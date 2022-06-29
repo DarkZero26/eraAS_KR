@@ -1,0 +1,111 @@
+﻿;-------------------------------------------------
+;DUNGEON_4：Lv4:광기の廃都
+;-------------------------------------------------
+@DUNGEON_4_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = （광기의 폐도）
+RESULTS = 레벨 4:광기의 폐도%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+@DUNGEON_4_ABLE
+RETURN 1
+
+
+@DUNGEON_4_PERSON
+#DIM PER
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 30) , 25 * (FLAG:調査深度 >= 70) , 25 * (FLAG:調査深度 >= 50) , 25)
+	CASE 0
+		;傷ついた조인
+		PER = 500
+	CASE 1
+		;冷凍カプセル
+		PER = 400
+	CASE 2
+		;오니との出会い
+		PER = 501
+	CASEELSE
+		;성노예救出
+		PER = 401
+ENDSELECT
+RETURN PER
+
+
+@DUNGEON_4_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+SIF RARE == -1
+	RARE = POSSIB(3)
+
+IF RARE == 1
+	;レア敵
+	SELECTCASE CHUSEN(33 , 33 , 33)
+		CASE 0
+			;ヴルトゥーム
+			ENE = 13
+		CASE 1
+			;ロードビヤーキー
+			ENE = 14
+		CASEELSE
+			;ニョグダ
+			ENE = 15
+	ENDSELECT
+ELSE
+	;通常敵
+	IF FLAG:調査深度 > 100
+		SELECTCASE CHUSEN(33 , 33 , 33)
+			CASE 0
+				;イタカァ
+				ENE = 25
+			CASE 1
+				;イ＝ス
+				ENE = 26
+			CASEELSE
+				;ショゴスロード
+				ENE = 27
+		ENDSELECT
+	ELSE
+		;ASのデフォルトでは100階以下は結構細かく設定されているが
+		;統一しちゃう
+		SELECTCASE CHUSEN(33 , 33 , 33)
+			CASE 0
+				;落とし子
+				ENE = 28
+			CASE 1
+				;深きもの
+				ENE = 29
+			CASEELSE
+				;ビヤーキー
+				ENE = 30
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN ENE
+
+
+@DUNGEON_4_ITEM
+#DIM IT
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 50) , 25 , 25 , 25)
+	CASE 0
+		;ゲノム入手。調査深度50以降
+		IT = 100
+	CASE 1
+		;書物閲覧
+		IT = 101
+	CASE 2
+		;古代遺跡発見
+		IT = 102
+	CASEELSE
+		;キャンプ跡地発見
+		IT = 103
+ENDSELECT
+RETURN IT
+
+
+;ダンジョンの各種パラメータ設定
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_4_PARAM
+FLAG:調査瘴気 = 0
+FLAG:索敵難易度 = 400
+RETURN

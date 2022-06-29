@@ -1,0 +1,115 @@
+﻿;-------------------------------------------------
+;DUNGEON_0：Lv0:都市境界線
+;-------------------------------------------------
+@DUNGEON_0_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = （습격 없음）
+RESULTS = 레벨 0:도시경계선%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+@DUNGEON_0_ABLE
+RETURN 1
+
+
+@DUNGEON_0_PERSON
+#DIM PER
+SELECTCASE CHUSEN(33 * (FLAG:調査深度 >= 30) , 33 , 33)
+	CASE 0
+		;성노예救出
+		PER = 401
+	CASE 1
+		IF Flag:調査イベント発生中 == 0 && Flag:調査区域 == 0 && CFLAG:(FLAG:調査キャラ):犬_出産回数 <= 10
+			;犬の花嫁
+			PER = 802
+		ELSEIF Flag:調査イベント発生中 == 0 && Flag:調査区域 == 0 && CFLAG:(FLAG:調査キャラ):犬_出産回数 >= 11
+			;自らの業と向き合い、さらなる禁忌を
+			PER = 804
+		ENDIF
+	CASEELSE
+		;軟体動物の群れ
+		PER = 803
+ENDSELECT
+RETURN PER
+
+
+;このダンジョンではアイテム入手系イベントが起きない
+@DUNGEON_0_ITEM
+#DIM IT
+RETURN IT
+
+
+@DUNGEON_0_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+SIF RARE == -1
+	RARE = POSSIB(3)
+
+IF RARE == 1
+	;レア敵
+	SELECTCASE CHUSEN(33 , 33 , 33)
+		CASE 0
+			;ヴルトゥーム
+			ENE = 13
+		CASE 1
+			;ロードビヤーキー
+			ENE = 14
+		CASEELSE
+			;ニョグダ
+			ENE = 15
+	ENDSELECT
+ELSE
+	;通常敵
+	IF FLAG:調査深度 < 15
+		;隠れ人
+		ENE = 37
+	ELSE
+		SELECTCASE CHUSEN(33 , 33 , 33)
+			CASE 0
+				;ショゴス
+				ENE = 34
+			CASE 1
+				;ミ＝ゴ
+				ENE = 35
+			CASEELSE
+				;インスマス
+				ENE = 36
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN ENE
+
+
+@DUNGEON_0_FE(STEP)
+#DIM STEP
+#DIM EV
+;このダンジョンではアイテム入手系、レア敵イベントが起きない(ASの仕様)
+SELECTCASE CHUSEN(0 , 25 , 15 , 0 , 60)
+	CASE 0
+		;レア敵
+		EV = 4
+	CASE 1
+		;通常敵。25%
+		EV = 3
+	CASE 2
+		;人材絡み。15%
+		EV = 1
+	CASE 3
+		;アイテム入手
+		EV = 2
+	CASE 4
+		;その他。何も起きない
+		EV = -1
+	CASEELSE
+		;予期しない数が返されても気づかない恐れがあるのでエラー落ち
+		THROW 予期しない分岐
+ENDSELECT
+RETURN EV
+
+;ダンジョンの各種パラメータ設定
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_0_PARAM
+FLAG:調査瘴気 = 0
+FLAG:索敵難易度 = 30
+RETURN

@@ -1,0 +1,172 @@
+﻿2018/10/19
+
+もともと欲しかった機能はコレだったんだ
+主に시설関連処理を色々と改造
+
+
+
+◆対象環境
+[era0004021]eraAS ver0.31
+＋eraAS_v031_m01_bugfix
+＋eraAS_v031_m02_mission_scout
+
+以下のパッチはマージ済み
+[era0004023]eraAS_0.31バグ修正パッチ
+[era0004024]eraAS_0.31ドロップアイテム簡略化表示パッチ
+
+
+
+◆注意事項
+・改変が広範囲にわたるので、他のパッチと競合を起こす可能性大
+・以後に登場するであろう他のパッチとの併用はできないことを覚悟しておいてください
+
+
+
+◆せつめい
+・能力表示画面から各キャラを시설や支援부대に配属できるように
+・에스테틱시설では画像表示処理を利用して対象の容姿変更適用前の姿と適用後の姿とを比較できるように
+・資金を消費する系の시설を利用する際に必要リソースの현재値を表示するように
+・上記改変作業にともなって시설関連処理の全体的な見直し、eramaker構文からemuera構文へ、適宜処理を切り出して関数化
+
+
+
+◆具体的な変更内容
+具体的な変更内容と変更の意図
+
+・新規関数@CHARA_LEAVE_CITY
+　キャラが부재になる（DELCHARAではない）場合のキャラ変数の変化を一括して行います
+　一時離脱する際に支援부대や시설からもまとめて外すようにしました
+　
+　※作成理由
+　@RPG_EVENT_800にて[부재]が立つ→救出イベントで[부재]が消える
+　この時、一時離脱中に人数が1枠分空くので、そこに適当な주민を配置できる
+　부재から復帰すると최대人数+1人分が配置されることになる
+　もっとも、この現象が実際に発生するかどうかは確認してません
+
+・支援부대系の関数追加
+　作成目的は能力表示画面から支援부대に配属できるようにするためです
+　関数追加、@CHARA_SET_SUPPORT(L_C_ID)
+　　キャラ登録番号を渡すことで、各支援부대への配属を行います
+　関数追加、@SUPPORT_CHARA_REMOVE(L_C_ID)
+　　キャラ登録番号を渡すことで、支援부대から解任します
+　関数追加、@SUPPORT_CHARA_SET(L_C_ID, L_SUP_ID)
+　　キャラ登録番号と支援부대IDを渡すことで、特定の支援부대に任命します
+　関数追加、@SHOW_ALL_SUPPORT(L_CNT_SUP)
+　　全ての支援부대について、配属されている人員を提示し、それぞれの人数を取得します
+
+・CITY_CENTERの関数追加
+　作成目的は二点
+　１）能力表示画面から各시설に配属できるようにするため
+　２）配属可能な시설は処理内容がほぼ同一なので、ここで一括して扱うため
+　
+　関数追加、@SHOW_FACILITY_LEVEL(L_FACI_ID)
+　　시설IDを渡すことで各시설の시설レベルを表示します
+　関数追加、@FACILITY_CHARA_SET(L_C_ID, L_FACI_ID)
+　　キャラ登録番号と支援부대IDを渡すことで、特定の시설に配属します
+　関数追加、@FACILITY_CHARA_REMOVE(L_C_ID)
+　　キャラ登録番号を渡すことで、시설から解任します
+　関数追加、@CITY_FACILITY_ORDER(L_FACI_ID)
+　　시설IDを渡すことで、配属する住民の選択を行います
+　関数追加、@SHOW_FACILITY_INTRODUCE(L_FACI_ID, L_TYPE)
+　　시설IDと表示内容を渡すことで、시설の各種情報を表示します
+　
+　関数追加、@CHARA_SET_WORKER(L_C_ID)
+　　キャラ登録番号を渡すことで、各시설への配属を行います
+　関数追加、@SHOW_ALL_WORKERS(L_FACI_LIST, L_CNT_WOKER)
+　　全ての시설について、配属されている人員を提示し、それぞれの人数を取得します
+
+
+
+◆変更箇所
+
+ERB/外界調査/調査イベント/RPG_800_住民拉致.ERB	
+　・関数追加、@CHARA_LEAVE_CITY
+
+ERB/本体/INFO_STATUS.ERB
+　・機能追加、能力表示画面から시설や支援부대に配属できるように
+
+ERB/外界調査/RPG_SUPPORT.ERB
+　・関数追加、@CHARA_SET_SUPPORT(L_C_ID)
+　・関数追加、@SUPPORT_CHARA_REMOVE(L_C_ID)
+　・関数追加、@SUPPORT_CHARA_SET(L_C_ID, L_SUP_ID)
+　・関数追加、@SHOW_ALL_SUPPORT(L_CNT_SUP)
+
+
+시설関連の改変
+
+ERB/都市関連/都市/CITY_CENTER.ERB
+　
+　関数追加、@SHOW_FACILITY_LEVEL(L_FACI_ID)
+　関数追加、@FACILITY_CHARA_SET(L_C_ID, L_FACI_ID)
+　関数追加、@FACILITY_CHARA_REMOVE(L_C_ID)
+　関数追加、@CITY_FACILITY_ORDER(L_FACI_ID)
+　関数追加、@SHOW_FACILITY_INTRODUCE(L_FACI_ID, L_TYPE)
+　関数追加、@CHARA_SET_WORKER(L_C_ID)
+　関数追加、@SHOW_ALL_WORKERS(L_FACI_LIST, L_CNT_WOKER)
+
+ERB/都市関連/都市/시설/CITY_F_에스테틱.ERB
+　・改変、@CITY_F_5
+　　소지금を表示
+　　INFO_STR_HAIRCOLORなどを使えば記述がシンプルになるのでそのように変更
+　　変更適用前と変更後を画像で提示するように変更
+
+ERB/都市関連/都市/시설/CITY_F_カジノ.ERB
+　・改変、@CITY_F_53
+　　共通処理が多いので@CITY_FACILITY_ORDERで処理させるように
+
+ERB/都市関連/都市/시설/CITY_F_러브호텔.ERB
+　・改変、@CITY_F_50
+　　共通処理が多いので@CITY_FACILITY_ORDERで処理させるように
+
+ERB/都市関連/都市/시설/CITY_F_품종개량시설.ERB
+　・改変、@CITY_F_54
+　　소지금を表示
+　　REPEAT文をFOR-NEXTに変更
+
+ERB/都市関連/都市/시설/CITY_F_학원.ERB
+　・改変、@CITY_F_1
+　　共通処理が多いので@CITY_FACILITY_ORDERで処理させるように
+
+ERB/都市関連/都市/시설/CITY_F_폐기장.ERB
+　・改変、@CITY_F_55
+　　APを表示
+
+ERB/都市関連/都市/시설/CITY_F_지원주택.ERB
+　・改変、@CITY_F_7
+　　共通処理が多いので@CITY_FACILITY_ORDERで処理させるように
+
+ERB/都市関連/都市/시설/CITY_F_병원.ERB
+　・改変、@CITY_F_3
+　　소지금を表示
+
+ERB/都市関連/都市/시설/CITY_F_연구시설.ERB
+　関数名があまりにも何をやる関数なのかわかりにくかったので
+　関数名を変更しつつeramaker文法準拠になっている箇所を改変しました
+　@CITY_F_52_GC→@LABORATORY_BREEDING_SELECT_MOTHER
+　@CITY_F_52_GC2→@LABORATORY_BREEDING_BABY_DESIGNING
+　　・関数追加、@LABORATORY_BREEDING_CREATE_BABY
+　　　この関数はキャラ作成～素質継承まで一括で行う
+　@CITY_F_52_GC_G→@LABORATORY_BREEDING_SELECT_DESIGN
+　@CITY_F_52_GC_G_O→@LABORATORY_BREEDING_FORMING_DESIGN
+　@CITY_F_52_GC_JZ→@LABORATORY_BREEDING_BABY_HEREDITY_CFLAG
+　@CITY_F_52_GC_HEREDY→@LABORATORY_BREEDING_BABY_HEREDITY_TALENT
+　　・関数追加、@HEREDITY_NORMAL_TALENT
+　　　範囲を指定して一括で素質の継承が出来るように作成
+　　・関数追加、@HEREDITY_CONFLICT_TALENT
+　　　同様に、範囲指定で相反する素質の継承を実行する
+　　・改変、広域変数であるCOUNTを使用するのはバグの元になりえるので書き換え
+　@CITY_F_52_BU→@LABORATORY_BOOST_ST
+　　・身体強化の際にMONEYが足りなくても実行できたのを修正（呼び出し元で弾いた）
+　　・強化実行時に현재체력/현재기력の決定処理で成長対象ではなく현재のTARGETの최대値を参照していたのを修正
+
+
+
+◆つくったひと：morph
+・morphのつくった以外のところの扱いはつくったひとに聞いて下さい
+・配布・改造・流用、好きにしてください
+・でも、その際のサポートは自分でやってね
+
+※　era＝R-18全般の常識的な取り扱いとして例えば以下のような事はやめて下さい
+
+・未成年者がいっぱいいる場所で広める
+・R-18以外のモノをメインに扱ってる場所で取り上げる

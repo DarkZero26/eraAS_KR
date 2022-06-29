@@ -1,0 +1,27 @@
+﻿;-------------------------------------------------
+;모럴イベント
+;-------------------------------------------------
+@TURN_EVENT_MORAL
+
+
+;保護されている住民は戻す
+SIF CFLAG:特別保護 != 0
+	RETURN
+
+
+IF CFlag:주민イベント傾向_性 > RAND:100
+	IF RAND:100 >= 90 && CFLAG:주민_모럴 < 0 
+		CALL TURN_EVENT_MORAL_BS
+	ELSEIF RAND:100 >= 95 && CFLAG:주민_모럴 < 0 && TALENT:학생 && TALENT:남혐 == 0
+		;흥미津々なお年頃
+		CALL TURN_EVENT_MORAL_OTSGR
+	ELSEIF CFLAG:주민_모럴 < 0 && TALENT:미망인 && CFlag:若い雄と미망인 >= 0
+		;若い雄にはまる미망인
+		CALL TURN_EVENT_MORAL_MBUJN
+	ELSEIF RAND:100 >= 95 && CFLAG:交配実験_回数 == 50
+		;魂に刻まれた快楽
+		CALL TURN_EVENT_MORAL_KUISYU
+	ENDIF
+ENDIF
+
+

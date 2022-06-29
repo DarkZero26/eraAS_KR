@@ -1,0 +1,97 @@
+﻿;-------------------------------------------------
+;자원봉사자イベント
+;-------------------------------------------------
+@TURN_EVENT_VOLUNTEER
+#DIM L_P
+#DIM C_P
+#DIM U_P
+#DIM E_P
+
+C_P = 0
+U_P = 0
+E_P = 0
+
+SIF FLAG:유연_독자판정 >= 1
+	C_P = FLAG:유연_독자판정*5
+
+SIF FLAG:유연_독자판정 <= -1
+	U_P = FLAG:유연_독자판정*5
+
+;キャリアLvが50以上の場合50まで下げる
+SIF FLAG:유연_합계경험치 >= 1500
+	 FLAG:유연_합계경험치 = 1500
+
+E_P = FLAG:유연_합계경험치-((FLAG:유연_합계경험치/20)*(FLAG:유연_위험성*2))
+
+;死んでいる場合は戻る
+SIF CFLAG:주민_육체데미지 >= 100 || FLAG:유연_정신데미지 >= 100
+	RETURN
+IF ((FLAG:유연_고정난수)+(FLAG:유연_サポーター総数*5)+E_P+C_P+U_P >= FLAG:유연_실패율+(FLAG:유연_위험성*2) &&  FLAG:유연_독자판정 != -10) || FLAG:유연_독자판정 == 10 
+	CFLAG:주민_육체데미지 += (FLAG:유연_육체데미지+FLAG:유연_위험성)/5
+	CFLAG:주민_정신데미지 += (FLAG:유연_정신데미지+FLAG:유연_위험성)/5
+	IF TALENT:자원봉사자 == 3
+		SETCOLOR 150,250,150
+		DRAWLINE
+		PRINTFORML 【유물 연구:성공】
+		DRAWLINE
+		CALLFORM AL_Clear_{FLAG:유연_연구대상}
+		DRAWLINE
+		L_P = (RAND:(FLAG:유연_연구이익+(FLAG:유연_위험성/2)))+1
+		FLAG:도시_현재LP += L_P
+			PRINTFORML ＬＰ　{FLAG:도시_현재LP-L_P}　→　{FLAG:도시_현재LP}
+		SIF FLAG:도시_최대LP <= FLAG:도시_현재LP
+			FLAG:도시_현재LP = FLAG:도시_최대LP
+		PRINTFORMW 
+	ENDIF
+ELSE
+	CFLAG:주민_육체데미지 += FLAG:유연_육체데미지+FLAG:유연_위험성
+	CFLAG:주민_정신데미지 += FLAG:유연_정신데미지+FLAG:유연_위험성
+	IF TALENT:자원봉사자 == 3
+		SETCOLOR 250,150,150
+		DRAWLINE
+		PRINTFORML 【유물 연구:실패】
+		DRAWLINE
+		CALLFORM AL_Out_{FLAG:유연_연구대상}
+		DRAWLINE
+		PRINTFORMW 
+	ENDIF
+ENDIF
+SIF TALENT:자원봉사자 == 3
+	MONEY -= FLAG:유연_비용
+
+CFLAG:(15000+FLAG:유연_연구대상) += 1
+CFLAG:주민_유연_総数 += 1
+
+
+IF CFLAG:주민_육체데미지 >= 100
+	SETCOLOR 250,50,50
+	PRINTFORML %타겟은% 육체에 축적된 대미지가 한계에 이르러 그대로 숨이 끊어졌다…….
+	SIF TALENT:자원봉사자 == 3
+		FLAG:유연_リーダー = 0
+ELSEIF CFLAG:주민_정신데미지 >= 100
+	SETCOLOR 250,50,50
+	PRINTFORML %타겟은% 정신에 축적된 대미지가 한계에 이르러 그대로 숨이 끊어졌다…….
+	SIF TALENT:자원봉사자 == 3
+		FLAG:유연_リーダー = 0
+ELSEIF TALENT:자원봉사자 == 3
+
+ENDIF
+
+
+RESETCOLOR
+
+;-------------------------------------------------
+;자원봉사자イベント　回復
+;-------------------------------------------------
+@TURN_EVENT_VOLUNTEER_1
+
+
+CFLAG:주민_육체데미지 -= 5
+SIF CFLAG:주민_육체데미지 <= 0
+	CFLAG:주민_육체데미지 = 0
+
+CFLAG:주민_정신데미지 -= 5
+SIF CFLAG:주민_정신데미지 <= 0
+	CFLAG:주민_정신데미지 = 0
+
+

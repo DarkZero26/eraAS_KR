@@ -1,0 +1,201 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_SYSTEM.ERB
+;	Facility	:イベント（システム）。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ EVENT_GAMESTART					EVE:ゲーム開始
+;	・ EVENT_OP_MAIN					EVE:オープニング(主処理)
+;	・ EVENT_OP_DETAIL					EVE:オープニング(詳細)
+;
+; *- エンディング
+;
+;	・ EVENT_ED_MAIN					EVE:エンディング主処理
+;	・ EVENT_ED_01_HAREM				EVE:エンディング(01:ハーレム)
+;	・ EVENT_ED_02_NOMAL				EVE:エンディング(02:ノーマル)
+;
+;===============================================================================
+
+
+;=================================================
+;   sub EVENT_GAMESTART
+;=================================================
+;   EVE:ゲーム開始
+;-------------------------------------------------
+@EVENT_GAMESTART
+
+;- EVE:オープニング(主処理)
+CALL EVENT_OP_MAIN
+
+
+Flag:都市_今期の締め切り = 90
+
+;- VAR:リスト更新
+CALL VAR_MAKE_LIST
+
+;- SYSTEM:オートセーブ処理
+CALL SYS_AUTO_SAVE
+
+;-- SYSTEM:MENU
+JUMP SYSTEM_MENU
+
+
+;=================================================
+;   sub EVENT_OP_MAIN
+;=================================================
+;   EVE:オープニング(主処理)
+;-------------------------------------------------
+@EVENT_OP_MAIN
+
+IF !FLAG:周回プレイ数
+	CALL C_LINE
+			TALENT:MASTER:오토코= 1
+ENDIF
+DRAWLINE
+PRINTFORML ≪[ＩＤ확인]、[고유게놈 확인]、[고유에테르 확인]、[　　　　　　　확인]≫
+DRAWLINE
+PRINTFORMW 
+DRAWLINE
+PRINTFORML ≪안녕하십니까,「플레이어」≫
+PRINTFORML ≪오늘은 임무 정기 확인을 합니다. 내용은 주로 우리의 행동 목적에 관한 것입니다≫
+PRINTFORMW 
+PRINTFORML ≪우선 이 도시에 대해서입니다≫
+PRINTFORML ≪이 행성상에서 도시라고 호칭할 수 있을 정도의 콜로니는 이곳 뿐입니다≫
+PRINTFORML ≪어째서일까요? 이는 현재 이 행성을 지배하고 있는「외적」의 공격 때문입니다≫
+PRINTFORML ≪「외적」은 원주민인 당신들에게 대해 공격적입니다. 목적, 소속 등 모든 것이 불명확합니다≫
+PRINTFORML ≪판명되어 있는 것은, 인간을 비롯한 수많은 종족들 생존의 위기에 처해져있다는 것입니다≫
+PRINTFORML ≪우리들은 단합해, 이 위기를 극복해야 합니다≫
+PRINTFORMW 
+PRINTFORML ≪그리고 다음으로 당신들……「플레이어」에 대해서입니다≫
+PRINTFORML ≪주로 도시의 운영, 외계 조사 역할을 맡고 있습니다. 당신들은 그 중의 한 명이구요≫
+PRINTFORML ≪때로는 협력하고 때로는 서로 경쟁하여, 도시와 그 거주민들의 레벨을 올리기 위해 힘써주세요≫
+PRINTFORML ≪권한이 허락되는 한 무엇을 하든 자유입니다…… 헌데 당신은 다른 자들과 비교하니 얌전한 편이군요≫
+PRINTFORMW 
+PRINTFORML ≪간소하지만 개요는 이상입니다. 우선 자주 가시던 카페에서 구인 활동을 하는게 좋겠네요≫
+PRINTFORML ≪모르는게 있으시다면『사전』에 엑세스 해주시길……≫
+PRINTFORMW 
+PRINTFORML ≪자 그럼 운영을 해봅시다. 인류의 보다 나은 미래를 위해≫
+PRINTFORML ≪저는「시티」, 도시를 총괄하여 당신들의 역사를 계속 지켜보겠습니다≫
+PRINTFORMW 
+DRAWLINE
+
+
+
+;=================================================
+;   sub EVENT_OP_DETAIL
+;=================================================
+;   EVE:オープニング(詳細)
+;-------------------------------------------------
+@EVENT_OP_DETAIL
+
+
+;-------------------------------------------------------------------------------
+;   エンディング
+;-------------------------------------------------------------------------------
+
+;=================================================
+;   sub EVENT_ED_MAIN
+;=================================================
+;   EVE:エンディング主処理
+;-------------------------------------------------
+@EVENT_ED_MAIN
+#DIM L_HAREM
+#DIM L_NOMAL
+#DIM L_MAN
+#DIM L_TMP
+
+;まだ未搭載
+RETURN
+
+SIF FLAG:クリアフラグ
+	RETURN
+
+
+L_NOMAL = 0
+L_HAREM = 0
+L_MAN = 0
+REPEAT CHARANUM
+	SIF !MARK:COUNT:예속각인
+		CONTINUE
+	L_NOMAL ++
+	SIF TALENT:COUNT:상위함락
+		L_HAREM ++
+	SIF TALENT:COUNT:오토코
+		L_MAN ++
+REND
+
+SIF L_NOMAL < 5
+	RETURN
+
+;-----------------------------
+;- 出力開始
+;-----------------------------
+FLAG:クリアフラグ = 1
+FLAG:２週目モード = 1
+
+
+CUSTOMDRAWLINE =
+PRINTFORML 【엔딩 달성】
+FORCEWAIT
+PRINTL
+PRINTW ………
+PRINTW ……
+PRINTW …
+PRINTL
+
+
+IF L_HAREM >= 5
+	CALL EVENT_ED_01_HAREM
+	L_TMP = 1
+ELSE
+	CALL EVENT_ED_02_NOMAL
+	L_TMP = 2
+ENDIF
+SETBIT FLAG:確認済みエンドフラグ, L_TMP
+
+PRINTL
+PRINTFORMW …
+PRINTFORMW ……
+PRINTFORMW ………
+PRINTL
+PRINTFORMW ＞메뉴에「2회차로 이행」버튼이 해금되었습니다.
+PRINTFORMW ＞다음 회차로 이행, 아니면 이대로 진행을 하실 수 있습니다.
+PRINTFORMW ………
+PRINTFORMW ……
+PRINTFORMW …
+PRINTL
+CUSTOMDRAWLINE =
+
+
+;=================================================
+;   sub EVENT_ED_01_HAREM
+;=================================================
+;   EVE:エンディング(01:ハーレム)
+;-------------------------------------------------
+@EVENT_ED_01_HAREM
+
+
+
+
+;=================================================
+;   sub EVENT_ED_02_NOMAL
+;=================================================
+;  EVE:エンディング(02:ノーマル)
+;-------------------------------------------------
+@EVENT_ED_02_NOMAL
+
+
+

@@ -1,0 +1,56 @@
+﻿
+;-------------------------------------------------
+; 都市　ニュース
+;-------------------------------------------------
+
+@CITY_NEWS
+
+
+SETCOLOR 250,250,250
+PRINTFORM 　　　　 【ＮＥＷＳ:
+IF Flag:도시_방위 != 0
+	PRINTFORM 
+ELSEIF FLAG:都市_ニュース == 15
+	PRINTFORM ≪거주민 여러분, 안녕하십니까. 오늘도 도시는 평화롭습니다.≫
+ELSEIF FLAG:都市_ニュース == 14
+	PRINTFORM 인기 아이돌 유닛의 신작 CD가 발매 중, 각 점포마다 품절 다발
+ELSEIF FLAG:都市_ニュース == 13
+	PRINTFORM 새로운 정보는 없습니다.
+ELSEIF FLAG:都市_ニュース == 12
+	PRINTFORM 도시 내에서 이상 현상은 보이지 않습니다.
+ELSEIF FLAG:都市_ニュース == 11
+	PRINTFORM 완전 침식 구역의 영역이 확대되고 있습니다. 각 부대는 대책을……
+ELSEIF FLAG:都市_ニュース == 10
+	PRINTFORM 허가를 받지 않고 흥미 위주로 도시 경계선을 탐색하지 맙시다.
+ELSEIF FLAG:都市_ニュース == 9
+	PRINTFORM ≪도시에 사는 거주민들, 오늘도 도시를 운영해 나갑시다.≫
+ELSEIF FLAG:都市_ニュース == 8
+	PRINTFORM 금일의 날씨가 변덕스러우므로, 구름의 상태를 잘 확인하신 후 외출해주십시오.
+ELSEIF FLAG:都市_ニュース == 7
+	PRINTFORM 시공 왜곡으로 인해 외계 지형이 변화하였습니다. 해당 지역은……
+ELSEIF FLAG:都市_ニュース == 6
+	PRINTFORM 신분이 낮은 거주민이 소식 블명이 되는 사건이 다발하고 있습니다. 세심한 주의를……
+ELSEIF FLAG:都市_ニュース == 5
+	PRINTFORM 이레귤러의 테러 행위가 발생, 즉시 진압되었습니다.
+ELSEIF FLAG:都市_ニュース == 4
+	PRINTFORM 외계에서 시공 왜곡이 발생하고 있습니다. 역장이 강한 곳에서는 주의해 주십시오.
+ELSEIF FLAG:都市_ニュース == 3
+	PRINTFORM 「플레이어 No.0{RAND:9}」의 권한 남용으로 인한 도시의 기능이 불안정하게……
+ELSEIF FLAG:都市_ニュース == 2
+	PRINTFORM 소형「외적」이 도시에 침입했지만, 피해는 없었습니다.
+ELSEIF FLAG:都市_ニュース == 1
+	PRINTFORM 「플레이어 No.0{RAND:9}」의 부대가 외계를 조사 중.
+ELSE
+	PRINTFORM 도시 경계선에서「외적」의 반응이 있으니, 거주민들은 주의하시기 바랍니다.
+ENDIF
+
+PRINTFORML 】
+RESETCOLOR
+
+
+
+
+
+
+
+

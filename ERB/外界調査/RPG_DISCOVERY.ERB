@@ -1,0 +1,213 @@
+﻿;-------------------------------------------------
+;発見
+;-------------------------------------------------
+@RPG_DISCOVERY(ARG)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_S
+#DIM L_AG
+#DIM L_DG1
+#DIM L_DG2
+#DIM L_G
+#DIM I_G
+#DIM CONST SKILL_LABEL_SPAN = 8
+
+L_G = RAND:20
+L_DG1 = RAND:6
+L_DG2 = RAND:6
+L_I = ARG
+L_S = 0
+L_AG = 0
+
+IF Flag:フロア_品質 >= RAND:100
+	IF Flag:フロア_品質 >= RAND:100
+		;高品質
+		I_G = (RAND:6)+20
+	ELSE 
+		;中品質
+		I_G = (RAND:6)+10
+	ENDIF
+ELSE 
+	;低品質
+	I_G = (RAND:6)
+ENDIF
+
+CLEARLINE LINECOUNT
+DRAWLINE
+CALL PRINT_LABEL("―――――――――발견!!―――――――――")
+PRINTL
+DRAWLINE
+IF FLAG:フロア_特殊調査 == 3
+	PRINTFORML 문득 신경 쓰이는 물건이 있어 자세히 조사해보자, 고풍스럽고 단단해보이는 자물쇠를 채운 상자를 찾아낸다.
+	PRINTFORML 간단한 구조이긴 하지만, 역으로 자물쇠를 여는 것 말고는 제대로 열 방법이 없는 것 같다.
+		SETCOLOR 0xFFA500
+		PRINTFORM 【락픽】
+		RESETCOLOR
+	PRINTFORML 기능이 있다면 열 수 있을지도 모른다.
+	PRINTFORML 없다면 자물쇠를 부술 수 밖에 없지만, 내용물이 파손될지도 모른다…….
+	PRINTL 
+	PRINTFORML ◇탐색자： %CALLNAME:L_I%
+	PRINTFORML 
+	PRINTFORM 　　기능：
+	CALL PRINT_STATUS(L_I, "락픽", SKILL_LABEL_SPAN, 3)
+	PRINTL 
+	PRINTL 
+	
+ELSEIF FLAG:フロア_特殊調査 == 2
+	PRINTFORML 어떤 시설에 침입해 각 방을 조사하던 중 기계적으로 잠긴 문을 발견한다.
+	PRINTFORM 아직 기능하고 있다. 여는데에
+		SETCOLOR 0xFFA500
+		PRINTFORM 【컴퓨터】
+		RESETCOLOR
+	PRINTFORML 기능이 뛰어나지 않다면 난감할 것이다.
+	PRINTFORML 귀찮다면 억지로 열어 버리는 수도 있지만, 그 반동으로 실내가 엉망진창이 될 가능성도 있다…….
+	PRINTFORML 
+	PRINTL 
+	PRINTFORML ◇탐색자： %CALLNAME:L_I%
+	PRINTFORML 
+	PRINTFORM 　　기능：
+	CALL PRINT_STATUS(L_I, "컴퓨터", SKILL_LABEL_SPAN, 3)
+	PRINTL 
+	PRINTL 
+	
+ELSEIF FLAG:フロア_特殊調査 == 1
+	PRINTFORML 구획을 조사하던 중 파괴된 대형 수송기를 발견한다. 얼핏 보기에는 아직 파손된지 얼마 되지 않은 듯 하다.
+	PRINTFORML 허나 안을 살펴보려 하니, 파손에 의한 긴급잠금이 걸려 있는 듯 쉬이 열리지 않는다.
+	PRINTFORM 이를 조사하는데에
+		SETCOLOR 0xFFA500
+		PRINTFORM 【기계수리】
+		RESETCOLOR
+	PRINTFORML 기능이 필요할 것이다. 특기분야라면 우선적인 선택이다.
+	PRINTFORML 아니면 억지로 열어버릴 수 있다. 하지만 그 선택은 성공 확률도 낮고 얻을 수 있는 것도 적어질 우려가 있다…….
+	PRINTL 
+	PRINTFORML ◇탐색자： %CALLNAME:L_I%
+	PRINTFORML 
+	PRINTFORM 　　기능：
+	CALL PRINT_STATUS(L_I, "기계수리", SKILL_LABEL_SPAN, 3)
+	PRINTL 
+	PRINTL 
+	
+ENDIF
+DRAWLINE
+
+PRINTFORML 
+PRINTFORML [0] 기능 사용
+PRINTFORML [1] 무리 해결
+PRINTFORML 
+$INPUT_LOOP
+INPUT
+DRAWLINE
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	IF FLAG:フロア_特殊調査 == 3
+		SIF CFlag:L_I:주민_技能_락픽 >=  RAND:100
+			L_S = 1
+	ELSEIF FLAG:フロア_特殊調査 == 2
+		SIF CFlag:L_I:주민_技能_컴퓨터 >=  RAND:100
+			L_S = 1
+	ELSEIF FLAG:フロア_特殊調査 == 1
+		SIF CFlag:L_I:주민_技能_기계수리 >=  RAND:100
+			L_S = 1
+	ENDIF
+	IF L_S == 1
+		CALL PRINT_LABEL("―――――――――성공―――――――――",,COLOR("RPG_MESSAGE_SUCCESS"))
+		PRINTL
+		PRINTFORML %CALLNAME:L_I%의 뛰어난 기능으로, 문제를 해결할 수 있었던 것 같다.
+		PRINTFORML 이어서 조사를 한 결과, 쓸 만한 것을 몇 개 발견할 수 있었다.
+		PRINTFORML 그것들을 허겁지겁 회수하고, 회수부대에게 반송을 부탁했다…….
+		PRINTFORML
+		L_AG = RAND:4
+		IF L_AG == 3
+			CALL PRINT_LABEL("아이템 입수")
+			PRINTFORML %조사처리(FlagNAME:(2100+I_G),"를")% 3개 입수했다.
+			FLAG:(2100+I_G) += 3
+		ELSEIF L_AG == 2
+			CALL PRINT_LABEL("게놈 입수")
+			PRINTFORML %조사처리(FlagNAME:(2500+L_G),"를")% 2개 입수했다.
+			Flag:(2500+L_G) += 2
+		ELSEIF L_AG == 1
+			CALL PRINT_LABEL("강화제 입수")
+			PRINTFORML %조사처리(FlagNAME:(2800+L_DG1),"를")% 1개 입수했다.
+			CALL PRINT_LABEL("강화제 입수")
+			PRINTFORML %조사처리(FlagNAME:(2800+L_DG2),"를")% 1개 입수했다.
+			Flag:(2800+L_DG1) += 1
+			Flag:(2800+L_DG2) += 1
+		ELSE
+			CALL PRINT_LABEL("초인약 입수")
+			PRINTFORML %조사처리(FlagNAME:(2800+L_DG1),"를")% 1개 입수했다.
+			Flag:(2810+L_DG1) += 1
+		ENDIF
+	ELSE
+		CALL PRINT_LABEL("―――――――――실패―――――――――",,COLOR("RPG_MESSAGE_BAD"))
+		PRINTL
+		PRINTFORML 이런저런 시행착오를 겪었지만 결국 실패한 것 같다…….
+		PRINTFORML 더이상 이를 해결할 수 없을 것이다.
+		PRINTFORML 조금 낙담하면서 %조사처리(CALLNAME:L_I,"는")% 구획조사를 재개했다…….
+	ENDIF
+CASE 1
+	SIF 30 >=  RAND:100
+			L_S = 1
+	IF L_S == 1
+		CALL PRINT_LABEL("―――――――――成功―――――――――",,COLOR("RPG_MESSAGE_SUCCESS"))
+		PRINTL
+		PRINTFORML 어떻게든 대상에게만 타격이 갈 수 있도록 공격을 가하자, 운 좋게 해결된 것 같다.
+		PRINTFORML 하지만 소량의 자재에 피해가 간 것 같아 일부는 못쓰게 되었다.
+		PRINTFORML 별 수 없다고 타협하면서 이를 회수, 회수부대에게 반송을 부탁했다…….
+		PRINTFORML
+		L_AG = RAND:3
+		IF L_AG == 2
+			CALL PRINT_LABEL("아이템 입수")
+			PRINTFORML %조사처리(FlagNAME:(2100+I_G),"를")% 1개 입수했다.
+			FLAG:(2100+I_G) += 1
+		ELSEIF L_AG == 1
+			CALL PRINT_LABEL("게놈 입수")
+			PRINTFORML %조사처리(FlagNAME:(2500+L_G),"를")% 1개 입수했다.
+			Flag:(2500+L_G) += 1
+		ELSE
+			CALL PRINT_LABEL("강화제 입수")
+			PRINTFORML %조사처리(FlagNAME:(2800+L_DG2),"를")% 1개 입수했다.
+			Flag:(2800+L_DG2) += 1
+		ENDIF
+	ELSE
+		CALL PRINT_LABEL("―――――――――실패―――――――――",,COLOR("RPG_MESSAGE_BAD"))
+		PRINTL
+		PRINTFORML 힘을 잘못 조절해 요란스럽게 파괴해버렸다…….
+		PRINTFORML 더이상 이를 해결할 수 없을 것이다.
+		PRINTFORML 조금 낙담하면서 %조사처리(CALLNAME:L_I,"는")% 구획조사를 재개했다…….
+	ENDIF
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+PRINTFORML 
+PRINTFORMW 
+
+Flag:フロア_特殊調査 = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

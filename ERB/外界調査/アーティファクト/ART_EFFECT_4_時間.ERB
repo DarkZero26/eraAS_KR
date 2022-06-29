@@ -1,0 +1,87 @@
+﻿;-------------------------------------------------
+;アーティファクトの効果テンプレート
+;4は効果IDで置き換える
+;-------------------------------------------------
+;名前をRESULTSに入れて返す。全角２字
+@ART_EFFECT_4_NAME
+RESULTS = 시간
+RETURN
+
+
+;この効果が生成可能か返す
+;1なら可能、0なら不可。RANKが対象アーティファクトのRANK
+@ART_EFFECT_4_ABLE(RANK)
+#DIM RANK
+RETURN 1
+
+
+;---攻撃前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_4_ATKPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_4_ATKPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---攻撃後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_4_ATKAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+SIF POSSIB((STRENGTH + 4) * 3) == 0
+	RETURN 0
+RETURN 1
+
+
+@ART_EFFECT_4_ATKAFTER(STRENGTH)
+#DIM STRENGTH
+PRINTFORML 【시간 Lv{STRENGTH}】주위의 시간을 정체시켜, 한 번 더 추격했다!
+EX_A:EXTRA_ATTACK = 1
+RETURN 1
+
+
+;---防御前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_4_DEFPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_4_DEFPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---防御後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_4_DEFAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_4_DEFAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;エフェクトの説明
+@ART_EFFECT_4_EXPLANATION
+;AS本体の説明文を継承
+RESULTS = 【이능　:　　시간】주위의 시간을 뒤틀어 우위를 점하게 하는 이능을 사용한다.

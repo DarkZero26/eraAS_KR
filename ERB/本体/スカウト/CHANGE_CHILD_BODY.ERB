@@ -1,0 +1,10 @@
+﻿@CHANGE_CHILD_BODY
+PRINTL !주의! 유아 체형, 작은 체형의 화상 교체 처리를 실행합니다.
+PRINTL 해당 처리는 한 번 처리한 후에는 불필요합니다.
+FOR LOCAL, 1, CHARANUM-1
+	IF TALENT:LOCAL:작은체형==1  || TALENT:LOCAL:소인체형==1
+		PRINTFORML {LOCAL}
+		CFLAG:LOCAL:주민_체격=1
+	ENDIF
+NEXT
+RETURN

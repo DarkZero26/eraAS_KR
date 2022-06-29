@@ -1,0 +1,41 @@
+﻿;-------------------------------------------------
+;キャンプ跡発見
+;入手金はしょっぱく
+;-------------------------------------------------
+@RPG_EVENT_103(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+L_G = 50*(RAND:((Flag:調査区域*(Flag:調査深度/3))+1) + 1)
+IF FLAG:調査区域 == 50 || FLAG:調査区域 == 51
+	L_G = LIMIT(L_G , 0 , 100000)
+ELSE
+	L_G = LIMIT(L_G , 0 , 50000)
+ENDIF
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 103
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:캠프 흔적 발견】
+PRINTFORML 
+PRINTFORML %조사처리(CALLNAME:L_I,"는")% 탐색 도중, 누군가가 야영하고 있었다고 생각되는 장소를 발견했다.
+PRINTFORML 대부분은 무가치한 쓰레기였지만, 약간의 금품과 식량이 남아있었다.
+PRINTFORML 모처럼이니 %조사처리(CALLNAME:L_I,"는")% 이를 가져가기로 했다…….
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 자금 {L_G}만큼 획득했다.
+PRINTFORML 
+PRINTFORML 
+PRINTFORMW 
+
+
+MONEY += L_G
+
+
+RESETCOLOR
+DRAWLINE

@@ -1,0 +1,178 @@
+﻿;-------------------------------------------------
+;調査準備
+;-------------------------------------------------
+@RPG_STANDBY(ARG:0,ARG:1,ARG:2)
+#DIM L_INPUT
+
+
+;支援부대の能力計算は@RPG_STARTで毎回行うことに
+[SKIPSTART]
+;수반合計ATK
+ARG:0 = 6800
+ARG:1 = 1
+ARG:2 = 6511
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_수반合計ATK = FLAG:범용변수
+;수반合計DEF
+ARG:0 = 6800
+ARG:1 = 1
+ARG:2 = 6512
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_수반合計DEF = FLAG:범용변수
+;수반合計HIT
+ARG:0 = 6800
+ARG:1 = 1
+ARG:2 = 6513
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_수반合計HIT = FLAG:범용변수
+;수반合計SPD
+ARG:0 = 6800
+ARG:1 = 1
+ARG:2 = 6514
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_수반合計SPD = FLAG:범용변수
+
+
+
+;후방合計HIT
+ARG:0 = 6801
+ARG:1 = 1
+ARG:2 = 6513
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_후방合計HIT = FLAG:범용변수
+;후방合計SPD
+ARG:0 = 6801
+ARG:1 = 1
+ARG:2 = 6514
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_후방合計SPD = FLAG:범용변수
+
+
+
+
+
+;회수合計LUK
+ARG:0 = 6802
+ARG:1 = 1
+ARG:2 = 6515
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_회수合計LUK = FLAG:범용변수
+;회수合計SPD
+ARG:0 = 6802
+ARG:1 = 1
+ARG:2 = 6514
+CALL MEMBER_LIST3(ARG:0,ARG:1,ARG:2)
+FLAG:支援_회수合計SPD = FLAG:범용변수
+[SKIPEND]
+
+
+;アーティファクトの能力計算はここでやる
+CALL RPG_ARTIFACT_PLUS(FLAG:調査キャラ)
+
+
+
+;-------------------------------------------------
+;수반부대のATK/DEF/HIT/SPDを計算して返す関数
+;-------------------------------------------------
+@CALC_ZUIHAN(TYPE = "")
+#DIM NUM
+#DIM CNT
+#DIM VAR
+#DIM RAT
+#DIM TEMP
+#DIMS TYPE
+
+NUM = GETNUM(CFLAG , "주민_" + TYPE)
+VAR = 0
+
+FOR CNT , 0 , CHARANUM
+	IF CFLAG:CNT:6800 == 1
+		;현재の地形補正を対象者の能力に適用して加算
+		CALLFORM RPG_TER{FLOORTER:NOWFLOOR}_RATIO_PLAYER(CNT)
+		RAT = RESULT
+		TEMP = PERCENT(CFLAG:CNT:NUM , RAT)
+		;MARKによる補正を加算
+		VAR += PERCENT(TEMP , 100 + MARK_COUNT(CNT))
+	ENDIF
+NEXT
+VAR += (VAR * FLAG:(@"遺物_%TYPE%合計値")) / 100
+RETURN VAR
+
+
+;-------------------------------------------------
+;후방부대のATK/DEF/HIT/SPDを計算して返す関数
+;후방부대に地形適性を適用すべきか迷ったけど、
+;탐색キャラと수반より離れてそうだなってことで地形適性は適用しない
+;具体的な理由はないので必要に応じて適用してください
+;-------------------------------------------------
+@CALC_KOUHOU(TYPE = "")
+#DIM NUM
+#DIM CNT
+#DIM VAR
+#DIM RAT
+#DIM TEMP
+#DIMS TYPE
+
+NUM = GETNUM(CFLAG , "주민_" + TYPE)
+VAR = 0
+
+FOR CNT , 0 , CHARANUM
+	IF CFLAG:CNT:6801 == 1
+		;후방부대に地形適性は適用しない(仮に)。適用する場合は*100を*RESULTに変える
+		;CALLFORM RPG_TER{FLOORTER:NOWFLOOR}_RATIO_PLAYER(CNT)
+		TEMP = CFLAG:CNT:NUM * 100 / 100
+		;MARKによる補正を加算
+		VAR += PERCENT(TEMP , 100 + MARK_COUNT(CNT))
+	ENDIF
+NEXT
+VAR += (VAR * FLAG:(@"遺物_%TYPE%合計値")) / 100
+RETURN VAR
+
+
+;-------------------------------------------------
+;회수부대のATK/DEF/HIT/SPDを計算して返す関数
+;회수부대に地形適性は適用しない
+;具体的な理由はないので必要に応じて適用してください
+;-------------------------------------------------
+@CALC_KAISYU(TYPE = "")
+#DIM NUM
+#DIM CNT
+#DIM VAR
+#DIM RAT
+#DIM TEMP
+#DIMS TYPE
+
+NUM = GETNUM(CFLAG , "주민_" + TYPE)
+VAR = 0
+
+FOR CNT , 0 , CHARANUM
+	IF CFLAG:CNT:6802 == 1
+		;후방부대に地形適性は適用しない(仮に)。適用する場合は*100を*RESULTに変える
+		;CALLFORM RPG_TER{FLOORTER:NOWFLOOR}_RATIO_PLAYER(CNT)
+		TEMP = CFLAG:CNT:NUM * 100 / 100
+		;MARKによる補正を加算
+		VAR += PERCENT(TEMP , 100 + MARK_COUNT(CNT))
+	ENDIF
+NEXT
+VAR += (VAR * FLAG:(@"遺物_%TYPE%合計値")) / 100
+RETURN VAR
+
+
+;-------------------------------------------------
+;刻印の段階に基づきボーナスを計算する式中関数
+;CHRにキャラ登録番号を受け取る
+;MARKの１段階につき5%としてみる
+;-------------------------------------------------
+@MARK_COUNT(CHR = -1)
+#FUNCTION
+#DIM CHR
+#DIM VALUE
+#DIM CNT
+#DIM CONST BONUS = 5
+VALUE = 0
+FOR CNT , 1 , 4
+	SIF MARK:CHR:예속각인 == CNT || MARK:CHR:함락각인 == CNT || MARK:CHR:음란각인 == CNT
+		VALUE += BONUS
+NEXT
+RETURNF VALUE
+

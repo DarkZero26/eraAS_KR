@@ -1,0 +1,75 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;7は유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_7_NAME
+RESULTS = 『부적』인리의 반지
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_7_ABLE
+SIF RPG_ARTIFACT_COUNTUNIQUE(7)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_7_RANK
+RETURN 60
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_7_ATK
+RETURN 90
+
+
+@ART_UNIQUE_7_DEF
+RETURN 160
+
+
+@ART_UNIQUE_7_HIT
+RETURN 150
+
+
+@ART_UNIQUE_7_SPD
+RETURN 150
+
+
+@ART_UNIQUE_7_LUK
+RETURN 75
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_7_GENOME
+RETURN 1800
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_7_ABILITY
+RETURN 5
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_7_MADEIN
+RETURN 1
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_7_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 이 세상 사람이 아닌 외적을 멀리하게 하는 부적.
+EXPL:1 = 오래된 민간 전승에 이와 비슷한 물건이 등장하지만 구체적인 제조 시기는 명확하지 않다.
+EXPL:2 = 
+EXPL:3 = 
+EXPL:4 = 
+RETURN 1

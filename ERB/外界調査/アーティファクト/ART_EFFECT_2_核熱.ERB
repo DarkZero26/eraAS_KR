@@ -1,0 +1,92 @@
+﻿;-------------------------------------------------
+;アーティファクトの効果テンプレート
+;2は効果IDで置き換える
+;-------------------------------------------------
+;名前をRESULTSに入れて返す。全角２字
+@ART_EFFECT_2_NAME
+RESULTS = 핵열
+RETURN
+
+
+;この効果が生成可能か返す
+;1なら可能、0なら不可。RANKが対象アーティファクトのRANK
+@ART_EFFECT_2_ABLE(RANK)
+#DIM RANK
+RETURN 1
+
+
+;---攻撃前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_2_ATKPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_2_ATKPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---攻撃後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_2_ATKAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+@ART_EFFECT_2_ATKAFTER(STRENGTH)
+#DIM STRENGTH
+#DIM TEMP
+TEMP = BRESULT:DAMAGE + 10
+TEMP = TEMP / (6 - STRENGTH)
+PRINTFORML 【핵열 Lv{STRENGTH}】%BSTR_D:BNAME%에게 {TEMP} 대미지를 주었다.
+SIF FLAG:도시_방위 != 0
+	PRINTFORML 　　　　 위험한 에너지는 도시에도 피해를 준다！
+EX_D:DAMAGE_PLUS += TEMP
+EX_A:DISASTER += TEMP
+RETURN 1
+
+
+;---防御前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_2_DEFPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_2_DEFPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---防御後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_2_DEFAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_2_DEFAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;エフェクトの説明
+@ART_EFFECT_2_EXPLANATION
+;AS本体の説明文を継承
+RESULTS = 【이능　:　　핵열】무언가와 접촉 시, 강한 핵열을 발생시키는 이능을 사용한다.
+RETURN

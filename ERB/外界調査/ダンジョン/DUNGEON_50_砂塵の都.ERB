@@ -1,0 +1,131 @@
+﻿;-------------------------------------------------
+;DUNGEON_50：LvXX:砂塵の都
+;-------------------------------------------------
+@DUNGEON_50_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = （장기 레벨 7）
+RESULTS = 레벨 50:모래먼지의 도시%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+@DUNGEON_50_ABLE
+RETURN 1
+
+
+;ルート抽選はコモン関数を使う
+;@DUNGEON_50_ROUTE
+;RETURN HOGE
+
+
+@DUNGEON_50_FE(STEP)
+#DIM FE
+#DIM STEP
+IF STEP % 50 == 0 && DEFEAT_ID38 >= 3
+	;50階ごと、かつ塵の信徒を3人以上倒している
+	FE = 5
+ELSE
+	;100階ごと以外は共通関数
+	CALL DUNG_FE_COMMON
+	FE = RESULT
+ENDIF
+RETURN FE
+
+
+@DUNGEON_50_PERSON
+#DIM PER
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 30) , 25 * (FLAG:調査深度 >= 70) , 25 * (FLAG:調査深度 >= 50) , 25)
+	CASE 0
+		;傷ついた조인
+		PER = 500
+	CASE 1
+		;冷凍カプセル
+		PER = 400
+	CASE 2
+		;오니との出会い
+		PER = 501
+	CASEELSE
+		;성노예救出
+		PER = 401
+ENDSELECT
+RETURN PER
+
+
+@DUNGEON_50_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+SIF RARE == -1
+	RARE = POSSIB(7)
+
+IF RARE == 1
+	;レア敵
+	;塵の信徒
+	ENE = 38
+ELSE
+	;通常敵
+	;不死老人
+	ENE = 17
+ENDIF
+
+RETURN ENE
+
+
+@DUNGEON_50_AFTERBATTLE(EID , WIN)
+#DIM EID
+#DIM WIN
+;塵の信徒の撃破数カウンタ
+SIF WIN == 1 && EID == 38
+	DEFEAT_ID38++
+
+;もし敵がクァチル・ウタウスなら塵の信徒の撃破数リセット(_SPBATTLEでやっているはずだが念のため)
+SIF EID == 16
+	DEFEAT_ID38 = 0
+RETURN
+
+
+@DUNGEON_50_ITEM
+#DIM IT
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 50) , 25 , 25 , 25)
+	CASE 0
+		;ゲノム入手。調査深度50以降
+		IT = 100
+	CASE 1
+		;書物閲覧
+		IT = 101
+	CASE 2
+		;古代遺跡発見
+		IT = 102
+	CASEELSE
+		;キャンプ跡地発見
+		IT = 103
+ENDSELECT
+RETURN IT
+
+;ダンジョンの各種パラメータ設定
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_50_PARAM
+FLAG:調査瘴気 = 15
+FLAG:索敵難易度 = 900
+RETURN
+
+
+;塵の信徒を3人以上倒した
+@DUNGEON_50_SPBATTLE
+;塵の信徒の撃破数削除
+DEFEAT_ID38 = 0
+IF EXPLANATION_ID16 == 0
+	DRAWLINE
+	PRINTFORMW 갑자기 빛이 비쳤다. 그 속에서 무언가가 내려오는 것을 %조사처리(CALLNAME:(FLAG:調査キャラ),"는")% 보았다.
+	PRINTFORMW "말라버린 아기 시체". 그것이 솔직한 인상이었다.
+	PRINTFORMW 인체를 흉내내고, 피부는 건조하고, 체구는 태아처럼 작고, 모발은 빠져 있다.
+	PRINTFORMW 확실히 겉모습은 너무 섬뜩하다. 하지만 자신이 품은 혐오감의 원천은 그쪽이 아니다.
+	PRINTFORMW 그 작은 몸이 깃든 힘은 파멸과 죽음 이외의 아무것도 느끼게 하지 않는다. 반드시 안 좋은 일이 일어난다.
+	PRINTFORMW 사악한 눈동자가 이쪽을 바라보았다. 그 얼굴에는 눈도, 코도 없었지만. 확실히 그렇게 느꼈다.
+	EXPLANATION_ID16 = 1
+ENDIF
+
+;逃走可
+CALL RPG_BATTLE(FLAG:調査キャラ , 16 , FLOORTER:NOWFLOOR ,  ,  ,  , FLAG:調査区域)
+CALL RPG_BATTLE_RESULT(FLAG:調査キャラ)
+RETURN
+

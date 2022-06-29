@@ -1,0 +1,2 @@
+﻿#DIM SAVEDATA DEFEAT_EID24    ;アイホートの雛を殺虫した数
+#DIM SAVEDATA EXPLANATION_ID23;アイホート登場時の前口上表示済みフラグ

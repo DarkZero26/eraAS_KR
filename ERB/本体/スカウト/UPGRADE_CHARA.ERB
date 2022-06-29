@@ -1,0 +1,132 @@
+﻿;-----------------------------------------------------------
+; シティの発展に合わせて新規キャラをアップグレードする。
+;-----------------------------------------------------------
+@UPGRADE_CHARA_FOR_NEWCHARA(L_CHARA)
+#DIM L_CHARA
+#DIM MAX_CHARA_STATUS     ;手持ちで최대の合計ステータス
+#DIM COPY_RATIO           ;ステータスコピー率
+#DIM COPY_RATIO_RACE = 40 ;内、종족특징コピー率
+#DIM COPY_RATIO_BASE = 30 ;内、ベース値のコピー率
+#DIM ADJUSTED_TOTAL       ;調整後の合計ステータス
+#DIM ADDITIONAL_BASE      ;底上げ部分ステータス
+#DIM TOTAL_STATUS         ;新規キャラの合計ステータス
+#DIM L_I
+
+;手持ちから최대の合計ステータスを取得する。
+MAX_CHARA_STATUS = _GET_MAX_STATUS_BY_ALL()
+
+
+;暫定的に70%を引き継ぐ（もっと低い値から条件で上方修正とか？）
+COPY_RATIO = COPY_RATIO_RACE + COPY_RATIO_BASE
+ADJUSTED_TOTAL = MAX_CHARA_STATUS * COPY_RATIO
+ADJUSTED_TOTAL /= 100
+
+; 新規キャラの현재合計値を取得
+TOTAL_STATUS = _GET_TOTAL_STATUS_WITHOUT_BONUS(L_CHARA)
+SIF TOTAL_STATUS >= ADJUSTED_TOTAL
+	RETURN
+
+
+
+;各ステータスを종족ステータスの比率通りにアップグレードする。
+ADJUSTED_TOTAL = MAX_CHARA_STATUS * COPY_RATIO_RACE
+ADJUSTED_TOTAL /= 100
+CFLAG:L_CHARA:주민_최대체력 = _ADJUST_STATUS(CFLAG:L_CHARA:주민_최대체력, TOTAL_STATUS, ADJUSTED_TOTAL)
+CFLAG:L_CHARA:주민_최대기력 = _ADJUST_STATUS(CFLAG:L_CHARA:주민_최대기력, TOTAL_STATUS, ADJUSTED_TOTAL)
+CFLAG:L_CHARA:주민_최대BRE = _ADJUST_STATUS(CFLAG:L_CHARA:주민_최대BRE, TOTAL_STATUS, ADJUSTED_TOTAL)
+CFLAG:L_CHARA:주민_ATK = _ADJUST_STATUS(CFLAG:L_CHARA:주민_ATK, TOTAL_STATUS, ADJUSTED_TOTAL)
+CFLAG:L_CHARA:주민_DEF = _ADJUST_STATUS(CFLAG:L_CHARA:주민_DEF, TOTAL_STATUS, ADJUSTED_TOTAL)
+CFLAG:L_CHARA:주민_HIT = _ADJUST_STATUS(CFLAG:L_CHARA:주민_HIT, TOTAL_STATUS, ADJUSTED_TOTAL)
+CFLAG:L_CHARA:주민_SPD = _ADJUST_STATUS(CFLAG:L_CHARA:주민_SPD, TOTAL_STATUS, ADJUSTED_TOTAL)
+
+;各ステータスを共通の値で底上げする（尖りすぎ防止のため）。
+ADDITIONAL_BASE = MAX_CHARA_STATUS * COPY_RATIO_BASE
+ADDITIONAL_BASE /= (100 * 7)
+CFLAG:L_CHARA:주민_최대체력 += ADDITIONAL_BASE
+CFLAG:L_CHARA:주민_최대기력 += ADDITIONAL_BASE
+CFLAG:L_CHARA:주민_최대BRE += ADDITIONAL_BASE
+CFLAG:L_CHARA:주민_ATK += ADDITIONAL_BASE
+CFLAG:L_CHARA:주민_DEF += ADDITIONAL_BASE
+CFLAG:L_CHARA:주민_HIT += ADDITIONAL_BASE
+CFLAG:L_CHARA:주민_SPD += ADDITIONAL_BASE
+
+;현재値で全回復する。
+CFLAG:L_CHARA:주민_현재체력 = CFLAG:L_CHARA:주민_최대체력
+CFLAG:L_CHARA:주민_현재기력 = CFLAG:L_CHARA:주민_최대기력
+CFLAG:L_CHARA:주민_현재BRE  = CFLAG:L_CHARA:주민_최대BRE
+
+
+;-----------------------------------------------------------
+; 手持ちから최대の合計ステータスを取得する。
+;-----------------------------------------------------------
+@_GET_MAX_STATUS_BY_ALL()
+#FUNCTION
+#DIM MAX_STATUS
+#DIM CURRENT_TOTAL
+#DIM L_I
+
+MAX_STATUS = 0
+FOR L_I, 1, CHARANUM - 1
+	CURRENT_TOTAL = _GET_TOTAL_STATUS_WITHOUT_BONUS(L_I)
+	SIF CURRENT_TOTAL > MAX_STATUS
+		MAX_STATUS = CURRENT_TOTAL
+NEXT
+
+RETURNF MAX_STATUS
+
+
+;-----------------------------------------------------------
+; 品種改良とドーピング値を抜いた合計ステータスを取得する。
+; ただし、品種改良及びドーピングで伸びる値の合計値に限る。
+;-----------------------------------------------------------
+@_GET_TOTAL_STATUS_WITHOUT_BONUS(L_CHARA)
+#FUNCTION
+#DIM L_CHARA
+#DIM TOTAL_STATUS
+#DIM L_CFLAG_ID
+
+TOTAL_STATUS = 0
+
+;品種改良及びドーピングで伸びる値の合計値
+TOTAL_STATUS += CFLAG:L_CHARA:주민_최대체력
+TOTAL_STATUS += CFLAG:L_CHARA:주민_최대기력
+TOTAL_STATUS += CFLAG:L_CHARA:주민_최대BRE
+TOTAL_STATUS += CFLAG:L_CHARA:주민_ATK
+TOTAL_STATUS += CFLAG:L_CHARA:주민_DEF
+TOTAL_STATUS += CFLAG:L_CHARA:주민_HIT
+TOTAL_STATUS += CFLAG:L_CHARA:주민_SPD
+
+;品種改良分を取り除く
+FOR L_CFLAG_ID, 1800, 1850
+	SIF CFLAG:L_CHARA:L_CFLAG_ID == 1
+		;遺伝子ひとつにつき HP,SP,BRE,ATK,DEF,HIT,SPD それぞれに2加算されている（計14）
+		TOTAL_STATUS -= 14
+NEXT
+
+;ドーピング分を取り除く
+TOTAL_STATUS -= CFLAG:L_CHARA:주민_強化回数
+TOTAL_STATUS -= (CFLAG:L_CHARA:주민_超人回数 * 2)
+
+;ニアの場合合計ステータスを緩和して都市補正を受けやすくする
+SIF CFLAG:L_CHARA:주민_종족 == 13
+	TOTAL_STATUS  -= 2600
+
+
+RETURNF TOTAL_STATUS
+
+
+;-----------------------------------------------------------
+; 各ステータスを自身のステータス比率通りにアップグレードする。
+;-----------------------------------------------------------
+@_ADJUST_STATUS(STATUS, TOTAL_STATUS, ADJUSTED_TOTAL)
+#FUNCTION
+#DIM STATUS
+#DIM TOTAL_STATUS
+#DIM ADJUSTED_TOTAL
+#DIM NEW_STATUS
+
+;新ステータス = 調整後合計ステータス * (部分ステータス / 合計ステータス)
+NEW_STATUS = ADJUSTED_TOTAL * STATUS
+NEW_STATUS /= TOTAL_STATUS
+
+RETURNF NEW_STATUS

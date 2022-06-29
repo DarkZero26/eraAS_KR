@@ -1,0 +1,117 @@
+﻿;-------------------------------------------------
+;外界調査
+;-------------------------------------------------
+@RPG_MAIN
+#DIM L_INPUT
+#DIMS DYNAMIC OP_RELOAD     ;初回以外のページ更新とリスト更新を抑制する
+#DIMS DNAME
+
+Flag:ターン進行深度 = 0
+Flag:ターン戦闘回数 = 0
+FLAG:ターン경험치 = 0
+Flag:조사이벤트번호 = 0
+
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+;日替わり区画だけ修飾子も出す。決め打ちでごめん
+;本来は日替わりダンジョンフラグでも作るべきなんだろうけど…
+CALLFORM DUNGEON_{FLAG:調査区域}_NAME(FLAG:調査区域 == 90)
+PRINTFORM 【조사처:%RESULTS%】
+
+[SKIPSTART]
+IF Flag:調査区域 == 90
+	PRINTFORM Lv{Flag:日替わり区画難易度}:ある区画】(最深部:{Flag:日替わり区画深度限界})
+ELSEIF Flag:調査区域 == 50
+	PRINTFORM LvXX:砂塵の都】
+ELSEIF FLAG:調査区域 == 51
+	PRINTFORM LvXX:腐敗聖堂(試作)
+ELSEIF Flag:調査区域 == 5
+	PRINTFORM Lv5:完全侵食区域[現代迷宮]】
+ELSEIF Flag:調査区域 == 4
+	PRINTFORM Lv4:광기の廃都】
+ELSEIF Flag:調査区域 == 3
+	PRINTFORM Lv3:危険区域】
+ELSEIF Flag:調査区域 == 2
+	PRINTFORM Lv2:堕ちた都市】
+ELSEIF Flag:調査区域 == 1
+	PRINTFORM Lv1:無法区域】
+ELSE
+	PRINTFORM Lv0:都市境界線】
+ENDIF
+[SKIPEND]
+
+PRINTFORML (현재심도:{Flag:調査深度})
+PRINTFORML  [격파수 누계:{Flag:敵_撃破数累計}]
+DRAWLINE
+
+IF Flag:턴조사완료 == 1
+	PRINTFORML 이번 턴의 조사는 끝났습니다. 
+ELSEIF  Flag:도시_방위 != 0
+	PRINTFORML 방위전 때에는 조사할 수 없습니다.
+ELSE
+	PRINTFORML [0] 조사개시
+ENDIF
+
+PRINTFORML [1] 조사구역 선택
+PRINTFORML 
+PRINTFORML [5] 부대배치
+PRINTFORM [2] 무장개량　　
+PRINTFORM [10] 아티팩트　　　　　　
+PRINTFORML [20] 제작
+PRINTFORM [3] 기능강화　　
+PRINTFORML [21] 아이템 사용
+PRINTFORML [4] 아이템 확인
+PRINTFORML 
+PRINTFORML [999] 그만둔다
+
+INPUT
+
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+	CASE 0
+		;防衛戦でない、かつそのターンの탐색がまだなされていない
+		IF !FLAG:턴조사완료 && !FLAG:도시_방위
+			;ダンジョンパラメータ設定
+			CALLFORM DUNGEON_{FLAG:調査区域}_PARAM
+			CALL RPG_EXPLORER_SELECT
+		ENDIF
+	CASE 1
+		CALL RPG_STAGESELECT
+	CASE 2
+		CALL RPG_CHARA_SELECT("RPG_武器強化")
+	CASE 3
+		CALL RPG_CHARA_SELECT("RPG_技能成長")
+	CASE 4
+		CALL RPG_ITEM
+	CASE 5
+		CALL RPG_CHARA_SELECT("RPG_수반配置")
+	CASE 10
+		CALL RPG_ARTIFACT
+	CASE 20
+		CALL RPG_CRAFT
+	CASE 21
+		CALL RPG_CHARA_SELECT("RPG_強化剤投与")
+	CASE 999
+		CALL SYSTEM_MENU
+	CASEELSE
+ENDSELECT
+
+GOTO INPUT_LOOP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

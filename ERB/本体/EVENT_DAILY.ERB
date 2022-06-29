@@ -1,0 +1,1392 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_DAILY.ERB
+;	Facility	:イベント（日常）。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;   002     2019/04/17      M                       ラベル表示リファクタリング
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ EVENT_DAILY_DRESS				EVE:日常(制服支給)
+;	・ EVENT_DAILY_BEDTIME				EVE:日常(夜伽イベント)
+;	・ EVENT_DAILY_BEDTIME_TALK			EVE:日常(夜伽会話)
+;	・ EVENT_DAILY_BEDTIME_V			EVE:日常(夜伽Ｖ)
+;	・ EVENT_DAILY_BEDTIME_A			EVE:日常(夜伽Ａ)
+;	・ EVENT_DAILY_BEDTIME_C			EVE:日常(夜伽Ｃ)
+;	・ EVENT_DAILY_BEDTIME_REV_V		EVE:日常(夜伽逆Ｖ)
+;	・ EVENT_DAILY_BEDTIME_REV_A		EVE:日常(夜伽逆Ａ)
+;	・ EVENT_DAILY_MORNING				EVE:日常(朝イベント)
+;	・ EVENT_DAILY_MORNING_0			EVE:日常(朝添い寝)
+;	・ EVENT_DAILY_MORNING_1			EVE:日常(朝キス)
+;
+; *- 処理補助系
+;
+;	・ EVENT_DAILY_BEDTIME_ADD_M		EVE:日常(夜伽経験:主人)
+;	・ EVENT_DAILY_BEDTIME_MSG_START	EVE:日常(夜伽メッセージ導入)
+;	・ EVENT_DAILY_BEDTIME_MSG_REV		EVE:日常(夜伽メッセージ共通:逆)
+;
+;===============================================================================
+
+
+;=================================================
+;   sub EVENT_DAILY_DRESS
+;=================================================
+;   EVE:日常(制服支給)
+;-------------------------------------------------
+@EVENT_DAILY_DRESS
+#DIM L_I
+#DIM L_T
+#DIM L_HIT
+#DIM L_BAK
+
+FLAG:日常コマンド = [[日常EVE:制服支給]]
+L_BAK = TARGET
+
+L_HIT=0
+FOR L_I,0,CHARANUM
+	L_T = L_I
+	SIF L_T < 0
+		BREAK
+	SIF L_T == MASTER
+		CONTINUE
+	SIF !MARK:L_T:예속각인
+		CONTINUE
+	SIF CFLAG:L_T:労役制服타입
+		CONTINUE
+
+	IF !L_HIT
+		L_HIT=1
+		DRAWLINE
+		CALL PRINT_LABEL("제복지급")
+		PRINTL
+		PRINTL
+	ENDIF
+
+	TARGET = L_T
+
+	;女
+	IF VAR_WOMAN()
+		CFLAG:L_T:労役制服타입 = [[労役制服타입:메이드服]]
+	;男
+	ELSE
+		CFLAG:L_T:労役制服타입 = [[労役制服타입:ボーイ服]]
+	ENDIF
+	CSTR:L_T:労役衣装名 = %MNG_CLOTHES_NAME(CFLAG:L_T:労役制服타입)%
+
+	PRINTFORML %CALLNAME%에게 노역을 지시하며, %조사처리(CSTR:L_T:労役衣装名,"를")% 지급했다…….
+
+	;- 口上出力:日常イベント
+	CALL KOJO_DAILY
+
+	PRINTL
+
+NEXT
+
+TARGET = L_BAK
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME
+;=================================================
+;   EVE:日常(夜伽イベント)
+;-------------------------------------------------
+@EVENT_DAILY_BEDTIME
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIMS L_STR
+#DIM L_BAK
+#DIM L_T
+#DIM L_TMP
+#DIM L_LIST, DEFTR_CL_NUM
+#DIM L_LIST_M, DEFTR_CL_NUM
+#DIM L_LIST_W, DEFTR_CL_NUM
+#DIM L_CNT
+#DIM L_CNT_M
+#DIM L_CNT_W
+
+FLAG:夜伽相手 = 0
+
+;-----------------------------
+;- 相手サーチ
+;-----------------------------
+VARSET L_LIST
+VARSET L_LIST_M
+VARSET L_LIST_W
+L_CNT=0
+L_CNT_M=0
+L_CNT_W=0
+REPEAT CHARANUM
+	L_T = COUNT
+	SIF L_T == MASTER
+		CONTINUE
+	;陥落のみ
+	SIF !MARK:L_T:함락각인
+		CONTINUE
+	;NTRは除外
+	SIF TALENT:L_T:ＮＴＲ도
+		CONTINUE
+
+	;오토코
+	IF TALENT:L_T:오토코
+		L_LIST_M:L_CNT_M = L_T
+		L_CNT_M ++
+	ELSE
+		L_LIST_W:L_CNT_W = L_T
+		L_CNT_W ++
+	ENDIF
+
+	L_LIST:L_CNT = L_T
+	L_CNT ++
+
+REND
+
+SIF !L_CNT
+	RETURN
+
+;-----------------------------
+;- リスト作成
+;-----------------------------
+L_T = L_LIST:(RAND:L_CNT)
+VARSET L_LIST
+L_CNT=0
+
+;오토코
+IF TALENT:L_T:오토코
+	WHILE 1
+		;五人まで
+		SIF L_CNT >= 5
+			BREAK
+		;0なら終わり
+		SIF !L_CNT_M
+			BREAK
+		L_TMP = (RAND:L_CNT_M)
+		L_T = L_LIST_M:L_TMP
+		SIF !L_T
+			BREAK
+		;追加
+		L_LIST:L_CNT = L_T
+		L_CNT ++
+		;削除
+		ARRAYREMOVE L_LIST_M, L_TMP, 1
+		L_CNT_M --
+	WEND
+;オンナ
+ELSE
+	WHILE 1
+		;五人まで
+		SIF L_CNT >= 5
+			BREAK
+		;0なら終わり
+		SIF !L_CNT_W
+			BREAK
+		L_TMP = (RAND:L_CNT_W)
+		L_T = L_LIST_W:L_TMP
+		SIF !L_T
+			BREAK
+		;追加
+		L_LIST:L_CNT = L_T
+		L_CNT ++
+		;削除
+		ARRAYREMOVE L_LIST_W, L_TMP, 1
+		L_CNT_W --
+
+	WEND
+ENDIF
+
+SIF !L_CNT
+	RETURN
+
+;PARTY名作成
+L_STR=
+FOR LOCAL, 0, L_CNT
+	L_T = L_LIST:LOCAL
+
+	SIF !L_T
+		BREAK
+	SIF STRLENS(L_STR)
+		L_STR +=" 、"
+	L_STR += @"%CALLNAME:L_T%"
+NEXT
+
+;-----------------------------
+;- 表示開始
+;-----------------------------
+
+L_BAK = TARGET
+TARGET = L_LIST:0
+;L_NAME		= %CALLNAME%\@ (L_CNT >= 2) ? 達 \@
+L_PLAYER	= %CALLNAME:MASTER%
+
+;-------------------
+;- 夜伽
+;-------------------
+CALL C_LINE
+CALL PRINT_LABEL("밤시중")
+PRINTL
+PRINTFORML %조사처리(L_STR,"를")% 잠자리로 불렀다…….
+PRINTFORML %조사처리(L_NAME,"는")% 발가벗고 %L_PLAYER%에게 충성을 맹세하며 %조사처리(L_PLAYER,"과")% 침대 안에서 보냈다…….
+FORCEWAIT
+PRINTL
+PRINTL
+
+
+;- 夜伽会話
+FOR LOCAL, 0, L_CNT
+	L_T = L_LIST:LOCAL
+	FLAG:夜伽相手 = L_T
+	TARGET = L_T
+
+	;- EVE:日常(夜伽会話)
+	CALL EVENT_DAILY_BEDTIME_TALK
+NEXT
+
+
+;- 夜伽実行
+FOR LOCAL, 0, L_CNT
+	L_T = L_LIST:LOCAL
+	FLAG:夜伽相手 = L_T
+	TARGET = L_T
+
+	;- EVE:日常(夜伽実行)
+	CALL EVENT_DAILY_BEDTIME_EXE
+	PRINTL
+NEXT
+
+;-------------------
+;- 就寝
+;-------------------
+FLAG:夜伽相手 = L_LIST:0
+
+;女
+IF !TALENT:오토코
+	PRINTDATA
+		DATAFORM %조사처리(L_PLAYER,"는")% %L_NAME%에게 안기며 취침했다…….
+		DATAFORM %조사처리(L_PLAYER,"는")% %L_NAME%에게 달라붙듯이 취침했다…….
+	ENDDATA
+	PRINTL 
+;男
+ELSE
+	PRINTFORML %조사처리(L_PLAYER,"는")% %조사처리(L_NAME,"과")% 몸을 맞대고 취침했다……
+ENDIF
+WAIT
+
+;戻す
+TARGET = L_BAK
+
+PRINTL
+PRINTL
+CALL PRINT_LABEL("아침")
+PRINTL
+
+;- EVE:日常(朝イベント)
+CALL EVENT_DAILY_MORNING
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_EXE
+;=================================================
+;   EVE:日常(夜伽実行)
+;-------------------------------------------------
+@EVENT_DAILY_BEDTIME_EXE
+#DIM L_TMP
+
+;-----------------------------
+;- 本番処理
+;-----------------------------
+L_TMP=0
+
+;奴隷が女
+IF !TALENT:오토코
+
+	;主人がP有り
+	IF VAR_PENIS(MASTER)
+
+		;奴隷が비처녀で主人が비동정
+		IF TALENT:비처녀 && TALENT:MASTER:비동정
+			L_TMP = [[日常EVE:夜伽Ｖ]]
+		;奴隷がＡ비처녀
+		ELSEIF TALENT:Ａ비처녀
+			L_TMP = [[日常EVE:夜伽Ａ]]
+		;それ以外
+		ELSE
+			L_TMP = [[日常EVE:夜伽Ｃ]]
+		ENDIF
+	;P無し
+	ELSE
+		L_TMP = [[日常EVE:夜伽Ｃ]]
+	ENDIF
+
+;奴隷が男
+ELSE
+
+	;主人がP有り
+	IF VAR_PENIS(MASTER)
+
+		;奴隷がＡ비처녀
+		IF TALENT:Ａ비처녀
+			L_TMP = [[日常EVE:夜伽Ａ]]
+		;それ以外
+		ELSE
+			L_TMP = [[日常EVE:夜伽Ｃ]]
+		ENDIF
+	;P無し
+	ELSE
+		;主人が비처녀で奴隷が비동정
+		IF TALENT:MASTER:비처녀 && TALENT:비동정
+			L_TMP = [[日常EVE:夜伽逆Ｖ]]
+		;主人がＡ비처녀
+		ELSEIF TALENT:MASTER:Ａ비처녀
+			L_TMP = [[日常EVE:夜伽逆Ａ]]
+		;それ以外
+		ELSE
+			L_TMP = [[日常EVE:夜伽Ｃ]]
+		ENDIF
+	ENDIF
+
+ENDIF
+
+FLAG:日常コマンド = L_TMP
+
+SELECTCASE L_TMP
+	CASE [[日常EVE:夜伽Ｖ]]
+		;- EVE:日常(夜伽Ｖ)
+		CALL EVENT_DAILY_BEDTIME_V
+	CASE [[日常EVE:夜伽Ａ]]
+		;- EVE:日常(夜伽Ａ)
+		CALL EVENT_DAILY_BEDTIME_A
+	CASE [[日常EVE:夜伽Ｃ]]
+		;- EVE:日常(夜伽Ｃ)
+		CALL EVENT_DAILY_BEDTIME_C
+	CASE [[日常EVE:夜伽逆Ｖ]]
+		;- EVE:日常(夜伽逆Ｖ)
+		CALL EVENT_DAILY_BEDTIME_REV_V
+	CASE [[日常EVE:夜伽逆Ａ]]
+		;- EVE:日常(夜伽逆Ａ)
+		CALL EVENT_DAILY_BEDTIME_REV_A
+ENDSELECT
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_TALK
+;=================================================
+;   EVE:日常(夜伽会話)
+;-------------------------------------------------
+@EVENT_DAILY_BEDTIME_TALK
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+#DIMS L_STR
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+IF !RAND:2
+	L_STR = 회화를 했다
+ELSE
+	L_STR = 스킨십을 나눴다
+ENDIF
+
+;奴隷が女
+IF !TALENT:오토코
+
+	SELECTCASE RAND:6
+		CASE 5
+			PRINTFORML %조사처리(L_NAME,"를")% 끌어안고 밀착하면서 %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"는")% 순종적인 암컷의 얼굴로, %L_PLAYER%에게 몸을 기댄다…….
+		CASE 4
+			PRINTFORML %조사처리(L_NAME,"를")% 주인의 암컷으로서 키스로 훈육하며, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"는")% 순종적인 암컷의 얼굴로, %L_PLAYER%에게 몇 번이고 충성을 맹세했다…….
+		CASE 3
+			;(主人がＰ有り＆奴隷が임신前)以外ならやり直し
+			SIF !(VAR_PENIS(MASTER) && !TALENT:임신)
+				RESTART
+			PRINTFORML %L_NAME%에게 아기씨를 받고 싶다고 전하면서, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"는")% 자궁을 바치고 있다는 것을 알리며, %L_PLAYER%의 씨를 기대하고 있다…….
+		CASE 2
+			PRINTFORML %L_NAME%의 두 가슴을 빨며, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"는")% 유두를 단단히 세우면서, 달콤한 소리를 내고 있다…….
+		CASE 1
+			PRINTFORML %조사처리(L_NAME,"과")% 몇 번이고 키스하며, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"로")%부터 입술을 뗄 때마다, 두 사람 사이로 사랑의 키스로 만들어진 실이 끌리고 있다…….
+		CASEELSE
+			PRINTFORML %L_NAME%의 몸을 애무하면서, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"는")% 사타구니를 적시며 욕정하고 있다…….
+	ENDSELECT
+;奴隷が男
+ELSE
+	SELECTCASE RAND:2
+		CASE 1
+			PRINTFORML %조사처리(L_NAME,"과")% 몇 번이고 키스하며, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"로")%부터 입술을 뗄 때마다, 두 사람 사이로 사랑의 키스로 만들어진 실이 끌리고 있다…….
+		CASEELSE
+			PRINTFORML %L_NAME%의 몸을 애무하면서, %조사처리(L_NAME,"과")% %L_STR%…….
+			PRINTFORML %조사처리(L_NAME,"는")% 페니스를 단단히 세우면서, 욕정하고 있다……
+	ENDSELECT
+ENDIF
+WAIT
+
+FLAG:日常コマンド = [[日常EVE:夜伽会話]]
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+PRINTL
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_V
+;=================================================
+;   EVE:日常(夜伽Ｖ)
+;-------------------------------------------------
+;主人C 奴隷V
+@EVENT_DAILY_BEDTIME_V
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+;-----------------------------
+;- 前情景
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ導入)
+CALL EVENT_DAILY_BEDTIME_MSG_START("Ｖ")
+
+;-----------------------------
+;- 本番
+;-----------------------------
+
+;危険日
+IF C_위험일(TARGET)
+	SELECTCASE RAND:7
+		CASE 6
+			PRINTFORML %조사처리(L_NAME,"는")% 시트를 잡으며 %L_PLAYER%의 욕망을 받아들이고 있다…….
+			PRINTFORML 발정해 화끈해진 %L_NAME%의 신체는,
+			PRINTFORML 위험일의 질이 정액으로 가득 찰 때까지 %조사처리(L_PLAYER,"를")%  놓으려 하지 않는다…….
+			PRINTFORML 두 사람은 손가락을 얽으며 오랫동안 깊은 키스를 나누었다…….
+		CASE 5
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%에게 뒤에서 자궁이 찔릴 때마다, 기묘한 신음을 내고 있다…….
+			PRINTFORML %L_PLAYER%의 정액이 위험일의 질내를 채워갈 때마다, %조사처리(L_NAME,"는")% 열락과 기쁨에 찬 교성을 지르고 있다…….
+		CASE 4
+			PRINTFORML %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"가")%  사정하는 순간 꽉 껴안으며, 조금 더 많은 정액을 받아들인다…….
+			PRINTFORML %조사처리(L_NAME,"는")% 위험일에 %L_PLAYER%에게 아기씨를 뿌렸다는 것에 행복을 느끼고 있다…….
+		CASE 3
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 귀에 입을 대고, 위험일이니 잔뜩 싸달라고 요염하게 부탁했다…….
+			PRINTFORML 그러고는 %L_PLAYER%에게 걸터앉아, 어느새 질척해진 그 곳에 스스로 %L_PLAYER%의 페니스를 삽입시켜갔다…….
+			PRINTFORML 격하게 허리를 흔들며 몇 번이고 정액을 짜낸 %조사처리(L_NAME,"는")% , 체내에 퍼지는 %L_PLAYER%의 아기씨 감촉에 만족하고 있다…….
+		CASE 2
+			PRINTFORML 배후로부터 격렬하게 찔러올리며, 어느때보다 열띤 모습으로 질내사정을 조르는 %조사처리(L_NAME,"를")% 보고,
+			PRINTFORML %조사처리(L_PLAYER,"는")% 위험일인 것을 생각하고는, 콩콩 자궁구를 부드럽게 노크하기 시작했다…….
+			PRINTFORML 여자의 끝부분을 찔릴 때마다 %조사처리(L_NAME,"는")% 사정하는 순간을 의식하게 되어, 달콤한 소리를 내게 된다…….
+			PRINTFORML 그 조심스럽고 강렬한 자극은, %L_NAME%에게 여자로서의 더한 기쁨을 상상하게 한다…….
+			PRINTFORML 그렇게 잔뜩 애태운 끝에, 드디어 뜨겁고 많은 양의 정액이 질내에 부어지자,
+			PRINTFORML 강렬한 감촉에 %조사처리(L_NAME,"는")% 눈물을 흘리면서 온 몸을 떨고, 원하던 기쁨을 맛보면서 절정했다…….
+		CASE 1
+			PRINTFORML 몇 번이나 질내사정한 후 %조사처리(L_NAME,"는")% 、%L_PLAYER%의 팔에 안기면서 위험일이였다는 것을 전했다…….
+			PRINTFORML 그것을 들은 %조사처리(L_PLAYER,"는")% %조사처리(L_NAME,"를")% 부둥켜안으며, 부드럽게 키스했다…….
+			PRINTFORML 격렬한 아이 만들기 섹스를 마치고, %L_PLAYER%의 팔에 다시 안기면서 %조사처리(L_NAME,"는")% 새삼 행복을 느끼고 있다…….
+		CASEELSE
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%에게 위험일임을 알리며, 이미 축축해진 국부를 드러내며 각오가 되어 있음을 전했다…….
+			PRINTFORML 그리고, 그대로 두 명은 정신없이 몇 번이고 몸을 섞었다…….
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:17
+		CASE 16
+			PRINTFORML %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"과")% 격렬한 사랑을 나눴다…….
+			PRINTFORML 자궁 내에 퍼지는『열』을 느끼면서 %조사처리(L_NAME,"는")% 여자의 행벅을 음미하고 있다…….
+			PRINTFORML %조사처리(L_PLAYER,"는")% %L_NAME%에게 사랑의 말을 속삭이며, %L_NAME%의 자궁을 정액으로 채워갔다…….
+		CASE 15
+			PRINTFORML %조사처리(L_NAME,"는")% 기승위로 격렬한 허리놀림을 느슨히 풀며, 이어진 채 쓰러져 %L_PLAYER%에게 안기고,
+			PRINTFORML 몸을 %L_PLAYER%에게 밀착해 입술이 닿을 거리에서 키스를 요구했다…….
+			PRINTFORML %조사처리(L_PLAYER,"는")% 이어진 채 %조사처리(L_NAME,"를")% 꽉 껴안고, 부탁에 부응하여 입술을 겹친다…….
+			PRINTFORML 혀가 황홀해지는 듯한 상냥한 키스를 %L_PLAYER%에게 여러 번 나누다,
+			PRINTFORML 질벽은 무의식 중에 페니스를 꽉 조이며, 끈적끈적한 애액을 흘렸다…….
+			PRINTFORML %L_NAME%의 몸이 기뻐하는 것을 깨닫자, %조사처리(L_PLAYER,"는")% %L_NAME%의 입술을 계속 희롱하면서 아래에서 밀어올려,
+			PRINTFORML 이내 이상하리만치 사정을 고대하는 %L_NAME%의 질에, 듬뿍 정액을 퍼부어 갔다…….
+		CASE 14
+			PRINTFORML 조명을 꺼 어두컴컴한 %L_PLAYER%의 방에서, 두 명의 뜨거운 숨결이 울리고 있다…….
+			PRINTFORML %조사처리(L_NAME,"과")% %조사처리(L_PLAYER,"는")% 태어난 그대로의 모습으로 이어져, 육욕을 탐하고 있다…….
+			PRINTFORML 두 사람의 관계에 확실한 증거를 얻으려고 끝없이 서로를 갈망하고 있다…….
+		CASE 13
+			PRINTFORML %조사처리(L_NAME,"는")% 앉아 있는 %L_PLAYER%의 사타구니에 득달같이 달려들어 넋을 잃고 열띤 눈빛으로 봉사를 이어간다…….
+			PRINTFORML %L_PLAYER%에게 다정하게 머리를 쓰다듬으면, %조사처리(L_NAME,"는")% 입봉사를 이어가며 눈을 치뜨고 시선을 흘겼다…….
+			PRINTFORML 정신없이 정열적인 봉사를 계속하는 %L_NAME%의 육단지는, 벌써 기대와 흥분으로 질척질척해져 꿀물을 떨구고 있었다…….
+			PRINTFORML %L_PLAYER%의 가벼운 신호로 %조사처리(L_NAME,"는")%  드디어 %L_PLAYER%에게 삽입해 줄 것을 알고 얼굴을 붉혔다…….
+			PRINTFORML %L_PLAYER%에게 안겨 대면좌위로 올라타라는 재촉을 받자, 
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 페니스를 천천히 맛보듯이 앉아, 끈적해진 꿀단지로 삼켜갔다…….
+			PRINTFORML 혀를 얽으며 헌신적으로 허리를 흔들어 봉사하는 %조사처리(L_NAME,"는")% , 뜨거운 정액을 태내에 받을 수 있다는 기대가 넘쳐흐르고 있다…….
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%에게 꽉 껴안겨 귓가에 사랑의 말을 들으면서 농후한 정액을 받아들였다…….
+		CASE 12
+			PRINTFORML %조사처리(L_NAME,"는")% 정상위로 정을 나누며 %L_PLAYER%에게 사랑을 속삭이면서 행복감에 싸여있었다…….
+			PRINTFORML %L_PLAYER%의 단단한 페니스로 자궁구를 몇 번이고 두드리며, 연속으로 절정에 달하고 있었다…….
+			PRINTFORML %L_NAME%의 육벽은 진심 어린 애액으로 %L_PLAYER%의 페니스를 감싸 가장 깊은 곳에서 사정하도록 꿈틀거리고 있었다…….
+;		CASE 11
+;			PRINTFORML %조사처리(L_NAME,"과")% %조사처리(L_PLAYER,"는")% ホテルのバスタブに浸かりながら繋がっている……
+;			PRINTFORML 溢れるお湯を気にする余裕はすぐに無くなり、%조사처리(L_NAME,"는")% 愛する主人に求められる喜びに酔いしれた……
+		CASE 10
+			PRINTFORML %조사처리(L_NAME,"는")% 시키는 대로 다리를 M자로 벌려 푹 젖은 음부가 %L_PLAYER%에게 잘 보일 수 있게 손가락으로 벌렸다…….
+			PRINTFORML %조사처리(L_PLAYER,"는")% 빨려 들어갈 듯이 얼굴을 가까이 대어, 숨결이 닿는 거리에서 %L_NAME%의 부끄러운 부분을 관찰했다…….
+			PRINTFORML 수치를 견디는 %조사처리(L_NAME,"였")%지만, %조사처리(L_PLAYER,"가")% 딱딱하게 발기된 음경을 보이면, 부끄러워하면서도 수줍어 했다…….
+		CASE 9
+			PRINTFORML %조사처리(L_NAME,"는")% 자신을 뒤에서 끌어안고, 정신없이 허리를 흔드는 %조사처리(L_PLAYER,"를")% 사랑스레 여기며 몸을 맡기고 있다…….
+			PRINTFORML %조사처리(L_PLAYER,"는")% 빠르게 한계를 맞이하게 되어 끌어안은 팔에 힘을 주며, 확실하게 질내에 정액을 쏟아부었다…….
+			PRINTFORML %조사처리(L_NAME,"는")% 자신을 안은 굳센 팔과, 태내를 채우는 뜨거운 것에 여자로서의 충족과 기쁨을 느끼고 있다…….
+		CASE 8
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 강직한 육봉에 꿰뚫려, 달콤한 소리를 내고 있다…….
+			PRINTFORML 이따금 %L_PLAYER%의 이름을 부르면서, 정욕을 탐했다…….
+			PRINTFORML 그리고 서로 꼭 껴안은 채, %L_PLAYER%의 정액을 몸의 가장 깊은 곳으로 받아들였다…….
+		CASE 7
+			PRINTFORML 태어난 그대로의 모습으로 서로 껴안은 %조사처리(L_NAME,"과")% %조사처리(L_PLAYER,"는")% 깊게 이어진 채 열띤 키스를 나누고 있다…….
+			PRINTFORML %조사처리(L_NAME,"는")% 혀가 서로 얽히게 하는 진심 어린 키스를 멈추지 못하고, %조사처리(L_PLAYER,"를")% 계속해서 요구하였다…….
+			PRINTFORML 두 손을 겹치고 키스를 계속하며 %L_NAME%의 질내에 뜨거운 정액이 부어졌다…….
+;		CASE 6
+;			PRINTFORML %조사처리(L_NAME,"는")% 労役時の메이드복姿に着替えると、主人に奉仕するを始めた……
+;			PRINTFORML 濃い目の「ご奉仕」で全身%L_PLAYER%の정액まみれになりながら、
+;			PRINTFORML 순종な메이드としてしっかりと子宮を捧げていた……
+		CASE 5
+			PRINTFORML %조사처리(L_NAME,"는")% 격렬한 키스를 하며, 주저 앉은 %L_PLAYER%에게 대면좌위로 연결되어 있다…….
+			PRINTFORML 신체의 가장 안쪽을 계속 강하게 찔려, 이미 %조사처리(L_NAME,"는")% 몇번이고 절정해 %L_PLAYER%의 정액을 질내에 받아들이고 있었다…….
+			PRINTFORML %L_NAME%의 약점을 알고 있는 %조사처리(L_PLAYER,"는")% 능수능란하게 허리를 움직여 재차 절정을 향해 속도를 올리고 있다…….
+			PRINTFORML %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"가")% 또 한 번 자신을 보내버릴 생각인걸 알아채자, %조사처리(L_PLAYER,"를")% 꼭 껴안았다…….
+			PRINTFORML 그리고, 가속된 %L_PLAYER%의 묵직한 한 방에 %조사처리(L_NAME,"는")% 큰 교성을 내뱉었다…….
+;			PRINTFORML 
+;			PRINTFORML そのまま限界が来るまで、%조사처리(L_NAME,"는")% イかされ続けた……
+		CASE 4
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%에게 정면에서 부드럽게 꿰뚫리며 사랑의 말을 귓가에서 속삭이며, 매우 풀어져 있었다…….
+			PRINTFORML %L_PLAYER%의 달콤한 말에 어쩔 줄 몰라한 %조사처리(L_NAME,"는")%, 다리로 붙잡아 질내사정을 조르는 것으로 %L_PLAYER%의 말에 응했다…….
+			PRINTFORML 그리고, 질내에 들어온 %L_PLAYER%의 뜨거운 정액을 느끼면서, %조사처리(L_NAME,"는")% 주인의 소유물이 되었다는 감각에 조수를 뿜으며 절정했다…….
+		CASE 3
+			PRINTFORML %조사처리(L_NAME,"과")% %조사처리(L_PLAYER,"는")% 손가락을 얽으며 몇 번이고 입맞춤을 하고 있다…….
+			PRINTFORML 키스하며 주고 받은 %L_PLAYER%의 다정한 말에, %조사처리(L_NAME,"는")% 넋을 놓고 듣고 있다…….
+		CASE 2
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%에게 후배위로 격렬하게 박히고 있다…….
+			PRINTFORML %L_PLAYER%에게 가장 안쪽을 자극당할 때마다, %조사처리(L_NAME,"는")% 전신이 녹아내리는 듯한 행복감에 싸여 있었다…….
+			PRINTFORML 배후에서 체내를 휘저어지면서 %조사처리(L_NAME,"는")% %L_PLAYER%에게 질내사정해달라고 간청했다…….
+		CASE 1
+			PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 위에 올라타 양 손을 붙잡고, 손가락을 얽으며 질내에 넘쳐흐르는 정액을 받아들였다…….
+			PRINTFORML 질내에서 맥동이 가라앉자 %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"를")% 쳐다보면서 기쁜 듯이 웃었다…….
+		CASEELSE
+			PRINTFORML %조사처리(L_NAME,"는")% 시트를 잡으면서 %L_PLAYER%의 욕망을 받아들였다…….
+			PRINTFORML 두 사람은 손가락을 얽으며, 깊고 긴 키스를 나누었다…….
+	ENDSELECT
+ENDIF
+WAIT
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+PRINTL
+
+;-----------------------------
+;- 結果
+;-----------------------------
+
+L_NAME = %CALLNAME:MASTER%
+
+L_TMP = (ABL:성노예 / 2)
+
+;- EXP
+CALL MNG_LOG_ADD("EXP", "키스경험",		(1+L_TMP))
+CALL MNG_LOG_ADD("EXP", "펠라경험",	(2+L_TMP/2))
+CALL MNG_LOG_ADD("EXP", "Ｖ경험",		(2+L_TMP))
+CALL MNG_LOG_ADD("EXP", "성교경험",		(2+L_TMP))
+
+CALL MNG_LOG_ADD("EXP", "절정경험",	(2+L_TMP))
+CALL MNG_LOG_ADD("EXP", "정음경험",	(2+L_TMP/2))
+CALL MNG_LOG_ADD("EXP", "정액경험",	(2+L_TMP))
+CALL MNG_LOG_ADD("EXP", "질싸경험",	(2+L_TMP))
+
+
+;- 첫체험기록:その他
+TRYCALL 첫체험기록_OTHER(TARGET, 1, L_NAME)
+
+;- 임신:可能チェック
+IF NINSIN_ABLE(TARGET)
+	;- 임신:チェック
+	;CALL NINSIN_CHK(TARGET, MASTER, 2+L_TMP, L_NAME)
+ENDIF
+
+;- EVE:日常(夜伽経験:主人)
+CALL EVENT_DAILY_BEDTIME_ADD_M("Ｖ")
+
+PRINTW
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_A
+;=================================================
+;   EVE:日常(夜伽Ａ)
+;-------------------------------------------------
+;主人C 奴隷A
+@EVENT_DAILY_BEDTIME_A
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+;-----------------------------
+;- 前情景
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ導入)
+CALL EVENT_DAILY_BEDTIME_MSG_START("Ａ")
+
+;-----------------------------
+;- 本番
+;-----------------------------
+
+PRINTFORM %조사처리(L_NAME,"는")% 
+PRINTDATA
+	DATAFORM 달아오른 얼굴로 
+	DATAFORM 침착하지 못한 모습으로 
+	DATAFORM 머뭇거리면서 
+	DATAFORM 다급한 모습으로 
+	DATAFORM 천천히 
+	DATAFORM 당연하다는 듯이 
+	DATAFORM 욕정에 찬 얼굴로 
+ENDDATA
+PRINTDATA
+	DATAFORM 대답을 막론하고 %L_PLAYER%를 덮쳐 엉덩이로 유혹했다…….
+	DATAFORM 뒤로 돌아서 엉덩이를 괴롭혀 달라고 조르고 있다…….
+	DATAFORM 벽에 손을 짚어 %L_PLAYER%에게 향해 엉덩이를 내밀었다…….
+	DATAFORM %L_PLAYER%에게 다가서서, 애널을 괴롭혀 달라고 열렬하게 졸랐다…….
+	DATAFORM %L_PLAYER%에게 안기며, 뒤를 괴롭혀 달라고 열렬히 말을 전했다…….
+	DATAFORM %조사처리(L_PLAYER,"를")% 밀어 넘어뜨려 페니스를 손에 쥐며, 강하게 엉덩이로 이끌고 있다…….
+ENDDATA
+PRINTL
+
+SELECTCASE RAND:7
+	CASE 6
+		PRINTFORML %조사처리(L_PLAYER,"는")% %조사처리(L_NAME,"를")% 배후로부터 부둥켜안고, 끌리는 대로 뒷구멍을 즐긴다…….
+		PRINTFORML %조사처리(L_NAME,"는")% 뜨거운 숨결을 내쉬며, 스스로 정신없이 %L_PLAYER%에게 허리를 흔들어 부딪치고 있다…….
+	CASE 5
+		PRINTFORML %조사처리(L_PLAYER,"는")% 이끌리는 대로 아날로 이어져, 천천히 허리를 움직였다.
+		PRINTFORML %조사처리(L_NAME,"는")% 한 번 찔릴 때마다 몸을 격하게 꺾으며, 열락에 빠져든다…….
+	CASE 4
+		PRINTFORML 손가락을 핥으며 잔뜩 모은 타액으로 자신의 아날을 문지르고,
+		PRINTFORML 숨을 크게 내쉬며 스스로 %L_PLAYER%의 페니스를 항문으로 삼켜갔다…….
+	CASE 3
+		PRINTFORML %조사처리(L_PLAYER,"는")% 엉덩이에 얼굴을 묻고, 혀로 아날을 듬뿍 적시고 페니스를 삽입했다.
+		PRINTFORML %L_NAME%의 아날은 부드럽게 %조사처리(L_PLAYER,"를")% 감싸, 뿌리까지 꽉 물고 있다…….
+	CASE 2
+		PRINTFORML 요구대로, %조사처리(L_PLAYER,"는")% %L_NAME%의 아날을 잔뜩 즐겼다…….
+	CASE 1
+		PRINTFORML 스스로 뒷구멍을 로션으로 풀어주고, 넓게 벌려서 페니스를 받아들이려는 %L_NAME%에게 응해
+		PRINTFORML %조사처리(L_PLAYER,"는")% 끌리는 대로 장내의 감촉을 맛보고 있었다…….
+	CASEELSE
+		PRINTFORML %조사처리(L_PLAYER,"가")% 보드라운 엉덩이에 사양 없이 삽입하자 %조사처리(L_NAME,"는")% 약하게 허리를 떨었다.
+ENDSELECT
+WAIT
+
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+PRINTL
+
+
+;-----------------------------
+;- 結果
+;-----------------------------
+
+L_NAME = %CALLNAME:MASTER%
+
+L_TMP = (ABL:성노예 / 2)
+
+;- EXP
+CALL MNG_LOG_ADD("EXP", "키스경험",		(1+L_TMP))
+CALL MNG_LOG_ADD("EXP", "펠라경험",	(2+L_TMP/2))
+CALL MNG_LOG_ADD("EXP", "Ａ경험",		(2+L_TMP))
+CALL MNG_LOG_ADD("EXP", "Ａ성교경험",		(2+L_TMP))
+
+CALL MNG_LOG_ADD("EXP", "절정경험",	(2+L_TMP))
+CALL MNG_LOG_ADD("EXP", "정음경험",	(2+L_TMP/2))
+CALL MNG_LOG_ADD("EXP", "정액경험",	(2+L_TMP))
+
+
+;- 첫체험기록:その他
+TRYCALL 첫체험기록_OTHER(TARGET, 2, L_NAME)
+
+;- EVE:日常(夜伽経験:主人)
+CALL EVENT_DAILY_BEDTIME_ADD_M("Ａ")
+
+PRINTW
+
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_C
+;=================================================
+;   EVE:日常(夜伽Ｃ)
+;-------------------------------------------------
+;主人C 奴隷C
+@EVENT_DAILY_BEDTIME_C
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+;-----------------------------
+;- 前情景
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ導入)
+CALL EVENT_DAILY_BEDTIME_MSG_START("Ｃ")
+
+;-----------------------------
+;- 本番
+;-----------------------------
+
+PRINTFORM %조사처리(L_NAME,"는")% 
+PRINTDATA
+	DATAFORM 달아오른 얼굴로 
+	DATAFORM 천천히 
+	DATAFORM 당연하다는 듯이 
+	DATAFORM 욕정에 찬 얼굴로 
+ENDDATA
+PRINTDATA
+	DATAFORM 섹스를 요구하며, 
+	DATAFORM %L_PLAYER%의 입술을 뺏으며, 
+ENDDATA
+PRINTDATA
+	DATAFORM 정욕에 흐린 눈으로 %조사처리(L_PLAYER,"를")% 밀어 넘어뜨렸다…….
+	DATAFORM %L_PLAYER%에게 덤벼들듯이 밀어 넘어뜨렸다…….
+ENDDATA
+PRINTL
+
+;主人がP有り
+IF VAR_PENIS(MASTER)
+
+	PRINTDATA
+		DATAFORM %L_PLAYER%의 페니스를 빨면서, %조사처리(L_NAME,"는")% 입 안에 사정을 받아들였다…….
+		DATAFORM %L_PLAYER%의 페니스에 혀를 감아 돌리면서, %조사처리(L_NAME,"는")% 정액을 삼켜갔다…….
+	ENDDATA
+	PRINTL
+	;奴隷がP有り
+	IF VAR_PENIS(TARGET)
+		PRINTFORML %L_PLAYER%의 페니스를 차차 손으로 어루만져 발기시키고
+		PRINTFORML 서로의 쿠퍼액을 뒤섞으며, %조사처리(L_PLAYER,"는")% 자신의 페니스를 흔들고 있었다…….
+	;P없음
+	ELSE
+		SELECTCASE RAND:4
+			CASE 3
+				PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 허리에 올라타, 비소가 흘리는 침을 %L_PLAYER%의 페니스에 직접 칠하고
+				PRINTFORML 페니스에 음순을 문지르며 칠칠치 못한 얼굴을 하고 있다…….
+			CASE 2
+				PRINTFORML 힘찬 %L_PLAYER%의 페니스를 허벅지 사이에 끼워, 천천히 허리를 움직이기 시작했다…….
+				PRINTFORML %조사처리(L_NAME,"는")% 애액이 넘치는 국부 표면으로 %L_PLAYER%의 육봉을 충분히 맛보고 있다…….
+			CASE 1
+				PRINTFORML %조사처리(L_NAME,"는")% 뒤로 넘어뜨려진 %L_PLAYER%의 위에서, 황홀한 표정으로 허리를 비틀고 있다…….
+				PRINTFORML 녹아내린 음부에 페니스를 문지르며, 정신없이 쾌감을 탐하고 있다…….
+			CASEELSE
+				PRINTFORML %L_PLAYER%의 허리에 걸터앉아, 끈적한 움직임으로 페니스를 압박했다…….
+				PRINTFORML %조사처리(L_NAME,"는")% 비부에서 흘러넘치는 꿀을 윤활제 삼아 스트로크를 조금씩 가속시켜 갔다…….
+		ENDSELECT
+	ENDIF
+
+;P無し
+ELSE
+
+	;奴隷がP有り
+	IF VAR_PENIS(TARGET)
+		SELECTCASE RAND:3
+			CASE 2
+				PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 다리를 힘차게 젖혀, 타액으로 듬뿍 적시고
+				PRINTFORML 페니스를 민감한 부위에 대고 부드러운 맨살의 감촉을 즐기면서 비벼댔다…….
+			CASE 1
+				PRINTFORML %조사처리(L_PLAYER,"는")% 강압적으로 강요하는 %L_NAME%에게 비소를 듬뿍 핥은 후,
+				PRINTFORML 요구에 따라 %L_NAME%의 페니스를 스마타로 사정을 이끌었다…….
+			CASEELSE
+				PRINTFORML 비렬을 혀로 차분히 적시고
+				PRINTFORML 자신의 우뚝 솟은 것을 들이대, 격하게 비비기 시작했다…….
+		ENDSELECT
+	;P없음
+	ELSE
+		PRINTFORML %L_PLAYER%의 한 다리를 끌어안고, 서로의 비소를 딥키스 하듯이 비벼댔다…….
+		PRINTFORML %조사처리(L_NAME,"는")% 끈적한 허리놀림으로 열락을 맛보고 있다…….
+	ENDIF
+
+ENDIF
+WAIT
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+PRINTL
+
+;-----------------------------
+;- 結果
+;-----------------------------
+
+L_NAME = %CALLNAME:MASTER%
+
+L_TMP = (ABL:성노예 / 2)
+
+;- EXP
+CALL MNG_LOG_ADD("EXP", "키스경험",		(1+L_TMP))
+CALL MNG_LOG_ADD("EXP", "Ｃ경험",		(2+L_TMP))
+CALL MNG_LOG_ADD("EXP", "절정경험",		(2+L_TMP))
+
+;主人がP有り
+IF VAR_PENIS(MASTER)
+	CALL MNG_LOG_ADD("EXP", "펠라경험",	(2+L_TMP/2))
+	CALL MNG_LOG_ADD("EXP", "정음경험",		(2+L_TMP/2))
+	CALL MNG_LOG_ADD("EXP", "정액경험",		(2+L_TMP))
+
+	CALL 첫체험기록_調教, TARGET, 4, L_NAME		;初펠라경험
+	CALL 첫체험기록_調教, TARGET, 7, L_NAME		;初정음경험
+ENDIF
+
+
+;- 첫체험기록:その他
+TRYCALL 첫체험기록_OTHER(TARGET, 4, L_NAME)
+
+;- EVE:日常(夜伽経験:主人)
+CALL EVENT_DAILY_BEDTIME_ADD_M("Ｃ")
+
+PRINTW
+
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_REV_V
+;=================================================
+;   EVE:日常(夜伽逆Ｖ)
+;-------------------------------------------------
+;主人V 奴隷C
+@EVENT_DAILY_BEDTIME_REV_V
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+;-----------------------------
+;- 前情景
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ導入)
+CALL EVENT_DAILY_BEDTIME_MSG_START("逆Ｖ")
+
+;-----------------------------
+;- 本番
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ共通:逆)
+CALL EVENT_DAILY_BEDTIME_MSG_REV("逆Ｖ")
+
+SELECTCASE RAND:2
+	CASE 1
+		PRINTDATA
+			DATAFORM 안쪽까지 격렬하게 박아주었으면 좋겠다고 귓전에 속삭였다…….
+			DATAFORM 잔뜩 질내사정해도 좋다고 작은 목소리로 %L_NAME%에게 말했다…….
+			DATAFORM 야릇한 웃음과 함께 무슨 일이든 어울려 주겠다고 %L_NAME%에게 말했다…….
+			DATAFORM 몸을 원하는대로 해도 좋다고 %L_NAME%의 귓전에 작게 속삭였다…….
+			DATAFORM 좋을대로 안아도 된다고 %L_NAME%에게 말했다…….
+			DATAFORM 만족할 때까지 범해줬으면 좋겠다고 키스를 나누면서 %L_NAME%에게 말했다…….
+			DATAFORM %L_NAME%에게 시선을 맞추면서, 질내사정을 원한다고 뜨거운 숨을 내뱉으며 말했다…….
+			DATAFORM 피부를 맞대며, 몸을 원하는대로 가지고 놀아도 좋다고 %L_NAME%에게 말했다…….
+		ENDDATA
+		PRINTL
+
+		PRINTDATA
+			DATAFORM 그리고 %조사처리(L_PLAYER,"는")% 덤벼들 듯이 덮치는 %조사처리(L_NAME,"를")% 그대로 받아들였다…….
+			DATAFORM %L_PLAYER%의 말에 흥분한 %조사처리(L_NAME,"는")% 기세 좋게 %조사처리(L_PLAYER,"를")% 밀어 넘어뜨렸다…….
+			DATAFORM %조사처리(L_NAME,"는")% 참지 못하고 %L_PLAYER%를 덮치고 발정난 것처럼 허리를 흔들었다…….
+			DATAFORM %조사처리(L_NAME,"는")% 눈빛을 바꾸고 %L_PLAYER%에게 덤벼들어, 페니스를 난폭하게 박아 넣었다…….
+			DATAFORM 이끌리는 대로 허리를 흔들고 있는 %조사처리(L_NAME,"는")% 이미 %조사처리(L_PLAYER,"를")% 잉태시키는 일밖에 생각하고 있지 않다…….
+			DATAFORM 그 말에 완전 흥분한 %조사처리(L_NAME,"는")% %L_PLAYER%에게 아이를 배게 하겠다는 일념으로 허리를 흔들고 있다…….
+			DATAFORM %L_PLAYER%의 말에 기분이 고조된 %조사처리(L_NAME,"는")% 만족할 때까지 %L_PLAYER%의 지체를 즐겼다…….
+			DATAFORM %L_PLAYER%의 말을 듣고서, %조사처리(L_NAME,"는")% 눈빛을 바꾸고 %L_PLAYER%에게 덤벼들었다…….
+			DATAFORM 말을 듣고 욕정한 %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"를")% 잉태시킬 생각으로 집요하게 허리를 흔들었다…….
+		ENDDATA
+		PRINTL
+
+	CASEELSE
+		PRINTDATA
+			DATAFORM 딱딱하게 발기한 %L_NAME%의 욕망에, 온몸으로 화답했다…….
+			DATAFORM 연인의 키스를 하면서 신체의 깊은 곳까지 이어져 갔다…….
+			DATAFORM 혀를 깊게 얽으면서 %L_NAME%에게 신체의 가장 깊숙한 곳을 허락했다…….
+			DATAFORM 서로 열정적으로 바라보며, 서로의 두 손을 꼭 잡고 깊은 관계를 맺었다…….
+			DATAFORM 손가락을 얽으며 침대로 향하고, 꿀이 넘치는 치부에 %L_NAME%의 성난 것을 받아들였다……
+			DATAFORM %조사처리(L_PLAYER,"는")% 스스로 %L_NAME%의 발기한 페니스를 질구로 물어 받아들였다…….
+		ENDDATA
+		PRINTL
+
+		PRINTDATA
+			DATAFORM 질내를 딱딱한 페니스로 강하게 긁으며, %조사처리(L_PLAYER,"는")% 달콤한 목소리를 내고 있다…….
+			DATAFORM 질척하고 음란한 소리를 내며 %L_PLAYER%의 음부는 액을 흘리며 %조사처리(L_NAME,"를")% 받아들였다…….
+			DATAFORM 그리고 그대로, 두 사람은 시간을 잊고 쾌락을 탐닉하고 있었다…….
+			DATAFORM 그리고 %조사처리(L_PLAYER,"는")% %조사처리(L_NAME,"를")% 다리로 붙잡고, 질 안으로 사정할 것을 재촉했다…….
+			DATAFORM %조사처리(L_PLAYER,"는")% 정신없이 %조사처리(L_NAME,"를")% 안으면서 질내사정을 조르고 있었다…….
+			DATAFORM 두 사람의 아기씨받이 섹스는 몇 시간이고 계속되었다…….
+			DATAFORM %조사처리(L_PLAYER,"는")% 무의식적으로 다리로 붙잡고, %L_NAME%의 질내사정을 요구했다…….
+			DATAFORM 그리고 두 사람은 서로를 탐하듯이 요했다…….
+			DATAFORM 그리고 두 사람은 살과 살을 맞대며, 몇 시간이고 뒤얽혔다…….
+			DATAFORM 대면좌위로 가장 안 쪽을 자극받으며, %조사처리(L_PLAYER,"는")% 꽉 껴안고 정신없이 입술을 탐하고 있다…….
+			DATAFORM 가슴을 자극하면서 후배위의 피스톤질에, %조사처리(L_PLAYER,"는")% 미쳐가고 있다…….
+			DATAFORM 딱딱해진 페니스를 스스로 걸쳐 앉아 삽입하고, %조사처리(L_PLAYER,"는")% 음란하게 흔들기 시작했다…….
+		ENDDATA
+		PRINTL
+ENDSELECT
+WAIT
+
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+PRINTL
+
+
+;-----------------------------
+;- 結果
+;-----------------------------
+
+L_NAME = %CALLNAME:MASTER%
+
+L_TMP = (ABL:성노예 / 2)
+
+;- EXP
+CALL MNG_LOG_ADD("EXP", "키스경험",		(1+L_TMP))
+CALL MNG_LOG_ADD("EXP", "성교경험",		(2+L_TMP))
+
+CALL MNG_LOG_ADD("EXP", "절정경험",	(2+L_TMP))
+
+
+;- 첫체험기록:その他
+TRYCALL 첫체험기록_OTHER(TARGET, 3, L_NAME)
+
+;- EVE:日常(夜伽経験:主人)
+CALL EVENT_DAILY_BEDTIME_ADD_M("逆Ｖ")
+
+PRINTW
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_REV_A
+;=================================================
+;   EVE:日常(夜伽逆Ａ)
+;-------------------------------------------------
+;主人A 奴隷C
+@EVENT_DAILY_BEDTIME_REV_A
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+;-----------------------------
+;- 前情景
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ導入)
+CALL EVENT_DAILY_BEDTIME_MSG_START("逆Ａ")
+
+;-----------------------------
+;- 本番
+;-----------------------------
+
+;- EVE:日常(夜伽メッセージ共通:逆)
+CALL EVENT_DAILY_BEDTIME_MSG_REV("逆Ａ")
+
+PRINTDATA
+	DATAFORM 엉덩이를 내밀고 뒤를 괴롭혀달라고 재촉했다…….
+	DATAFORM 작은 목소리로 뒷구멍을 원하는대로 해도 좋다고 전했다…….
+	DATAFORM %L_NAME%의 귀에, 뒷구멍을 괴롭혀줬으면 좋겠다고 전했다…….
+	DATAFORM 뒤로 돌아서, 엉덩이를 크게 벌려 보였다…….
+	DATAFORM %L_NAME%위 발기한 페니스를 뒷구멍에 가져다 대어, 삽입을 권유했다…….
+	DATAFORM 벽에 양손을 짚고, 뒤를 괴롭혀달라고 몸짓으로 보였다…….
+	DATAFORM 뒤를 찔러달라고 전하며, 침대에서 개처럼 엎드린 자세를 취했다…….
+	DATAFORM 애널을 엉망진창으로 하고 싶다는 %L_NAME%의 희망을 듣고 엎드렸다…….
+	DATAFORM 자유롭게 %L_NAME%에게 애널을 괴롭히게 했다…….
+	DATAFORM 애널에 삽입하려 하는 %조사처리(L_NAME,"를")% 위해, 힘을 빼고 숨을 크게 내쉬었다…….
+ENDDATA
+PRINTL
+
+IF ABL:MASTER:Ａ감각 >= 3
+	PRINTDATA
+		DATAFORM 그대로 %조사처리(L_NAME,"는")% 부드럽게 풀린 %L_PLAYER%의 애널을 만족할 때까지 즐겼다…….
+		DATAFORM 뜨겁고 천천히 맥박치는 %L_NAME%의 페니스를 애널로 받아들이고, %조사처리(L_PLAYER,"는")% 스스로 허리를 흔들기 시작했다…….
+		DATAFORM 그리고 서로를 요구하며 쾌락을 탐하면서 두 사람은 오랫동안 이어져 있었다…….
+		DATAFORM 서로가 만족할 때까지의 긴 시간동안, 무심히 애널 섹스를 계속했다…….
+		DATAFORM 장내가 직접적으로 쑤셔지는 쾌락에 도취되면서, %조사처리(L_PLAYER,"는")% %L_NAME%위 행위를 받아들였다…….
+		DATAFORM %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"를")% 뒤에서 부둥켜안고, 자유롭게 %L_PLAYER%의 항문에 욕망을 토해냈다…….
+		DATAFORM 그리고 %L_NAME%의 애널 자극에 %조사처리(L_PLAYER,"는")% 끝없이 치태를 보였다…….
+		DATAFORM 단단히 발기한 페니스를 쉽게 받아들이며, %조사처리(L_PLAYER,"는")% 횐희의 소리를 내뱉으며 허리를 흔들어댔다…….
+	ENDDATA
+ELSE
+	PRINTDATA
+		DATAFORM 그리고 %조사처리(L_PLAYER,"는")% 익숙치 않은 행위에 신음하면서도 %조사처리(L_NAME,"과")%의 한때를 즐겼다…….
+		DATAFORM 아직 익숙하지 않은 뒤로부터 삽입하는 감각에 당황하면서도, %L_NAME%의 욕망에 부응했다…….
+		DATAFORM 그대로 %조사처리(L_NAME,"는")% %L_PLAYER%의 신선한 애널의 감촉을, 오랜 시간에 걸쳐 음미했다…….
+		DATAFORM 익숙하지 않은 애널의 감촉에 당황하고 있었지만, 이윽고 뜨거운 한숨이 섞이기 시작했다…….
+	ENDDATA
+ENDIF
+PRINTL
+WAIT
+
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+PRINTL
+
+
+;-----------------------------
+;- 結果
+;-----------------------------
+
+L_NAME = %CALLNAME:MASTER%
+
+L_TMP = (ABL:성노예 / 2)
+
+;- EXP
+CALL MNG_LOG_ADD("EXP", "키스경험",		(1+L_TMP))
+CALL MNG_LOG_ADD("EXP", "성교경험",		(2+L_TMP))
+
+CALL MNG_LOG_ADD("EXP", "절정경험",	(2+L_TMP))
+
+
+;- 첫체험기록:その他
+TRYCALL 첫체험기록_OTHER(TARGET, 3, L_NAME)
+
+;- EVE:日常(夜伽経験:主人)
+CALL EVENT_DAILY_BEDTIME_ADD_M("逆Ａ")
+
+PRINTW
+
+
+;=================================================
+;   sub EVENT_DAILY_MORNING
+;=================================================
+;   EVE:日常(朝イベント)
+;-------------------------------------------------
+@EVENT_DAILY_MORNING
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_BAK
+#DIM L_TYPE
+
+L_BAK = TARGET
+TARGET = FLAG:夜伽相手
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+
+SELECTCASE RAND:2
+	;朝キス
+	CASE 1
+		;- EVE:日常(朝キス)
+		CALL EVENT_DAILY_MORNING_1
+		L_TYPE = [[日常EVE:朝キス]]
+	;朝添い寝
+	CASEELSE
+		;- EVE:日常(朝添い寝)
+		CALL EVENT_DAILY_MORNING_0
+		L_TYPE = [[日常EVE:朝添い寝]]
+ENDSELECT
+
+FLAG:日常コマンド = L_TYPE
+
+;- 口上出力:日常イベント
+CALL KOJO_DAILY
+
+PRINTL
+
+;戻す
+TARGET = L_BAK
+
+
+;=================================================
+;   sub EVENT_DAILY_MORNING_0
+;=================================================
+;   EVE:日常(朝添い寝)
+;-------------------------------------------------
+@EVENT_DAILY_MORNING_0
+#DIMS L_NAME
+#DIMS L_PLAYER
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+SELECTCASE RAND:5
+	CASE 4
+		PRINTFORML 아침, %조사처리(L_PLAYER,"가")% 일어나자 옆에서 %L_NAME%가 자고 있다…….
+		PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 기척에 눈을 뜨고, 조금 덜 깬 모습으로 아침 인사를 했다…….
+	CASE 3
+		PRINTFORML 아침, %조사처리(L_PLAYER,"는")% 부드러운 감촉에 눈을 떴다…….
+		PRINTFORML 보니까 %조사처리(L_NAME,"가")% %L_PLAYER%의 옆에서 새근새근 자고 있었다…….
+		PRINTFORML 무방비한 표정에 쓴 웃음을 지으며, %조사처리(L_NAME,"를")% 슬쩍 깨웠다…….
+	CASE 2
+		PRINTFORML 아침, %조사처리(L_PLAYER,"는")% %조사처리(L_NAME,"가")% 껴안고 있는 것을 눈치채고, 눈을 떴다…….
+		PRINTFORML %조사처리(L_NAME,"는")% %L_PLAYER%의 곁에서 완전히 안심한 표정을 지으며 자고 있다…….
+	CASE 1
+		PRINTFORML 아침에 눈을 뜨자 옆에서 %조사처리(L_NAME,"가")% %L_PLAYER%의 팔을 베개 삼아 행복한 듯이 자고 있었다…….
+		PRINTFORML 조용히 흔들어서 깨우자 %조사처리(L_NAME,"는")% 얼굴을 붉히며 아침 인사를 했다…….
+	CASEELSE
+		PRINTFORML 아침, %조사처리(L_PLAYER,"가")% 눈을 뜨자 옆에서 %L_NAME%가 잠들어 있다…….
+		PRINTFORML 살짝 흔들어서 깨우자, 잠이 덜 깬 %조사처리(L_NAME,"가")% 안겨왔다…….
+ENDSELECT
+WAIT
+
+
+
+;=================================================
+;   sub EVENT_DAILY_MORNING_1
+;=================================================
+;   EVE:日常(朝キス)
+;-------------------------------------------------
+@EVENT_DAILY_MORNING_1
+#DIMS L_NAME
+#DIMS L_PLAYER
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+SELECTCASE RAND:7
+	CASE 6
+		PRINTFORML 아침, 자고 있던 %조사처리(L_PLAYER,"는")% %L_NAME%의 다정한 입맞춤으로 깨어났다…….
+		PRINTFORML %조사처리(L_NAME,"는")% %조사처리(L_PLAYER,"가")% 잠에서 완전히 깨어날 때까지,
+		PRINTFORML 쪼아대는 듯한 가벼운 입맞춤을 몇 번이고 반복하고 있었다…….
+	CASE 5
+		PRINTFORML 입술에 살짝 닿는 키스로 %조사처리(L_PLAYER,"는")% 눈을 떴다…….
+		PRINTFORML 아침 햇살 속, %조사처리(L_NAME,"는")% 쑥스러워 하면서도 아침 인사를 했다…….
+	CASE 4
+		PRINTFORML 키스의 감각에 %조사처리(L_PLAYER,"는")% 눈을 떴다…….
+		PRINTFORML %L_PLAYER%의 바로 옆에서, 약간 부끄러운 듯이 얼굴을 붉힌 %조사처리(L_NAME,"가")%, 아침이 왔음을 알렸다…….
+	CASE 3
+		PRINTFORML 이른 아침, 아직 자고 있던 %L_PLAYER%의 곁에 %조사처리(L_NAME,"가")% 찾아왔다…….
+		PRINTFORML 눈을 뜨게 하는 키스로 %조사처리(L_PLAYER,"를")% 깨우고, 행복한 미소를 지으며 아침인사를 건넸다…….
+	CASE 2
+		PRINTFORML %조사처리(L_PLAYER,"는")% %L_NAME%의 키스로 잠에거 깨어났다…….
+		PRINTFORML 자다 깬 %L_PLAYER%에게, %조사처리(L_NAME,"는")% 행복한 미소를 지으며 하루의 시작을 알렸다…….
+	CASE 1
+		PRINTFORML 아침, %조사처리(L_PLAYER,"는")% %L_NAME%의 입맞춤으로 잠에서 깨어났다…….
+		PRINTFORML 잠에서 막 깨어나 흐릿한 시야 속, 눈 앞에서 %조사처리(L_NAME,"가")% 미소짓고 있다…….
+	CASEELSE
+		PRINTFORML 아침, %조사처리(L_PLAYER,"는")% %L_NAME%의 입맞춤으로 눈을 떴다…….
+		PRINTFORML %조사처리(L_NAME,"는")% 얼굴을 붉히면서 아침인사를 건넸다…….
+ENDSELECT
+WAIT
+
+
+;-------------------------------------------------------------------------------
+;   処理補助系
+;-------------------------------------------------------------------------------
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_ADD_M
+;=================================================
+;   EVE:日常(夜伽経験:主人)
+;-------------------------------------------------
+; Input:
+;  ARGS					処理타입(Ｖ,Ａ,Ｃ,逆Ｖ,逆Ａ)
+;-------------------------------------------------
+@EVENT_DAILY_BEDTIME_ADD_M(ARGS)
+#DIMS L_NAME
+#DIM L_TMP
+
+L_NAME		= %NAME%
+L_TMP = (ABL:욕망 / 2)
+
+SELECTCASE ARGS
+	CASE "Ｖ"
+		;- 첫체험기록:その他
+		TRYCALL 첫체험기록_OTHER(MASTER, 3, L_NAME)
+	CASE "Ａ"
+		;- 첫체험기록:その他
+		TRYCALL 첫체험기록_OTHER(MASTER, 3, L_NAME)
+	CASE "Ｃ"
+		;- 첫체험기록:その他
+		TRYCALL 첫체험기록_OTHER(MASTER, 4, L_NAME)
+
+		;- 첫체험기록:その他
+		TRYCALL 첫체험기록_OTHER(MASTER, 1, L_NAME)
+	CASE "逆Ａ"
+		;- 첫체험기록:その他
+		TRYCALL 첫체험기록_OTHER(MASTER, 2, L_NAME)
+	;その他
+	CASEELSE
+ENDSELECT
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_MSG_START
+;=================================================
+;   EVE:日常(夜伽メッセージ導入)
+;-------------------------------------------------
+; Input:
+;  ARGS					処理타입(Ｖ,Ａ,Ｃ,逆Ｖ,逆Ａ)
+;-------------------------------------------------
+@EVENT_DAILY_BEDTIME_MSG_START(ARGS)
+#DIMS L_NAME
+#DIMS L_PLAYER
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+SELECTCASE ARGS
+	CASE "Ｖ"
+		CALL PRINT_LABEL("夜伽Ｖ")
+	CASE "Ａ"
+		CALL PRINT_LABEL("夜伽Ａ")
+	CASE "Ｃ"
+		CALL PRINT_LABEL("夜伽Ｃ")
+	CASE "逆Ｖ"
+		CALL PRINT_LABEL("夜伽逆Ｖ")
+	CASE "逆Ａ"
+		CALL PRINT_LABEL("夜伽逆Ａ")
+	;その他
+	CASEELSE
+ENDSELECT
+CALL INFO_危険日(TARGET)
+PRINTL
+
+
+SELECTCASE ARGS
+	CASE "Ｖ"
+		PRINTFORM %조사처리(L_NAME,"는")% 
+		IF RAND:2 == 0
+			PRINTFORM %조사처리(L_PLAYER,"를")% 바라보며 
+			PRINTDATA
+				DATA '아침까지 안아줬으면 좋겠다' 
+				DATA '강제로 범해줬으면 좋겠다' 
+				DATA '안쪽까지 쑤셔줬으면 좋겠다' 
+				DATA '엉망진창으로 만들어줬으면 좋겠다' 
+				DATA '격한 사랑을 나눠줬으면 좋겠다' 
+				DATA '아기씨를 잔뜩 받았으면 좋겠다' 
+				DATA '자궁을 가득 채워줬으면 좋겠다' 
+				DATAFORM '%조사처리(L_PLAYER,"과")%의 아이를 가지고 싶다' 
+			ENDDATA
+			PRINTL 라면서 조르고 있다…….
+		ELSE
+			PRINTDATA
+				DATAFORM %L_PLAYER%에게 안기면서, 몸을 이리저리 꼬고 있다…….
+				DATAFORM %L_PLAYER%의 손을 잡고선, 자신의 지체로 유혹하고 있다…….
+				DATAFORM %L_PLAYER%의 목에 팔을 두르고 몸을 밀어붙여 왔다…….
+				DATAFORM %L_PLAYER%에게 밀착하면서, 허리를 하체로 밀어붙이고 있다…….
+				DATAFORM %L_PLAYER%에게 허리를 밀착하고 조르고 있다…….
+				DATAFORM %L_PLAYER%의 손을 잡고는, 비소가 이미 젖었음을 보여주었다…….
+				DATAFORM %L_PLAYER%에게 덮쳐지기를 기다리고 있다…….
+				DATAFORM %L_PLAYER%에게 안기는 것을 기대하고 있다…….
+			ENDDATA
+			PRINTL 
+		ENDIF
+
+	CASE "Ａ"
+		PRINTFORM %조사처리(L_NAME,"는")% 
+		IF RAND:2 == 0
+			PRINTFORM %조사처리(L_PLAYER,"를")% 바라보며 
+			PRINTDATA
+				DATA '아침까지 안아줬으면 좋겠다' 
+				DATA '강제로 범해줬으면 좋겠다' 
+				DATA '안쪽까지 쑤셔줬으면 좋겠다' 
+				DATA '엉망진창으로 만들어줬으면 좋겠다' 
+				DATA '격한 사랑을 나눠줬으면 좋겠다' 
+			ENDDATA
+			PRINTL 라면서 조르고 있다…….
+		ELSE
+			GOTO SEX_NOMAL
+		ENDIF
+
+	CASE "Ｃ"
+		PRINTFORM %조사처리(L_NAME,"는")% 
+		IF RAND:2 == 0
+			PRINTFORM %조사처리(L_PLAYER,"를")% 바라보며 
+			PRINTDATA
+				DATA '아침까지 안아줬으면 좋겠다' 
+				DATA '강제로 범해줬으면 좋겠다' 
+				DATA '엉망진창으로 만들어줬으면 좋겠다' 
+				DATA '격한 사랑을 나눠줬으면 좋겠다' 
+			ENDDATA
+			PRINTL 라면서 조르고 있다…….
+		ELSE
+			$SEX_NOMAL
+			PRINTDATA
+				DATAFORM %L_PLAYER%에게 안기면서, 몸을 이리저리 꼬고 있다…….
+				DATAFORM %L_PLAYER%의 손을 잡고선, 자신의 지체로 유혹하고 있다…….
+				DATAFORM %L_PLAYER%의 목에 팔을 두르고 몸을 밀어붙여 왔다…….
+				DATAFORM %L_PLAYER%에게 밀착하면서, 허리를 하체로 밀어붙이고 있다…….
+				DATAFORM %L_PLAYER%에게 허리를 밀착하고 조르고 있다…….
+				DATAFORM %L_PLAYER%에게 덮쳐지기를 기다리고 있다…….
+				DATAFORM %L_PLAYER%에게 안기는 것을 기대하고 있다…….
+			ENDDATA
+			PRINTL 
+		ENDIF
+
+	;逆系
+	CASEELSE
+		PRINTFORM %조사처리(L_NAME,"는")% 
+		IF RAND:2 == 0
+			PRINTFORM %조사처리(L_PLAYER,"를")% 바라보며 
+			PRINTDATA
+				DATA '서로 깊은 사랑을 하고 싶다' 
+			ENDDATA
+			PRINTL 라면서 조르고 있다…….
+		ELSE
+			PRINTDATA
+				DATAFORM %L_PLAYER%의 손을 잡고선, 서로 사랑하는 행위로 유혹하고 있다…….
+				DATAFORM %L_PLAYER%의 목에 팔을 두르고 몸을 밀착시키고 있다…….
+				DATAFORM %L_PLAYER%에게 밀착하면서, 허리를 하체로 밀어붙이고 있다…….
+			ENDDATA
+			PRINTL 
+		ENDIF
+ENDSELECT
+;WAIT
+
+
+;=================================================
+;   sub EVENT_DAILY_BEDTIME_MSG_REV
+;=================================================
+;   EVE:日常(夜伽メッセージ共通:逆)
+;-------------------------------------------------
+; Input:
+;  ARGS					処理타입(逆Ｖ,逆Ａ)
+;-------------------------------------------------
+@EVENT_DAILY_BEDTIME_MSG_REV(ARGS)
+#DIMS L_NAME
+#DIMS L_PLAYER
+#DIM L_TMP
+
+L_NAME		= %CALLNAME%
+L_PLAYER	= %CALLNAME:MASTER%
+
+
+PRINTDATA
+	DATAFORM 달아오른 얼굴로 
+	DATAFORM 침착하지 못한 모습으로 
+	DATAFORM 당연하다는 듯이 
+	DATAFORM 욕정에 찬 얼굴로 
+ENDDATA
+PRINTFORM %조사처리(L_PLAYER,"를")% 바라보는 %조사처리(L_NAME,"를")%, %조사처리(L_PLAYER,"는")% 
+PRINTDATA
+	DATAFORM 상냥하게 
+	DATAFORM 미소지으면서 
+	DATAFORM 조용히 
+	DATAFORM 천천히 
+	DATAFORM 온화한 표정으로 
+	DATAFORM 수줍어하면서 
+ENDDATA
+PRINTDATA
+	DATAFORM 포옹하며, 
+	DATAFORM 끌어안으며, 
+	DATAFORM 유혹하며, 
+	DATAFORM 손을 잡으며, 
+	DATAFORM 고개를 끄덕이며, 
+	DATAFORM 안기며, 
+	DATAFORM 몸을 기대며, 
+ENDDATA
+PRINTL
+

@@ -1,0 +1,131 @@
+﻿
+;-------------------------------------------------
+;企業扇動
+;-------------------------------------------------
+@CITY_KS(ARG:0,ARG:1,ARGS:0)
+#DIM L_INPUT
+#DIM L_M
+#DIM L_I
+#DIM L_NM
+#DIM N_S
+#DIM K_N
+#DIM K_N2
+
+K_N2 = 0
+
+$INPUT_LOOP
+K_N = 1
+L_NM = 0
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 【기업선동】
+DRAWLINE
+$INPUT_LOOP_K
+PRINTFORM 【%STR:(2500+K_N)%:
+PRINTFORM 【담당:
+ARG:0 = 16000
+ARG:1 = K_N
+CALL MEMBER_LIST2(ARG:0,ARG:1)
+SIF FLAG:범용변수 == 0
+	FLAG:(6020+K_N) = 0
+PRINTFORML 】
+PRINTFORML  [레벨:{Flag:(6001), 3 ,RIGHT}]
+K_N += 1
+SIF K_N <= 5
+	GOTO INPUT_LOOP_K
+DRAWLINE
+PRINTFORML 도시의 기업에 주민을 보내 일을 촉진시킵니다.
+PRINTFORML 주민을 임명함으로써, 턴 종료 시 기업에 개입하여 공적 포인트를 받습니다. (각 기업당 1명까지)
+PRINTFORML 【무자각 소질・인기・지위・계급이 높을수록 ＋보정.】
+PRINTFORML 【비처녀이며 모럴이 낮을수록……】【비처녀이며 카르마가 높을수록……】
+DRAWLINE
+PRINTFORML [  0] 담당임명
+PRINTFORML 
+PRINTFORML [100] 임명해제
+PRINTFORML [999] 돌아간다
+INPUT
+L_INPUT = RESULT
+L_M = RESULT
+SELECTCASE L_INPUT
+	CASE 999
+		JUMP SYSTEM_MENU
+	CASEELSE
+		SIF L_INPUT > 2 && L_INPUT != 100
+			GOTO INPUT_LOOP
+		CLEARLINE LINECOUNT
+		DRAWLINE
+		PRINTFORML 담당할 기업을 선택해주세요.
+		DRAWLINE
+		K_N = 1
+				$INPUT_LOOP_K2
+		ARG:0 = 16000
+		ARG:1 = K_N
+		PRINTFORM [{K_N}]　%STR:(2500+K_N)%:
+		PRINTFORM 담당:
+		CALL MEMBER_LIST2(ARG:0,ARG:1)
+		SIF FLAG:범용변수 == 0
+			FLAG:(6020+K_N) = 0
+		PRINTFORML 
+		K_N += 1
+		SIF K_N <= 5
+			GOTO INPUT_LOOP_K2
+		PRINTFORML 
+		PRINTFORML [999] 돌아간다
+		INPUT
+		L_INPUT = RESULT
+		K_N2    = RESULT
+		SELECTCASE L_INPUT
+		CASE 999
+			GOTO INPUT_LOOP
+		CASE 1,2,3,4,5
+			CLEARLINE LINECOUNT
+			DRAWLINE
+			PRINTFORML 임명할 주민을 선택해주세요.
+			DRAWLINE
+			CALL LIST_CHARA
+			L_INPUT = RESULT
+			L_I = RESULT
+			IF L_INPUT != 1000
+				IF TALENT:L_INPUT:NPC == 1
+					PRINTFORMW NPC는 선택할 수 없습니다.
+					GOTO INPUT_LOOP
+				ELSEIF L_INPUT == 999
+					GOTO INPUT_LOOP
+				ELSEIF L_INPUT == 0
+					PRINTFORMW 당신은 선택할 수 없습니다.
+					GOTO INPUT_LOOP
+				ELSE
+					IF L_M == 100 && (CFlag:L_I:16000 != 0)
+							CFlag:L_I:16000 = 0
+						PRINTFORMW %조사처리(CALLNAME:L_I,"를")% 임무에서 제외했습니다.
+					ELSE
+							IF Flag:(6020+K_N2)  != 0
+								PRINTFORMW 배속할 수 있는 인원은 기업 당 １명까지입니다.
+								GOTO INPUT_LOOP
+							ENDIF
+							IF CFlag:L_I:(16000) != 0
+								PRINTFORMW 이미 %STR:(2500+CFlag:L_I:(16000))%에 임명되어 있습니다.
+								GOTO INPUT_LOOP
+							ENDIF
+							L_NM += 1
+						CFlag:L_I:(16000) = K_N2
+						Flag:(6020+K_N2)  = 1
+						PRINTFORMW %조사처리(CALLNAME:L_I,"를")% 임명했습니다.
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDSELECT
+		GOTO INPUT_LOOP
+ENDSELECT
+
+GOTO INPUT_LOOP
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,144 @@
+﻿;-------------------------------------------------
+;훈련장イベント
+;-------------------------------------------------
+@TURN_EVENT_F_56
+#DIM INST     ;教官の登録番号を入れる
+#DIM MCOST    ;雇われ教官へのレッスン料
+#DIM ECOST    ;キャラを教官にしたときの必要경험치
+#DIM UPABL    ;上がる能力のABL添え字
+#DIM POS      ;能力上昇確率を一時格納
+#DIM UPVAR    ;能力上昇量を一時格納
+#DIM THRE     ;能力上昇値の最低値。これ以下だったらRANDを取る、THRESHOLD
+#DIM ISTHRE   ;能力の上昇量が最低値を割っていた場合1。デバッグ用
+#DIMS UPNAME  ;上がる能力の略称
+THRE = 3
+ISTHRE = 0
+INST = F56_GET_INST()
+;雇われ教官への経費は仮に20000としてみる
+MCOST = 20000
+ECOST = 0
+
+DRAWLINE
+CALL PRINT_LABEL("훈련장 이벤트(시설)",,,CALLNAME)
+PRINTL  
+
+;どの能力が上がるか抽選
+IF 0
+	;LUKが訓練で育つのどうなん？と思い除外
+	;UPABL = GETNUM(CFLAG , "주민_LUK")
+ELSEIF RAND:4 == 0
+	UPABL = GETNUM(CFLAG , "주민_ATK")
+	UPNAME = ATK
+ELSEIF RAND:3 == 0
+	UPABL = GETNUM(CFLAG , "주민_DEF")
+	UPNAME = DEF
+ELSEIF RAND:2 == 0
+	UPABL = GETNUM(CFLAG , "주민_HIT")
+	UPNAME = HIT
+ELSE
+	UPABL = GETNUM(CFLAG , "주민_SPD")
+	UPNAME = SPD
+ENDIF
+
+;能力の上昇量を計算。上昇幅が小さすぎるようならRAND値にする
+UPVAR = CFLAG:UPABL / RAND(50 , 100)
+IF UPVAR < THRE
+	UPVAR = RAND(1 , THRE)
+	ISTHRE = 1
+ENDIF
+
+
+
+IF INST >= 0
+	;必要경험치を計算。生徒および教官の能力が高いほどコスト上昇 
+	ECOST = F56_CALC_ECOST(CFLAG:UPABL , CFLAG:INST:UPABL)
+
+	PRINTFORML %타겟은% 교관 %CALLNAME:INST%의 지도 하에 훈련에 힘쓰고 있다.
+	IF CFLAG:INST:주민_경험치 < ECOST
+		;必要경험치が足りない
+		PRINTFORML 교관 %CALLNAME:INST%의 경험치：{CFLAG:INST:주민_경험치}  필요 경험치：{ECOST}
+		PRINTFORML 하지만 %조사처리(CALLNAME:INST,"가")% 지도를 하기에는 경험이 부족한 것 같다…….
+		DRAWLINE
+		WAIT
+		RETURN
+	ENDIF
+
+	;教官の能力が高いほど成功の確率が高まる
+	POS = F56_POSSIB(UPNAME , INST , TARGET)
+	;#;PRINTFORML 교관{CFLAG:INST:UPABL}  학생{CFLAG:UPABL}  성공률：{POS}％  최저보장：%\@ISTHRE ? YES # NO\@%
+	CFLAG:INST:주민_경험치 -= ECOST
+	IF POSSIB(POS)
+		;成功
+		CFLAG:UPABL += UPVAR
+		PRINTFORML 노력의 결실로 %CALLNAME%의 %조사처리(UPNAME,"가")% 상승했다!
+		PRINTFORML %CALLNAME%　【%UPNAME%：{CFLAG:UPABL}】(＋{UPVAR})
+		PRINTFORML %CALLNAME:INST%의 경험치【{CFLAG:INST:주민_경험치}】(-{ECOST})
+	ELSE
+		;失敗
+		PRINTFORML 하지만 %CALLNAME%의 능력에 변화는 보이지 않았다…….
+	ENDIF
+ELSE
+	;外部から教官を雇う
+	IF MONEY < MCOST
+		;資金が足りない
+		PRINTFORML 자금：{MONEY}  요금：{MCOST}
+		PRINTFORML %타겟은% 훈련 비용을 지불하지 못했다…….
+		DRAWLINE
+		WAIT
+		RETURN
+	ENDIF
+
+	MONEY -= MCOST
+	PRINTFORML %타겟은% 교관의 지도를 받고 있다.
+	PRINTFORML 자금：{MONEY}(-{MCOST})
+	;성공률は仮に30%としてみる
+	POS = 30
+	IF POSSIB(POS)
+		;成功
+		CFLAG:UPABL += UPVAR
+		PRINTFORML 노력의 결실로 %CALLNAME%의 %조사처리(UPNAME,"가")% 상승했다!
+		PRINTFORML %CALLNAME%　【%UPNAME%：{CFLAG:UPABL}】(＋{UPVAR})
+	ELSE
+		;失敗
+		PRINTFORML 하지만 %CALLNAME%의 능력에 변화는 보이지 않았다…….
+	ENDIF
+ENDIF
+
+DRAWLINE
+WAIT
+RETURN
+
+
+;경험치の必要量を計算する式中関数
+;引数ABLVAR_Sには訓練を受ける者の현재の能力値を、
+;ABLVAR_Iには教官の能力値を入れる。どちらも必須
+@F56_CALC_ECOST(ABLVAR_S = -1 , ABLVAR_I = -1)
+#FUNCTION
+#DIM TRGT
+#DIM ABLVAR_S
+#DIM ABLVAR_I
+SIF ABLVAR_S < 0 || ABLVAR_I < 0
+	THROW 引数の指定が不正です  ABLVAR_S={ABLVAR_S}  ABLVAR_I={ABLVAR_I}
+RETURNF LIMIT((ABLVAR_S + ABLVAR_I) / 2 , 10 , 10000)
+
+;能力アップの成功確率を計算する関数
+;UPABLにATK/DEF/HIT/LUKを文字列で、INSTに教官のキャラ番号を、STUに訓練生のキャラ番号を受け取る
+@F56_POSSIB(ABLS = "" , INST = -1 , STU = -1)
+#FUNCTION
+#DIM INST
+#DIM STU
+#DIM ABLNUM
+#DIMS ABLS
+SELECTCASE ABLS
+	CASE "ATK"
+		ABLNUM = GETNUM(CFLAG , "주민_ATK")
+	CASE "DEF"
+		ABLNUM = GETNUM(CFLAG , "주민_DEF")
+	CASE "HIT"
+		ABLNUM = GETNUM(CFLAG , "주민_HIT")
+	CASE "SPD"
+		ABLNUM = GETNUM(CFLAG , "주민_SPD")
+	CASEELSE
+		THROW ABLSの指定が不正です  ABLS=%ABLS%
+ENDSELECT
+RETURNF CFLAG:INST:ABLNUM * 100 / (CFLAG:INST:ABLNUM + CFLAG:STU:ABLNUM + 1)

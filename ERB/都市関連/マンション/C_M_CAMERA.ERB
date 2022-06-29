@@ -1,0 +1,291 @@
+﻿
+
+
+
+;-------------------------------------------------
+;  맨션행동
+;-------------------------------------------------
+@C_M_AS(ARG:1)
+IF FLAG:時間帯 == 0
+	IF RAND:10  > 4
+		CFLAG:맨션행동 = 50+RAND:3
+	ELSEIF !RAND:2
+		CFLAG:맨션행동 = 0
+	ELSE
+		CFLAG:맨션행동 = 100
+	ENDIF
+ELSE
+	IF (TALENT:교제중 == 1 || TALENT:결혼함 == 1 && RAND:10 > 4) && TALENT:비처녀 == 1
+		IF (TALENT:거유 == 1 || TALENT:폭유 == 1) && RAND:10 > 6
+			CFLAG:맨션행동 = 700
+		ELSE
+			CFLAG:맨션행동 = 500+((RAND:3)*10)
+		ENDIF
+	ELSEIF !RAND:3
+		CFLAG:맨션행동 = 50+RAND:3
+	ELSEIF !RAND:2
+		CFLAG:맨션행동 = 0
+	ELSE
+		CFLAG:맨션행동 = 100
+	ENDIF
+ENDIF
+
+SIF TALENT:임신 != 0
+	CFLAG:맨션행동 = 0
+
+CFLAG:맨션행동고정난수 = RAND:10
+
+;-------------------------------------------------
+;  盗撮
+;-------------------------------------------------
+@C_M_CAMERA(ARG:1)
+#DIM L_I
+#DIM L_BUG
+
+
+FLAG:화상_애니메이션1 = 0
+FLAG:화상_애니메이션2 = 0
+
+
+
+L_BUG = TARGET
+
+TARGET = ARG:1
+
+
+;CFLAG:맨션행동 == 100
+
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+CALL C_PICTURE_M(ARG:1)
+CALL PRINT_LABEL(@"{CFLAG:マンションID}호실")
+CALL PRINT_LABEL("주민",,,CALLNAME)
+PRINTL
+DRAWLINE
+IF FLAG:時間帯 == 0
+	IF CFLAG:맨션행동 == 999
+	ELSEIF CFLAG:맨션행동 == 100
+	;睡眠
+		PRINTFORML 방에 빛이 들어오지 않고, 조용하다.
+		PRINTFORML %타겟은% 침대에서 작은 숨소리를 내며 자고 있다…….
+	ELSEIF CFLAG:맨션행동 == 52
+	;読書
+		PRINTFORML 침대에 걸터앉아 독서를 하고 있다. 관심 깊은 것인지 열심히 탐독하고 있다…….
+		PRINTFORML 진행상황을 보아하니 막 읽기 시작했을 것이다. 당분간은 계속 읽고 있을 것이다…….
+	ELSEIF CFLAG:맨션행동 == 51
+	;お風呂上り
+		PRINTFORML 카메라를 들여다 보자 타월을 몸에 두른 %타겟이% 보인다. 아무래도 목욕을 끝낸 참인 듯 하다.
+		PRINTFORML 살짝 김을 내뿜는 달아오른 몸을 너무나 요염하게, 그 보드라운 피부를 북돋우고 있다…….
+	ELSEIF CFLAG:맨션행동 == 50
+	;パソコン
+		PRINTFORML 딱히 할 일이 없다는 듯, 심심풀이인지 웹 서핑이라도 하는 것 같다.
+		PRINTFORML 그 외에는 딱히 볼거리가 없다.
+	ELSEIF CFLAG:맨션행동 == 0
+	;留守
+		PRINTFORML 아무도 없다…….
+		PRINTFORML 아무래도 외출 중인 모양이다…….
+	ENDIF
+ELSE
+	IF CFLAG:맨션행동 == 999
+	ELSEIF CFLAG:맨션행동 == 700
+	;パイズリ
+		IF TALENT:ＮＴＬ == 1
+		;ＮＴＬ
+			PRINTFORML %타겟이% 남편의 육봉을 풍만한 가슴으로 감싸고 %CALLNAME:MASTER%에게 길들여진 움직임으로 봉사하고 있다.
+			PRINTFORML 아무래도 %타겟이% 남편과의 성행위를 싫어하게 되어 대신 가슴으로 봉사하게 된 듯하다.
+			PRINTFORML 능숙한 봉사와 부드럽고 큰 잘 여문 그 가슴에 의한 봉사로, %CALLNAME%의 남편은 이미 몇번이고
+			PRINTFORML 사정했는지 대량의 백탁액을 가슴골 안에 넘치게 하고 있지만 그럼에도 봉사를 그만둘 생각은 없고
+			PRINTFORML %타겟은% 남편이 관계를 강요하지 않도록 이번 봉사로 철저히 정액을 짜낼 작정인 것 같다…….
+		ELSE
+			PRINTFORML %타겟이% 남자의 육봉을 풍만한 가슴으로 요염하게 봉사하고 있다.
+			PRINTFORML 상하로 움직이거나 손에 준 힘을 조절할 때마다, 잘 여문 그 가슴의 형태가 변해간다.
+			PRINTFORML 가슴골을 자세히 보면 이미 사정했는지, 대량의 백탁액이 가슴골 안에서 넘치고 있다…….
+		ENDIF
+	ELSEIF CFLAG:맨션행동 == 520
+	;騎乗位
+		IF TALENT:ＮＴＬ == 1
+		;ＮＴＬ
+			PRINTFORML 남편이 어떻게든 간청해서인지 %타겟은% 불만스러우면서도 어쩔 수 없다는 듯 남편 위에 올라타
+			PRINTFORML 되도록 빨리 끝내려는 생각인지, 남편의 페니스를 뿌리까지 물어 격하게 허리를 상하로 움직여
+			PRINTFORML 빨리빨리 사정시켜 만족시키려는 속셈인 것 같다…….
+		ELSE
+			PRINTFORML %타겟이% 남자의 위에 올라타, 비소에 페니스를 물고 크게 허리를 흔들고 있다.
+		ENDIF
+	ELSEIF CFLAG:맨션행동 == 510
+	;後背位
+		IF TALENT:ＮＴＬ == 1
+		;ＮＴＬ
+			PRINTFORML 엎드린 %타겟을%, 남편이 격하게 허리를 흔들며 범하고 있지만 그 신음소리는
+			PRINTFORML 어딘가 어색한 기색으로, %타겟은% 무의식 중에 %마스터와%의 성행위와
+			PRINTFORML 비교가 되는지 갈 수 없는 안타까운 쾌감에 만족하지 못하고 있는 것 같다…….
+		ELSE
+			PRINTFORML 엎드린 %타겟을%, 남자가 격하게 허리를 흔들며 범하고 있다.
+		ENDIF
+	ELSEIF CFLAG:맨션행동 == 500
+	;正常位
+		IF TALENT:ＮＴＬ == 1
+		;ＮＴＬ
+			PRINTFORML 남편에게 덮쳐져, %타겟이% 범해져 신음을 내고 있다.
+			PRINTFORML 그러나 그 소리는 부자연스러울 정도로 커 %CALLNAME:MASTER%에게는 연기처럼 보인다.
+			PRINTFORML 아무래도 %타겟은% %마스터와%의 격렬한 성행위에 길들여진 것인지
+			PRINTFORML 남편과의 행위로는 만족할 수 없게 된 것 같다…….
+		ELSE
+			PRINTFORML 남자에게 덮쳐져, %타겟이% 범해져 신음을 내고 있다.
+		ENDIF
+	ELSEIF CFLAG:맨션행동 == 100
+	;睡眠
+		PRINTFORML 방에 빛이 들어오지 않고, 조용하다.
+		PRINTFORML %타겟은% 침대에서 작은 숨소리를 내며 자고 있다…….
+	ELSEIF CFLAG:맨션행동 == 52
+	;読書
+		PRINTFORML 침대에 걸터앉아 독서를 하고 있다. 관심 깊은 것인지 열심히 탐독하고 있다…….
+		PRINTFORML 진행상황을 보아하니 막 읽기 시작했을 것이다. 당분간은 계속 읽고 있을 것이다…….
+	ELSEIF CFLAG:맨션행동 == 51
+	;お風呂上り
+		PRINTFORML 카메라를 들여다 보자 타월을 몸에 두른 %타겟이% 보인다. 아무래도 목욕을 끝낸 참인 듯 하다.
+		PRINTFORML 살짝 김을 내뿜는 달아오른 몸을 너무나 요염하게, 그 보드라운 피부를 북돋우고 있다…….
+	ELSEIF CFLAG:맨션행동 == 50
+	;パソコン
+		PRINTFORML 딱히 할 일이 없다는 듯, 심심풀이인지 웹 서핑이라도 하는 것 같다.
+		PRINTFORML 그 외에는 딱히 볼거리가 없다.
+	ELSEIF CFLAG:맨션행동 == 0
+	;留守
+		PRINTFORML 아무도 없다…….
+		PRINTFORML 아무래도 외출 중인 모양이다…….
+	ENDIF
+ENDIF
+
+
+
+
+
+SIF CFLAG:맨션행동 >= 500 && CFLAG:맨션행동 <= 699
+	CALL C_M_CAMERA_H(ARG:1)
+
+DRAWLINE
+PRINTFORML  [0] 종료
+SETCOLOR 0,0,0
+	TINPUT 100, 100, 1
+RESETCOLOR
+IF RESULT == 0
+ELSEIF RESULT == 100
+	FLAG:5900 += 1
+	SIF FLAG:화상_애니메이션2 == 0
+		FLAG:화상_애니메이션1 += 1
+	SIF FLAG:화상_애니메이션2 == 1
+		FLAG:화상_애니메이션1 -= 2
+	SIF FLAG:화상_애니메이션1 == 4
+		FLAG:화상_애니메이션2 = 1
+	SIF FLAG:화상_애니메이션1 == 0
+		FLAG:화상_애니메이션2 = 0
+
+	SIF FLAG:5900 >= 3
+		FLAG:5900 = 0
+	GOTO INPUT_LOOP
+ENDIF
+
+
+IF  CFLAG:맨션경험획득 == 0 && CFLAG:맨션행동 >= 500 && CFLAG:맨션행동 <= 700 
+	CLEARLINE LINECOUNT
+	SIF CSTR:첫섹스상대명 == ""
+		CSTR:첫섹스상대명 = %CSTR:恋人名前%
+	SIF CSTR:첫키스상대명 == "" 
+		CSTR:첫키스상대명 = %CSTR:恋人名前%
+	SIF CSTR:첫정음상대명 =="" 
+		CSTR:첫정음상대명 = %CSTR:恋人名前%
+	SIF CSTR:첫펠라상대명 ==""
+		CSTR:첫펠라상대명 = %CSTR:恋人名前%
+	SIF CSTR:첫A섹스상대명 ==""
+		CSTR:첫A섹스상대명 = %CSTR:恋人名前%
+	SIF CSTR:첫절정상대명 ==""
+		CSTR:첫절정상대명 = %CSTR:恋人名前%
+	SIF CSTR:첫질사상대명 ==""
+		CSTR:첫질사상대명 = %CSTR:恋人名前%
+	TALENT:비처녀 = 1
+	TALENT:Ａ비처녀 = 1
+	TCVAR:履歴_EXP_処女喪失 = 1
+	TCVAR:履歴_EXP_Ａ処女喪失 = 1
+	CALL JN_SEX_EXP
+	CFLAG:맨션경험획득 = 1
+	PRINTFORMW
+ENDIF
+
+TARGET = L_BUG
+
+
+;-------------------------------------------------
+;에로상세
+;-------------------------------------------------
+@C_M_CAMERA_H(ARG:1)
+#DIMS L_NAME
+
+
+IF TALENT:결혼함 == 1
+	L_NAME = 남편
+ELSEIF TALENT:교제중 == 1
+	L_NAME = 연인
+ELSE
+	L_NAME = 남성
+ENDIF
+
+
+IF CFLAG:맨션행동고정난수 == 9
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 8
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 7
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 6
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 5
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 4
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 3
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 2
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 1
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF CFLAG:맨션행동고정난수 == 0
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ENDIF
+
+
+
+
+
+
+
+
+

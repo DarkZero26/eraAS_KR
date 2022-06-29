@@ -1,0 +1,22 @@
+﻿;-------------------------------------------------
+;ロイガー
+;日替わり区画専用ボス
+;-------------------------------------------------
+@ENEMY_7(L_STATUS , LS_STATUS)
+#DIM REF L_STATUS
+#DIMS REF LS_STATUS
+#DIM TEMP
+
+LS_STATUS:CON_敵_NAME = Lloiga
+TEMP = FLAG:日替わり区画難易度 * 10
+
+L_STATUS:CON_敵_EB = 10 + TEMP
+L_STATUS:CON_敵_HP = TEMP * 3 + 30
+L_STATUS:CON_敵_ATK = TEMP * 2
+L_STATUS:CON_敵_DEF = TEMP * 2
+L_STATUS:CON_敵_HIT = TEMP * 2
+L_STATUS:CON_敵_SPD = TEMP * 2
+L_STATUS:CON_敵_弱点 = 2
+L_STATUS:CON_敵_耐性 = 1
+L_STATUS:CON_敵_レア = 1
+RETURN

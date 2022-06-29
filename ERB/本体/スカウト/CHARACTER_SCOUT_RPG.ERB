@@ -1,0 +1,284 @@
+﻿;-------------------------------------------------
+;スカウト時の戦闘能力
+;-------------------------------------------------
+; Input:
+;  ARGS					対象値
+; Output:
+;  RETURNF				位置
+;-------------------------------------------------
+@CHARACTER_SCOUT_RPG(ARG:0)
+#DIM L_I
+#DIM L_HP
+#DIM L_SP
+#DIM L_ATK
+#DIM L_DEF
+#DIM L_HIT
+#DIM L_SPD
+#DIM L_LUK
+#DIM L_BRE
+#DIM L_SBP
+#DIM L_SLO
+#DIM L_SLU
+
+L_I = ARG:0
+L_SBP = 0
+
+
+IF CFLAG:L_I:주민_종족 == 13
+;ニア
+	L_HP = 300
+	L_SP = 300
+	L_ATK = 40
+	L_DEF = 40
+	L_HIT = 40
+	L_SPD = 40
+	L_LUK = 30
+	L_BRE = 2000
+ELSEIF CFLAG:L_I:주민_종족 == 12
+;吸血오니
+	L_HP = 50
+	L_SP = 60
+	L_ATK = 70
+	L_DEF = 35
+	L_HIT = 60
+	L_SPD = 70
+	L_LUK = 5
+	L_BRE = 100
+ELSEIF CFLAG:L_I:주민_종족 == 11
+;정령
+	L_HP = 25
+	L_SP = 25
+	L_ATK = 10
+	L_DEF = 10
+	L_HIT = 50
+	L_SPD = 60
+	L_LUK = 70
+	L_BRE = 0
+ELSEIF CFLAG:L_I:주민_종족 == 10
+;오니
+	L_HP = 60
+	L_SP = 60
+	L_ATK = 80
+	L_DEF = 80
+	L_HIT = 5
+	L_SPD = 5
+	L_LUK = 5
+	L_BRE = 0
+ELSEIF CFLAG:L_I:주민_종족 == 9
+;조인
+	L_HP = 15
+	L_SP = 50
+	L_ATK = 15
+	L_DEF = 10
+	L_HIT = 30
+	L_SPD = 80
+	L_LUK = 10
+	L_BRE = 0
+ELSEIF CFLAG:L_I:주민_종족 == 8
+;해인
+	L_HP = 30
+	L_SP = 40
+	L_ATK = 25
+	L_DEF = 40
+	L_HIT = 50
+	L_SPD = 50
+	L_LUK = 30
+	L_BRE = 50
+ELSEIF CFLAG:L_I:주민_종족 == 7
+;이스
+	L_HP = 2
+	L_SP = 2
+	L_ATK = 80
+	L_DEF = 80
+	L_HIT = 5
+	L_SPD = 60
+	L_LUK = 5
+	L_BRE = 200
+ELSEIF CFLAG:L_I:주민_종족 == 6
+;용인
+	L_HP = 80
+	L_SP = 80
+	L_ATK = 60
+	L_DEF = 60
+	L_HIT = 40
+	L_SPD = 60
+	L_LUK = 20
+	L_BRE = 50
+ELSEIF CFLAG:L_I:주민_종족 == 5
+;천사
+	L_HP = 30
+	L_SP = 30
+	L_ATK = 20
+	L_DEF = 20
+	L_HIT = 25
+	L_SPD = 25
+	L_LUK = 50
+	L_BRE = 0
+ELSEIF CFLAG:L_I:주민_종족 == 4
+;오토마타
+	L_HP = 30
+	L_SP = 30
+	L_ATK = 30
+	L_DEF = 40
+	L_HIT = 30
+	L_SPD = 30
+	L_LUK = 10
+	L_BRE = 0
+ELSEIF CFLAG:L_I:주민_종족 == 3
+;아인
+	L_HP = 50
+	L_SP = 50
+	L_ATK = 25
+	L_DEF = 25
+	L_HIT = 10
+	L_SPD = 35
+	L_LUK = 5
+	L_BRE = 0
+ELSEIF CFLAG:L_I:주민_종족 == 2
+;야마
+	L_HP = 20
+	L_SP = 40
+	L_ATK = 25
+	L_DEF = 25
+	L_HIT = 20
+	L_SPD = 30
+	L_LUK = 10
+	L_BRE = 30
+ELSEIF CFLAG:L_I:주민_종족 == 1
+;엘프
+	L_HP = 10
+	L_SP = 30
+	L_ATK = 5
+	L_DEF = 5
+	L_HIT = 40
+	L_SPD = 40
+	L_LUK = 10
+	L_BRE = 60
+ELSE
+;인간
+	L_HP = 35
+	L_SP = 35
+	L_ATK = 20
+	L_DEF = 20
+	L_HIT = 20
+	L_SPD = 50
+	L_LUK = 20
+	L_BRE = 0
+ENDIF
+
+
+
+
+
+SIF TALENT:L_I:「시스터」== 1
+	L_SBP += 10+(RAND:10)
+
+SIF TALENT:L_I:「뮤추얼」== 1
+	L_SBP += 20+(RAND:20)
+	
+IF RAND:100 >= 97 && FLAG:범용변수 == 52
+	TALENT:L_I:돌연변이 = 1
+	L_SBP += 10+(RAND:10)
+ENDIF
+
+IF RAND:100 >= 97 && FLAG:범용변수 == 52
+	TALENT:L_I:선조회귀 = 1
+	L_SBP += 10+(RAND:10)
+ENDIF
+
+SIF Flag:都市_裏社会 >= 999
+	Flag:都市_裏社会 = 999
+SIF Flag:都市_表社会  >= 999
+	Flag:都市_表社会  = 999
+
+L_SLO = (Flag:都市_表社会)/10
+L_SLU = (Flag:都市_裏社会)/25
+
+SIF  Flag:喫茶店_補正値 >= 1
+	L_SBP += (Flag:喫茶店_補正値)*2
+
+CFlag:L_I:주민_최대체력 = (RAND:20)+L_HP+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLO
+CFlag:L_I:주민_현재체력 = CFlag:L_I:주민_최대체력
+CFlag:L_I:주민_최대기력 = (RAND:20)+L_SP+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLO
+CFlag:L_I:주민_현재기력 = CFlag:L_I:주민_최대기력
+CFlag:L_I:주민_SAN      = (RAND:40)+40+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP
+CFlag:L_I:주민_GUTS     = (RAND:40)+40+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP
+CFlag:L_I:주민_BRAVE    = (RAND:40)+40+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP
+
+CFlag:L_I:주민_ATK      = (RAND:20)+L_ATK+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLU
+CFlag:L_I:주민_DEF      = (RAND:20)+L_DEF+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLU
+CFlag:L_I:주민_HIT      = (RAND:20)+L_HIT+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLU
+CFlag:L_I:주민_SPD      = (RAND:20)+L_SPD+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLU
+CFlag:L_I:주민_LUK      = (RAND:20)+L_LUK+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+(L_SLU/2)
+CFlag:L_I:주민_최대BRE  = L_BRE+(RAND:(Flag:イベントキャラ特別補正+1))+L_SBP+L_SLO
+CFlag:L_I:주민_현재BRE  = CFlag:L_I:주민_최대BRE
+
+
+CFlag:L_I:주민_技能ポイント = 200
+
+CSTR:L_I:주민_M兵装_名前 = メイン兵装
+CFlag:L_I:주민_M兵装ダ이스 = 2
+CFlag:L_I:주민_M兵装데미지 = 3
+CFlag:L_I:주민_M兵装ボーナス = 2
+CFlag:L_I:주민_M兵装숙련도 = 1
+
+CSTR:L_I:주민_S兵装_名前 = サブ兵装
+CFlag:L_I:주민_S兵装ダ이스 = 1
+CFlag:L_I:주민_S兵装데미지 = 3
+CFlag:L_I:주민_S兵装ボーナス = 1
+CFlag:L_I:주민_S兵装숙련도 = 1
+
+
+;必要ならフラグで制御
+;IF FLAG:兵装ランダム
+	CFlag:L_I:주민_M兵装 = RAND:5
+	CSTR:L_I:주민_M兵装_名前 = %ランダム兵装名(CFlag:L_I:주민_M兵装)%
+	CFlag:L_I:주민_S兵装 = RAND:5
+	CSTR:L_I:주민_S兵装_名前 = %ランダム兵装名(CFlag:L_I:주민_S兵装)%
+;ENDIF
+
+@ランダム兵装名(ARG)
+#FUNCTIONS
+#DIM T_R
+
+T_R = RESULT 
+VARSET LOCALS
+SELECTCASE ARG
+	CASE 0
+		;体術
+		SPLIT "가라데/유술/골법/호신술/스모/쿵후/복싱/무에타이/코만도삼보/카포에라/시스테마/태권도/크라브・마가/비공술/투기술/수용신권/건틀릿/갈고리/통파/너클더스터", "/", LOCALS
+		LOCAL = RAND:RESULT
+	CASE 1
+		;刀剣
+		SPLIT "나이프/햇챗/일본도/롱소드/세이버/레이피어/한손검/양손검/손도끼/양손도끼/전투도끼/토마호크/프랑키스카/바디시/창/숏스피어/재블린/랜스/할버드/사슬낫/대낫/나기나타/나가마키/미늘창/전투창/유엽도/물결창/청룡언월도/방천화극/전기톱/드릴/고주파블레이드", "/", LOCALS
+		LOCAL = RAND:RESULT
+	CASE 2
+		;鈍器
+		SPLIT "곤봉/짓테/메이스/통나무/쌍절곤/프레일/모닝스타/칠절곤/채찍/가죽채찍/사슬/쇠메/슬레지해머/워해머/곡괭이/장술/봉술/투석/슬링샷/바렛크로스보우/삽/빗자루/대걸레/빠루같은무언가/요요/부메랑", "/", LOCALS
+		LOCAL = RAND:RESULT
+	CASE 3
+		;銃器
+		SPLIT "권총/리볼버/산탄총/기관단총/경기관총/바람총/돌격소총/저격소총/대물소총/못총/코일건/수류탄/투척용나이프/수리검/쇠뇌/단궁/화궁/장궁/컴포지드보우/컴파운드보우/양궁/에어소프트건/플랒즈마건/쇼커/프리저", "/", LOCALS
+		LOCAL = RAND:RESULT
+	CASE 4
+		;魔術
+		SPLIT "화염마법/수마법/얼음마법/흙마법/바람마법/전기마법/소리마법/광마법/독마법/흑마술/백마술/고대마술/자연마술/정령마술/정신마술/시간마술/공간마술/조령술/룬마법/수비술/마안/소환마술", "/", LOCALS
+		LOCAL = RAND:RESULT
+	CASEELSE
+		LOCALS = 兵装
+		LOCAL = 0
+ENDSELECT
+
+RESULT = T_R
+RETURNF LOCALS:LOCAL
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,21 @@
+﻿;敵パラメータ読み込み配列添字
+#DIM CONST CON_敵_HP = 0 ;最終HP=HP+RAND:(MAX(1,HP/2))
+#DIM CONST CON_敵_ATK = 1;ATK=ATK+RAND:(MAX(1,ATK/2));
+#DIM CONST CON_敵_DEF = 2;DEF=DEF+RAND:(MAX(1,DEF/2))
+#DIM CONST CON_敵_HIT = 3;HIT=HIT+RAND:(MAX(1,HIT/2))
+#DIM CONST CON_敵_SPD = 4;SPD=SPD+RAND:(MAX(1,SPD/2))
+#DIM CONST CON_敵_LUK = 5;
+#DIM CONST CON_敵_EB = 6  ;獲得경험치
+#DIM CONST CON_敵_主兵装 = 7;M兵装のダ이스ID。初期値にコモンダ이스が入っている
+#DIM CONST CON_敵_副兵装 = 8;S兵装のダ이스ID。初期値にコモンダ이스が入っている
+#DIM CONST CON_敵_レア = 9;유니크フラグ。非0で유니크敵になる
+#DIM CONST CON_敵_弱点 = 10;弱点属性
+#DIM CONST CON_敵_耐性 = 11;耐性を持つ属性
+#DIM CONST CON_敵_逃走確定 = 12;このフラグがあるとプレイヤー側が確定で逃げられる。逃走可能かどうかは@RPG_BATTLEの引数で定義する
+#DIM CONST CON_敵_逃走企図 = 13;このフラグがあると敵が逃走を試みる。25なら25%の確率で逃走
+
+;敵パラメータ読み込み配列添字(文字列)
+#DIM CONST CON_敵_NAME = 0
+
+;汎用ダ이스持ちがLv2ダ이스を使い始める深度
+#DIM CONST DICE_LVUP_FLOOR = 0 , 100;この深度から確定で上位モデルのダ이스を使う

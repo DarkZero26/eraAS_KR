@@ -1,0 +1,189 @@
+﻿;-------------------------------------------------
+;시설　훈련장
+;教官1人、生徒4人まで
+;ただし変数上はCFLAG:훈련장関係者を持つ者が5人いる
+;-------------------------------------------------
+@CITY_F_56
+#DIM CONST L_훈련장 = 56
+#DIM STU , 5;生徒の登録番号が入る
+#DIM STUCNT
+#DIM CNT
+#DIM EC , 5;生徒の必要とする경험치を格納
+#DIM INST
+#DIM L_INPUT
+#DIM L_C_ID
+
+VARSET STU , -1
+VARSET EC
+STUCNT = 0
+INST = F56_GET_INST()
+CLEARLINE LINECOUNT
+
+;훈련장関係者、教官を検索
+FOR CNT , 1 , CHARANUM
+	IF CFLAG:CNT:훈련장関係者 == 1
+		STU:STUCNT = CNT
+		STUCNT++
+		SIF STUCNT == 5
+			BREAK
+	ENDIF
+NEXT
+DRAWLINE
+PRINTL 훈련장
+DRAWLINE
+PRINTFORML 주민에게 전투훈련을 실시합니다.
+PRINTFORML 훈련생은 능력이 상승할 기회가 있습니다.
+DRAWLINE
+IF INST >= 0
+	PRINTFORML 교관：%CALLNAME:INST , 16 , LEFT%[소지경험치：{CFLAG:INST:주민_경험치}]
+	PRINTFORML % "　" * 11%[ATK:{CFLAG:INST:주민_ATK , 8 , LEFT}DEF:{CFLAG:INST:주민_DEF , 8 , LEFT}　HIT:{CFLAG:INST:주민_HIT , 8 , LEFT}　SPD:{CFLAG:INST:주민_SPD , 8 , LEFT}]
+	PRINTL  
+	PRINTFORML 교관으로 임명된 주민의 경험치를 사용해, 훈련생의 능력향상을 노립니다.
+	PRINTFORML 훈련 성공 여부는 교관의 능력을 따릅니다. 전투능력이 뛰어난 주민을 지정해주세요.
+	PRINTFORML 성공 여부에 관계없이 소정의 경험치가 공제됩니다.
+ELSE
+	PRINTL 교관：(교관을 외부에서 초빙합니다. 훈련생 1명 당 자금 20000 이 필요헙니다.)
+	PRINTL  
+	PRINTL 외부 교관을 고용합니다. 성공 확률은 주민의 현재 능력에 관계없이 30%입니다.
+	PRINTL 높은 능력을 가진 주민이라도 결과를 기대할 수 있습니다.
+	PRINTL 성공 여부에 관계없이 소정의 비용이 소비됩니다.
+ENDIF
+DRAWLINE
+IF INST >= 0
+	FOR CNT , 0 , 5
+		;훈련장関係者フラグがあっても教官役は除外する
+		IF STU:CNT > 0
+			SIF CFLAG:(STU:CNT):訓練_教官
+				CONTINUE
+			EC:CNT = F56_CALC_ECOST(F56_HEIKIN_ABL(STU:CNT) , F56_HEIKIN_ABL(INST))
+			PRINTFORML 학생：%CALLNAME:(STU:CNT) , 16 , LEFT%[필요경험치：{EC:CNT}]
+			PRINTFORML % "　" * 11%[ATK:{F56_POSSIB("ATK" , INST , STU:CNT) , 4 , RIGHT}％　DEF:{F56_POSSIB("DEF" , INST , STU:CNT) , 4 , RIGHT}％　HIT:{F56_POSSIB("HIT" , INST , STU:CNT) , 4 , RIGHT}％　SPD:{F56_POSSIB("SPD" , INST , STU:CNT) , 4 , RIGHT}％]
+		ELSE
+			PRINTL 학생：(부재)
+		ENDIF
+	NEXT
+ELSE
+	FOR CNT , 0 , 4
+		IF STU:CNT > 0
+			PRINTFORML 학생：%CALLNAME:(STU:CNT) , 16 , LEFT%
+		ELSE
+			PRINTFORML 학생：（부재）
+		ENDIF
+	NEXT
+ENDIF
+DRAWLINE
+
+IF INST >= 0
+	PRINTFORML 필요경험치：{SUMARRAY(EC)}
+	PRINTFORML 어디까지나 기준입니다. 실제 필요량은 향상되는 능력에 따라 변동됩니다.
+ELSE
+	PRINTFORML 필요자금 소계：{STUCNT * 20000}
+ENDIF
+
+DRAWLINE
+PRINTL [3] 교관임명
+PRINTL [2] 학생등록
+PRINTL [1] 해제
+PRINTL  
+PRINTL [0] 돌아간다
+
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+	CASE 3 , 2 , 1
+		;훈련장関係者を増やす
+		;@CITY_FACILITY_ORDER(L_FACI_ID)からコピペ
+		$LOOP_INPUT2
+		;STUCNTを更新
+		STUCNT = 0
+		FOR CNT , 1 , CHARANUM
+			SIF CFLAG:CNT:훈련장関係者
+				STUCNT++
+		NEXT
+		CLEARLINE LINECOUNT
+		DRAWLINE
+		IF L_INPUT == 3
+			PRINTL 교관으로 임명할 주민을 선택해주세요.
+		ELSEIF L_INPUT == 2
+			PRINTL 훈련받을 주민을 선택해주세요.
+		ELSE
+			PRINTL 등록 해제할 주민을 선택해주세요.
+		ENDIF
+		DRAWLINE
+		CALL LIST_CHARA("시설配属")
+		L_C_ID = RESULT
+		IF L_C_ID == 1000
+			RESTART
+		ELSEIF !INRANGE(L_C_ID, 0, CHARANUM - 1)
+			PRINTFORMW 입력된 번호는 캐릭터 범위 외입니다.
+			GOTO LOOP_INPUT2
+		ELSEIF L_C_ID == 0
+			PRINTFORMW 당신은 선택할 수 없습니다.
+			GOTO LOOP_INPUT2
+		ELSEIF TALENT:L_C_ID:비전투원 == 1
+			PRINTFORMW 비전투원은 선택할 수 없습니다.
+			GOTO LOOP_INPUT2
+		ENDIF
+		
+		IF L_INPUT == 1
+			CALL FACILITY_CHARA_REMOVE(L_C_ID)
+			;教官なら教官フラグも消す
+			SIF CFLAG:L_C_ID:訓練_教官
+				CFLAG:L_C_ID:訓練_教官 = 0
+			GOTO LOOP_INPUT2
+		ELSEIF L_INPUT == 2 || L_INPUT == 3
+			;教官任命で、すでに훈련장関係者だが教官フラグがない場合
+			IF L_INPUT == 3 && CFLAG:L_C_ID:훈련장関係者 && CFLAG:L_C_ID:訓練_教官 == 0
+				CALL F56_SET_INST(L_C_ID)
+				GOTO LOOP_INPUT2
+			ENDIF
+			IF L_INPUT == 2 && STUCNT == 4 && INST == -1
+				;生徒選択、かつ훈련장関係者がまだ４人でも教官がいないなら終了
+				PRINTFORMW 학생은 4명까지 배속할 수 있습니다.
+				GOTO LOOP_INPUT2
+			ENDIF
+			IF STUCNT >= 5
+				PRINTFORMW 5명까지 배속할 수 있습니다.
+				GOTO LOOP_INPUT2
+			ENDIF
+
+			CALL FACILITY_CHARA_SET(L_C_ID, L_훈련장)
+
+			;教官任命なら教官フラグ立て。既に教官がいるなら関数内でそっちを解任
+			SIF L_INPUT == 3
+				CALL F56_SET_INST(L_C_ID)
+			GOTO LOOP_INPUT2
+		ENDIF
+		
+ENDSELECT
+
+;INST=INSTRUCTOR
+;教官フラグが立っているキャラを検索して返す
+;부재なら-1
+@F56_GET_INST
+#FUNCTION
+#DIM CNT
+FOR CNT , 0 , CHARANUM
+	SIF CFLAG:CNT:訓練_教官
+		RETURNF CNT
+NEXT
+RETURNF -1
+
+
+;教官フラグをセット。前任者がいるなら同時に抹消する
+@F56_SET_INST(TRGT = -1)
+#DIM TRGT
+#DIM TEMP
+TEMP = F56_GET_INST()
+SIF TEMP > 0
+	CFLAG:TEMP:訓練_教官 = 0
+CFLAG:TRGT:訓練_教官 = 1
+RETURN 1
+
+
+;TRGTのATK、DEF、HIT、SPDの平均値を出す式中間数
+@F56_HEIKIN_ABL(TRGT = -1)
+#FUNCTION
+#DIM TRGT
+RETURNF (CFLAG:TRGT:주민_ATK + CFLAG:TRGT:주민_DEF + CFLAG:TRGT:주민_HIT + CFLAG:TRGT:주민_SPD) / 4

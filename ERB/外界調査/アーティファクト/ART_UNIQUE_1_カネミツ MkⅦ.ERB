@@ -1,0 +1,74 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;1は유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_1_NAME
+RESULTS = 『단강』카네미츠 Mk-Ⅶ
+RETURN
+
+
+@ART_UNIQUE_1_ABLE
+;複数入手は不可
+SIF RPG_ARTIFACT_COUNTUNIQUE(1)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_1_RANK
+RETURN 50
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_1_ATK
+RETURN 155
+
+
+@ART_UNIQUE_1_DEF
+RETURN 20
+
+
+@ART_UNIQUE_1_HIT
+RETURN 130
+
+
+@ART_UNIQUE_1_SPD
+RETURN 80
+
+
+@ART_UNIQUE_1_LUK
+RETURN 3
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_1_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_1_ABILITY
+RETURN 3
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_1_MADEIN
+RETURN 0
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(3個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_1_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 태고로부터 존재했던 『비젠 나가후네(備前長船)』라고 불린 검을 근현대의 기술로 복원하는 것을 목적으로 만들어낸 일품.
+EXPL:1 = 이름대로 제 7세대의 제품으로 새롭게 셀 모터 입자 분해기를 내장, 참으로 뛰어난 손맛을 자랑한다.
+EXPL:2 = 외적 습격으로 인해 제조 공장과 관계자가 소실, 제조법도 소실되어버렸다고 전해진다.
+EXPL:3 = 
+EXPL:4 = 
+RETURN 1

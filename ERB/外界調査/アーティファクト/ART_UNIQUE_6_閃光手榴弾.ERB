@@ -1,0 +1,77 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;6は유니크アーティファクトのIDで置き換える。1以上にすること
+
+;ART_EFFECT_7「閃光」のテスト目的
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_6_NAME
+RESULTS = 『충격』섬광수류탄
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_6_ABLE
+SIF RPG_ARTIFACT_COUNTUNIQUE(6)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_6_RANK
+RETURN 30
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_6_ATK
+RETURN 50
+
+
+@ART_UNIQUE_6_DEF
+RETURN 45
+
+
+@ART_UNIQUE_6_HIT
+RETURN 30
+
+
+@ART_UNIQUE_6_SPD
+RETURN 50
+
+
+@ART_UNIQUE_6_LUK
+RETURN 60
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_6_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_6_ABILITY
+RETURN 7
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_6_MADEIN
+RETURN 5
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_6_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 섬광을 발하여 적의 움직임을 단시간 멈추는 기능을 가진다.
+EXPL:1 = 빛 자체에 지향성이 있는 것 같아 소유자를 폭발에 말려들게 하지 않고 적만을 정확히 노리는 능력이 있다.
+EXPL:2 = 폭발에 지향성을 부여하는 원리도, 피아구분 방법도 불분명해 우리의 지식・기술과는 전혀 다른 접근법으로 제조된 것으로 보인다.
+EXPL:3 = 또한 폭발한 이후에도 아티팩트가 남아 재사용할 수 있기 때문에 『수류탄』이라는 이름은 맞지 않아 개명이 검토되고 있다.
+EXPL:4 = 
+RETURN 1

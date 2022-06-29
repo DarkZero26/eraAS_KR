@@ -1,0 +1,749 @@
+﻿;-------------------------------------------------
+;ターン経過のイベント
+;-------------------------------------------------
+@TURN_EVENT(ARG)
+#DIM L_I
+#DIM L_P
+#DIM L_P2
+#DIM L_TGT_BAK
+
+L_TGT_BAK = TARGET
+L_P2 = 0
+L_I = 0
+
+FLAG:都市_合計팬수数 = SUMCARRAY(CFLAG:팬수の数)
+
+SIF FLAG:유연_연구대상 != 0
+	CALLFORM AL_Branch_{FLAG:유연_연구대상}
+
+FOR L_I, 1, CHARANUM
+	TARGET = L_I
+	ARG =  L_I
+
+	IF TARGET != MASTER  && (TALENT:L_I:NPC != 999)  && TALENT:L_I:부재 == 0 && TALENT:L_I:자원봉사자 == 0  && TALENT:L_I:남성거주자 == 0
+		;陥落ボーナスイベント
+		SIF CFLAG:華燭の典 == 0 && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1)
+			CALL TURN_EVENT_FALL_BONUS
+		CALL TURN_EVENT_NAYAMI_K
+		IF CFLAG:レギュラー != 0
+			CALL TURN_EVENT_NJ
+			;ＡＩ博士の改造イベント
+			SIF (RAND:10000 <= 1 && CFlag:주민_카르마 <= 0) || (Talent:AI전속피험자 == 1 && RAND:2000 <= 1)
+				CALL TURN_EVENT_AIHKS
+			;交流イベント
+			SIF CFLAG:주민交流設定 != 0 && RAND:100 < CFLAG:주민イベント傾向_交流
+				CALL TURN_EVENT_COM
+			CALL TURN_EVENT_MORAL
+			CALL TURN_EVENT_FON
+			CALL TURN_EVENT_F
+			CALL TURN_EVENT_HNYU
+			CALL TURN_EVENT_NTL
+			CALL TURN_EVENT_UWK
+			CALL TURN_EVENT_COMPANY
+			SIF RAND:100 >= 50 && Talent:비처녀 != 0 && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1)
+				CALL TURN_EVENT_KNRK
+		ENDIF
+		CALL TURN_EVENT_TL
+		CALL TURN_EVENT_NAYAMI_K_END
+		CALL TURN_EVENT_NAYAMI
+		SIF RAND:100 >= 95
+			CALL TURN_EVENT_NYM_R
+		SIF CFLAG:임신フラグ != 0
+			CALL NINSIN_MAIN(ARG)
+		;必須イベント(回復等)
+		CALL TURN_EVENT_RPG_P
+		CALL TURN_EVENT_PERSONAL_END
+		CALL TURN_EVENT_CITY_EXP
+	ELSEIF TALENT:L_I:부재 == 1
+		;납치감금
+		SIF CFlag:납치감금 > 0 && FLAG:ＮＴＲモード == 1
+			CALL TURN_EVENT_RPG_RK
+		;交配実験
+		SIF CFlag:交配実験 > 0 && FLAG:ＮＴＲモード == 1
+			CALL TURN_EVENT_RPG_KJ
+	ENDIF
+	IF TALENT:L_I:자원봉사자 == 1
+		CALL TURN_EVENT_VOLUNTEER_1
+	ENDIF
+	IF TALENT:L_I:자원봉사자 != 0 && FLAG:유연_연구대상 != 0 && FLAG:유연_リーダー != 0 && MONEY >= FLAG:유연_비용 && (CFLAG:주민_육체데미지 < 100 || FLAG:유연_정신데미지 < 100)
+		CALL TURN_EVENT_VOLUNTEER
+	ENDIF
+	IF TALENT:L_I:NPC != 0 
+		TRYCALLFORM TURN_EVENT_NPC_{CFlag:NPC番号}(ARG)
+	ENDIF
+NEXT
+CALL TURN_EVENT_CITY_GROWTH
+TARGET = L_TGT_BAK
+
+CALL Unique_Check
+
+IF RAND:100 >= 95 && Flag:都市_Lv >= 10 && FLAG:도시_방위 == 0 && Flag:都市_襲撃 > 1 && Flag:EP他プレイヤー干渉 == 0
+	Flag:EP他プレイヤー干渉 = 1
+	Flag:EP敵戦力 = (RAND:((Flag:都市_Lv)+1))/10
+	Flag:EP敵戦力 = LIMIT(Flag:EP敵戦力, 1, 10)
+ENDIF
+
+IF Flag:EP他プレイヤー干渉 == 3 && FLAG:도시_방위 == 0 && Flag:都市_襲撃 > 1
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	PRINTFORML 타 「플레이어」에게 이 구획에 대한 간섭을 허락해 버린 것 같다…….
+	PRINTFORML 【도시 레벨이 저하되었습니다.】
+	DRAWLINE
+	PRINTFORMW 
+	Flag:都市_Lv -= (Flag:都市_Lv/5)+1
+	Flag:EP他プレイヤー干渉 = 0
+	Flag:EP敵戦力 = 0
+	Flag:EP追撃方法 = 0
+	Flag:EP成否 = 0
+ELSEIF Flag:EP他プレイヤー干渉 != 0 && FLAG:도시_방위 == 0 && Flag:都市_襲撃 > 1
+	Flag:EP他プレイヤー干渉 += 1
+ELSEIF Flag:EP他プレイヤー干渉 != 0 && (FLAG:도시_방위 != 0 || Flag:都市_襲撃 <= 1)
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	PRINTFORML 타 「플레이어」는 외계의 이변을 감지하고 철수한 것 같다…….
+	DRAWLINE
+	PRINTFORMW 
+	Flag:EP他プレイヤー干渉 = 0
+	Flag:EP敵戦力 = 0
+	Flag:EP追撃方法 = 0
+	Flag:EP成否 = 0
+ENDIF
+
+
+SIF RAND:10 > 7
+	Flag:依頼_スパイテロ駆除_Lv = RAND:(Flag:都市_Lv+1)+2
+SIF RAND:10 > 7
+	Flag:依頼_이스からの駆除依頼_Lv = RAND:(Flag:都市_Lv+1)+3
+
+IF FLAG:지원_체력회복지원 == 1 && Flag:도시_현재SP >= 7
+	L_P2 = 6
+	Flag:도시_현재SP -= 7
+ENDIF
+
+Flag:도시_현재AP += Flag:도시_최대AP / (10 - L_P2)
+Flag:도시_현재SP += Flag:도시_최대SP / 2
+Flag:도시_현재TP += Flag:도시_최대TP
+
+
+
+IF RAND:100 > 50
+	Flag:都市_天気 = 0
+ELSE
+	Flag:都市_天気 = RAND:4+1
+ENDIF
+
+SIF Flag:도시_현재AP >= Flag:도시_최대AP
+	Flag:도시_현재AP = Flag:도시_최대AP
+SIF Flag:도시_현재SP >= Flag:도시_최대SP
+	Flag:도시_현재SP = Flag:도시_최대SP
+SIF Flag:도시_현재TP >= Flag:도시_최대TP
+	Flag:도시_현재TP = Flag:도시_최대TP
+
+Flag:도시_최대LP = 50+(Flag:都市_Lv*2)
+
+
+SIF Flag:都市_Lv >= 5 && FLAG:도시_방위 == 0 &&  Flag:都市_襲撃 > 0
+	FLAG:都市_襲撃 -= 1
+
+SIF Flag:都市_Lv >= 5 && FLAG:도시_방위 == 0 &&  Flag:都市_襲撃 <= 0
+	CALL CITY_RID
+
+SIF FLAG:도시_방위 > 0
+	FLAG:도시_방위 -= 1
+	
+IF Flag:都市_Lv >= 5 && FLAG:도시_방위 == 0 && Flag:都市_襲撃 == 0 && FLAG:도시_방위蓄積데미지 >= FLAG:도시_방위成功데미지
+	CALL CITY_RID_B_CLEAR
+ELSEIF Flag:都市_Lv >= 5 && FLAG:도시_방위 == 0 && Flag:都市_襲撃 == 0 && FLAG:도시_방위蓄積데미지 < FLAG:도시_방위成功데미지
+	CALL CITY_RID_B_MISS
+ENDIF
+
+
+IF Flag:都市_週 == 6
+	Flag:都市_週 = 0
+	SIF Flag:도시_방위損壊率 > 0
+		Flag:도시_방위損壊率 -= 2+(RAND:3)
+	SIF Flag:도시_방위損壊率 < 0
+		Flag:도시_방위損壊率 = 0
+ELSE
+	Flag:都市_週 += 1
+ENDIF
+
+
+
+
+SIF  RAND:10 >= 2
+	Flag:都市_裏社会 -= (RAND:10)+((1+Flag:都市_裏社会)/20)
+SIF  RAND:10 >= 2
+	Flag:都市_表社会 -= (RAND:10)+((1+Flag:都市_表社会)/20)
+
+
+
+FLAG:都市_ニュース = RAND:16
+
+IF Flag:都市_今期の締め切り == 0 && Flag:都市_今期の기여도 == 0
+	Flag:都市_今期の締め切り = 90
+	 CALL TURN_EVENT_KSN
+ELSEIF Flag:都市_今期の締め切り == 0
+	CALL TURN_EVENT_KSN
+ELSE
+	Flag:都市_今期の締め切り -= 1
+ENDIF
+
+SIF !RAND:10
+	Flag:도시_공적獲得機会 = 1
+
+
+FLAG:유연_독자판정 = 0
+FLAG:도시_파트너섹스 = 0
+FLAG:都市_ストーリー = RAND:13
+
+Flag:日替わり区画難易度 = ((RAND:(Flag:都市_Lv))/20)+1
+Flag:日替わり区画深度限界 = ((RAND:(Flag:都市_Lv))/10)+20
+SIF Flag:日替わり区画難易度 >= 9
+	Flag:日替わり区画難易度 = 9
+SIF Flag:日替わり区画深度限界 >= 50
+	Flag:日替わり区画深度限界 = 50
+SIF Flag:調査区域 == 90
+	Flag:調査深度 = 0
+
+
+IF FLAG:유연_연구대상 != 0 && FLAG:유연_リーダー != 0
+	FLAG:유연_고정난수 = RAND:101
+	FLAG:(16000+FLAG:유연_연구대상) += 1
+ENDIF
+
+
+
+IF FLAG:あなた_女フラグ != 0
+	SIF CFLAG:MASTER:임신フラグ != 0
+		CALL NINSIN_MAIN(MASTER)
+	IF TALENT:MASTER:수정 == 0 && TALENT:MASTER:임신 == 0
+		CFLAG:MASTER:수정현재내구치 += CFLAG:MASTER:수정최대내구치/10
+		IF CFLAG:MASTER:수정현재내구치 >= CFLAG:MASTER:수정최대내구치
+			CFLAG:MASTER:수정현재내구치 = CFLAG:MASTER:수정최대내구치
+		ENDIF
+	ENDIF
+ENDIF 
+
+;CALL TURN_EVENT_CAFE_CHARA_MAIN
+
+
+;-------------------------------------------------
+;昼夜経過のイベント
+;-------------------------------------------------
+@TURN_EVENT_1(ARG)
+#DIM L_I
+#DIM L_P
+#DIM L_TGT_BAK
+
+L_TGT_BAK = TARGET
+
+L_I = 0
+
+SIF CHARANUM == 1
+	RETURN
+
+$IN_LOOP
+	TARGET = L_I
+	ARG =  L_I
+	IF TARGET != MASTER  
+		CALL C_M_AS(ARG:1)
+		SIF FLAG:도시_현재TP > 0
+			CFLAG:L_I:호감도 += (FLAG:도시_현재TP)*5
+	ENDIF
+	L_I += 1
+	SIF L_I != CHARANUM
+		GOTO IN_LOOP
+TARGET = L_TGT_BAK
+
+Flag:턴조사완료 = 0
+
+
+
+
+
+
+
+
+SIF FLAG:都市_合計팬수数 >= 100000000
+	FLAG:都市_合計팬수数 = 100000000
+	
+Flag:도시_현재TP += Flag:도시_최대TP
+SIF Flag:도시_현재TP >= Flag:도시_최대TP
+	Flag:도시_현재TP = Flag:도시_최대TP
+
+;-------------------------------------------------
+;ターン経過の悩み関連算出
+;-------------------------------------------------
+@TURN_EVENT_NAYAMI_K
+#DIM L_LOOP
+#DIM L_TGT_BAK
+
+L_LOOP = 1
+REPEAT 5
+	IF CFlag:(4000+L_LOOP) == 100 ||CFlag:(4000+L_LOOP) == 101 ||CFlag:(4000+L_LOOP) == 102 ||CFlag:(4000+L_LOOP) == 103 ||CFlag:(4000+L_LOOP) == 105
+		CFlag:주민_悩み金銭絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 202 ||CFlag:(4000+L_LOOP) == 302 ||CFlag:(4000+L_LOOP) == 303 ||CFlag:(4000+L_LOOP) == 500 ||CFlag:(4000+L_LOOP) == 501 ||CFlag:(4000+L_LOOP) == 502 ||CFlag:(4000+L_LOOP) == 600 ||CFlag:(4000+L_LOOP) == 601 ||CFlag:(4000+L_LOOP) == 102 
+		CFlag:주민_悩み対人絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 404 
+		CFlag:주민_悩み勉学絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 304 ||CFlag:(4000+L_LOOP) == 305 
+		CFlag:주민_悩み食生絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 105 ||CFlag:(4000+L_LOOP) == 104 ||CFlag:(4000+L_LOOP) == 400 ||CFlag:(4000+L_LOOP) == 304 ||CFlag:(4000+L_LOOP) == 401 ||CFlag:(4000+L_LOOP) == 402 ||CFlag:(4000+L_LOOP) == 403
+		CFlag:주민_悩み家庭絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 201 ||CFlag:(4000+L_LOOP) == 202 ||CFlag:(4000+L_LOOP) == 203 ||CFlag:(4000+L_LOOP) == 204 ||CFlag:(4000+L_LOOP) == 205 
+		CFlag:주민_悩み恋愛絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 304 ||CFlag:(4000+L_LOOP) == 305 ||CFlag:(4000+L_LOOP) == 204 ||CFlag:(4000+L_LOOP) == 103 
+		CFlag:주민_悩み病絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 500 ||CFlag:(4000+L_LOOP) == 501 ||CFlag:(4000+L_LOOP) == 502 ||CFlag:(4000+L_LOOP) == 503 
+		CFlag:주민_悩み犯罪絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 602 ||CFlag:(4000+L_LOOP) == 603 ||CFlag:(4000+L_LOOP) == 604 ||CFlag:(4000+L_LOOP) == 605
+		CFlag:주민_悩み性的絡み = 1
+	ENDIF
+
+	L_LOOP += 1
+REND
+L_LOOP = 11
+REPEAT 5
+	IF CFlag:(4000+L_LOOP) == 100 ||CFlag:(4000+L_LOOP) == 101 ||CFlag:(4000+L_LOOP) == 102 ||CFlag:(4000+L_LOOP) == 103 ||CFlag:(4000+L_LOOP) == 104||CFlag:(4000+L_LOOP) == 304
+		CFlag:주민_悩み金銭絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 303 
+		CFlag:주민_悩み対人絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 302 || CFlag:(4000+L_LOOP) == 404 
+		CFlag:주민_悩み勉学絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 402 ||CFlag:(4000+L_LOOP) == 405 ||CFlag:(4000+L_LOOP) == 401 
+		CFlag:주민_悩み食生絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 300 ||CFlag:(4000+L_LOOP) == 303 
+		CFlag:주민_悩み家庭絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 200 ||CFlag:(4000+L_LOOP) == 201 ||CFlag:(4000+L_LOOP) == 202 ||CFlag:(4000+L_LOOP) == 203 ||CFlag:(4000+L_LOOP) == 600
+		CFlag:주민_悩み恋愛絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 400 ||CFlag:(4000+L_LOOP) == 401 ||CFlag:(4000+L_LOOP) == 404 ||CFlag:(4000+L_LOOP) == 405 ||CFlag:(4000+L_LOOP) == 406 ||CFlag:(4000+L_LOOP) == 407 
+		CFlag:주민_悩み病絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 500 ||CFlag:(4000+L_LOOP) == 501 ||CFlag:(4000+L_LOOP) == 502 
+		CFlag:주민_悩み犯罪絡み = 1
+	ELSEIF CFlag:(4000+L_LOOP) == 600 ||CFlag:(4000+L_LOOP) == 601 ||CFlag:(4000+L_LOOP) == 202 ||CFlag:(4000+L_LOOP) == 204
+		CFlag:주민_悩み性的絡み = 1
+	ENDIF
+	L_LOOP += 1
+REND
+
+
+;-------------------------------------------------
+;ターン経過の増減＆調整
+;-------------------------------------------------
+@TURN_EVENT_PERSONAL_END
+
+IF TALENT:수정 == 0 && TALENT:임신 == 0
+	CFLAG:수정현재내구치 += CFLAG:수정최대내구치/10
+	IF CFLAG:수정현재내구치 >= CFLAG:수정최대내구치
+		CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+	ENDIF
+ENDIF
+
+CFLAG:맨션경험획득 = 0
+
+CFLAG:子宮精液貯蔵量 -= CFLAG:子宮精液貯蔵量/3
+CFLAG:子宮精液貯蔵量 -= 500
+
+SIF CFLAG:子宮精液貯蔵量 <= 100
+	CFLAG:子宮精液貯蔵量 = 0
+
+IF TALENT:학생 && RAND:3 >= 1
+	CFLAG:주민_業務ポイント += 1
+	IF CFLAG:주민_業務ポイント >= (CFLAG:주민_기여도/2)+3
+		PRINTFORML %타겟은% 업무로 경험을 얻고, 추가적인 공헌을 할 수 있게 되었다.
+		PRINTFORMW 공헌치　【{CFLAG:주민_기여도}→{(CFLAG:주민_기여도)+1}】
+		CFLAG:주민_業務ポイント = 0
+		CFLAG:주민_기여도 += 1
+	ENDIF
+ENDIF
+
+SIF Talent:치안유지국원 != 0
+	CFLAG:주민_경험치 += RAND:3
+
+;ここから調整
+IF Talent:ＮＴＬ == 1 && Talent:미망인 == 1
+	TALENT:ＮＴＬ = 0
+	TALENT:결혼함 = 0
+ENDIF
+
+SIF CFlag:주민_M兵装숙련도 == 0
+	CFlag:주민_M兵装숙련도 = 1
+
+SIF CFlag:주민_S兵装숙련도 == 0
+	CFlag:주민_S兵装숙련도 = 1
+
+
+;-------------------------------------------------
+;ターン経過の悩み関連初期化
+;-------------------------------------------------
+@TURN_EVENT_NAYAMI_K_END
+
+CFlag:주민_悩み金銭絡み = 0
+CFlag:주민_悩み対人絡み = 0
+CFlag:주민_悩み勉学絡み = 0
+CFlag:주민_悩み食生絡み = 0
+CFlag:주민_悩み家庭絡み = 0
+CFlag:주민_悩み恋愛絡み = 0
+CFlag:주민_悩み病絡み = 0
+CFlag:주민_悩み犯罪絡み = 0
+CFlag:주민_悩み性的絡み = 0
+
+;-------------------------------------------------
+;ターン経過のイベントの悩み解決
+;-------------------------------------------------
+@TURN_EVENT_NAYAMI
+#DIM L_SP    ;NPCによる解決サポート
+#DIM L_GET_AP;悩み解決による獲得成長値
+
+IF CFlag:주민_悩み解決判定回数 > 0
+	CFlag:주민_悩み解決判定回数 -= 1
+	CFlag:주민_悩み解決中 += 1
+	CALL VAR_NAYAMI_SET_ASSIST(TARGET)
+ELSEIF CFlag:주민_悩み解決判定回数 == 0 && CFlag:주민_悩み解決中 > 0
+	L_SP = 0
+	IF FLAG:지원_고민해결지원 == 1 && Flag:도시_현재SP >= 4
+	L_SP += (CFlag:주민_悩み解決成功確立/5)+15
+		Flag:도시_현재SP -= 4
+	ENDIF
+	REPEAT 3
+		IF (CFlag:주민_悩み解決成功確立)+L_SP > RAND:100
+			IF CFlag:주민_悩み解決選択 >= 10
+				CFlag:주민_悩み解決合計加算 += RAND:15+20
+				CFlag:주민_悩み成功回数 += 1
+			ELSE
+				CFlag:주민_悩み解決合計加算 += RAND:8+8
+				CFlag:주민_悩み成功回数 += 1
+			ENDIF
+		ELSE
+			CFlag:주민_悩み解決合計加算 += 1
+		ENDIF
+	REND
+	DRAWLINE
+	SETCOLOR 0,250,250
+	PRINTFORML %CALLNAME%의 고민 해결 결과가 나왔습니다！
+	RESETCOLOR
+	PRINTFORM 【결과:
+	IF CFlag:주민_悩み成功回数 >= 2
+		SETCOLOR 0,250,250
+		PRINTFORM 대성공
+		CFlag:주민_悩み前回結果 = 2		;前回結果表示用
+	ELSEIF CFlag:주민_悩み成功回数 >= 1
+		SETCOLOR 0,250,250
+		PRINTFORM 성공
+		CFlag:주민_悩み前回結果 = 1		;前回結果表示用
+	ELSE
+		SETCOLOR 250,0,0
+		PRINTFORM 실패
+		CFlag:주민_悩み前回結果 = 0		;前回結果表示用
+	ENDIF
+	RESETCOLOR
+	PRINTFORML 】
+	PRINTFORML 【달성률】{CFlag:(4200+CFlag:주민_悩み解決選択)}　→　{CFlag:(4200+CFlag:주민_悩み解決選択)+CFlag:주민_悩み解決合計加算}
+	PRINTFORMW 【호감도】{CFlag:호감도}　→　{CFlag:호감도+(20*CFlag:(4300+CFlag:주민_悩み解決選択))} 
+	CFlag:호감도 += (20*CFlag:(4300+CFlag:주민_悩み解決選択))
+	CFlag:(4200+CFlag:주민_悩み解決選択) += CFlag:주민_悩み解決合計加算
+	CFlag:주민_悩み解決合計加算 = 0
+	CFlag:주민_悩み解決中 = 0
+	CFlag:주민_悩み成功回数 = 0
+	CFLAG:주민_悩み협력상황 = 0
+	RESETCOLOR
+	CALL VAR_NAYAMI_SET_ASSIST(TARGET)
+ENDIF
+
+IF CFlag:(4200+CFlag:주민_悩み解決選択) >= 100
+		CFlag:(4200+CFlag:주민_悩み解決選択) = 100
+	L_GET_AP = CFlag:(4300+CFlag:주민_悩み解決選択) * 15 / 10
+	CFlag:주민_悩み前回結果 = 3		;前回結果表示用
+
+	SETCOLOR 0,250,250
+	PRINTFORML %CALLNAME:MASTER%의 조력으로 %타겟이% 안고 있던 고민을 하나 해결했습니다！
+	PRINTFORMW 【최대AP】{Flag:도시_최대AP}　→　{Flag:도시_최대AP+L_GET_AP}
+	Flag:도시_최대AP += L_GET_AP
+	Flag:도시_현재AP += L_GET_AP / 2
+	IF CFlag:관계단계 == 0 && (CFlag:주민_悩み解決選択 >= 10)
+		CFlag:관계단계 = 1
+		SIF ABL:친밀 < 9
+			ABL:친밀 += 1
+		SIF ABL:농락 < 9
+			ABL:농락 += 1
+		PRINTFORMW 두 사람의 관계가 【안면 있음】에서 【친구】가 되었습니다.
+	ENDIF
+	IF CFlag:관계단계 == 1 && (CFlag:주민_悩み解決選択 <= 9)
+		CFlag:관계단계 = 2
+		SIF ABL:친밀 < 9
+			ABL:친밀 += 1
+		SIF ABL:농락 < 9
+			ABL:농락 += 1
+		PRINTFORMW 두 사람의 관계가 【친구】에서 【절친】이 되었습니다.
+	ENDIF
+	IF CFlag:(4200+CFlag:주민_悩み解決選択) == 100
+		CFlag:(4000+CFlag:주민_悩み解決選択) = 0
+		CFlag:(4100+CFlag:주민_悩み解決選択) = 0
+		CFlag:(4200+CFlag:주민_悩み解決選択) = 0
+		CFlag:(4300+CFlag:주민_悩み解決選択) = 0
+		CFlag:(4400+CFlag:주민_悩み解決選択) = 0
+		CFlag:(4500+CFlag:주민_悩み解決選択) = 0
+	ENDIF
+	CFLAG:주민_悩み解決選択 = 0
+	CALL VAR_NAYAMI_SET_ASSIST(TARGET)
+ENDIF
+RESETCOLOR
+
+
+
+
+;-------------------------------------------------
+;RPG回復
+;-------------------------------------------------
+@TURN_EVENT_RPG_P
+
+IF CFlag:주민_현재체력 != CFlag:주민_최대체력 && CFlag:주민_현재기력 != CFlag:주민_최대기력
+	DRAWLINE
+	SETCOLOR 0,250,250
+	PRINTFORML %타겟은% 휴식을 취하고 체력을 회복했다.
+	RESETCOLOR
+	DRAWLINE
+ENDIF
+CFlag:주민_현재체력 += CFlag:주민_최대체력/2
+SIF Talent:《아웃이터》 == 0
+	CFlag:주민_현재기력 = CFlag:주민_최대기력
+CFlag:주민_현재BRE = CFlag:주민_최대BRE
+
+SIF CFlag:주민_현재체력 >= CFlag:주민_최대체력
+	CFlag:주민_현재체력 = CFlag:주민_최대체력
+
+
+
+;-------------------------------------------------
+;기여
+;-------------------------------------------------
+@TURN_EVENT_CITY_EXP
+#DIM DYNAMIC RATE_EVIL_UP        ;裏社会に기여する確率、선악属性準拠
+
+#DIM DYNAMIC CHARA_WORK          ;このターンのキャラの功績
+#DIM DYNAMIC WORK_BONUS          ;業種別、経験その他によるボーナス、基礎値はCHARA_WORK
+#DIM DYNAMIC FALLEN_BONUS        ;陥落による補正
+
+#DIM DYNAMIC CITY_EXP            ;都市に入る경험치、基礎値はWORK_BONUS
+#DIM DYNAMIC FACI_UP_VALUE       ;各시설に入る経験の数値
+#DIM DYNAMIC GROWTH_ILLEGAL_SIDE ;裏社会の変動値、マイナス成長を含む
+#DIM DYNAMIC GROWTH_LAWFUL_SIDE  ;表社会の変動値
+
+
+
+SELECTCASE CFlag:주민_속성
+CASE 2
+	RATE_EVIL_UP = 80
+CASE 1
+	RATE_EVIL_UP = 20
+CASEELSE
+	RATE_EVIL_UP = 50
+ENDSELECT
+
+;功績基礎値は업무경험의존、刻印つけるとがんばる
+CHARA_WORK = RAND:(3 + GETEXPLV(EXP:업무경험, 9)) + MAX(MARK:예속각인, MARK:함락각인, MARK:음란각인) * 2
+;아이돌による全주민への追加補正、補正値0～20、팬수数8000以上で최대補正
+CHARA_WORK += CBRT(LIMIT(FLAG:都市_合計팬수数, 1, 8000)) - 1
+
+;業種別、経験その他によるボーナス、基礎値は功績
+WORK_BONUS = MAX(CHARA_WORK, 1)
+IF Talent:아이돌 != 0
+	WORK_BONUS += RAND:6 + GETEXPLV(EXP:유혹경험, 9) + CBRT(LIMIT(CFLAG:주민_인기, 1, 1000))
+ELSEIF Talent:사회인 != 0
+	WORK_BONUS += RAND(2, 6) + RAND(2, 6) + RAND(2, 6)
+ELSEIF Talent:성직자 != 0
+	SIF RAND:10 > 4 && CFlag:주민_카르마 >= 1
+		CFlag:주민_카르마 -= 1
+	WORK_BONUS += RAND:3 + GETEXPLV(EXP:봉사쾌락경험, 9)
+	SIF CFLAG:주민_모럴 > 0
+		WORK_BONUS += SQRT(LIMIT(ABS(CFLAG:주민_모럴), 1, 100))
+ELSEIF Talent:메이드 != 0
+	IF Flag:도시_현재AP <= Flag:도시_최대AP
+		Flag:도시_현재AP += CHARA_WORK + 1
+	ENDIF
+	WORK_BONUS += RAND:6 + GETEXPLV(EXP:봉사쾌락경험, 9) + GETEXPLV(EXP:주인조교경험, 9)
+ELSEIF Talent:창녀 != 0
+	WORK_BONUS += RAND:3 + GETEXPLV(EXP:매춘경험, 9)
+	SIF CFLAG:주민_모럴 < 0
+		WORK_BONUS += SQRT(LIMIT(ABS(CFLAG:주민_모럴), 1, 100))
+ELSEIF Talent:학생 != 0
+	WORK_BONUS += RAND(1, 10) + RAND(1, 10)
+ELSE
+	WORK_BONUS += RAND(1, 3) + CBRT(LIMIT(FLAG:都市_合計팬수数, 1, 1000)) - 1
+ENDIF
+
+;陥落関連ボーナス
+IF TALENT:합의 == 1 || TALENT:조교완료
+	FALLEN_BONUS = 1 + CFlag:주민_기여도 / 2
+ELSEIF TALENT:약점   != 0
+	FALLEN_BONUS = 1 + CFlag:주민_기여도 / 5
+ELSEIF TALENT:범해짐 != 0
+	FALLEN_BONUS = 1 + CFlag:주민_기여도 / 10
+ELSE
+	FALLEN_BONUS = 1 + CFlag:주민_기여도 / 4
+ENDIF
+;三種類の陥落ごとに別々のボーナス
+IF TALENT:애인 == 1
+	FALLEN_BONUS += RAND:(3 + CBRT(LIMIT(CFLAG:호감도 / 100, 1, 1000)))
+ELSEIF TALENT:정부 == 1
+	FALLEN_BONUS += RAND:(3 + GETEXPLV(EXP:매춘경험, 9))
+ELSEIF TALENT:심취 == 1
+	FALLEN_BONUS += RAND:(3 + GETEXPLV(EXP:봉사쾌락경험, 9))
+ENDIF
+
+IF RAND:100 < RAND:10 + (CFlag:주민_지위 + CFlag:주민_기여도) * 10
+	CITY_EXP            = WORK_BONUS
+	FACI_UP_VALUE       = (RAND:(CFlag:주민_기여도) + FALLEN_BONUS) * (WORK_BONUS) + CHARA_WORK
+	GROWTH_ILLEGAL_SIDE = RAND:(CFlag:주민_기여도) + FALLEN_BONUS + RAND:(CFlag:주민_기여도 * 2)
+	GROWTH_LAWFUL_SIDE  = RAND:(CFlag:주민_기여도) + FALLEN_BONUS
+	
+	IF RAND:100 < RATE_EVIL_UP
+		;시설(悪)
+		Flag:(4150 + RAND:7) += FACI_UP_VALUE + RAND:(1+((Flag:都市_裏社会)/100))
+		Flag:都市_裏社会 += GROWTH_ILLEGAL_SIDE
+		Flag:都市_表社会 -= GROWTH_LAWFUL_SIDE
+	ELSE
+		;시설(善)
+		Flag:(4101 + RAND:8) += FACI_UP_VALUE + RAND:(1+((Flag:都市_表社会)/100))
+		Flag:都市_裏社会 -= GROWTH_ILLEGAL_SIDE
+		Flag:都市_表社会 += GROWTH_LAWFUL_SIDE
+	ENDIF
+	
+	Flag:都市_경험치       += CITY_EXP
+	Flag:都市_今期の기여도 += CITY_EXP
+ENDIF
+
+SIF Flag:都市_裏社会 <= 0
+	Flag:都市_裏社会 = 0
+SIF Flag:都市_表社会  <= 0
+	Flag:都市_表社会  = 0
+
+SIF Flag:都市_裏社会 >= 999
+	Flag:都市_裏社会 = 999
+SIF Flag:都市_表社会  >= 999
+	Flag:都市_表社会  = 999
+	
+IF TALENT:모유체질  == 1 && RAND:10 >= 3
+	FLAG:도시_현재BP += (RAND:4)+1
+	PRINTFORML 모유체질인 %타겟은% 항상 모유가 나온다.
+	PRINTFORML %마스터는% 오늘분의 모유를 채취해 BP로 변환했다.
+ENDIF
+
+Flag:도시_공적 += CHARA_WORK
+MONEY += (Flag:都市_Lv + 1 + RAND:(Flag:都市_Lv + 1)) * 70
+
+
+
+
+
+;-------------------------------------------------
+;都市の成長処理
+;キャラ処理のたびに成長を行うのを止め、경험치取得後にまとめて成長を行うように変更
+;-------------------------------------------------
+@TURN_EVENT_CITY_GROWTH
+#DIM FACI_ID
+;시설の成長処理
+FOR FACI_ID, 1, 100
+	;시설名未定義ならスルー
+	SIF !STRLENS(FLAGNAME:(4000 + FACI_ID))
+		CONTINUE
+	;成長できなくなるまで続ける
+	WHILE Flag:(4100 + FACI_ID) >= MAX(Flag:(4000 + FACI_ID), 1) * 10
+		Flag:(4100 + FACI_ID) -= MAX(Flag:(4000 + FACI_ID), 1) * 10
+		Flag:(4000 + FACI_ID) ++
+	WEND
+NEXT
+;都市自体の成長処理
+WHILE Flag:都市_경험치 >= Flag:都市_Lv * 10
+	Flag:都市_경험치 -= Flag:都市_Lv * 10
+	Flag:都市_Lv ++
+WEND
+
+
+
+
+
+;-------------------------------------------------
+;キャラ来訪イベント制御
+;-------------------------------------------------
+@TURN_EVENT_CAFE_CHARA_MAIN
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM  CHARA_LIST, 1000 ;キャラ一覧
+#DIM  CHARA_CNT        ;キャラカウンタ
+#DIMS DUMMY            ;REF対策で渡すだけ
+CALLF MEMBER_LIST_ALL("CAFE", CHARA_LIST, CHARA_CNT)
+CALL CHARA_SORT_CTRL(CHARA_LIST, CHARA_CNT, "호감도　　　降順", DUMMY)
+CALL CHARA_SORT_CTRL(CHARA_LIST, CHARA_CNT, "협력상황降順", DUMMY)
+FOR LOCAL, 0, CHARA_CNT
+	PRINTFORMW 카페에서 쉬는 %CALLNAME:MASTER% 곁에 %조사처리(CALLNAME:(CHARA_LIST:LOCAL),"가")% 다가왔다・・・
+	CALL TURN_EVENT_CAFE_CHARA_COMING(CHARA_LIST:LOCAL)
+	SIF RESULT < 0
+		RETURN
+NEXT
+
+
+
+;あなたのもとにキャラがやってくるイベント
+@TURN_EVENT_CAFE_CHARA_COMING(C_ID)
+#DIM C_ID    ;キャラの登録番号
+#DIM L_INPUT ;入力内容の一時保持
+PRINTFORML 
+DRAWLINE
+CALL NAYAMI_PAGE(C_ID)
+CALL C_PICTURE_T(C_ID)
+CALL INFO_CITY_BASE
+DRAWLINE
+PRINTFORML 
+IF FLAG:도시_현재TP <= 0
+	PRINTFORML [-] - TP 부족！
+ELSEIF VAR_NAYAMI_ASSIST_ABLE_LIST(C_ID)
+	PRINTFORML [3] - 고민 듣기 (TP:1)
+ELSE
+	PRINTFORML [3] - 대화하기　(TP:1)
+ENDIF
+PRINTFORML [2] - 적당히 대한다（다른 상대를 기다린다）
+PRINTFORML [1] - BP섭취
+PRINTFORML 
+PRINTFORML [0] - 고민상담종료（모든 캐릭터）
+DO
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 3
+		IF FLAG:도시_현재TP <= 0
+			CALL C_INPUT_ERROR("TP不足です")
+			CONTINUE
+		ENDIF
+		IF VAR_NAYAMI_ASSIST_ABLE_LIST(C_ID)
+			CALL NAYAMI_CHALLENGE(C_ID)
+			IF RESULT
+				FLAG:도시_현재TP --
+				CFLAG:C_ID:주민_悩み협력상황 = 1
+				RETURN
+			ENDIF
+		ELSE
+			FLAG:도시_현재TP --
+			CALL CAFE_TALK2(C_ID)
+		ENDIF
+	CASE 2
+		PRINTFORMW 적당히 대한 뒤 다른 사람이 오기를 기다렸다.
+		PRINTFORML 
+		RETURN
+	CASE 1
+		CALL SYSTEM_BP
+	CASE 0
+		PRINTFORML 오늘은 이쯤에서 그만두자.
+		RETURN -1
+	CASEELSE
+		$RETRY
+		CALL C_INPUT_ERROR("無効な入力です")
+		CONTINUE
+	ENDSELECT
+	BREAK
+LOOP 1
+RESTART
+
+
+

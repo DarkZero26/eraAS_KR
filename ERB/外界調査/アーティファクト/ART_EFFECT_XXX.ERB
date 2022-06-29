@@ -1,0 +1,93 @@
+﻿[SKIPSTART]
+;-------------------------------------------------
+;アーティファクトの効果テンプレート
+;XXXは効果IDで置き換える
+
+;表示用テンプレート
+;効果発動時
+;PRINTFORMW 【(名前)Lv{STRENGTH}】(発動時の描写)
+
+;説明表示用
+;RESULTS = 【異能　:　　(名前)】(効果に関してざっくり説明)
+;-------------------------------------------------
+;名前をRESULTSに入れて返す。全角２字
+@ART_EFFECT_XXX_NAME
+RESULTS = 
+RETURN
+
+
+;この効果が生成可能か返す
+;1なら可能、0なら不可。RANKが対象アーティファクトのRANK
+@ART_EFFECT_XXX_ABLE(RANK)
+#DIM RANK
+RETURN 1
+
+
+;---攻撃前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_XXX_ATKPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_XXX_ATKPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---攻撃後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_XXX_ATKAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_XXX_ATKAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---防御前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_XXX_DEFPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_XXX_DEFPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---防御後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_XXX_DEFAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_XXX_DEFAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;エフェクトの説明
+;説明文を一旦保存する都合上、RESULTS:0の一行のみ有効
+@ART_EFFECT_XXX_EXPLANATION
+RESULTS = 
+RETURN 1
+[SKIPEND]

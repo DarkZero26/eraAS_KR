@@ -1,0 +1,88 @@
+﻿;-------------------------------------------------
+;アーティファクトの効果テンプレート
+;1は効果IDで置き換える
+;-------------------------------------------------
+;名前をRESULTSに入れて返す。全角２字
+@ART_EFFECT_1_NAME
+RESULTS = 흡혈
+RETURN
+
+
+;この効果が生成可能か返す
+;1なら可能、0なら不可。RANKが対象アーティファクトのRANK
+@ART_EFFECT_1_ABLE(RANK)
+#DIM RANK
+RETURN 1
+
+
+;---攻撃前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_1_ATKPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_1_ATKPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---攻撃後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_1_ATKAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+@ART_EFFECT_1_ATKAFTER(STRENGTH)
+#DIM STRENGTH
+#DIM TEMP
+TEMP = BRESULT:DAMAGE / (21 - (STRENGTH * 4))
+PRINTFORML 【흡혈 Lv{STRENGTH}】적의 생혈을 흡수해, {TEMP} 회복했다.
+EX_A:RECOV += TEMP
+RETURN 1
+
+
+;---防御前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_1_DEFPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_1_DEFPRE(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---防御後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_1_DEFAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_1_DEFAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;エフェクトの説明
+@ART_EFFECT_1_EXPLANATION
+;AS本体の説明文を継承
+RESULTS = 【이능　:　　흡혈】흘러내린 피를 받고, 그것을 흡수해 소지자를 치유시키는 이능을 사용한다.
+RETURN

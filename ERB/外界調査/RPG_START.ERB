@@ -1,0 +1,755 @@
+﻿;-------------------------------------------------
+;調査開始
+;-------------------------------------------------
+@RPG_EXPLORER_SELECT
+#DIM          L_INPUT
+#DIM          L_SUP_ID
+#DIM          NOW_GROUP     ;REF用
+#DIMS DYNAMIC OP_RELOAD     ;初回以外のページ更新とリスト更新を抑制する
+IF CMATCH(CFLAG:0:주민_탐색者, 1) == 0
+	NOW_GROUP = 1
+	CALL LIST_CHARA_STATUS_MAIN(0, NOW_GROUP, OP_RELOAD, "RPG", "≪외계조사를 개시합니다. 이번 탐색자를 선택해주세요.≫")
+	OP_RELOAD = 「ページ更新無し」「リスト更新無し」
+	L_INPUT = RESULT
+	IF L_INPUT <= 0
+		RETURN
+	ENDIF
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	CALL C_PICTURE_RD(L_INPUT)
+	DRAWLINE
+	L_SUP_ID = INFO_STATUS_GET_BY_LABEL(L_INPUT, "부대")
+	IF L_SUP_ID
+		PRINTFORML %조사처리(CALLNAME:L_INPUT,"는")% 현재, 지원부대에서 임무를 맡고 있습니다.
+		PRINTFORML 해임 후 탐색에 참가시켜도 괜찮겠습니까?
+		PRINTFORML 
+		PRINTFORML [1] - 탐색시킨다
+		PRINTFORML [0] - 그만둔다  [9] - 다시 선택한다
+		DO
+			INPUT
+			SELECTCASE RESULT
+			CASE 1
+				CALL SUPPORT_CHARA_REMOVE(L_INPUT)
+			CASE 9
+				RESTART
+			CASE 0
+				RETURN
+			CASEELSE
+				CONTINUE
+			ENDSELECT
+			BREAK
+		LOOP 1
+	ELSE
+		PRINTFORML %조사처리(CALLNAME:L_INPUT,"가")% 외계 탐색을 개시합니다. 괜찮겠습니까?
+		PRINTFORML 
+		PRINTFORML [1] - 탐색시킨다
+		PRINTFORML [0] - 그만둔다  [9] - 다시 선택한다
+		DO
+			INPUT
+			SELECTCASE RESULT
+			CASE 1
+			CASE 9
+				RESTART
+			CASE 0
+				RETURN
+			CASEELSE
+				CONTINUE
+			ENDSELECT
+			BREAK
+		LOOP 1
+	ENDIF
+	PRINTFORML %조사처리(CALLNAME:L_INPUT,"를")% 탐색부대로 등록하시겠습니까?
+	PRINTFORML 
+	PRINTFORML [1] - 등록한다
+	PRINTFORML [0] - 등록하지 않는다
+	DO
+		INPUT
+		SELECTCASE RESULT
+		CASE 1
+			CALL SUPPORT_CHARA_SET(L_INPUT, 3)
+		CASE 0
+		CASEELSE
+			CONTINUE
+		ENDSELECT
+		BREAK
+	LOOP 1
+ELSE
+	NOW_GROUP = 1
+	CALL LIST_CHARA_STATUS_MAIN(0, NOW_GROUP, OP_RELOAD, "EXPLORER", "≪외계조사를 개시합니다. 이번 탐색자를 선택해주세요.≫")
+	L_INPUT = RESULT
+	OP_RELOAD = 「ページ更新無し」「リスト更新無し」
+	IF L_INPUT <= 0
+		RETURN
+	ENDIF
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	CALL C_PICTURE_RD(L_INPUT)
+	DRAWLINE
+	PRINTFORML %조사처리(CALLNAME:L_INPUT,"가")% 외계 탐색을 개시합니다. 괜찮겠습니까?
+	PRINTFORML 
+	PRINTFORML [1] - 탐색시킨다
+	PRINTFORML [0] - 그만둔다  [9] - 다시 선택한다
+	DO
+		INPUT
+		SELECTCASE RESULT
+		CASE 1
+		CASE 9
+			RESTART
+		CASE 0
+			RETURN
+		CASEELSE
+			CONTINUE
+		ENDSELECT
+		BREAK
+	LOOP 1
+ENDIF
+Flag:調査キャラ = L_INPUT
+Flag:탐색中 = 1
+CALL RPG_STANDBY
+CALL RPG_START
+
+
+
+@RPG_START(ARG)
+#DIM L_INPUT
+#DIM L_I
+
+ARG = Flag:調査キャラ
+Flag:敵_レア = 0
+Flag:自動戦闘 = 0
+SAVESTR:調査_一言 = 
+RESETBGCOLOR
+L_I = ARG
+
+SIF Flag:調査深度 == 0
+		CALL RPG_START_NEXT(ARG)
+
+;同じフロアにとどまったとき、または入力のやり直しのためのラベル
+$INPUT_LOOP
+;ルート選択。主に既存のセーブデータに適用した場合のための分岐
+SIF NOWFLOOR >= FLOORLENGTH || FLOOREVENT:NOWFLOOR == 0
+	CALL RPG_SELECTROUTE
+
+;수반/후방/회수부대の能力再計算(地形適性があるため)
+CALL CALC_SUPPORT
+
+CLEARLINE LINECOUNT
+DRAWLINE
+CALL C_PICTURE_R(ARG)
+DRAWLINE
+CALL PRINT_ROUTE(1)
+DRAWLINE
+IF Flag:フロア_탐색回数 <= 0 ||  Flag:フロア_種類 == 90	; 回数0では選択できないように
+	SETCOLOR 60,60,60
+	PRINTPLAIN [0]  - 조사불가　　
+	RESETCOLOR
+ELSE
+	PRINTBUTTON @"[0]  - 조사(SP소비)", 0
+ENDIF
+PRINT 　　
+PRINTBUTTON @"[1]  - 휴식(SP소비)", 1
+IF  Flag:フロア_種類 == 90	; 回数0では選択できないように
+	SETCOLOR 60,60,60
+	PRINTPLAIN 　　[2]  - 전투불가
+	RESETCOLOR
+ELSE
+	PRINT 　　
+	PRINTBUTTON @"[2]  - 전투", 2
+	PRINTL 
+ENDIF
+IF Flag:フロア_特殊調査 > 0 && Flag:フロア_種類 != 90
+	SETCOLOR 50,250,250
+	PRINTFORML [10] - 발견(SP소비)
+	RESETCOLOR
+ELSE 
+	PRINTFORML 
+ENDIF
+PRINTFORML [3]  - 이동(SP소비)
+IF CFlag:L_I:주민_현재기력 <= CFlag:L_I:주민_최대기력-((CFlag:L_I:주민_최대기력*7)/10)
+	CALL PRINT_LABEL("주의：피로합니다!",,COLOR("RPG_MESSAGE_WARNING"))
+	PRINTFORML 
+ELSE 
+	PRINTFORML 
+ENDIF
+PRINTFORML [999] - 철수
+DRAWLINE
+
+SETCOLOR 0,0,0
+TINPUT 400, 100, 2
+RESETCOLOR
+L_INPUT = RESULT
+
+
+
+
+SELECTCASE L_INPUT
+	CASE 0
+		;調査
+		IF Flag:フロア_탐색回数 <= 0
+			SAVESTR:調査_状況 =  【―――――――더는 아무 것도 없는 듯하다―――――――】
+			SAVESTR:調査_状況2 = 
+			; KBで直接叩いた場合用に追加
+			GOTO INPUT_LOOP
+		ELSEIF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
+			CFlag:L_I:주민_현재기력 -= Flag:フロア_消耗
+			CALL RPG_ITEMGET(ARG)
+			CALL RPG_MINIEVENT_MAIN(ARG)
+			Flag:フロア_탐색回数 -= 1
+		ELSE
+			PRINTFORMW %CALLNAME:L_I%의 ＳＰ가 부족합니다.
+		ENDIF
+	CASE 1
+		;休憩
+		IF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
+			CFlag:L_I:주민_현재기력 -= Flag:フロア_消耗
+			CFlag:L_I:주민_현재체력 += CFlag:L_I:주민_최대체력/5
+			SIF CFlag:L_I:주민_현재체력 >= CFlag:L_I:주민_최대체력
+				CFlag:L_I:주민_현재체력 = CFlag:L_I:주민_최대체력
+			SAVESTR:調査_状況 =  【―――――――휴식했습니다―――――――】
+			SAVESTR:調査_状況2 = 
+		ELSE
+			PRINTFORMW %CALLNAME:L_I%의 ＳＰ가 부족합니다.
+		ENDIF
+	CASE 2
+		;戦闘
+		CALL RPG_BATTLE_DUNGEON(ARG)
+	CASE 3
+		;次へ
+		IF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
+			CFlag:L_I:주민_현재기력 -= Flag:フロア_消耗
+			Flag:調査深度 += 1
+			Flag:フロア_탐색回数 = (RAND:3)+(RAND:((Flag:調査区域/2)+1))+1
+			Flag:ターン進行深度 += 1
+			;현재いるルートを進める。ダンジョン全体の進行度とは別
+			NOWFLOOR += 1
+			CALL RPG_START_NEXT(ARG)
+		ELSE
+			PRINTFORMW %CALLNAME:L_I%의 ＳＰ가 부족합니다.
+		ENDIF
+	CASE 10
+		;発見
+		IF Flag:フロア_特殊調査 <= 0
+
+		ELSEIF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
+			CALL RPG_DISCOVERY(ARG)
+		ELSE
+			PRINTFORMW %CALLNAME:L_I%의 ＳＰ가 부족합니다.
+		ENDIF
+	CASE 100
+		;8900はフロアノイズ
+		FLAG:8900 += 1
+		SIF FLAG:8900 >= 3
+			FLAG:8900 = 0
+		GOTO INPUT_LOOP
+	CASE 999
+		;撤退
+		Flag:턴조사완료 = 1
+			CALL RPG_END
+		CALL RPG_MAIN
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+
+
+SIF CFlag:L_I:주민_현재기력 <= 0
+	GOTO INPUT_LOOP
+
+
+IF Flag:調査区域 == 90 && (Flag:調査深度 >= Flag:日替わり区画深度限界)
+	CALL RPG_BATTLE_DUNGEON(ARG)
+ELSEIF Flag:フロア_会敵 >= RAND:100
+	SIF ((FLAG:支援_후방合計HIT+FLAG:支援_후방合計SPD)/2) >= RAND:100
+		Flag:支援_敵影確認 = 1
+	IF Flag:支援_敵影確認 != 0 && (((FLAG:支援_후방合計HIT+FLAG:支援_후방合計SPD)/4)-Flag:フロア_会敵) >= RAND:100
+		SAVESTR:調査_状況  = 【적의 모습을 포착한 후방부대의 색적을 바탕으로, 숨어서 지나쳤다…】
+		SAVESTR:調査_状況2 = 
+		IF RAND:20 == 0	; 5%
+			SAVESTR:調査_状況2 = 【…만 시야에 들어왔는지, 숨어 있던 것을 들키고 말았다!】
+			CALL RPG_BATTLE_DUNGEON(ARG)
+		ENDIF
+	ELSEIF CFLAG:L_I:주민_技能_은신 >= RAND:100
+		SAVESTR:調査_状況  = 【적의 기색을 눈치챈 %조사처리(CALLNAME:L_I,"는")% 접촉을 피해 숨어서 지나쳤다……】
+		SAVESTR:調査_状況2 = 
+	ELSE
+		CALL RPG_BATTLE_DUNGEON(ARG)
+	ENDIF
+ENDIF
+
+IF Flag:調査瘴気 > 0
+	IF CFLAG:L_I:주민_현재BRE > 0
+		CFLAG:L_I:주민_현재BRE -= Flag:調査瘴気
+		SIF CFLAG:L_I:주민_현재BRE <= 0
+			CFLAG:L_I:주민_현재BRE = 0
+	ELSE
+		CFLAG:L_I:주민_현재체력 -= (Flag:調査瘴気/2)+1
+		CFLAG:L_I:주민_현재기력 -= (Flag:調査瘴気/2)+1
+		SIF CFLAG:L_I:주민_현재체력 <= 0
+			CFLAG:L_I:주민_현재체력 = 1
+		SIF CFLAG:L_I:주민_현재기력 <= 0
+			CFLAG:L_I:주민_현재기력 = 1
+	ENDIF
+ENDIF
+
+
+SIF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
+	CALL RPG_EVENT_MAIN
+
+
+GOTO INPUT_LOOP
+
+
+
+
+
+
+
+;-------------------------------------------------
+;調査進行
+;-------------------------------------------------
+@RPG_START_NEXT(ARG)
+#DIM L_INPUT
+#DIM L_I
+
+L_I = ARG
+
+IF Flag:調査深度 != 0 && RAND:10 > 5
+	IF !RAND:5
+		Flag:フロア_種類 = 12
+	ELSEIF !RAND:4
+		Flag:フロア_種類 = 11
+	ELSEIF !RAND:3
+		Flag:フロア_種類 = 10
+	ELSEIF !RAND:2
+		Flag:フロア_種類 = 2
+	ELSE
+		Flag:フロア_種類 = 1
+	ENDIF
+ELSE 
+	Flag:フロア_種類 = 0
+ENDIF
+
+SIF Flag:ターン進行深度 >= 5 && RAND:100 > 97
+	Flag:フロア_種類 = 90
+
+IF Flag:調査区域 == 90
+	Flag:フロア_会敵 = (((RAND:15)+1)*Flag:日替わり区画難易度)
+	Flag:フロア_消耗 = ((RAND:(Flag:日替わり区画難易度+1))+1)
+ELSE 
+	Flag:フロア_会敵 = (((RAND:15)+1)*Flag:調査区域)
+	Flag:フロア_消耗 = ((RAND:(Flag:調査区域+1))+1)*2
+ENDIF
+Flag:フロア_品質 = RAND:(Flag:調査区域+1*5)
+Flag:フロア_発見率 = RAND:100
+Flag:フロア_탐색回数 = (RAND:2)+1
+SIF CFLAG:L_I:주민_技能_눈독 > RAND:100
+	Flag:フロア_탐색回数 += (RAND:2)+1
+
+IF Flag:フロア_種類 == 90
+	Flag:フロア_品質 = 0
+	Flag:フロア_発見率 = 0
+	Flag:フロア_탐색回数 = 0
+	Flag:フロア_탐색回数 = 0
+	CFLAG:L_I:주민_현재체력 = CFLAG:L_I:주민_최대체력
+	CFLAG:L_I:주민_현재기력 = CFLAG:L_I:주민_최대기력
+ENDIF
+
+SIF Flag:調査区域 == 0
+	Flag:フロア_品質 = 0
+
+IF Flag:フロア_種類 == 90
+	SAVESTR:調査_フロア名 = 중계거점
+ELSEIF Flag:フロア_種類 == 12
+	SAVESTR:調査_フロア名 = 슈퍼
+ELSEIF Flag:フロア_種類 == 11
+	SAVESTR:調査_フロア名 = 편의점
+ELSEIF Flag:フロア_種類 == 10
+	SAVESTR:調査_フロア名 = 주택
+ELSEIF Flag:フロア_種類 == 2
+	SAVESTR:調査_フロア名 = 뒷골목
+ELSEIF Flag:フロア_種類 == 1
+	SAVESTR:調査_フロア名 = 번화가
+ELSE 
+	SAVESTR:調査_フロア名 = 길거리
+ENDIF
+
+
+SIF CFLAG:L_I:주민_技能_귀동냥 > RAND:100
+	SAVESTR:調査_フロア名 = %SAVESTR:調査_フロア名%(조우 확률:{Flag:フロア_会敵})
+
+
+
+IF Flag:調査区域 != 0 && Flag:ターン進行深度 >= 5 && (20+(CFLAG:L_I:주민_技能_눈독/3) > RAND:100)
+	Flag:フロア_特殊調査 = (RAND:3)+1
+ELSE 
+	Flag:フロア_特殊調査 = 0
+ENDIF
+
+
+SIF Flag:調査深度 == 0
+	Flag:調査深度 += 1
+
+
+SAVESTR:調査_状況 = 
+SAVESTR:調査_状況2 = 
+SAVESTR:調査_状況3 = 
+
+IF Flag:フロア_種類 == 90
+;中継拠点
+	IF !RAND:10
+		SAVESTR:調査_状況 = 인기척을 느껴 근방에 중계거점이 있다는 것을 떠올린다.
+		SAVESTR:調査_状況2 = 근처에 「외적」이 없음을 확인하고, 거점에 들르기로 했다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = ≪[ＩＤ확인], [고유게놈 확인], [고유 에테르 확인], 입장을 허가합니다.≫
+		SAVESTR:調査_状況2 = ≪무사하셔서 다행입니다. 중계거점에 어서오세요.≫
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = ≪잘 오셨네요, 수고하셨습니다. 여기서 피로를 푸세요.≫
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 「외적」의 습격이 있었는지, 입구 부근에서 눋은 냄새가 난다…….
+		SAVESTR:調査_状況2 = 아직 적습이 없으니 괜찮을까…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 사람의 손이 자주 가는 만큼, 바깥보다 꺠끗하고 안전한 것 같다.
+		SAVESTR:調査_状況2 = 한숨 돌리면서 다음 조사방법을 생각해보기로 하자…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 중계거점에 도착하자 갑작스럽게 피로가 몰려온다. 상상 이상으로 피곤했던 모양이다.
+		SAVESTR:調査_状況2 = 다음 조사 전에 쉬도록 하자…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 타「플레이어」의 부대도 이곳을 사용하는 것 같고, 의외로 인기있는 것 같다.
+		SAVESTR:調査_状況2 = 지금 잠을 자면 느닷없는「외적」의 습격에도 문제 없을 것이다.
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 둘러보니 도시의 주민이 드문드문 발견된다.
+		SAVESTR:調査_状況2 = 누군가가 있다는 사실만으로도 안심이 된다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 소규모의 공간 안정장치 덕분에, 이곳에서 안전하게 쉴 수 있을 것이다…….
+	ELSE
+		SAVESTR:調査_状況 = 중계지점에 도착, 겨우 한숨 돌릴 수 있을 것 같다…….
+	ENDIF
+ELSEIF Flag:フロア_種類 == 12
+;スーパー
+	IF !RAND:10
+		SAVESTR:調査_状況 = 슈퍼에 다다르기는 했지만
+		SAVESTR:調査_状況2 = 고객의 모습은 없고 가게 안은 으스스할 정도로 조용하다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = 탁아소에 부모가 마중 나오지 않은 채 굶어 죽어버린 아이가 있다.
+		SAVESTR:調査_状況2 = 울타리를 넘으려다 그대로 탈진해버린 것 같다…….
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = 일용품을 봐도 손상이 심하고, 그 어떤 것도 쓸 수 없는 것 같다…….
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 중앙 부근에서 산더미처럼 쌓인 시체를 발견했다.
+		SAVESTR:調査_状況2 = 어느 것이나 농락이라도 당한 듯이 비참한 모습이 되어 있다…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 이 슈퍼에서 사건이 터진 것인지, 여기저기에 살점과 피가 흩어져 있다.
+		SAVESTR:調査_状況2 = 오래 머물지 않는 편이 좋을 것 같다…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 어느 단체가 점거하고 있었는지 바리케이드와 방어시설이 설치되어 있다.
+		SAVESTR:調査_状況2 = 허나 주변에 있는 시체를 보아하니 습격에 버티지 못한 것 같다…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 보존고에 도착하자 아직도 장비가 작동하고 있는지 공기와 온도가 정상적으로 유지되고 있다.
+		SAVESTR:調査_状況2 = 하지만 안쪽에서 풍기는 썩은 냄새는 막을 수 없는 것 같다…….
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 등산용 공간 구석에 조난용인지 비상식량과 식수가 비치되어 있다.
+		SAVESTR:調査_状況2 = 특수 가공 제품이라 아직 먹을 수 있을 것 같다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 10ｍ 정도 끌러간 듯한 핏자국이 보이고, 자국은 창고로 이어지고 있는 것 같다…….
+	ELSE
+		SAVESTR:調査_状況 = 식품 코너에는 거친 자국이 있고, 식료품은 거의 없는 것 같다…….
+	ENDIF
+ELSEIF Flag:フロア_種類 == 11
+;コンビニ
+	IF !RAND:10
+		SAVESTR:調査_状況 = 유통기한 20{RAND:40}{RAND:10}년 {(RAND:12)+1}월 {(RAND:30)+1}일이라고 써진 식품이 있다. 상태가 심히 좋지 않아 먹을 수 없다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = 『□□□에서 나타난 미지의 생물에게 다가가다…！』라고 쓰여진 신문이 있다.
+		SAVESTR:調査_状況2 = 지금은 더 이상 미지도 뭣도 아니지만…….
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = 선반 틈에서 새 통조림을 찾았다.
+		SAVESTR:調査_状況2 = 부식 방지 가공이 되어 있어 지금도 충분히 먹을 수 있을 것이다…….
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 판매 금지된 굿즈가 진열되어 있다. 일부 마니아들이 보면 환장할 것이다…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 백골 시체가 엎어져 쓰러져있다. 먹을 것이 없어 아사한 것 같다…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 쇠퇴한 편의점이 있다. 열화로 인해 가동도 되지 않고, 들어가려면 억지로 열 수 밖에 없는 것 같다…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 아직 사용 중인 선불 카드가 있다.
+		SAVESTR:調査_状況2 = 바코드를 인증받으면 쓸 수 있지 않을까……？
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 힘 없는 형광등이 약하게 점포를 밝히고 있다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 아직 가동 중인 냉동고는 썡쌩하게 식품을 냉동 보관하고 있다.
+		SAVESTR:調査_状況2 = 특수 가공한 아이스크림 정도라면 먹을 수 있을 것 같다…….
+	ELSE
+		SAVESTR:調査_状況 = 매장에 들어섰으나 식품 계열은 거의 없어졌고, 다른 상품들도 열화나 부식이 심하다…….
+	ENDIF
+ELSEIF Flag:フロア_種類 == 10
+;住宅
+	IF !RAND:10
+		SAVESTR:調査_状況 = 여러 채의 주택이 늘어서 있다. 하지만 인기척은 전혀 느껴지지 않는다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = 2층 창문으로 목을 맨 사람의 그림자가 보인다. 자살이 낫다는 것인가…….
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = 얼마 전까지 이곳을 근거지로 삼고 있었던 것인지, 젊은 청년들이 맥없이 쓰러져 있다…….
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 붕괴된 주택이 있는가 하면, 부식이 얼마 되지 않은 주택도 있다. 멀쩡한 곳부터 조사하자…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 무언가가 있었는지, 큰 마당에서 고민하는 표정을 한 시체가 나뒹굴고 있다…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 주택지 한복판에 전차가 자리잡고 있다. 하지만 포신은 휘어져 있고 궤도도 찌그러져 있다…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 폐허에 숨어 사는 자들은 눈에 띄는 곳에서는 살지 않는지 기척이 전혀 없다…….
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 더이상 집주인은 없는지 방 안은 텅 비어있다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 거실까지 들어가자 노부부가 소파에 달라붙듯이 죽어 있다.
+		SAVESTR:調査_状況2 = 수중에 있는 약으로 보아 함께 죽은 것이겠지…….
+	ELSE
+		SAVESTR:調査_状況 = 현관 앞에서 어린 아이가 죽어 있다.
+		SAVESTR:調査_状況2 = 문고리에 손이 닿지 않은 것 같다…….
+	ENDIF
+ELSEIF Flag:フロア_種類 == 2
+;路地裏
+	IF !RAND:10
+		SAVESTR:調査_状況 = 본래 인기척이 없는 골목길이 폐허로 변하자 을씨년스러운 분위기를 풍긴다.
+		SAVESTR:調査_状況2 = 별 볼일 없다면 빨리 이동하는게 좋을 것 같다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = 기척은 없을 터인데 어디선가 소리가 난다. 경계를 게을리하지 않는 편이 좋을 것이다…….
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = 안쪽에 여성의 시체가 있다. 복부는 파열되어 있고, 속은 깨끗하게 비어있다…….
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 검은 액체가 골목 구석구석에 퍼져 있다. 꽤 오래 전 것인지 건조하다…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 꾸물꾸물 움직이고 있는 사람의 그림자가 보인다.
+		SAVESTR:調査_状況2 = 허나 부식되거나 액상화 된것을 보면 이미 늦은 것 같다…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 사각에 누군가의 은신처가 있다.
+		SAVESTR:調査_状況2 = 하지만 더이상 쓰이지 않는지 먼지가 쌓이고 있다…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 길가에 수상한 원뿔형 통조림이 버려져 있다. 특수한 구조를 하고 있지만 실속은 없는 것 같다…….
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 골목의 막다른 곳에서 한 남자가 머리에서 피를 뿜어내며 죽어 있다.
+		SAVESTR:調査_状況2 = 한 손에는 권총이 들려 있었고, 그 표정은 어딘지 모르게 안도하는 것 같았다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 골목 안 깊은 곳에서 온 신경이 거부할 정도의 냄새가 난다. 지하에서 장기가 넘쳐흐르고 있는 것 같다…….
+	ELSE
+		SAVESTR:調査_状況 = 도시에 우뚝 솟은 마천루도 뒷골목에서는 그 모습을 볼 수 없다.
+		SAVESTR:調査_状況2 = 안쪽은 어둑하고 공기도 탁하다…….
+	ENDIF
+ELSEIF Flag:フロア_種類 == 1
+;繁華街
+	IF !RAND:10
+		SAVESTR:調査_状況 = 예전에는 북적였을 번화가도, 사람이 없다면 쓸쓸하게 느껴진다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = 빼곡하게 여러 점포가 들어서 있다, 지만 어딘가 공허하게 느껴진다…….
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = 약국으로 발을 옮겼지만, 여러 약품의 냄새가 한데 섞여 코를 찌르니 나아가는 것을 주저하게 한다…….
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 옆에는 정육점이 있지만, 아니나다를까 고기가 아니라 구더기와 파리의 시체뿐이었다…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 자신과 같은 조사원일까, 무장한 여자가 가슴에서 피를 흘리며 죽어 있다…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 전기가 살아 있는 것인지, 반파된 TV가 광고 영상을 방영하고 있다…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 사람이 모이는 번화가도 폐허로 변하면 북적임도 사라진다.
+		SAVESTR:調査_状況2 = 한탄하듯이 허무하게 바람만이 분다…….
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 가게 안쪽에서 부식된 고기덩어리가 꿈틀대고 있다.
+		SAVESTR:調査_状況2 = 이미 죽어가고 있지만 가까이 가지 않는게 좋을 것이다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 남자가 테이블에 엎어진 채 죽어 있다.
+		SAVESTR:調査_状況2 = 그 모습은 몸도 마음도 몹시 지친 모습이였다…….
+	ELSE
+		SAVESTR:調査_状況 = 음식점 창문 쪽으로 시선을 돌리자, 가게 안에서 대량의 시체가 나뒹굴고 있다…….
+	ENDIF
+ELSE 
+;街道
+	IF !RAND:10
+		SAVESTR:調査_状況 = 샛길에 시꺼먼 핏자국이 튀어 있다.
+		SAVESTR:調査_状況2 = 멀리서도 알 수 있을 만큼 무참한 광경을 확인할 수 있었다…….
+	ELSEIF !RAND:9
+		SAVESTR:調査_状況 = 한 경관이 벽에 기대듯이 죽어 있다.
+		SAVESTR:調査_状況2 = 주변에 있는 외적의 시체를 보아하니 최후까지 싸웠던 것 같다…….
+	ELSEIF !RAND:8
+		SAVESTR:調査_状況 = 충돌 사고의 영향인지 여러 대의 차량이 벽처럼 밀집해 있다.
+		SAVESTR:調査_状況2 = 우회할 수 밖에 없는 것 같다…….
+	ELSEIF !RAND:7
+		SAVESTR:調査_状況 = 도로에서 벗어난 차가 벽에 처박혀 있다.
+		SAVESTR:調査_状況2 = 안을 확인해보자 여러 명의 백골 시체가 잠들어 있다…….
+	ELSEIF !RAND:6
+		SAVESTR:調査_状況 = 큰 건물이 없는 탓인지, 찬 바람이 틈새를 누비듯 불고 있다…….
+	ELSEIF !RAND:5
+		SAVESTR:調査_状況 = 흔한 가도의 광경이 펼쳐진다. 특별히 눈에 띄는 것은 없는 것 같다…….
+	ELSEIF !RAND:4
+		SAVESTR:調査_状況 = 여러 갈래 가도가 교차하고 있다. 표시를 해 두지 않는다면 미아가 될 것 같다…….
+	ELSEIF !RAND:3
+		SAVESTR:調査_状況 = 가도 한가운데에 있는 손상된 표지판이 바람에 흔들리며 삐걱거리고 있다…….
+	ELSEIF !RAND:2
+		SAVESTR:調査_状況 = 오래전의 전투 흔적인지, 깊게 패인 땅이 눈길을 끈다…….
+	ELSE
+		SAVESTR:調査_状況 = 버려진 차가 길가에 놓여 있다.
+		SAVESTR:調査_状況2 = 타이어에 바람이 빠져 쓸모가 없을 것 같다…….
+	ENDIF
+ENDIF
+
+;ステージ開始時の説明
+IF Flag:調査深度 == 1
+	IF Flag:調査区域 == 90
+		SAVESTR:調査_状況  = ≪이 구획의 공간이 안정되어 있는 것은 １일까지입니다.≫
+		SAVESTR:調査_状況2 = ≪오늘 중으로 최심부까지 가도록 하죠.≫
+	ELSEIF Flag:調査区域 == 50
+		SAVESTR:調査_状況  = 이 구역은 시간을 조종하는 『외신(外神)』이 있는 곳이다.
+		SAVESTR:調査_状況2 = 덤벼드는 것은 무모하기 때문에 세심한 주의를 해야 한다…….
+	ELSEIF Flag:調査区域 == 5
+		SAVESTR:調査_状況  = 도시 전체를 거대한 거미줄이 빽빽이 뒤덮고 있다.
+		SAVESTR:調査_状況2 = 지날 수 있는 통로가 엉망진창이다. 마치 하얀 미궁이다…….
+	ELSE
+		SAVESTR:調査_状況  = 필드가 전개되어, 시공간이 안정돼 활동 가능한 상태가 된다.
+		SAVESTR:調査_状況2 = 휘감기는 한기를 물리치듯 정신을 바짝 차리면서 조사를 개시했다…….
+	ENDIF
+ENDIF
+
+IF TALENT:L_I:유니크 
+	TRYCALLFORM KOJO_DEFAULT_ENCOUNTER_K{CFLAG:L_I:NPC番号}_RPGTALK
+ELSE
+	IF !RAND:10
+		SAVESTR:調査_一言 = 「……相変わらず不気味%CSTR:L_I:어미肯定%…」
+	ELSEIF !RAND:9
+		SAVESTR:調査_一言 = 「…大丈夫…%CSTR:L_I:어미逆説%気は抜けない%CSTR:L_I:어미応答2%」
+	ELSEIF !RAND:8
+		SAVESTR:調査_一言 = 「…………」
+	ELSEIF !RAND:7
+		SAVESTR:調査_一言 = 「…っ…、冷たい風が……防寒対策しないと…」
+	ELSEIF !RAND:6
+		SAVESTR:調査_一言 = 「何か見つけるといい%CSTR:L_I:어미繋ぎ%%CSTR:L_I:어미逆説%」
+	ELSEIF !RAND:5
+		SAVESTR:調査_一言 = 「―――静かすぎるのも問題%CSTR:L_I:어미肯定%…」
+	ELSEIF !RAND:4
+		SAVESTR:調査_一言 = 「……！、…気のせい…%CSTR:L_I:어미同意求む%…？」
+	ELSEIF !RAND:3
+		SAVESTR:調査_一言 = 「――まだ気配はない%CSTR:L_I:어미応答2%」
+	ELSEIF !RAND:2
+		SAVESTR:調査_一言 = 「%CSTR:L_I:어미反応%…、ここに繋がる%CSTR:L_I:어미応答3%」
+	ELSE
+		SAVESTR:調査_一言 = 「…ふぅ……」
+	ENDIF
+ENDIF
+
+
+IF Flag:フロア_種類 == 90
+	SAVESTR:調査_一言 = 【중계거점에 도착해 HP와 SP가 전부 회복되었다.】
+ENDIF
+
+
+;フロアイベント発生
+CALL FLOOREVENT
+
+
+;-------------------------------------------------
+;支援부대の能力を再計算する関数
+;-------------------------------------------------
+@CALC_SUPPORT
+CALL CALC_ZUIHAN("ATK")
+FLAG:支援_수반合計ATK = RESULT
+CALL CALC_ZUIHAN("DEF")
+FLAG:支援_수반合計DEF = RESULT
+CALL CALC_ZUIHAN("HIT")
+FLAG:支援_수반合計HIT = RESULT
+CALL CALC_ZUIHAN("SPD")
+FLAG:支援_수반合計SPD = RESULT
+
+CALL CALC_KOUHOU("HIT")
+FLAG:支援_후방合計HIT = RESULT
+CALL CALC_KOUHOU("SPD")
+FLAG:支援_후방合計SPD = RESULT
+
+CALL CALC_KAISYU("LUK")
+FLAG:支援_회수合計LUK = RESULT
+CALL CALC_KAISYU("SPD")
+FLAG:支援_회수合計SPD = RESULT
+RETURN
+
+
+;-------------------------------------------------
+;ダンジョン탐색における戦闘を始める関数
+;ARGは調査キャラ
+;RAREはレア敵を出すフラグ。0で通常敵、1でレア敵強制
+;-1なら通常通りレア・通常の抽選を行う
+;-------------------------------------------------
+@RPG_BATTLE_DUNGEON(ARG = -1 , RARE = -1)
+#DIM ENEM
+#DIM RARE
+#DIM FIELD
+SIF ARG == -1
+	THROW ARGの値が不正です({ARG})
+
+;敵を抽選
+CALLFORM DUNGEON_{FLAG:調査区域}_ENEMY(RARE)
+ENEM = RESULT
+
+;戦場を設定
+FIELD = FLOORTER:NOWFLOOR
+CALL RPG_BATTLE(ARG , ENEM , FIELD , FLAG:調査深度 / 5 ,  ,  , FLAG:調査区域)
+;-----以下戦闘結果の処理-----
+;以下の関数は必ずJUMPする
+CALL RPG_BATTLE_RESULT(ARG , ENEM)
+RETURN
+
+
+;-------------------------------------------------
+;ダンジョンでの戦闘後の処理を行う関数。ダンジョン탐색専用なので注意
+;BATTLE_WIN_Pなどの戦闘結果変数がきちんと処理されている必要あり
+;必ずJUMPする。CALL元には帰らないので注意
+;RPG_STARTへ飛ぶ　＝戦闘終了後も탐색を継続
+;SYSTEM_MENUへ飛ぶ＝戦闘で問題が起きたので撤退
+;-------------------------------------------------
+@RPG_BATTLE_RESULT(ARG , ARG:1)
+;ダンジョン別の戦闘終了後処理関数
+TRYCCALLFORM DUNGEON_{FLAG:調査区域}_AFTERBATTLE(ARG:1 , BATTLE_WIN_P)
+
+CATCH
+	;一応TRYCCALLFORMにしておくが、今のところ例外処理なし
+ENDCATCH
+
+IF BATTLE_WIN_P
+	CALL RPG_HP_RECOVERY(ARG)
+	CALL RPG_DISMANTLE(ARG)
+
+	;アーティファクト入手
+	IF RAND:((Flag:調査深度)+1) >=  20+RAND:100
+		;日替わり区画でない、かつレア敵撃破なら20%の確率でゲノム適性付きアーティファクト生成処理
+		;判定に失敗なら通常のアーティファクト生成
+		IF FLAG:調査区域 != 90 && FLAG:敵_レア != 0
+			CALL RPG_ARTIFACT_GENOME_GET(ARG , ARTIFACT_GENOME)
+		ELSE
+			CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		ENDIF
+	ENDIF
+
+	SIF Flag:調査区域 >= 3 && Flag:調査深度 >= 50
+		CALL ARCHIVE_G
+
+	IF Flag:調査区域 == 90 && (Flag:調査深度 >= Flag:日替わり区画深度限界)
+		;日替わり区画専用
+		RESETBGCOLOR
+		PRINTFORML ≪구획 답파, 축하드립니다. 「외적」이 근거지로 하고 있던 플로어에서 아티팩트 반응을 검지≫
+		PRINTFORMW ≪모처럼이니 회수하죠. 좋은 것이 발견되면 좋겠네요≫
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		Flag:調査深度 = 0
+		Flag:턴조사완료 = 1
+		CALL RPG_END
+		JUMP RPG_MAIN
+	ENDIF
+
+	JUMP RPG_START(ARG)
+ELSEIF BATTLE_WIN_E
+	JUMP SYSTEM_MENU
+ELSEIF BATTLE_ESCAPE_P || BATTLE_ESCAPE_E
+	;プレイヤー側か敵側の逃走で決着
+	JUMP RPG_START
+ELSEIF BATTLE_TIMEUP
+	;戦闘の時間切れで決着
+	JUMP RPG_START
+ELSE
+	THROW 予期しない戦闘結果
+ENDIF
+RETURN

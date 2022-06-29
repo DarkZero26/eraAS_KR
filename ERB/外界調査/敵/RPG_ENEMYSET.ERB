@@ -1,0 +1,132 @@
+﻿;-------------------------------------------------
+;ENEMYに与えられた番号の敵を呼び出し、各種フラグをセットする関数
+;乱数による能力の振れ幅もここで処理
+;BOOSTに数を受け取るとその分能力を増加する
+;-------------------------------------------------
+@RPG_ENEMYSET(ENEMY = -1 , BOOST = 0 , DUNGEON = -1)
+#DIM STATUS_E  ,100 ;敵パラメータ受け渡し配列
+#DIMS STATUS_ES,100 ;同上
+#DIM ENEMY          ;敵ID
+#DIM BOOST          ;敵全体の強化/弱体化。負数で弱体化し、正数で強化される
+#DIM DUNGEON        ;ダンジョンIDを受け取り、탐색の場合を想定する
+#DIM CNT
+
+;敵パラメータ読み込み配列初期化
+VARSET STATUS_E
+VARSET STATUS_ES
+
+;汎用ダ이스抽選。もし専用ダ이스を使わせたいなら各々の敵設定ファイルでダ이스の設定を書き換える
+IF DUNGEON >= 0
+	;特定の調査区域ではダ이스レベルアップが起きない
+	IF DUNGEON > 1
+		;特定の調査深度以上からLV2ダ이스
+		FOR CNT , VARSIZE("DICE_LVUP_FLOOR") - 1 , 0 , -1
+			IF FLAG:調査深度 >= DICE_LVUP_FLOOR:CNT
+				CALL DICE_LOTTERY(CNT + 1)
+				STATUS_E:CON_敵_主兵装 = RESULT
+				CALL DICE_LOTTERY(CNT + 1)
+				STATUS_E:CON_敵_副兵装 = RESULT
+			ENDIF
+		NEXT
+	ELSE
+		GOTO DICE_LV1
+	ENDIF
+ELSE
+	$DICE_LV1
+	;Lv1汎用ダ이스
+	CALL DICE_LOTTERY()
+	STATUS_E:CON_敵_主兵装 = RESULT
+	CALL DICE_LOTTERY()
+	STATUS_E:CON_敵_副兵装 = RESULT
+ENDIF
+
+;敵パラメータを参照型配列で読み込み
+CALLFORM ENEMY_{ENEMY}(STATUS_E , STATUS_ES)
+
+;敵強化/弱体化フラグを下限処理しておく
+BOOST = MAX(-100 , BOOST)
+
+;広域変数への格納および乱数による振れ幅をつける
+SAVESTR:敵_名前 = %STATUS_ES:CON_敵_NAME%
+;変数名衝突の問題が起きたので取り急ぎ数字で左辺を指定
+FLAG:敵_최대체력 = STATUS_E:CON_敵_HP + RAND:(STATUS_E:CON_敵_HP / 2 <= 0 ? 1 # STATUS_E:CON_敵_HP / 2)
+FLAG:敵_ATK = STATUS_E:CON_敵_ATK + RAND:(STATUS_E:CON_敵_ATK / 2 <= 0 ? 1 # STATUS_E:CON_敵_ATK / 2)
+FLAG:敵_DEF = STATUS_E:CON_敵_DEF + RAND:(STATUS_E:CON_敵_DEF / 2 <= 0 ? 1 # STATUS_E:CON_敵_DEF / 2)
+FLAG:敵_HIT = STATUS_E:CON_敵_HIT + RAND:(STATUS_E:CON_敵_HIT / 2 <= 0 ? 1 # STATUS_E:CON_敵_HIT / 2)
+FLAG:敵_SPD = STATUS_E:CON_敵_SPD + RAND:(STATUS_E:CON_敵_SPD / 2 <= 0 ? 1 # STATUS_E:CON_敵_SPD / 2)
+FLAG:敵_LUK = STATUS_E:CON_敵_LUK + RAND:(STATUS_E:CON_敵_LUK / 2 <= 0 ? 1 # STATUS_E:CON_敵_LUK / 2)
+FLAG:敵_取得경험치 = STATUS_E:CON_敵_EB
+FLAG:敵_弱点 = STATUS_E:CON_敵_弱点
+FLAG:敵_耐性 = STATUS_E:CON_敵_耐性
+FLAG:敵_レア = STATUS_E:CON_敵_レア
+FLAG:敵_逃走確定 = STATUS_E:CON_敵_逃走確定
+FLAG:敵_逃走企図 = STATUS_E:CON_敵_逃走企図
+
+;BOOST処理部
+FLAG:敵_최대체력 += PERCENT(FLAG:敵_최대체력 , BOOST)
+FLAG:敵_ATK += PERCENT(FLAG:敵_ATK , BOOST)
+FLAG:敵_DEF += PERCENT(FLAG:敵_DEF , BOOST)
+FLAG:敵_HIT += PERCENT(FLAG:敵_HIT , BOOST)
+FLAG:敵_SPD += PERCENT(FLAG:敵_SPD , BOOST)
+FLAG:敵_LUK += PERCENT(FLAG:敵_LUK , BOOST)
+
+FLAG:敵_현재체력 = FLAG:敵_최대체력
+
+;ダ이스設定部
+;ダ이스ID
+Flag:敵_M兵装 = STATUS_E:CON_敵_主兵装
+
+;ダ이스の性能
+CALLFORM DICE_SIDE_{STATUS_E:CON_敵_主兵装}
+Flag:敵_M兵装데미지 = RESULT
+CALLFORM DICE_ROLLNUM_{STATUS_E:CON_敵_主兵装}
+Flag:敵_M兵装ダ이스 = RESULT
+CALLFORM DICE_BONUS_{STATUS_E:CON_敵_主兵装}
+Flag:敵_M兵装ボーナス = RESULT
+
+Flag:敵_S兵装 = STATUS_E:CON_敵_副兵装
+CALLFORM DICE_SIDE_{STATUS_E:CON_敵_副兵装}
+Flag:敵_S兵装데미지 = RESULT
+CALLFORM DICE_ROLLNUM_{STATUS_E:CON_敵_副兵装}
+Flag:敵_S兵装ダ이스 = RESULT
+CALLFORM DICE_BONUS_{STATUS_E:CON_敵_副兵装}
+Flag:敵_S兵装ボーナス = RESULT
+
+;副兵装が汎用品なら主兵装と同等の能力になってしまうので弱体化
+CALLFORM DICE_COMMON_{STATUS_E:CON_敵_副兵装}
+IF RESULT
+	;ダ이스ロール数はそのまま
+	Flag:敵_S兵装ダ이스 = Flag:敵_S兵装ダ이스
+	Flag:敵_S兵装데미지 = MAX(PERCENT(Flag:敵_S兵装데미지 , RAND(60 , 80)) , 2)
+	Flag:敵_S兵装ボーナス = PERCENT(Flag:敵_S兵装ボーナス , RAND(60 , 80))
+ENDIF
+RETURN
+
+
+
+
+@ENEMY_PARAM_READ(KEY = -1)
+#FUNCTION
+#DIM KEY
+RETURNF ENEMY_PARAM(KEY)
+
+
+@ENEMY_PARAM_WRITE(KEY = -1 , VALUE = 0)
+#FUNCTION
+#DIM KEY
+#DIM VALUE
+CALLF ENEMY_PARAM(KEY , 1 , VALUE)
+RETURNF ENEMY_PARAM(KEY)
+
+
+@ENEMY_PARAM(KEY , WRITE = 0 , VALUE)
+#FUNCTION
+#DIM WRITE
+#DIM KEY
+#DIM VALUE
+#DIM L_PRM , 100
+
+SIF WRITE
+	L_PRM:KEY = VALUE
+
+RETURNF L_PRM:KEY

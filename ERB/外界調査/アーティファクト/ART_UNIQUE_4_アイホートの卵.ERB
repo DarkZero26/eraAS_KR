@@ -1,0 +1,76 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;4は유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_4_NAME
+RESULTS = 『기형』Eihort의 알
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_4_ABLE
+;複数入手は不可
+SIF RPG_ARTIFACT_COUNTUNIQUE(4)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_4_RANK
+RETURN 60
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_4_ATK
+RETURN 160
+
+
+@ART_UNIQUE_4_DEF
+RETURN 45
+
+
+@ART_UNIQUE_4_HIT
+RETURN 150
+
+
+@ART_UNIQUE_4_SPD
+RETURN 90
+
+
+@ART_UNIQUE_4_LUK
+RETURN 75
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_4_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_4_ABILITY
+RETURN 0
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_4_MADEIN
+RETURN 3
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_4_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 이름대로 Eihort의 새끼가 들어있는 알……이라고 생각된다. 생명활동도 유지되고 있음에도 무슨 이유인지 적의는 없는 듯하다.
+EXPL:1 = 사용자의 요구에 따라 알에서 부화해 싸우고, 일이 끝나면 다시 알로 되돌아가는 모습은 "새끼"라고 할 수 있을지 의심스럽다.
+EXPL:2 = 그 외형은 달리 비교할 수 없을 정도로 불쾌하기 짝이 없지만, 친애의 정을 나타내는 모습은 의외로 사랑스럽다.
+EXPL:3 = 그들이 그 잘못된 동족의식을 버리는 일이 없기를 기도하자…….
+EXPL:4 = 
+RETURN 1

@@ -1,0 +1,47 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:_SYSTEM_VARIANT.ERH
+;	Facility	:ヘッダファイル(召喚処理)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	001		2014/03/10		なるはや				出身作品に関する変数を追加
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;   各種フラグ
+;-------------------------------------------------
+#DEFINE DEFSMN_LIST_NUM		4400	;데이터 수
+#DIM GSMN_LIST,				4400	;배열:데이터
+#DIM SAVEDATA GSMN_STOCK,	4400	;스톡플래그(0:구매가능 1:재고없음)
+#DIM SAVEDATA GSMN_VIEW_MODE,	1	;표시모드
+#DIM SAVEDATA GSMN_CTL_MODE,	1	;작품제어모드(0:통상 1:작품별)
+
+;중고처리
+#DEFINE 中古キャラデータ数		4400		;데이터 수
+#DIM SAVEDATA 中古キャラABL,	4400,60		;실종캐릭터의 ABL보존용
+#DIM SAVEDATA 中古キャラBASE,	4400,1		;	　〃　　 BASE보존용
+#DIM SAVEDATA 中古キャラEXP,	4400,100	;	　〃　　 EXP보존용
+#DIM SAVEDATA 中古キャラTALENT,	4400,220	;	　〃　　 TALENT보존용
+#DIM SAVEDATA 中古キャラ初体験,	4400,8		;	　〃　　 첫체험보존용
+#DIM SAVEDATA 中古キャラ임신相手,4400,1		;	　〃　　 실종시의 임신상대 보존용
+
+
+;유닛 타입제어용
+#DEFINE DEFSMN_RACE_NUM		50		;유닛 타입 수
+#DIMS GSMN_RACE,			50		;배열:유닛 타입
+#DIM GSMN_RACE_NO,			1		;유닛 타입NO
+#DEFINE DEFSMN_ORIGIN_MAX	500		;출신 작품 수
+#DIMS GSMN_ORIGIN,			500		;배열:출신작품
+#DIMS GSMN_ORIGIN_KANA,		500		;배열:출신 가나
+#DIM GSMN_ORIGIN_NO,		1		;출신작품 NO
+#DIM GSMN_ORIGIN_NUM,		1		;출신작품 총 수 
+#DIM GSMN_ORIGIN_INITED,	1		;출신작품 준비완료
+#DIM GSMN_LIST_START,		1		;목록시작위치
+#DIM GSMN_LIST_END,			1		;목록종료위치
+

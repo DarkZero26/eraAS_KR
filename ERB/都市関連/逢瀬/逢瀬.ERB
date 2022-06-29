@@ -1,0 +1,197 @@
+﻿
+;-------------------------------------------------
+;逢瀬する
+;-------------------------------------------------
+@OUS_MAINE
+#DIM L_INPUT
+
+CALL MASTER_CHANGE_UPDATE
+FLAG:あなた_逢瀬中 = 1
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 평행세계의 존재와 교체된 상태로 도시의 남성과 밀회를 행합니다.
+PRINTFORML ※임신・출산도 가능하지만, 현 시점에서는 도시에 공헌하는 일은 없습니다.
+DRAWLINE
+
+PRINTFORML 　　　　　　　[1] - 밀회한다
+PRINTFORM 　　　　　　　[2] - 능력표시
+PRINTFORML 　　[12] - 이름 변경
+PRINTFORML 　　　　　　　[3] - 역헌팅
+PRINTFORML 　　　　　　　[4] - 헤어진다
+PRINTFORML 　　　　　　　
+PRINTFORML 　　　　　　　
+PRINTFORML 　　　　　　　
+PRINTFORML 　　　　　　　
+PRINTFORML
+PRINTFORM [999] - 돌아간다　　
+CALL C_PICTURE_MASTER(MASTER)
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 1
+	CALL OUS_SUB_1
+CASE 2
+	CALL OUS_SUB_2
+CASE 3
+	CALL CITY_SCOUT
+CASE 4
+	CALL OUS_SUB_DELETE
+CASE 12
+	CALL OUS_SUB_12
+CASE 999
+	FLAG:あなた_逢瀬中 = 0
+	RETURN
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+RESTART
+
+
+;-------------------------------------------------
+;逢瀬 逢瀬する
+;-------------------------------------------------
+@OUS_SUB_1(ARG)
+#DIM L_INPUT
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 남성 주민 중 밀회 상대를 선택해주세요.
+DRAWLINE
+CALL MEMBER_LIST_D
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+ARG = RESULT
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	SIF TALENT:L_INPUT:남성거주자 == 0
+		GOTO INPUT_LOOP
+	FLAG:あなた_元ターゲット = TARGET
+	TFLAG:メインターゲット = L_INPUT
+	GTR_PL:1 = L_INPUT
+	TARGET = L_INPUT
+	SIF FLAG:あなた_元ターゲット != -1
+		CFLAG:(FLAG:あなた_元ターゲット):調教対象フラグ = 0
+	CFLAG:(TARGET):調教対象フラグ = 1
+	
+	CALL SYSTEM_TRAIN
+	
+	SIF FLAG:あなた_元ターゲット != -1
+		CFLAG:(FLAG:あなた_元ターゲット):調教対象フラグ = 1
+	CFLAG:(TARGET):調教対象フラグ = 0
+	TFLAG:メインターゲット = FLAG:あなた_元ターゲット
+	TARGET = FLAG:あなた_元ターゲット
+	GTR_PL:1 = FLAG:あなた_元ターゲット
+	FLAG:ターン終了フラグ = 1
+	FLAG:あなた_逢瀬中 = 0
+	FLAG:調教開始フラグ = 0
+	JUMP SYSTEM_MENU
+ENDSELECT
+
+
+;-------------------------------------------------
+;逢瀬 能力表示
+;-------------------------------------------------
+@OUS_SUB_2(ARG)
+#DIM L_INPUT
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 능력을 표시하고자 하는 남성 주민을 선택해주세요.
+DRAWLINE
+CALL MEMBER_LIST_D
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+ARG = RESULT
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	CALL INFO_STATUS_MAIN(ARG)
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+;-------------------------------------------------
+;逢瀬 お別れ
+;-------------------------------------------------
+@OUS_SUB_DELETE
+#DIM L_INPUT
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 헤어질 남성 주민을 선택해주세요.
+DRAWLINE
+CALL MEMBER_LIST_D
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	CALL CANCEL_SCOUT(L_INPUT)
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+
+;-------------------------------------------------
+;逢瀬 名前変更
+;-------------------------------------------------
+@OUS_SUB_12(ARG)
+#DIM L_INPUT
+#DIM L_I
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 이름을 변경할 남성 주민을 선택해 주세요.
+DRAWLINE
+CALL MEMBER_LIST_D
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+L_I = RESULT
+ARG = RESULT
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	PRINTFORML 현재 이름은 "%CALLNAME:L_I%"입니다. 새로운 이름을 입력해주세요.
+	PRINTFORML 입력을 취소하려면, 공입력을 해주세요.
+	DRAWLINE
+	INPUTS
+	SELECTCASE RESULTS
+		CASE ""
+			RESTART
+		CASEELSE
+			NAME:L_I = %RESULTS%
+			CALLNAME:L_I = %RESULTS%
+			CLEARLINE LINECOUNT
+			DRAWLINE
+			PRINTFORML 이름을 %조사처리(CALLNAME:L_I,"로")% 변경했습니다.
+			PRINTFORMW 
+	ENDSELECT
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+
+
+
+
+

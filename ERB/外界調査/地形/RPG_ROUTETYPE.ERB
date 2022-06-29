@@ -1,0 +1,171 @@
+﻿;-------------------------------------------------
+;そのルートの타입、および地形を定義
+;-------------------------------------------------
+[SKIPSTART]
+;-------------------------------------------------
+;(ルート타입の説明など記入)
+;-------------------------------------------------
+;そのルート타입の名前をRESULTに入れて返す
+@RTYPE_XXX_NAME
+RESULTS = 
+RETURN
+
+;そのルート타입を構成する地形を一つ返す
+;ルートの地形決定関数でフロア階層分回して使う
+@RTYPE_XXX_TERRAIN
+#DIM TER
+RETURN TER
+[SKIPEND]
+
+
+;-------------------------------------------------
+;ルート타입の決定関数。ルート타입を一つ返す
+;複数バージョン作りたくなるかもしれないのでIDを振っておく
+;-------------------------------------------------
+@CHOOSE_ROUTE(DUNG = -1)
+#DIM RT
+#DIM DUNG
+
+TRYCCALLFORM DUNGEON_{DUNG}_ROUTE
+
+CATCH
+	;ルート타입決定関数未定義なら汎用処理
+	SELECTCASE CHUSEN(25 , 25 , 25 , 25)
+		CASE 0
+			;平原
+			RT = 1
+		CASE 1
+			;都市部
+			RT = 2
+		CASE 2
+			;森林地帯
+			RT = 3
+		CASE 3
+			;河川地帯
+			RT = 4
+		CASEELSE
+			THROW 予期しない分岐
+	ENDSELECT
+ENDCATCH
+RETURN RT
+
+
+
+;-------------------------------------------------
+;平原
+;-------------------------------------------------
+;そのルート타입の名前をRESULTに入れて返す
+@RTYPE_1_NAME
+RESULTS = 平原
+RETURN
+
+;そのルート타입を構成する地形を一つ返す
+@RTYPE_1_TERRAIN
+#DIM TER
+SELECTCASE CHUSEN(50 , 20 , 15 , 15)
+	CASE 0
+		;平地
+		TER = 1
+	CASE 1
+		;市街地
+		TER = 2
+	CASE 2
+		;林
+		TER = 5
+	CASE 3
+		;川
+		TER = 6
+	CASEELSE
+		THROW 想定しない分岐
+ENDSELECT
+RETURN TER
+
+
+;-------------------------------------------------
+;都市部
+;-------------------------------------------------
+;そのルート타입の名前をRESULTに入れて返す
+@RTYPE_2_NAME
+RESULTS = 都市部
+RETURN
+
+;そのルート타입を構成する地形を一つ返す
+@RTYPE_2_TERRAIN
+#DIM TER
+SELECTCASE CHUSEN(30 , 40 , 15 , 15)
+	CASE 0
+		;平地
+		TER = 1
+	CASE 1
+		;市街地
+		TER = 2
+	CASE 2
+		;林
+		TER = 5
+	CASE 3
+		;川
+		TER = 6
+	CASEELSE
+		THROW 想定しない分岐
+ENDSELECT
+RETURN TER
+
+
+;-------------------------------------------------
+;森林地帯
+;-------------------------------------------------
+;そのルート타입の名前をRESULTに入れて返す
+@RTYPE_3_NAME
+RESULTS = 森林地帯
+RETURN
+
+;そのルート타입を構成する地形を一つ返す
+@RTYPE_3_TERRAIN
+#DIM TER
+SELECTCASE CHUSEN(5 , 50 , 10 , 35)
+	CASE 0
+		;市街地
+		TER = 2
+	CASE 1
+		;林
+		TER = 5
+	CASE 2
+		;川
+		TER = 6
+	CASE 3
+		;森
+		TER = 3
+	CASEELSE
+		THROW 想定しない分岐
+ENDSELECT
+RETURN TER
+
+
+;-------------------------------------------------
+;河川地帯
+;-------------------------------------------------
+;そのルート타입の名前をRESULTに入れて返す
+@RTYPE_4_NAME
+RESULTS = 河川地帯
+RETURN
+
+;そのルート타입を構成する地形を一つ返す
+@RTYPE_4_TERRAIN
+#DIM TER
+SELECTCASE CHUSEN(5 , 10 , 50 , 35)
+	CASE 0
+		;市街地
+		TER = 2
+	CASE 1
+		;林
+		TER = 5
+	CASE 2
+		;川
+		TER = 6
+	CASE 3
+		;湖
+		TER = 4
+	CASEELSE
+		THROW 想定しない分岐
+ENDSELECT
+RETURN TER

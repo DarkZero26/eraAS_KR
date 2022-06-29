@@ -1,0 +1,35 @@
+﻿;-------------------------------------------------
+;財布発見
+;-------------------------------------------------
+@RPG_EVENT_300(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+
+L_G = 3000 + RAND(1 , MAX(FLAG:調査深度 , 2)) * 200
+L_G = MIN(L_G , 30000)
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 300
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:지갑 발견】
+PRINTFORML 
+PRINTFORML %조사처리(CALLNAME:L_I,"는")% 탐색 도중 지갑을 발견했다. 상당한 액수가 들어 있는 것 같다.
+PRINTFORML 주변을 둘러봐도 주인으로 생각되는 사람의 그림자조차 찾을 수 없다.
+PRINTFORML 이대로 방치한다 해도 풍화되면서 사라질 뿐이다. 잘 활용해주도록 하자…….
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 자금 {L_G}만큼 획득했다.
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+
+MONEY += L_G
+RESETCOLOR
+DRAWLINE

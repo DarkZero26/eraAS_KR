@@ -1,0 +1,27 @@
+﻿;-------------------------------------------------
+;暴走した실험체
+;이스からの駆除依頼専用
+;依頼部分で呼ぶこと前提
+;-------------------------------------------------
+@ENEMY_0(L_STATUS , LS_STATUS)
+#DIM REF L_STATUS
+#DIMS REF LS_STATUS
+#DIM TEMP
+
+LS_STATUS:CON_敵_NAME = 폭주한 실험체
+TEMP = (Flag:依頼_이스からの駆除依頼_Lv / 2) + 1
+
+;特定レベルから専用ダ이스
+SIF Flag:依頼_이스からの駆除依頼_Lv >= 40
+	L_STATUS:CON_敵_主兵装 = 4
+
+L_STATUS:CON_敵_EB = 10 + TEMP * 2
+L_STATUS:CON_敵_HP = TEMP * 10 + 50
+L_STATUS:CON_敵_ATK = TEMP * TEMP + 6
+L_STATUS:CON_敵_DEF = TEMP * TEMP + 7
+L_STATUS:CON_敵_HIT = TEMP * TEMP + 5
+L_STATUS:CON_敵_SPD = TEMP * TEMP + 5
+L_STATUS:CON_敵_LUK = 0
+L_STATUS:CON_敵_弱点 = RAND:5
+L_STATUS:CON_敵_耐性 = RAND:5
+RETURN

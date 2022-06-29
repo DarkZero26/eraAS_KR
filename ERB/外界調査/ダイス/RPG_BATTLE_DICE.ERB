@@ -1,0 +1,525 @@
+﻿;-------------------------------------------------
+;ダ이스定義関数群
+;XXXをダ이스IDで置き換える。IDは重複不可
+;以下の5つの関数は欠けてはいけない
+;DICE_NAME_XXX 　　ダ이스の名前。RESULTSに代入して返す
+;DICE_SIDE_XXX 　　ダ이스の面の数。1以上
+;DICE_ROLLNUM_XXX　ダ이스を振る数。1以上
+;DICE_BONUS_XXX　　ダ이스の出目に加算する数。任意の数
+;DICE_COMMON_XXX 　そのダ이스が汎用品かどうか。0なら유니크なダ이스、0以外ならコモンダ이스
+
+;-------------------------------------------------
+;以下のコメントブロックはテンプレート
+[SKIPSTART]
+;-------------------------------------------------
+;IDXXX
+;(誰のダ이스かなどを書く)
+;期待値
+;-------------------------------------------------
+@DICE_NAME_XXX
+RESULTS = 
+RETURN 1
+
+
+@DICE_ROLLNUM_XXX
+RETURN 
+
+
+@DICE_SIDE_XXX
+RETURN 
+
+
+@DICE_BONUS_XXX
+RETURN 
+
+
+@DICE_COMMON_XXX
+RETURN 0
+[SKIPEND]
+
+
+;-------------------------------------------------
+;コモンダ이스をランダムで抽選して返す関数
+;LVにコモンダ이스のレベルを受け取る
+;-------------------------------------------------
+@DICE_LOTTERY(LV = 1)
+#DIM DSET , 100
+#DIM CNT
+#DIM DSETNUM
+#DIM ISUNIQ
+#DIM LV
+VARSET DSET , -1
+DSETNUM = 0
+
+FOR CNT , 0 , VARSIZE("DSET")
+	TRYCCALLFORM DICE_COMMON_{CNT}
+		SIF RESULT == LV
+			DSET:(DSETNUM++) = CNT
+	CATCH
+		CONTINUE
+	ENDCATCH
+NEXT
+
+;DSETNUMが0ならコモンダ이스が未定義なのでエラー
+SIF DSETNUM == 0
+	THROW コモンダ이스が一つも定義されていません
+
+RETURN DSET:(RAND:DSETNUM)
+
+[SKIPSTART]
+ELSEIF !RAND:
+	RETURN 
+[SKIPEND]
+
+
+;-------------------------------------------------
+;ID0
+;汎用品
+;期待値9
+;-------------------------------------------------
+@DICE_NAME_0
+RESULTS = 비극의 다이스
+
+
+@DICE_ROLLNUM_0
+RETURN 2
+
+
+@DICE_SIDE_0
+RETURN 7
+
+
+@DICE_BONUS_0
+RETURN 0
+
+
+@DICE_COMMON_0
+RETURN 1
+
+
+;-------------------------------------------------
+;ID1
+;汎用品
+;期待値9
+;-------------------------------------------------
+@DICE_NAME_1
+RESULTS = 매혹의 다이스
+
+
+@DICE_ROLLNUM_1
+RETURN 3
+
+
+@DICE_SIDE_1
+RETURN 5
+
+
+@DICE_BONUS_1
+RETURN 0
+
+
+@DICE_COMMON_1
+RETURN 1
+
+
+;-------------------------------------------------
+;ID2
+;汎用品
+;期待値10
+;-------------------------------------------------
+@DICE_NAME_2
+RESULTS = 시시한 다이스
+
+
+@DICE_ROLLNUM_2
+RETURN 4
+
+
+@DICE_SIDE_2
+RETURN 3
+
+
+@DICE_BONUS_2
+RETURN 1
+
+
+@DICE_COMMON_2
+RETURN 1
+
+
+;-------------------------------------------------
+;ID4
+;依頼"이스の駆除依頼"特定Lvから主兵装で使用
+;期待値16.5
+;-------------------------------------------------
+@DICE_NAME_4
+RESULTS = 안경 다이스
+
+
+@DICE_ROLLNUM_4
+RETURN 3
+
+
+@DICE_SIDE_4
+RETURN 10
+
+
+@DICE_BONUS_4
+RETURN 0
+
+
+@DICE_COMMON_4
+RETURN 0
+
+
+;-------------------------------------------------
+;ID5
+;他勢力のエージェントが主兵装で使用
+;期待値18
+;-------------------------------------------------
+@DICE_NAME_5
+RESULTS = 악의의 다이스
+
+
+@DICE_ROLLNUM_5
+RETURN 4
+
+
+@DICE_SIDE_5
+RETURN 8
+
+
+@DICE_BONUS_5
+RETURN 0
+
+
+@DICE_COMMON_5
+RETURN 0
+
+
+;-------------------------------------------------
+;ID6
+;都市に襲撃してきた敵の主兵装
+;期待値20
+;-------------------------------------------------
+@DICE_NAME_6
+RESULTS = 광기의 다이스
+
+
+@DICE_ROLLNUM_6
+RETURN 2
+
+
+@DICE_SIDE_6
+RETURN 15
+
+
+@DICE_BONUS_6
+RETURN 4
+
+
+@DICE_COMMON_6
+RETURN 0
+
+
+;-------------------------------------------------
+;ID7
+;都市に襲撃してきた敵の副兵装
+;期待値15
+;-------------------------------------------------
+@DICE_NAME_7
+RESULTS = 모독 다이스
+
+
+@DICE_ROLLNUM_7
+RETURN 6
+
+
+@DICE_SIDE_7
+RETURN 4
+
+
+@DICE_BONUS_7
+RETURN 0
+
+
+@DICE_COMMON_7
+RETURN 0
+
+
+;-------------------------------------------------
+;ID8
+;ダンジョンボスの主兵装
+;期待値18
+;-------------------------------------------------
+@DICE_NAME_8
+RESULTS = 뼈 주사위
+
+
+@DICE_ROLLNUM_8
+RETURN 3
+
+
+@DICE_SIDE_8
+RETURN 11
+
+
+@DICE_BONUS_8
+RETURN 0
+
+
+@DICE_COMMON_8
+RETURN 0
+
+
+;-------------------------------------------------
+;ID9
+;ダンジョンボスの副兵装
+;期待値15
+;-------------------------------------------------
+@DICE_NAME_9
+RESULTS = 실버 다이스
+
+
+@DICE_ROLLNUM_9
+RETURN 4
+
+
+@DICE_SIDE_9
+RETURN 6
+
+
+@DICE_BONUS_9
+RETURN 1
+
+
+@DICE_COMMON_9
+RETURN 0
+
+
+;-------------------------------------------------
+;ID10
+;調査区域50のボス"塵を踏むもの[クァチル・ウタウス]"の主兵装
+;期待値29
+;-------------------------------------------------
+@DICE_NAME_10
+RESULTS = 시공 주사위
+
+
+@DICE_ROLLNUM_10
+RETURN 2
+
+
+@DICE_SIDE_10
+RETURN 28
+
+
+@DICE_BONUS_10
+RETURN 0
+
+
+@DICE_COMMON_10
+RETURN 0
+
+
+;-------------------------------------------------
+;ID11
+;調査区域50のボス"塵を踏むもの[クァチル・ウタウス]"の副兵装
+;期待値22.5
+;-------------------------------------------------
+@DICE_NAME_11
+RESULTS = 먼지 주사위
+
+
+@DICE_ROLLNUM_11
+RETURN 5
+
+
+@DICE_SIDE_11
+RETURN 8
+
+
+@DICE_BONUS_11
+RETURN 0
+
+
+@DICE_COMMON_11
+RETURN 0
+
+
+;-------------------------------------------------
+;ID12
+;調査区域51のボス"異界の秩序[ガベージコレクタ]"の主兵装
+;期待値31
+;-------------------------------------------------
+@DICE_NAME_12
+RESULTS = 해방 다이스 v3.52
+
+
+@DICE_ROLLNUM_12
+RETURN 2
+
+
+@DICE_SIDE_12
+RETURN 30
+
+
+@DICE_BONUS_12
+RETURN 0
+
+
+@DICE_COMMON_12
+RETURN 0
+
+
+;-------------------------------------------------
+;ID13
+;調査区域51のボス"異界の秩序[ガベージコレクタ]"の副兵装
+;期待値24
+;-------------------------------------------------
+@DICE_NAME_13
+RESULTS = 감시 다이스 v1.13
+
+
+@DICE_ROLLNUM_13
+RETURN 6
+
+
+@DICE_SIDE_13
+RETURN 7
+
+
+@DICE_BONUS_13
+RETURN 0
+
+
+@DICE_COMMON_13
+RETURN 0
+
+
+;-------------------------------------------------
+;ID14
+;隠れ人の主兵装ダ이스。ガッカリ性能
+;期待値6.5
+;-------------------------------------------------
+@DICE_NAME_14
+RESULTS = 체념의 다이스
+
+
+@DICE_ROLLNUM_14
+RETURN 1
+
+
+@DICE_SIDE_14
+RETURN 6
+
+
+@DICE_BONUS_14
+RETURN 3
+
+
+@DICE_COMMON_14
+RETURN 0
+
+
+;-------------------------------------------------
+;ID15
+;隠れ人の副兵装ダ이스。ガッカリ性能
+;期待値3.5
+;-------------------------------------------------
+@DICE_NAME_15
+RESULTS = 불행의 다이스
+
+
+@DICE_ROLLNUM_15
+RETURN 1
+
+
+@DICE_SIDE_15
+RETURN 6
+
+
+@DICE_BONUS_15
+RETURN 0
+
+
+@DICE_COMMON_15
+RETURN 0
+
+
+;-------------------------------------------------
+;ID16
+;汎用品LV2
+;期待値15
+;-------------------------------------------------
+@DICE_NAME_16
+RESULTS = 비극의 다이스\(改)
+RETURN 1
+
+
+@DICE_ROLLNUM_16
+RETURN 2
+
+
+@DICE_SIDE_16
+RETURN 12
+
+
+@DICE_BONUS_16
+RETURN 0
+
+
+@DICE_COMMON_16
+RETURN 2
+
+
+;-------------------------------------------------
+;ID17
+;汎用品LV2
+;期待値16
+;-------------------------------------------------
+@DICE_NAME_17
+RESULTS = 매혹의 다이스\(改)
+RETURN 1
+
+
+@DICE_ROLLNUM_17
+RETURN 4
+
+
+@DICE_SIDE_17
+RETURN 6
+
+
+@DICE_BONUS_17
+RETURN 0
+
+
+@DICE_COMMON_17
+RETURN 2
+
+
+;-------------------------------------------------
+;ID18
+;汎用品LV2
+;期待値13
+;-------------------------------------------------
+@DICE_NAME_18
+RESULTS = 시시한 다이스\(改)
+RETURN 1
+
+
+@DICE_ROLLNUM_18
+RETURN 6
+
+
+@DICE_SIDE_18
+RETURN 2
+
+
+@DICE_BONUS_18
+RETURN 4
+
+
+@DICE_COMMON_18
+RETURN 2

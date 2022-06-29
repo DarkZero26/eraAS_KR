@@ -1,0 +1,102 @@
+﻿;-------------------------------------------------
+;マッチョマン来訪イベント
+;-------------------------------------------------
+@TURN_EVENT_NORMAL_MCM
+#DIM L_INPUT
+#DIM L_HP
+#DIM L_ATK
+#DIM L_DEF
+
+DRAWLINE
+PRINTFORML 【마초맨 방문：%CALLNAME%】
+PRINTFORMW %타겟이% 자택에서 쉬는 중 난데없이 손님이 찾아왔다.
+PRINTFORMW 현관 앞까지 나가니 왜인지 부메랑 팬츠 차림의 우락부락 마초맨이 포즈를 취하며 서있다!
+PRINTFORML 「근육 트레이닝, 하지 않겠습니까아아앗!!!!」
+PRINTFORML 예상 밖의 손님에 %타겟이% 굳어있을 때 남자는 그렇게 외치면서 새로운 포즈를 취했다.
+PRINTFORML 
+$INPUT_LOOP
+PRINTFORML [1]   - 【근육 트레이닝 하겠습니다!】
+PRINTFORML [999] - 【사양하겠습니다!】
+PRINTFORML 
+
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 1	;筋トレします!
+	PRINTFORMW %CALLNAME%의 말에 피식 웃은 남자는 즉시 트레이닝을 시작했다…….
+	PRINTFORML ……
+	PRINTFORMW …………
+	;95% 확률로 통상 그뉵 트레이닝
+	IF RAND:100 >= 5
+		PRINTFORML 남자가 지시한 대로 근육 트레이닝을 실시한 %타겟은% 상쾌한 피로감에 싸여 있었다.
+		PRINTFORML 흘러나오는 땀을 수건으로 닦으면서 %타겟은% 남자와 둘이서 근육을 단련한 쾌감에 젖는다.
+		PRINTFORML 「근육은… 배신하지 않는다아아악!!!!」
+		PRINTFORMW 팟 하고 포즈를 취한 남자는 땀과 오일로 번들거리는 근육을 과시하며 떠났다…….
+		
+		L_HP    = 1+(RAND:10)
+		L_ATK   = 1+(RAND:3)
+		L_DEF   = 1+(RAND:3)
+		
+		PRINTFORML 남자의 정확한 근육 트레이닝으로 %타겟은% 단련되었다!
+		PRINTFORML HP 　{CFLAG:주민_최대체력}　→　{CFLAG:주민_최대체력+L_HP}
+		PRINTFORML ATK　{CFLAG:주민_ATK}　→　{CFLAG:주민_ATK+L_ATK}
+		PRINTFORMW DEF　{CFLAG:주민_DEF}　→　{CFLAG:주민_DEF+L_DEF}
+		
+		CFLAG:주민_최대체력 += L_HP
+		CFLAG:주민_현재체력 += L_HP
+		CFLAG:주민_ATK      += L_ATK
+		CFLAG:주민_DEF      += L_DEF
+		
+	;5% 확률로 현관합체 락커룸(?) 레슬링
+	ELSE
+		PRINTFORML 현관 앞에서 남자에게 짓눌린 %타겟은% 그 비소를 남자의 거대한 육봉에 찔리고 있었다.
+		PRINTFORML 단련된 남자의 육체는 강철처럼 단단하고 바위처럼 무겁다.
+		PRINTFORMW %CALLNAME%의 힘으로는 밀쳐내기는커녕 저항조차 충분히 하지 못한 채 바닥에 억눌려 있다.
+		PRINTFORML 「질육 트레이니이잉!!!!　질육 트레이닝 기분 좋구마아아안!!!!」
+		PRINTFORML 남자가 허리를 흔들 때마다 너무 거대한 육봉이 꽉 조여진 질벽을 휘감듯이 움직여,
+		PRINTFORML 착암기로 배리치는 듯한 충격이 %CALLNAME%의 자궁구를 덮친다.
+		PRINTFORML 너무나 난폭하고 폭력적인 교미에 %CALLNAME%의 육체는 일찍이 항복하여 조금이라도 빨리 이 악몽을 끝내려고
+		PRINTFORML 필사적으로 애액을 주위로 흩뜨리며 남자의 육봉을 열심히 조인다.
+		PRINTFORML 그런 보람이 있어서인지 남자는 자궁구에 귀두 끝을 반쯤 박아 넣으며 사정하기 시작했다.
+		PRINTFORML 「욱… 후웃………… 이것으로, 질육 트레이닝 종료오오옷!!!!」
+		PRINTFORML 마루 위에 추욱 몸이 늘어진 %타겟을% 쳐다보지도 않고 남자는 일어서서 떠나 버렸다.
+		PRINTFORMW %CALLNAME%의 질구는 크게 뻐끔 열린 채 닫히지 않고 남자의 정액을 걸쭉하게 흘리고 있었다…….
+		
+		SIF CSTR:첫섹스상대명 == ""
+			CSTR:첫섹스상대명 = 마초맨
+		SIF CSTR:첫키스상대명 == "" 
+			CSTR:첫키스상대명 = 마초맨
+		SIF CSTR:첫질사상대명 ==""
+			CSTR:첫질사상대명 = 마초맨
+		
+		TALENT:비처녀 = 1
+		TCVAR:履歴_EXP_処女喪失 = 1
+		
+		EXP:키스경험 += (RAND:3)+1
+		EXP:Ｂ경험 += (RAND:3)+1
+		EXP:Ｖ경험 += 1
+		EXP:성교경험 += 1
+		EXP:정액경험 += 1
+		EXP:질싸경험 += 1
+		EXP:강간경험 += 1
+		EXP:고통쾌락경험 += 1
+	ENDIF
+CASE 999	;遠慮しておきます!
+	PRINTFORML %타겟은% 거절의 말을 외치며 문을 닫고 서둘러 문을 잠갔다.
+	PRINTFORML 그리고나서 현관 앞 모습을 모니터로 확인하니, 마침 남자가 어깨를 축 늘어뜨리고 떠날 참이었다.
+	PRINTFORMW 도대체 뭐였던 것인지…….
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+
+DRAWLINE
+
+
+
+
+
+
+

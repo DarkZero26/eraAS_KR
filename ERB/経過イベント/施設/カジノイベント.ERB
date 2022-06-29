@@ -1,0 +1,263 @@
+﻿;-------------------------------------------------
+;カジノイベント
+;-------------------------------------------------
+@TURN_EVENT_F_53
+#DIM L_MONEY
+#DIM L_MONEY2
+#DIM DICE_RESULT_UNCONSCIOUS
+#DIM DICE_RESULT_PHEROMONES
+
+DICE_RESULT_UNCONSCIOUS = COC7_DICE(CFLAG:무자각한암컷)
+DICE_RESULT_PHEROMONES = COC7_DICE(CFLAG:페로몬)
+
+DEBUGPRINTFORML 판정결과 무자각암컷 {CFLAG:무자각한암컷}: %COC7_DICE_GET_RESULT_STR(DICE_RESULT_UNCONSCIOUS)%
+DEBUGPRINTFORML 판정결과 페　로　몬 {CFLAG:페로몬}: %COC7_DICE_GET_RESULT_STR(DICE_RESULT_PHEROMONES)%
+
+DRAWLINE
+PRINTFORML 【카지노 이벤트(시설):%CALLNAME%】
+PRINTFORML %타겟은% 지정된 바니 코스튬을 입고 호객 행위를 하고 있었다.
+IF DICE_RESULT_UNCONSCIOUS > 0
+	;무자각한암컷 判定 通常成功以上
+	IF TALENT:거유 || TALENT:폭유
+		PRINTFORML 가슴 사이즈가 맞지 않는 듯, 금방이라도 옷에서 풍유가 흘러넘칠 것만 같지만 %타겟은% 눈치채지 못한 것 같다.
+	ELSEIF TALENT:빈유 || TALENT:절벽
+		PRINTFORML 가슴 사이즈가 살짝 부족한 듯, 보기에 따라서는 젖꼭지가 보일 것 같지만 %타겟은% 눈치채지 못한 것 같다.
+	ELSE
+		PRINTFORML 바디라인을 강조하는 듯한, 단단히 지체에 적합한 의상이지만 신경 쓰는 분위기는 느껴지지 않는다.
+	ENDIF
+	PRINTFORML 남자들의 정욕을 자아내는 모습임을 자각하지 못한 채 %타겟은% 계속 일했다…….
+ELSE
+	;무자각한암컷 判定 失敗
+	IF TALENT:거유 || TALENT:폭유
+		PRINTFORML 하지만 가슴 사이즈가 맞지 않는 듯, 금방이라도 옷에서 풍유가 흘러넘칠 것만 같다.
+	ELSEIF TALENT:빈유 || TALENT:절벽
+		PRINTFORML 하지만 %CALLNAME%의 가슴 사이즈로는 조금 맞지 않는 듯, 보기에 따라서는 젖꼭지가 보일 것 같다.
+	ELSE
+		PRINTFORML 딱 맞아 떨어지는 지체에서 보이는 라인에, 약간의 부끄러움을 느낀다.
+	ENDIF
+	PRINTFORML 그래도 기합을 넣고 %타겟은% 업무를 계속했다…….
+ENDIF
+PRINTFORML 
+
+SELECTCASE DICE_RESULT_PHEROMONES
+	CASE 4,3,2
+		;페로몬 判定 hard成功以上
+		PRINTFORML 무자각하게 페로몬을 발하는 %타겟은% 그것에 걸려든 남자들의 시선을 신경쓰고 있다…….
+	CASE 1
+		;通常成功
+		PRINTFORML 열광하는 카지노 내부, %CALLNAME%의 주위에는 그녀에게 푹 빠진 남성 손님들이 모여 있었다…….
+	CASEELSE
+		;失敗
+		PRINTFORML 주어진 임무를 소화하여, 오늘도 카지노는 갬블러들의 일희일비로 북적이는 채로 깊은 밤을 보낸다…….
+ENDSELECT
+PRINTFORMW 
+
+L_MONEY = 500
+
+L_MONEY += ((CFLAG:무자각한암컷)*20)+(RAND:((CFLAG:무자각한암컷)+1*20))
+L_MONEY += ((CFLAG:페로몬)*20)+(RAND:((CFLAG:페로몬)+1*20))
+L_MONEY += ((CFLAG:암컷의본능)*20)+(RAND:((CFLAG:암컷의본능)+1)*20)
+L_MONEY += ((CFLAG:성적인흥미)*20)+(RAND:((CFLAG:성적인흥미)+1*20))
+L_MONEY += ((CFLAG:수컷에관심)*20)+(RAND:((CFLAG:수컷에관심)+1*20))
+L_MONEY += ((CFLAG:성교원망)*20)+(RAND:((CFLAG:성교원망)+1*20))
+L_MONEY += ((CFLAG:임신원망)*20)+(RAND:((CFLAG:임신원망)+1*20))
+
+L_MONEY = L_MONEY*(1+(FLAG:고급카지노/5))+(CFlag:주민_인기/10)
+RESETCOLOR
+
+IF RAND:100 >= 60 && (CFLAG:주민_모럴 < 0 || CFLAG:주민_카르마 >= 40)
+	CALL TURN_EVENT_F_53_C
+ELSEIF CFLAG:페로몬 >= 40 && DICE_RESULT_PHEROMONES >= 3
+	;페로몬が40以上かつextream成功以上の場合
+	;出目が技能値の1/5以下なので、技能値10ごとに+2%、40なら8%
+	CALL TURN_EVENT_F_53_B
+	L_MONEY += 1000
+ENDIF
+
+
+SIF TALENT:쾌락중독 == 1
+	L_MONEY = L_MONEY/9
+
+CALL TURN_EVENT_NNK
+
+PRINTFORML 【금일　%CALLNAME%의 매상:￥{L_MONEY}】
+
+
+MONEY += L_MONEY
+
+
+
+
+;-------------------------------------------------
+;カジノイベント　카르마
+;-------------------------------------------------
+@TURN_EVENT_F_53_C
+#DIM DICE_RESULT_INSTINCT
+
+DICE_RESULT_INSTINCT = COC7_DICE(CFLAG:암컷의본능, TALENT:강간원망)
+DEBUGPRINTFORML 판정결과 암컷의본능 {CFLAG:암컷의본능}: %COC7_DICE_GET_RESULT_STR(DICE_RESULT_INSTINCT)%
+
+DRAWLINE
+SETCOLOR 250,50,150
+PRINTFORML 【왜인지 %CALLNAME%의 상태가 이상하다……】
+
+
+PRINTFORML 갑자기 몸이 뜨거워진 %타겟은% 휘청거리는 걸음걸이로 일터를 떠난다.
+PRINTFORML 아무도 없는 창고로 도망치듯 들어가고 그대로 맥없이 쓰러진다.
+PRINTFORML 바니 슈트를 비껴 비소를 드러내니 애액이 질척질척하게 흘러 넘치고 있었다.
+PRINTFORML …아무래도 아까 마신 음료에 무언가가 섞여 있었던 것 같다.
+PRINTFORMW 
+PRINTFORML 그렇게 확신한 순간 뒤에서 누군가에게 밀쳐져 넘어진다.
+PRINTFORML 뒤돌아봐도 의식이 몽롱한 탓인지 체격부터 남자인지 아닌지 분간할 수 없다.
+PRINTFORML 혼란스러운 %타겟을% 아는지 모르는지, 남자는 딱딱해진 페니스를 질내로 침입시킨다.
+
+IF DICE_RESULT_INSTINCT > 0
+	PRINTFORML 저항이 무의미하다는 것을 깨달았는 것인지, 아니면 약으로 암컷의 본능이 깨어났는 것인지,
+	PRINTFORML %타겟은% 별 저항 없이 능욕을 받아들였다….
+	PRINTFORMW 
+	PRINTFORML %타겟을% 굴복시키기 위해서인지 남자는 %CALLNAME%의 상태를 보면서 허리의 움직임을 바꾸어 간다.
+	PRINTFORML 약점인 성감대를 찾아낸 것인지 훨씬 큰 소리로 교성을 지르는 %타겟을% 보고 이때의 움직임을 바탕으로 피스톤 속도를 올렸다.
+	PRINTFORML 육봉을 당겨 뺄 때마다 귀두가 질주름에 걸리고 그것이 쾌감이 되어 %타겟을% 덮친다.
+	PRINTFORML %CALLNAME%의 의사와는 다르게 질내는 남자의 물건에 맞게끔 꿈틀거리고
+	PRINTFORML 자신을 범하는 페니스로부터 더 큰 쾌감을 얻기 위해 질벽을 조여 갔다…….
+ELSE	
+	PRINTFORML 비명을 지르려 해도 소리가 나오지 않고, 불행하게도 벽도 문도 방음 가공처리가 되었기 때문에
+	PRINTFORML 약해진 %타겟은% 치욕을 받아들일 수 밖에 없었다…….
+	PRINTFORMW 
+	PRINTFORML 후배위로 페니스를 찔러 넣고 몇 번 정도 조금씩 움직인 후 긴 스트로크로 허리를 처박기 시작한다.
+	PRINTFORML 질벽의 처음부터 끝까지 귀두가 전체를 스치고, 그 강한 쾌락에 %타겟은% 허리를 젖히며 거친 숨소리를 내뱉었다.
+	PRINTFORML 약효가 점점 강해지고 있어서인지 %타겟은% 한 마리 암컷으로 변해 달콤한 소리를 흘리고 있다.
+	PRINTFORML 그 모습에 남자는 음흉한 미소를 지으면서 여자에게 씨를 뿌리기 위해 피스톤 속도를 올렸다…….
+ENDIF
+PRINTFORMW 
+PRINTFORML 한 시간 후, 모든 정욕을 토해낸 남자는 드디어 질내에서 페니스를 빼낸다.
+PRINTFORML 그러자 비소에서는 씨뿌리기의 증거인 백탁액이 쏟아져 나온다.
+PRINTFORML 그것과는 관계없이 남자는 %CALLNAME%의 입가에 페니스를 들이대며 펠라치오를 지시한다.
+PRINTFORML 저항력을 잃은 %타겟은% 탁한 눈빛인 채로 그것을 입에 물고 천천히 봉사해 간다.
+PRINTFORML 최후에는 기절해버려 몽롱한 사이에 일어난 이 사건은 %CALLNAME%의 기억에 남지 않을 것이다…….
+PRINTFORMW 
+
+
+
+
+SIF CSTR:첫섹스상대명 == ""
+	CSTR:첫섹스상대명 = 카지노 손님
+SIF CSTR:첫키스상대명 == "" 
+	CSTR:첫키스상대명 = 카지노 손님
+SIF CSTR:첫정음상대명 =="" 
+	CSTR:첫정음상대명 = 카지노 손님
+SIF CSTR:첫펠라상대명 ==""
+	CSTR:첫펠라상대명 = 카지노 손님
+SIF CSTR:첫A섹스상대명 ==""
+	CSTR:첫A섹스상대명 = 카지노 손님
+SIF CSTR:첫절정상대명 ==""
+	CSTR:첫절정상대명 = 카지노 손님
+SIF CSTR:첫질사상대명 ==""
+	CSTR:첫질사상대명 = 카지노 손님
+
+
+
+TALENT:비처녀 = 1
+TALENT:Ａ비처녀 = 1
+TCVAR:履歴_EXP_処女喪失 = 1
+TCVAR:履歴_EXP_Ａ処女喪失 = 1
+CALL JN_SEX_EXP
+EXP:강간경험 += (RAND:1+1)+1
+EXP:고통쾌락경험 += (RAND:2)
+
+
+IF TALENT:쾌락중독 == 0 && RAND:100 > 40 && TALENT:정부 == 0
+	SETCOLOR 150,50,250
+	PRINTFORML 【%CALLNAME%의 상태가 이상하다…. 임무를 잊을 정도로 성행위에 빠져 버린 것 같다……】
+	PRINTFORML 【%타겟은% 「쾌락중독」에 빠졌다…. 자금 획득이 격감합니다.】
+	TALENT:쾌락중독 = 1
+ENDIF
+
+
+
+;-------------------------------------------------
+;カジノイベント　客のイタズラ
+;페로몬強すぎる주민が客にイタズラされる。
+;◆모럴低下、카르마増加、수입微増
+;-------------------------------------------------
+@TURN_EVENT_F_53_B
+#DIM DICE_RESULT_INSTINCT
+
+DICE_RESULT_INSTINCT = COC7_DICE(CFLAG:암컷의본능, TALENT:강간원망)
+DEBUGPRINTFORML 판정결과 암컷의본능 {CFLAG:암컷의본능}: %COC7_DICE_GET_RESULT_STR(DICE_RESULT_INSTINCT)%
+
+DRAWLINE
+SETCOLOR 250,50,150
+PRINTFORML 【%타겟은% 취객과 엮였다……】
+
+
+PRINTFORML 홀에서 바삐 일하던 %타겟은% 수상한 눈초리를 한 남성 손님에게 붙잡혔다.
+PRINTFORMW 술에 취한 것인지 별로 엮이고 싶지 않은 분위기지만 주위에 다른 스탭도 없어, 마지못해 대응하기로 했다…….
+
+PRINTFORML %타겟이% 남자에게 다가가자 남자는 허리에 손을 감아 %타겟을% 끌어안았다.
+
+PRINTFORML 
+IF DICE_RESULT_INSTINCT < 1
+	;암컷의본능 判定 失敗
+	PRINTFORML 하지만 걸리적거려서 저항하고 %타겟은% 남자의 손에서 빠져나갔다.
+	PRINTFORML 이 카지노에서 성적인 서비스를 하고 있지 않다고 남자에게 설명하자, 히죽히죽 웃고 있지만 일단은 납득한 것 같다.
+	PRINTFORML 아무리 봐도 반성하는 기색은 없지만 어쨌든 오늘 다시 덮치지는 않을 것이다.
+	PRINTFORML 경계를 강화하면서도 %타겟은% 일을 재개했다.
+	RETURN
+ENDIF
+
+IF TALENT:거유 || TALENT:폭유
+	PRINTFORML 저항하려고 한 %조사처리(CALLNAME,"였")%지만, 가슴팍에 미끄러져 들어간 남자의 손이 옷을 벗겨 버려 풍만한 젖가슴이 그대로 드러나 버렸다.
+	PRINTFORML 각도가 다른 손님에겐 보이지 않을 정도인게 불행 중 다행이나, 소리 지르며 도움을 요청하면 시선이 집중될 것 같아 소리를 낼 수 없다.
+	PRINTFORML 어떻게든 원만하게 끝내려는 %CALLNAME%의 태도를 동의로 착각한 남자는 점점 행동이 대담해져 갔다.
+	PRINTFORML 풍유의 부드러움을 즐기며 술낸사가 나는 숨을 유두에 불면서 %CALLNAME%의 유륜을 혀끝으로 덮는다.
+	PRINTFORML %타겟이% 멈추라고 작은 소리로 항의하자 남자는 가볍게 이를 세우며 유두를 물었다.
+	PRINTFORML 남자의 애무로 유두가 핑 하고 무방비하게 선 유두에 강한 자극이 가해져, %타겟은% 반쯤 힘이 풀려 고객에게 기대어 무너진다.
+	PRINTFORML 깊은 골짜기에 얼굴이 묻힌 모습이 된 남자는 점점 기분이 좋아져 %CALLNAME%의 비소에 손을 뻗어 쓸쓸한 듯한 클리토리스를 집는다.
+	PRINTFORML 민감해진 유듀와 클리토리스를 동시에 괴롭혀져 %타겟은% 가버렸지만, 어떻게든 교성만큼은 내지 않았다.
+	PRINTFORML 입술을 깨물며 숨을 고르고 있는 %CALLNAME%의 요염한 모습에 만족한 남자는 여운에 젖은 %타겟을% 대신해 옷을 가다듬는다.
+	PRINTFORMW 이건 서비스라며, 남자가 딴 몫의 일부를 %CALLNAME%의 땀으로 축축해진 골짜기에 팁으로써 꽂아 넣는 것으로 해방됐다…….
+ELSEIF TALENT:빈유 || TALENT:절벽
+	PRINTFORML 안겨진 %타겟은% 가슴팍을 바로 위로부터 들여다보는 형태가 되어 틈새로부터 작은 돌기를 확실히 보여져 버렸다.
+	PRINTFORML 손님을 상대로 난폭하게 대응할 수도 없어 %타겟은% 남자에게 부드럽게 굴면서 도망치려 했지만 술에 취해 통하지 않는다.
+	PRINTFORML 되려 강한 거부는 좋다는 뜻이라며 틈새로 손을 넣고 %CALLNAME%의 유두 끝을 삭삭 문지르기 시작한다.
+	PRINTFORML 남자의 지나친 행동에 %타겟이% 도움을 청하려고 주위를 돌아보자 핏발 선 눈으로 시간(視姦)하는 다수의 손님과 눈이 마주친다.
+	PRINTFORML 중인환시 속에 유두를 애무당하고 있는 상황에 얼굴을 새빨갛게 물들인 %타겟은% 수치에 떨며 남자의 장난감이 되었다.
+	PRINTFORML %CALLNAME%의 저항이 멈추자 남자는 대담히 바니 슈트를 반쯤 벗기고 노출된 유두에 달라붙는다.
+	PRINTFORML 남자의 집요한 손놀림으로 애무당하고 있던 유두는 일찌감치 굴복했고 %타겟은% 등을 활처럼 젖히며 절정했다.
+	PRINTFORML 바닥에 무너져 내린 %CALLNAME%에게 남자는 서비스료라며 약간의 돈을 쥐여주고는 다시 유희로 돌아갔다.
+	PRINTFORML 이윽고 제정신을 차린 %타겟은% 다급히 옷을 가다듬고 재빨리 자리를 떴다.
+	PRINTFORMW 하지만 일부 상황을 보고 있던 손님은 %타겟을% 차례차례 불러 세웠고, %타겟은% 대기실까지 점점이 웅덩이를 만들게 되었다…….
+ELSE
+	PRINTFORML 이 카지노에서는 성적인 서비스를 시행하지 않는다고 %타겟은% 남자에게 설명했지만, 만취 상대에게 통할 리 없었다.
+	PRINTFORML 가게 규칙을 방패삼아 거절하려고 하는 %타겟을% 설득하려고 남자는 겨드랑이에 손을 넣고 형태 좋은 가슴을 주무르기 시작한다.
+	PRINTFORML 양손으로 가슴을 받치듯 아래에서 주무르고 검지와 중지로 유두를 사이에 두고 번갈아 움직이며 당겨 올렸다.
+	PRINTFORML 처음에는 저항하던 %CALLNAME%의 입에서 거친 숨소리가 새어나오자 점점 자기주장을 시작한 유두가 집중적으로 만져진다.
+	PRINTFORML 이내 거절의 말을 입에 올릴 수 없게 된 %타겟이% 절정에 이르자 남자는 기분 나쁜 미소를 지으며 손을 놓았다.
+	PRINTFORMW 뜨거운 호흡을 반복하는 %CALLNAME%의 가슴에 칩을 꽂은 남자는 쾌락에 떨리는 엉덩이를 때리고는 %타겟을% 업무로 돌려보냈다…….
+ENDIF
+
+
+IF CFLAG:주민_모럴 > 0
+	PRINTFORML %CALLNAME%의 모럴이 저하했다.
+	PRINTFORML 모럴　{CFLAG:주민_모럴} → {CFLAG:주민_모럴-1}
+ENDIF
+IF CFLAG:주민_카르마 < 100
+	PRINTFORML %CALLNAME%의 카르마가 상승했다.
+	PRINTFORMW 카르마　{CFLAG:주민_카르마} → {CFLAG:주민_카르마+1}
+ENDIF
+
+SIF CSTR:첫절정상대명 ==""
+	CSTR:첫절정상대명 = 카지노 손님
+
+EXP:Ｂ경험 += (RAND:2)+1
+EXP:절정경험 += (RAND:3)+1
+
+CFLAG:주민_모럴 -= 1
+CFLAG:주민_카르마 += 1
+
+
+
+
+
+

@@ -1,0 +1,60 @@
+﻿;-------------------------------------------------
+;不穏イベント
+;-------------------------------------------------
+@TURN_EVENT_FON
+
+;保護されている住民は戻す
+SIF CFLAG:特別保護 != 0
+	RETURN
+
+;性関係
+IF CFlag:주민イベント傾向_性 > RAND:100 
+	SELECTCASE RAND:9
+		CASE 0
+			SIF CFLAG:주민_모럴 < 0
+				;若気の至り
+				CALL TURN_EVENT_FON_1
+		CASE 1
+			SIF CFLAG:주민_카르마 >= 20
+				;이레귤러襲撃イベント
+				CALL TURN_EVENT_I_R
+		CASE 2
+			SIF CFLAG:주민_모럴 < 0
+				;発情少年イベント
+				CALL TURN_EVENT_HJ_S
+		CASE 3
+			SIF CFLAG:주민_모럴 <= 0 && CFLAG:窃盗の代償アフター >= 1
+				;窃盗の代償アフター
+				CALL TURN_EVENT_NSM_AF
+		CASE 4
+			SIF CFLAG:주민_모럴 <= 0 && CFLAG:窃盗の代償アフター == 0
+				;窃盗の代償
+				CALL TURN_EVENT_NSM
+		CASE 5
+			SIF CFLAG:주민_모럴 <= 0 && CFLAG:주민_카르마 >= 40 && TALENT:치안유지국원 == 1 && CFLAG:悪徳치안유지국원 >= 0
+				;悪徳치안유지국원
+				CALL TURN_EVENT_AKTKC
+		CASE 6
+			SIF CFLAG:주민_모럴 <= 20 && CFLAG:주민_카르마 >= 20
+				;매혹の女
+				CALL TURN_EVENT_FON_MWK
+		CASE 7
+			SIF CFLAG:주민_모럴 <= 20 && CFLAG:주민_카르마 >= 20
+				;매료の男
+				CALL TURN_EVENT_FON_MRYU
+		CASE 8
+			SIF Flag:도시_방위損壊率 > RAND:100
+				;触手イベント
+				CALL TURN_EVENT_SS
+		CASEELSE
+		;- 範囲外
+	ENDSELECT
+ENDIF
+
+
+
+
+
+
+
+

@@ -1,0 +1,400 @@
+﻿@C_PICTURE(C_T, L_X, L_Y)
+#DIM C_T
+#DIM L_X
+#DIM L_Y
+#DIMS LSTR_0
+;-------------------------------------------------
+;描画処理
+;-------------------------------------------------
+
+LSTR_0 = <nonbutton pos='{L_X}'><img src='MAIN_BG_{FLAG:時間帯}' height = '1000'  ypos = '{L_Y-150}'></nonbutton>
+IF Talent:C_T:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(C_T, L_X, L_Y, -465, 850, LSTR_0)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(C_T, L_X, L_Y, -465, 850, LSTR_0)
+ENDIF
+
+
+
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+;MASTER用
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+@C_PICTURE_MASTER(C_T, L_X, L_Y)
+#DIM C_T
+#DIM L_X
+#DIM L_Y
+#DIMS LSTR_0
+;-------------------------------------------------
+;描画処理
+;-------------------------------------------------
+
+HTML_PRINT C_PICTURE_HTML(C_T, 100, -1000, -465, 850, LSTR_0)
+
+
+
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+;トーク時
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+@C_PICTURE_T(C_T)
+#DIM C_T
+#DIM L_X
+#DIM L_Y
+#DIMS LS_type
+#DIMS LS_kudoki
+#DIMS LS_kanraku ;陥落ラベル用
+
+L_X = 0
+L_Y = 0
+LS_type   = %INFO_STR_KEIKOU(CFLAG:C_T:値傾向)%
+
+;폐기장経由等、初期합의済みキャラには설득도が設定されていない
+IF TALENT:C_T:합의 == 1
+	LS_kudoki = 합의
+ELSE
+	LS_kudoki = %INFO_STR_KUDOKI(CFLAG:C_T:설득도)%
+ENDIF
+
+;陥落ラベル設定
+IF TALENT:C_T:심취 == 1
+	LS_kanraku = 심취
+ELSEIF TALENT:C_T:애인 == 1
+	LS_kanraku = 애인
+ELSEIF TALENT:C_T:정부 == 1
+	LS_kanraku = 정부
+ELSE
+	LS_kanraku =
+ENDIF
+
+
+;-------------------------------------------------
+;描画処理
+;-------------------------------------------------
+DRAWLINE
+IF Talent:C_T:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(C_T, L_X, L_Y, 0, 850)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(C_T, L_X, L_Y, 0, 850)
+ENDIF
+
+PRINTFORM 　　　　　
+CALL PRINT_LABEL("이름",,,CALLNAME:C_T)
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_STATUS(C_T, "선호도")
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_STATUS(C_T, "충성도")
+CALL PRINT_STATUS(C_T, "애정도")
+CALL PRINT_STATUS(C_T, "음란도")
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_LABEL("성향",,,LS_type)
+IF LS_kanraku == ""
+	CALL PRINT_LABEL("육체관계",,,LS_kudoki)
+ELSE
+	CALL PRINT_LABEL("육체관계",,,LS_kanraku,,COLOR("紫"))
+ENDIF
+PRINTL
+PRINTFORML 　　　　　
+IF CFlag:C_T:주민_悩み解決判定回数 != 0
+	PRINTFORM 　　　　　
+	CALL PRINT_LABEL("현재 고민해결중",,,@"결과까지 앞으로{(CFlag:C_T:주민_悩み解決判定回数)+1}일",,COLOR(@"고민해결{CFlag:C_T:주민_悩み解決判定回数}"))
+	PRINTL
+ELSE
+	;前回結果表示用
+	IF CFlag:C_T:주민_悩み解決中 == 0 && CFlag:C_T:주민_悩み前回協力 > 0
+		SELECTCASE CFlag:C_T:주민_悩み前回協力
+			CASE 1
+				LOCALS:1 = 자금기부
+			CASE 2
+				LOCALS:1 = 법의힘
+			CASE 3
+				LOCALS:1 = 치료
+			CASE 4
+				LOCALS:1 = 어드바이스
+			CASE 5
+				LOCALS:1 = 가게소개
+			CASE 6
+				LOCALS:1 = 격려한다
+			CASE 7
+				LOCALS:1 = 가르쳐준다
+			CASE 8
+				LOCALS:1 = 소문을퍼뜨린다
+			CASE 9
+				LOCALS:1 = 정보조작
+			CASE 10
+				LOCALS:1 = 전력으로돕는다
+		ENDSELECT
+		SELECTCASE CFlag:C_T:주민_悩み前回結果
+			CASE 0
+				LOCALS:2 = 失敗
+			CASE 1
+				LOCALS:2 = 成功
+			CASE 2
+				LOCALS:2 = 大成功
+			CASE 3
+				LOCALS:2 = 解決済
+		ENDSELECT
+		IF LOCALS:2 != "解決済"
+			PRINTFORM 　　　　　
+			CALL PRINT_LABEL("전회의 해결 방법",,,@"%LOCALS:1%(%LOCALS:2%)")
+			PRINTL
+		ELSE
+			PRINTFORML 　　　　　
+		ENDIF
+	ELSE
+		PRINTFORML 　　　　　
+	ENDIF
+ENDIF
+PRINTFORML 　　　　　%CAFE_STR_KANKEIDANKAI(C_T)%
+DRAWLINE
+
+
+
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+;ステータス付
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+@C_PICTURE_S(L_T)
+#DIM L_T
+#DIM L_X
+#DIM L_Y
+
+#DIMS CS_race
+#DIMS CS_align
+#DIMS CS_chii
+#DIMS CS_size
+#DIMS CS_hairC
+#DIMS CS_hair
+#DIMS CS_eye
+#DIMS CS_eyeC
+#DIMS CS_body
+#DIMS CS
+
+L_X = 0
+L_Y = -800
+
+CS_race  = %INFO_STR_SYUZOKU(CFLAG:L_T:주민_종족)%
+CS_align = %INFO_STR_ZOKUSEI(CFLAG:L_T:주민_속성)%
+CS_chii  = %INFO_STR_CHII(CFLAG:L_T:주민_지위)%
+CS_size  = %INFO_STR_THREESIZE(L_T)%
+CS_hairC = %INFO_STR_HAIRCOLOR(CFLAG:L_T:머리색)%
+CS_hair  = %INFO_STR_HAIR(CFLAG:L_T:머리모양)%
+CS_eye   = %INFO_STR_EYE(CFLAG:L_T:目)%
+CS_eyeC  = %INFO_STR_EYECOLOR(CFLAG:L_T:瞳色)%
+CS_body  = %INFO_STR_STYLE(CFLAG:L_T:체형)%
+
+IF TALENT:L_T:유니크 == 1
+	CS_race  = %INFO_STR_SYUZOKU(CFLAG:L_T:주민_종족)%
+	CS_align = %INFO_STR_ZOKUSEI(CFLAG:L_T:주민_속성)%
+	CS_chii  = %INFO_STR_CHII(CFLAG:L_T:주민_지위)%
+	CS_size  = %INFO_STR_THREESIZE(L_T)%
+	CS_hairC = 불명
+	CS_hair  = 불명
+	CS_eye   = 불명
+	CS_eyeC  = 불명
+	CS_body  = 불명
+ENDIF
+;-------------------------------------------------
+;描画処理
+;-------------------------------------------------
+PRINTFORM 　　　　　
+CALL PRINT_LABEL("종족",,,CS_race)
+CALL PRINT_LABEL("속성",,,CS_align)
+CALL PRINT_LABEL("신분",,,CS_chii)
+CALL PRINT_STATUS(L_T,"공헌도")
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_LABEL(CS_size)
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_LABEL("머리색",,,CS_hairC)
+CALL PRINT_LABEL("머리모양",,,CS_hair)
+CALL PRINT_LABEL("눈",,,  CS_eye)
+CALL PRINT_LABEL("눈색",,,CS_eyeC)
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_LABEL("체형",,,CS_body)
+PRINTL
+PRINTFORM 　　　　　
+CALL PRINT_LABEL("매력포인트",,,CSTR:L_T:チャームポイント)
+CALL PRINT_LABEL("버릇",,,CSTR:L_T:癖)
+PRINTL
+PRINTFORM 　　　　　
+PRINTFORM 【유전자:
+CALL INFO_TARGET_GENOM(L_T)
+PRINTFORML 】
+PRINTFORML 　　　　　
+PRINTFORML 　　　　　
+
+IF Talent:L_T:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(L_T, L_X, L_Y, 0, 850)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(L_T, L_X, L_Y, 0, 850)
+ENDIF
+
+
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+;隠しステータス(裸)
+;-------------------------------------------------
+;-------------------------------------------------
+;-------------------------------------------------
+@C_PICTURE_S_S(ARG)
+#DIM L_T
+#DIM L_X
+#DIM L_Y
+#DIMS LSTR
+#DIMS LSTR_4 ;임신状態の表示（文字列情報のみ）
+#DIMS LSTR_8 ;アイコン♀
+#DIMS LSTR_9 ;アイコン卵子
+#DIMS LSTR_10;アイコン수정
+#DIMS LSTR_11;胎児描写画像
+#DIMS LSTR_Z ;結合用
+#DIM C_ninsin
+#DIM L_SIEK
+#DIMS CS_ninsin
+
+L_T = ARG
+L_X = 0
+L_Y = 0
+C_ninsin = C_PICTURE_NINSIN(ARG)
+L_SIEK = CFLAG:L_T:子宮精液貯蔵量/5000
+SIF L_SIEK >= 4
+	L_SIEK = 4
+
+IF CFLAG:L_T:임신フラグ == 1 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:%CALLNAME:MASTER%와의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == -4 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:%CSTR:L_T:임신相手名%와의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == -1 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:%CSTR:L_T:3501%와의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == 70 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:지원주택의 청년과의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == 71 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:소년과의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == 72 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:들개와의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == 2 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:%CSTR:L_T:3500%와의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF CFLAG:L_T:임신フラグ == 3 && TALENT:L_T:임신 != 0
+	CS_ninsin =【자궁:애인과의 아이】【경과주수:{TALENT:L_T:임신}】
+ELSEIF  TALENT:L_T:수정 != 0 
+	CS_ninsin =【자궁:수정中】【잉태중:{TALENT:L_T:수정}】
+ELSEIF TALENT:L_T:임신 == 0 && TALENT:L_T:수정 == 0 && L_SIEK >= 1
+	IF    L_SIEK >= 4 
+		CS_ninsin =【자궁:정액 탱크라고 부를 수 있을 정도의 %CALLNAME:MASTER%의 정자가 난자를 찾아 꿈틀거리고 있다.】
+	ELSEIF   L_SIEK >= 3
+		CS_ninsin =【자궁:넘쳐나는 %CALLNAME:MASTER%의 정자가 자궁 안을 헤엄치고 있다】
+	ELSEIF   L_SIEK >= 2
+		CS_ninsin =【자궁:아이를 만들기에 충분한 %CALLNAME:MASTER%의 정액이 자궁에 들어있다.】
+	ELSEIF   L_SIEK >= 1
+		CS_ninsin =【자궁:%CALLNAME:MASTER%의 정액으로 하얗게 물들었다.】
+	ENDIF
+ELSE
+	CS_ninsin =【자궁:】
+ENDIF
+DRAWLINE
+PRINTFORML ■----------------기밀등록정보----------------■
+
+LSTR_4 = <nonbutton pos='{L_X}'>　　　　　　　　　　%CS_ninsin%</nonbutton>
+LSTR_8 = <nonbutton pos='{L_X}'>　　　　　<img src='EX_A_0' height = '100'  ypos = '500'></nonbutton>
+LSTR_9 = <nonbutton pos='{L_X}'>　　　　　<img src='EX_A_1' height = '100'  ypos = '600'></nonbutton>
+LSTR_10 = <nonbutton pos='{L_X}'>　　　　　<img src='EX_A_2' height = '100'  ypos = '700'></nonbutton>
+IF TALENT:L_T:임신 == 0 && TALENT:L_T:수정 == 0
+	LSTR_11 = <nonbutton pos='{L_X}'>　　　　　<img src='H_TNS_0_{L_SIEK}' height = '500'  ypos = '0'></nonbutton>
+ELSE
+	LSTR_11 = <nonbutton pos='{L_X}'>　　　　　<img src='NINSIN_0_{C_ninsin}' height = '500'  ypos = '0'></nonbutton>
+ENDIF
+LSTR_Z = %LSTR_4%%LSTR_8%%LSTR_9%%LSTR_10%%LSTR_11%
+
+IF Talent:L_T:NPC == 0
+	HTML_PRINT C_PICTURE_HTML_NAKED(L_T, L_X, L_Y, 0, 800, LSTR_Z)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML_NAKED(L_T, L_X, L_Y, 0, 800, LSTR_Z)
+ENDIF
+
+HTML_PRINT LSTR
+;今の所この表示が必ずセットでついてくるのでこの関数側で問題ないはず
+PRINTFORML 　　　　　　　　
+PRINTFORML 　　　　　　　　
+PRINTFORML 　　　　　　　　
+PRINTFORML 　　　　　　　　
+PRINTFORM 　　　　　　
+CALL PRINT_STATUS(L_T, "모체 레벨")
+PRINTL
+PRINTFORM 　　　　　　
+CALL PRINT_STATUS(L_T, "난자 레벨")
+PRINTL
+PRINTFORM 　　　　　　
+CALL PRINT_RANGE_STATUS(L_T, "수정내구도", "수정/내구도")	; 検索キー(第3引数)は/でPRE/POST分割して検索する。
+CALL PRINT_STATUS(L_T, "수정확률")
+PRINTL
+
+
+
+;-------------------------------------------------
+;掛け合い表示用、현재仮実装中
+;-------------------------------------------------
+@C_PICTURE_PAIR_TALK_A(C_ID)
+#DIM C_ID
+;1行≒98のY座標
+IF C_ID == 0
+	PRINTFORML
+ELSEIF TALENT:C_ID:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(C_ID, 2500, -1192, -450, 850)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(C_ID, 2500, -1192, -450, 850)
+ENDIF
+
+@C_PICTURE_PAIR_TALK_B(C_ID)
+#DIM C_ID
+IF C_ID == 0
+	PRINTFORML
+ELSEIF TALENT:C_ID:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(C_ID, 3500, -1290, 0, 850)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(C_ID, 3500, -1290, 0, 850)
+ENDIF
+
+
+
+;-------------------------------------------------
+;きせかえ処理のプレビュー用
+;-------------------------------------------------
+@C_PICTURE_FITTING(C_ID, MEMO_COS, NEW_COS)
+#DIM         C_ID
+#DIM REF     MEMO_COS
+#DIM REF     NEW_COS
+#DIM CONST   COS_CFLAG_ID  = 420, 423, 424, 421, 422, 419, 418
+FOR LOCAL, 0, 7
+	CFLAG:C_ID:(COS_CFLAG_ID:LOCAL) = MEMO_COS:LOCAL
+NEXT
+DRAWLINE
+HTML_PRINT C_PICTURE_HTML(C_ID, 50, 0, 0, 850)
+;HTML_PRINT C_PICTURE_HTML_NAKED(C_ID, 700, 98, 0, 850)
+HTML_PRINT C_PICTURE_HTML_NAKED(C_ID, 550, -100, 0, 850)
+FOR LOCAL, 0, 7
+	CFLAG:C_ID:(COS_CFLAG_ID:LOCAL) = NEW_COS:LOCAL
+NEXT
+HTML_PRINT C_PICTURE_HTML(C_ID, 1200, -200, 0, 850)
+HTML_PRINT C_PICTURE_HTML_NAKED(C_ID, 1700, -300, 0, 850)
+
+PRINTFORML 　　　　　　　　　　→
+PRINTFORML 　　　　　
+PRINTFORML 　　　　　
+PRINTFORML 　　　　　
+PRINTFORML 　　　　　
+DRAWLINE

@@ -1,0 +1,77 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;8は유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_8_NAME
+RESULTS = 『ﾟ々。』사행고양이의 헤드미러
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_8_ABLE
+;複数入手は不可
+SIF RPG_ARTIFACT_COUNTUNIQUE(8)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_8_RANK
+RETURN 30
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_8_ATK
+RETURN 55
+
+
+@ART_UNIQUE_8_DEF
+RETURN 76
+
+
+@ART_UNIQUE_8_HIT
+RETURN 21
+
+
+@ART_UNIQUE_8_SPD
+RETURN 39
+
+
+@ART_UNIQUE_8_LUK
+RETURN 44
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_8_GENOME
+RETURN 1801
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_8_ABILITY
+RETURN 3
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_8_MADEIN
+RETURN 2
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_8_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 어느 이세계에 존재하는 『사행고양이』라는 생물을 사역마로 소환하여 부릴 수 있는 기능을 가진다.
+EXPL:1 = 『사행고양이』는 직립한 고양이 같은 모습을 하고 있으며 항상 신체 대부분이 비스듬히 기울어져 있다.
+EXPL:2 = 전투에서는 「로켓으로 변해 돌격한다」「어디선가 꺼낸 자전거를 적에게 던진다」 같은 이해할 수 없는 행동으로 싸운다.
+EXPL:3 = ……
+EXPL:4 = 으ㅣㅅㅏ는 ㅇㅓㄷㅣ인ㄱㅏ요?
+RETURN 1
+

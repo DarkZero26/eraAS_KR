@@ -1,0 +1,284 @@
+﻿
+
+;-------------------------------------------------
+;アーカイブ
+;-------------------------------------------------
+@ARCHIVE_TOP
+#DIM L_N
+#DIM A_N
+#DIM L_INPUT
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+
+L_N = 0
+
+FLAG:17001 = 1
+
+DRAWLINE
+PRINTFORML  【아카이브】
+PRINTFORML  여기에서는 외계조사에서 회수한 아카이브를 열람할 수 있습니다.
+DRAWLINE
+$AL_LOOP
+IF FLAG:(17000+L_N) != 0
+	PRINTFORML [{L_N}] %FLAGNAME:(17000+L_N)%
+ELSE
+
+ENDIF
+L_N += 1
+RESULT = 0
+SIF L_N < 500
+	GOTO AL_LOOP
+DRAWLINE
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	SIF FLAG:(17000+L_INPUT) == 0
+		GOTO INPUT_LOOP2
+	A_N = L_INPUT 
+	CALL ARCHIVE_C(A_N)
+	GOTO INPUT_LOOP2
+ENDSELECT
+RESTART
+
+
+;-------------------------------------------------
+;アーカイブ　회수
+;-------------------------------------------------
+@ARCHIVE_G
+#DIM A_G
+#DIM L_N
+
+A_G = 0
+
+SIF RAND:100 <= 95
+	RETURN
+
+
+L_N  = (RAND:12)+1
+
+SIF FLAG:(17000+L_N) == 0
+	A_G = 1
+
+
+FLAG:(17000+L_N) = 1
+SIF A_G == 1
+PRINTFORMW 아카이브 %조사처리(FLAGNAME:(17000+L_N),"를")% 회수했습니다.
+
+
+
+;-------------------------------------------------
+;アーカイブ　閲覧
+;-------------------------------------------------
+@ARCHIVE_C(A_N)
+#DIM A_N
+
+
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML %FLAGNAME:(17000+A_N)%
+DRAWLINE
+IF  A_N == 13
+	PRINTFORML 어느 연구원의 수기（３／３）
+	PRINTFORML 
+	PRINTFORML 오늘, 나는 기적을 일으켰다.
+	PRINTFORML 보름 정도 전에 연구소에서 헤맨 조사대원을 잡은 것이지만, 그 대원은 여자였다.
+	PRINTFORML 그 대원의 여자에게 실험 생물 EC-1021이 흥미를 나타냈으므로 줘봤더니,
+	PRINTFORML EC-1021은 그녀와 교미를 실시해, 놀랍게도 임신시킨 것이다!
+	PRINTFORML 출산시의 쇼크로 그 대원은 사망해 버렸지만, 태어난 아이는
+	PRINTFORML 특정의 전기신호를 감각 기관에 보내는 것으로 컨트롤이 가능하다고 판명되었다.
+	PRINTFORML 육체 강도는 「외적」에 못지않고, 전기신호에 의해 제어가 가능.
+	PRINTFORML 지금까지의 실험 생물과 같이 시간 경과에 의한 컨트롤의 저하도 볼 수 없다.
+	PRINTFORML 확실히 인류 최강의 병사가 탄생한 순간이었다.
+	PRINTFORML 이것을 기적이라고 부르지 않고 뭐라고 부르는 것인가.
+	PRINTFORML 
+	PRINTFORML 향후 잡은 남자는 뇌를 「외적」의 육체에 이식해 교배역으로 해,
+	PRINTFORML 여자는 최강의 병사를 낳기 위한 모체로서 활용해 나간다.
+	PRINTFORML 최강의 병사를 양산한 여명에는, 「외적」따위는 눈 깜짝할 순간에 구축해 보이겠다.
+	PRINTFORML 그리고 녀석들에게, 시티에게 깨닫게 해 주는 것이다.
+	PRINTFORML 나의 연구가 인류를 미래로 인도해, 시티가 내린 판단은 잘못이었다고.
+	PRINTFORML 
+ELSEIF  A_N == 12
+	PRINTFORML 어느 연구원의 수기（２／３）
+	PRINTFORML 
+	PRINTFORML 결론부터 말하자면 「외적」의 육체를 사람의 뇌로 제어하는 것은 불가능했다.
+	PRINTFORML 탑재한 사람의 뇌는 어떠한 이유에 의해 오염되는 것 같고, 점차 이성을 잃어 가는 것이다.
+	PRINTFORML 연구 설비가 갖추어지지 않은 도시 밖의 랩에서는 원인을 밝혀내는 일도 할 수 없다.
+	PRINTFORML 
+	PRINTFORML 오늘, 실험생물 EC-1017을 도살처분했다. 도살처분은 이것으로 19체째다.
+	PRINTFORML 「외적」의 육체는 시체를 재이용하면 되지만, 사람의 뇌는 그렇게는 안 된다.
+	PRINTFORML 어떻게든 해 사람의 육체를 손에 넣을 방법은 없을까….
+	PRINTFORML 
+ELSEIF  A_N == 11
+	PRINTFORML 어느 연구원의 수기（１／３）
+	PRINTFORML 
+	PRINTFORML 오늘, 사람의 수정란에 「외적」의 유전자를 짜넣는 실험이 승인되었다.
+	PRINTFORML 도시는 조금씩 발전하고 있다고는 해도, 자원에는 한계가 있다.
+	PRINTFORML 내가 진행하고 있던 「외적」의 육체를 사람의 뇌로 제어하는 실험은 동결되어
+	PRINTFORML 할애해지고 있던 자원은 모두 그 쪽으로 돌려지게 되었다.
+	PRINTFORML 하지만 취약한 사람의 육체를 이용해 「외적」에게 대항할 수 있는지?
+	PRINTFORML 내가 낸 대답은 「아니」다.
+	PRINTFORML 시티가 잘못한 선택을 인류에게 강요한다고 한다면, 더 이상 따르는 것은 할 수 없다.
+	PRINTFORML 
+ELSEIF  A_N == 10
+	PRINTFORML GEOYA! GEOYA, GEOYA, GEOYA! GEOYA─! …GEOYA!
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML GEOHGEOHGEOYAGEOYA, GEOHGEOHGEOYAGEOYA, GEOYAGEOYA!
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 　　　　　　질RINGEOYA
+	PRINTFORML
+ELSEIF A_N == 9
+	PRINTFORML 「주회 하고 있을 때, 안쪽에 있는 적은 베던가 마법으로 공격하세요!」
+	PRINTFORML 라고 말했지만 사실일까…. 그렇지만 선배는 매일 주회 하고 있으니까 그렇겠지.
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 그런데 「주회」라는건 뭐에 대한 걸까.
+	PRINTFORML 
+ELSEIF A_N == 8
+	PRINTFORML 표제는 이하와 같다
+	PRINTFORML 
+	PRINTFORML ·전대미문의 태풍에 의한 피해
+	PRINTFORML 
+	PRINTFORML ·교통사고 다발중
+	PRINTFORML 
+	PRINTFORML ·수수께끼의 정신병이 유행
+	PRINTFORML 
+	PRINTFORML ·[검열]대륙에서 수수께끼의 생물 출현!
+ELSEIF A_N == 7
+	PRINTFORML 　　　안개가 진하니까 일단 써 둔다
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 　위가 슈퍼
+	PRINTFORML 오른쪽이 주택지
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 위가 도서관? 그리고 오른쪽이 슈퍼?
+	PRINTFORML 　　　기억이 잘못 됐나?
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 　　　　　　　　　역시 이상하다
+ELSEIF A_N == 6
+	PRINTFORML 도시의 이상을 눈치채고 밖에 나왔지만, 밖은 좀 더 이상했다.
+	PRINTFORML 괴물 있는 것은 알고 있었지만, 설마 이정도나 있다니…
+	PRINTFORML 거기에 거리인데도 끝이 없는 미로같이 되어 있다.
+	PRINTFORML 함께 탈주한 동료와는 떨어져버리고, 사면초가다…….
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 에이전트가 총을 가지고 근처를 배회하고 있다.
+	PRINTFORML 도시로부터는 나는 이레귤러로서 인식되어 버린 것 같다.
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 　　　배　　　　　　먹혔
+	PRINTFORML 　　　　이럴 줄 알았　　　　　　　　　　도시에 있었으면
+ELSEIF A_N == 5
+	PRINTFORML 해안에 있는 창고에 나온 그 괴물은 뭐였던 거야?
+	PRINTFORML 불쾌한 촉수에 미끌미끌한 신체, 기분 나쁜 것도 정도가 있지.
+	PRINTFORML 놀라서 봉으로 두들겼더니 바다로 빠져들었지만… 죽지는 않은 것 같다
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 최근, 이상한 것을 보았다던가 하는 소문도 있고, 오늘은 잠이 올 것 같지 않아
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF A_N == 4
+	PRINTFORML 　　　인스머스　　　총을 쏜다
+	PRINTFORML 미＝고　　　둔기로 친다
+	PRINTFORML 　쇼거스　　　　　　　마법으로 공격
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+ELSEIF A_N == 3
+	PRINTFORML [검열]에 지시받은 것을 숨겨 두었다.
+	PRINTFORML 될 수 있으면 빨리 회수하는 것이 좋다.
+	PRINTFORML 시간이 지나면 갈 수 있는 곳이 바뀌어 버리고,
+	PRINTFORML 최악의 경우 도시의 녀석들에게 발견될지도 모르니까 말야.
+ELSEIF A_N == 2
+	PRINTFORML 피험체의 [검열]을 골라내 시험용 배양액으로 채운 캡슐에 격납.
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 격납으로부터 1개월 경과, 정상적으로 생체신호를 확인.
+	PRINTFORML 
+	PRINTFORML 격납으로부터 2개월 경과, 정상적으로 생체신호를 확인.
+	PRINTFORML 
+	PRINTFORML 격납으로부터 3개월 경과, 생체신호를 확인했지만 약간의 흐트러짐이 보였다.
+	PRINTFORML 
+	PRINTFORML 격납으로부터 4개월 경과, 띄엄띄엄이나마 생체신호를 확인.
+	PRINTFORML 
+	PRINTFORML 격납으로부터 5개월 경과, 기능정지.
+	PRINTFORML 
+	PRINTFORML 이상으로부터 [검열]의 교환의 경우에 일시 보존에 유용.
+	PRINTFORML 
+ELSEIF A_N == 1
+	PRINTFORML 걸어도 걸어도 같은 곳만 맴도는 것 같다…
+	PRINTFORML 
+	PRINTFORML 　　　엄청나게 수색했지만 아무도 없다. 있는 것은 시체뿐이다…
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 　　　　　　　　　　　　　이제 지쳤다
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 아무나 좋아
+	PRINTFORML 　　　　　　　　　　혼자서는 마음이 견디지 못해
+	PRINTFORML 
+	PRINTFORML 
+ENDIF
+
+
+DRAWLINE
+DRAWLINE
+
+PRINTFORMW
+CLEARLINE LINECOUNT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

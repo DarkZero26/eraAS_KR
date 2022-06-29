@@ -1,0 +1,76 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;3は유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_3_NAME
+RESULTS = 『잔재』예지의 조각
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_3_ABLE
+;複数入手不可
+SIF RPG_ARTIFACT_COUNTUNIQUE(3)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_3_RANK
+RETURN 60
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_3_ATK
+RETURN 50
+
+
+@ART_UNIQUE_3_DEF
+RETURN 180
+
+
+@ART_UNIQUE_3_HIT
+RETURN 50
+
+
+@ART_UNIQUE_3_SPD
+RETURN 120
+
+
+@ART_UNIQUE_3_LUK
+RETURN 90
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_3_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_3_ABILITY
+RETURN 5
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_3_MADEIN
+RETURN 5
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_3_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = "방대"라는 표현으로도 부족할 정도로 방대한 이스족의 지식은 노트에 기록된다.
+EXPL:1 = 이 아티팩트는 빙산의 일각이지만, 그럼에도 이해는 불가능에 가깝다.
+EXPL:2 = 오히려 이것의 용도는 따로 있으니,
+EXPL:3 = 장기보존을 위해 경년열화를 받지 않고, 물리적 파괴에도 내성을 갖도록 만들어진 이 노트는 방어 도구로도 유용하다.
+EXPL:4 = 
+RETURN 1

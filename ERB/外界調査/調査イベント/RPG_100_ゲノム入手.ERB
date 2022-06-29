@@ -1,0 +1,43 @@
+﻿;-------------------------------------------------
+;ゲノム入手
+;2020/11/18  락픽による成功判定を導入。もとは@RPG_EVENT_MAINにあった判定
+;-------------------------------------------------
+@RPG_EVENT_100(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+L_G = RAND:20
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 100
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:게놈 입수】
+PRINTFORML 
+PRINTFORML %조사처리(CALLNAME:L_I,"는")% 인근 건물을 샅샅히 조사하다, 우연히 특수 가공된 상자를 발견했다.
+IF CFLAG:L_I:주민_技能_락픽 > RAND:100
+	PRINTFORML 타고난 락픽 기능으로 잠금을 풀자, 안에는 현대에서 귀중한 게놈이 담겨져 있었다.
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 이 행운에 기뻐하며, 일단 상자 쨰로 가져가기로 했다…….
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW 
+	PRINTFORML %조사처리(FlagNAME:(2500+L_G),"를")% 입수했다.
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW 
+	Flag:(2500+L_G) += 1
+ELSE
+	;判定失敗
+	PRINTFORML 하지만 상자는 엄중히 잠겨있었고, 그 자물쇠는 %조사처리(CALLNAME:L_I,"가")% 모르는 형식이였다.
+	PRINTFORML 시간을 투자해서 자물쇠를 열 수 있을지도 모르겠지만, 언제 적에게 습격당할지 모르는 상황이다.
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 체념하고 떠날 수 밖에 없었다…….
+	PRINTL 
+	PRINTL
+	PRINTW 
+ENDIF
+
+RESETCOLOR
+DRAWLINE

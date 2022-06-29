@@ -1,0 +1,80 @@
+﻿#DIM CONST ATK_RATIO = 100   ;((50 + ダ이스出目 * 10) * ATK * ATK_RATIO) / 100としてダ이스出目にかけるATKの倍率を調整。敵味方共通
+#DIM CONST ATK_RATIO_E = 100 ;((50 + ダ이스出目 * 10) * ATK * ATK_RATIO * ATK_RATIO_E) / 100としてダ이스出目にかけるATKの倍率を調整。敵専用
+#DIM CONST ATK_BASE = 70     ;ATKの値にかかる基本割合。これにサイコロの出目x10が加算
+#DIM CONST DEF_RATIO = 80    ;DEFの倍率を調整。敵味方共通
+#DIM CONST DEF_RATIO_E = 100 ;上記の敵専用補正
+
+#DIM CONST FLOORLENGTH = 30 ;１フロアの최대の長さ
+#DIM SAVEDATA FLOOREVENT, 30;フロアで起きるイベントを記録
+#DIM SAVEDATA FE_VISIBLE, 30;上記フロアイベントが可視化されるかどうか
+#DIM SAVEDATA ROUTETYPE,   1;そのルートの属性
+#DIM SAVEDATA FLOORTER,   30;そのフロアの地形。FLOOR TERRAIN
+#DIM SAVEDATA NOWFLOOR,    1;현재いるフロア
+#DIMS SAVEDATA ROUTENAME    ;현재進んでいるルートの名前
+
+#DIM BATTLEFIELD            ;戦闘が起きた場所の地形
+#DIM TACTICAL_P             ;プレイヤー側戦術的有利
+#DIM TACTICAL_E             ;敵側戦術的有利
+#DIM BATTLE_WIN_P           ;プレイヤー側が勝ったら立つフラグ
+#DIM BATTLE_WIN_E           ;敵側が勝ったら立つフラグ
+#DIM BATTLE_ESCAPE_P        ;プレイヤー側が戦闘から逃げたら立つフラグ
+#DIM BATTLE_ESCAPE_E        ;敵側が戦闘から逃げたら立つフラグ
+#DIM BATTLE_TIMEUP          ;時間経過で戦闘終了したら立つフラグ
+#DIM CONST AMBUSH = 20      ;奇襲成立時にかかる補正
+#DIM CONST ADVANTAGE = 15   ;戦術的有利時にかかる補正
+
+#DIM BPARAM_A , 100
+#DIM BPARAM_D , 100
+#DIM BRESULT  , 100
+#DIM BOOST_A  , 100
+#DIM BOOST_D  , 100
+#DIM EX_A     , 100
+#DIM EX_D     , 100
+#DIMS BSTR_A  , 100
+#DIMS BSTR_D  , 100
+
+;戦闘パラメータ受け渡し用配列の添え字
+;ダ이스系
+#DIM CONST ダ이스数  = 0 ;BOOST_Aで使うときはパーセンテージ加算ではなく固定値加算
+#DIM CONST ダ이스面  = 1 ;同上
+#DIM CONST ダ이스加算= 2 ;同上
+;能力系 - キャラ自身
+#DIM CONST 최대HP    = 3
+#DIM CONST 현재HP    = 4
+#DIM CONST 攻撃      = 5
+#DIM CONST 防御      = 6
+#DIM CONST 命中      = 7
+#DIM CONST 速度      = 8
+#DIM CONST 幸運      = 9
+;能力系 - アーティファクト
+#DIM CONST ART攻撃   = 10
+#DIM CONST ART防御   = 11
+#DIM CONST ART命中   = 12
+#DIM CONST ART速度   = 13
+#DIM CONST ART幸運   = 14
+;能力系 - 攻撃타입、弱点、耐性
+#DIM CONST 攻타입  = 15
+#DIM CONST 弱点      = 16
+#DIM CONST 耐性      = 17
+;能力系 - 熟숙련도
+#DIM CONST 熟練      = 18
+;戦術的優劣
+#DIM CONST 戦術      = 19
+;その他
+#DIM CONST ISENEMY   = 20;敵かどうかフラグ
+#DIM CONST 攻勢      = 21
+
+;戦闘パラメータ受け渡し配列文字列版
+#DIM CONST BNAME     = 0
+#DIM CONST WEAPON    = 1
+
+;戦闘結果渡し配列の添え字
+#DIM CONST HITNUM    = 0
+#DIM CONST DAMAGE    = 1
+
+;アーティファクト効果の戦闘後効果配列
+#DIM CONST RECOV = 0 ;攻撃終了時にこれだけ回復する
+#DIM CONST DAMAGE_PLUS = 1;攻撃終了時にこの数値を追加데미지として受ける。EX_A:DAMAGE_PLUSなら攻撃者に、EX_D:DAMAGE_PLUSなら防御者に追加데미지がいく
+#DIM CONST DISASTER    = 2;都市への데미지。防衛戦のみ機能する。EX_A、EX_Dどちらも同じ都市데미지として扱われる
+#DIM CONST EXTRA_ATTACK= 3;攻撃終了時にこのフラグがあるともう１ターン攻撃
+

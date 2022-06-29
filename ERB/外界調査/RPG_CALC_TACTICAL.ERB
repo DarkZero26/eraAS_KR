@@ -1,0 +1,99 @@
+﻿;-------------------------------------------------
+;戦術有利/不利を計算する関数
+;-------------------------------------------------
+@RPG_CALC_TACTICAL(CHAR = -1 , ENEM = -1 , FIELD = -1)
+#DIM CHAR
+#DIM C_RAT
+#DIM ENEM
+#DIM E_RAT
+#DIMS TERNAME
+#DIM TERLEN
+#DIM JUDLEN
+#DIM TACT ;TACTICAL
+#DIM FIELD
+#DIM OFFSET
+#DIM SPHI , 2;SPD + HIT
+
+SIF CHAR == -1 || CHAR >= CHARANUM
+	THROW CHARが不正です({CHAR})
+SIF ENEM == -1
+	THROW ENEMが不正です({ENEM})
+
+CALLFORM RPG_TER{FIELD}_RATIO_PLAYER(CHAR)
+C_RAT = RESULT
+SPHI:0 = (CFLAG:CHAR:주민_HIT + CFLAG:CHAR:주민_SPD) * C_RAT / 100
+SPHI:0 = RAND(1 , SPHI:0) + RAND(1 , SPHI:0)
+
+CALLFORM RPG_TER{FIELD}_RATIO_ENEMY(ENEM)
+E_RAT = RESULT
+SPHI:1 = (FLAG:敵_HIT + FLAG:敵_SPD) * E_RAT / 100
+SPHI:1 = RAND(1 , SPHI:1) + RAND(1 , SPHI:1)
+
+CALLFORM RPG_TER{FIELD}_NAME
+TERNAME = %RESULTS%
+TERLEN = STRLENS(@"%TERNAME%")
+
+TACT = SPHI:0 * 100 / (SPHI:0 + SPHI:1)
+TACT -= 50
+
+OFFSET = TACT / 10
+
+;半角42字
+RESULTS:0 = %" " * (21 - (TERLEN / 2))%%TERNAME%
+;#;RESULTS:0 = %RESULTS:0%{TACT}\%
+RESULTS:1 = 自軍({C_RAT , 3}\%)%"　" * 11%({E_RAT , 3}\%)　敵
+RESULTS:2 = %"＝" * 5%%"―" * 5%＋%"―" * 5%%"＝" * 5%
+RESULTS:3 = %"　" * (10 - OFFSET)%△%"　" * (10 + OFFSET)%
+SELECTCASE JUDGE_TACTICAL(TACT)
+	CASE 2 , -2
+		RESULTS:4 = 奇襲！
+	CASE 1
+		RESULTS:4 = 有利
+	CASE -1
+		RESULTS:4 = 不利
+	CASEELSE
+		RESULTS:4 = 拮抗
+ENDSELECT
+JUDLEN = STRLENS(@"%RESULTS:4%")
+RESULTS:4 = %" " * (21 - (JUDLEN / 2))%%RESULTS:4%
+RETURN TACT
+
+
+;-------------------------------------------------
+;@RPG_CALC_TACTICALの計算結果から実際の戦術的優位、奇襲を判定する式中関数
+;引数に上記関数の返値を受け取る
+;-2=敵側の奇襲
+;-1=敵の戦術優位
+;0=拮抗
+;1=味方戦術優位
+;2=味方の奇襲
+;-------------------------------------------------
+@JUDGE_TACTICAL(TACT)
+#FUNCTION
+#DIM TACT
+#DIM CONST AMB = 30
+#DIM CONST ADV = 15
+#DIM TEMP
+
+SELECTCASE ABS(TACT)
+	CASE IS >= AMB
+		;奇襲成立
+		IF TACT > 0
+			TEMP = 2
+		ELSE
+			TEMP = -2
+		ENDIF
+	CASE IS >= ADV
+		;優位
+		IF TACT > 0
+			TEMP = 1
+		ELSE
+			TEMP = -1
+		ENDIF
+	CASEELSE
+		;優劣つかず
+		TEMP = 0
+ENDSELECT
+RETURNF TEMP
+
+

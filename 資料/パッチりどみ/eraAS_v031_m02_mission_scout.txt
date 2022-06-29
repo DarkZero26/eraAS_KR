@@ -1,0 +1,139 @@
+﻿2018/10/19
+
+多少UIを改善したつもりのパッチ
+主にスカウト関連処理を色々と改造
+
+
+
+◆対象環境
+[era0004021]eraAS ver0.31
+＋eraAS_v031_m01_bugfix
+
+以下のパッチはマージ済み
+[era0004023]eraAS_0.31バグ修正パッチ
+[era0004024]eraAS_0.31ドロップアイテム簡略化表示パッチ
+
+
+
+◆注意事項
+・改変が広範囲にわたるので、他のパッチと競合を起こす可能性大
+・以後に登場するであろう他のパッチとの併用はできないことを覚悟しておいてください
+
+
+
+◆せつめい
+・「スパイテロ駆除依頼」「이스による駆除依頼」の成功時、加入キャラのステータスを閲覧してから加入の可否を選択することが可能に
+・能力表示画面にて、NO:ARGを表示してるのはCFLAG:개별번호にすべきと思うので修正
+　ランダムキャラは同じcsvから生成されるのでNO:ARGは同一値になります
+・加入時にキャラの危険日がランダムに設定されるように変更
+・スカウト時に「気に入らないからチェンジで！」した場合にはキャラ固有IDの加算が進まないように挙動を変更
+・隠しステータス（無自覚の雌など、페로몬系ステータス）の生成処理の変更
+　１）各種페로몬系ステータスは無自覚の雌が高ければ高いほど大きな数値になるように
+　２）各種페로몬系ステータスは素質の影響を受けるように
+　３）ただしこれらは「確率的な傾向」として実装されており、ばらつきが発生する
+・上記改変作業にともなってスカウト関連処理の全体的な見直し、eramaker構文からemuera構文へ、適宜処理を切り出して関数化
+
+
+
+◆具体的な変更内容
+ERB/任務/MISSION_M.ERB
+・加入キャンセル処理をDELCHARAからCANCEL_SCOUTに変更
+・報酬キャラを確認できるように
+　スパイテロ駆除依頼/이스からの駆除依頼のクリア時に
+　受け取るキャラのステータスを閲覧してから加入の可否を選択できるように改変
+
+ERB/주민/TURN_EVENT_NYM_R.ERB
+・悩みの生成処理関連を切り出して関数化してここに置いた
+　従来はスカウトによるキャラ生成時にも直で処理を書いていたが
+　　CALL MAKE_BIG_NAYAMI(登録番号, 生成対象悩みスロット)
+　　CALL MAKE_SMALL_NAYAMI(登録番号, 生成対象悩みスロット)
+　それぞれ大きい悩みと小さい悩みがこれで生成できるようになった
+
+ERB/本体/INFO_STATUS.ERB
+・@INFO_STATUS_SINGLE(L_C_ID, OP)を作成
+　1キャラのみを対象にしてINFO_STATUS_GROUPをcallする
+　前掲のスパイテロ駆除依頼/이스からの駆除依頼のクリア時用に作成
+・@INFO_STATUS_HEADERのたぶん変数の参照ミスと思われる部分の修正
+　NO:ARGはADDCHARAで使用したCHARA.CSVの番号を記録している
+　ランダムキャラだとすべて同一の番号になってしまうのでCFLAG:개별번호に修正
+
+ERB/本体/その他処理/MEMBER_LIST.ERB
+・eramaker風の構文をemuera文法で全体的に書き換え
+　動作自体は変わってない
+
+ERB/本体/スカウト/CHARACTER_NPC_SCOUT.ERB
+・加入キャンセル処理をDELCHARAからCANCEL_SCOUTに変更
+・NPC加入時の危険日のランダム化
+・eramaker風の構文をemuera文法で全体的に書き換え
+　REPEAT文のFOR文への書き換え
+　能力値の上限処理はSIFからMIN()を使用したものに変更
+
+ERB/本体/スカウト/CHARACTER_SCOUT.ERB
+・危険日設定処理のランダム化
+・@CANCEL_SCOUTの作成
+　キャラ物色中にキャンセルしても番号が進むのが気になるので作成
+　DELCHARAの代わりに使う
+　あくまでも「目の前に現れたけど加入させるつもりはねぇよ」って時に使う関数であって
+　既存の주민がキャラロストしましたー的な場合はDELCHARAでよし
+
+ERB/本体/スカウト/CHARACTER_SCOUT_MIND.ERB
+・eramaker風の構文をemuera文法で全体的に書き換え
+・一部を関数に切り分けて使いまわせるように
+・一人称、二人称の設定処理は@CHARACTER_SCOUT_MIND_PRONOUNとして関数化
+　第二引数に「性格ID」を渡す必要がある
+・性格ID取得F関数@CHARACTER_SCOUT_TALENT_TO_MINDの作成
+　@CHARACTER_SCOUT_MINDの場合はランダム生成によって「性格ID」を保持しているが
+　それ以外の場面では素質から性格IDを取得しなければならないのでそれ用のF関数を作成した
+　　CALL CHARACTER_SCOUT_MIND_PRONOUN(TARGET, CHARACTER_SCOUT_TALENT_TO_MIND(TARGET))
+　としてやればTARGETの一人称二人称が設定できる（ただし、性格素質が設定されていることが前提）
+・@CHARACTER_SCOUT_MIND_REPEAT0/@CHARACTER_SCOUT_MIND_REPEAT
+　上記の改変にともなって記述を整理した
+・@CHARACTER_SCOUT_PERSONAL
+　当関数の処理内容を「身体特徴系のフレーバーデータ設定」と解釈し、いくつかの関数に切り分けた
+　癖の設定は@CHARACTER_SCOUT_KUSE
+　チャームポイントの設定は@CHARACTER_SCOUT_CHARM_POINT
+　신장체중やスリーサイズの生成は@CHARACTER_SCOUT_BODYSIZEとして関数化した
+　CSTRで記録する「癖」と「チャームポイント」は追加の可能性を考慮してSTRDATA構文を使用した
+・@CHARACTER_SCOUT_PERSONAL2
+　一部小文字を大文字にしたのと半角スペースを入れたくらいでほぼ変化なし
+・@CHARACTER_SCOUT_PERSONAL3/@CHARACTER_SCOUT_COSTUME(L_C_ID)
+　可読性の向上
+・@CHARACTER_SCOUT_EXTRA
+　前述の通り、悩み生成処理を関数化したので記述がかなりシンプルに
+・@CHARACTER_SECRET
+　単純なランダム処理ではなくなった
+　「こういう傾向があるよ～」程度で確率が絡むので数十名単位で加入しないとわかりにくい
+　比較的わかりやすい例）
+　　종족：조인は모체레벨、난자레벨ともに高評価の개체が生まれやすい
+　　종족：오토마타は모체레벨、난자레벨ともに低評価の개체が生まれやすい
+
+ERB/本体/スカウト/Random_Chara.ERB
+・処理を切り分けて関数化
+　素質関連（性格）は@SET_RANDOM_TALENT_MENTAL
+　素質関連（身体）は@SET_RANDOM_TALENT_SENCIBITY
+・上記のランダム素質付与処理の処理変更
+　これらの関数ではRANDによる複数の抽選処理が行われるが、抽選結果番号の重複が発生した場合に
+　抽選処理が無駄になってしまうのでFISHER_YATES_SHAFFLEを利用した処理に変更した
+
+ERB/組み込み関数/FUNC_FISHER_YATES_SHAFFLE.ERB
+・eraTWから輸入した自作関数
+　現状ではtalentのランダム取得用
+
+ERB/都市関連/カフェ/CITY_SCOUT.ERB
+・加入キャンセル処理をDELCHARAからCANCEL_SCOUTに変更
+・連続加入時にキャラ数上限に達した時用に中断処理を仕込んだ
+
+ERB/都市関連/都市/시설/CITY_F_연구시설.ERB
+・加入キャンセル処理をDELCHARAからCANCEL_SCOUTに変更
+
+
+
+◆つくったひと：morph
+・morphのつくった以外のところの扱いはつくったひとに聞いて下さい
+・配布・改造・流用、好きにしてください
+・でも、その際のサポートは自分でやってね
+
+※　era＝R-18全般の常識的な取り扱いとして例えば以下のような事はやめて下さい
+
+・未成年者がいっぱいいる場所で広める
+・R-18以外のモノをメインに扱ってる場所で取り上げる

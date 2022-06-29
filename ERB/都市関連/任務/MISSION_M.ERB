@@ -1,0 +1,508 @@
+﻿;-------------------------------------------------
+;ミッション
+;-------------------------------------------------
+@MISSION_MAIN
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+
+DRAWLINE
+PRINTFORML ≪[ＩＤ확인]、[고유게놈 확인]、[고유에테르 확인]、[　　　　　　　확인]、메인서버 엑세스를 허가합니다≫
+DRAWLINE
+PRINTFORML
+PRINTFORML
+PRINTFORML
+PRINTFORML
+PRINTFORML
+PRINTFORMW
+
+CALL MISSION_MAIN2
+;-------------------------------------------------
+;ミッション
+;-------------------------------------------------
+@MISSION_MAIN2
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+
+DRAWLINE
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪어서오세요「플레이어」, 당신에게 제시할 수 있는 의뢰는 아래와 같습니다≫
+DRAWLINE
+IF Flag:依頼_スパイテロ駆除_Lv > 0
+	PRINTFORML [1] - 【스파이 테러 구제(LV:{Flag:依頼_スパイテロ駆除_Lv})】
+ELSE
+	PRINTFORML       【――――NO MISSION――――】
+ENDIF
+IF Flag:依頼_이스からの駆除依頼_Lv > 0
+	PRINTFORML [2] - 【이스로부터의 구제의뢰(LV:{Flag:依頼_이스からの駆除依頼_Lv})】
+ELSE
+	PRINTFORML       【――――NO MISSION――――】
+ENDIF
+IF Flag:イベント誘拐中 == 1
+	PRINTFORML [500] - 【주민 구출】
+ELSE
+	PRINTFORML       【――――NO MISSION――――】
+ENDIF
+IF Flag:イベント誘拐中 == 2
+	PRINTFORML [501] - 【주민 실험시설로부터의 구출】
+ELSE
+	PRINTFORML       【――――NO MISSION――――】
+ENDIF
+PRINTFORML
+PRINTFORML
+PRINTFORML
+PRINTFORML 
+PRINTFORML [999] - 돌아간다
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 1
+ CALL MISSION_SP
+CASE 2
+ CALL MISSION_IKI
+CASE 3
+CASE 4
+CASE 500
+ CALL MISSION_JN_S
+CASE 501
+ CALL MISSION_JN_S2
+CASE 100
+	CALL JN_CONFIG_DELETE
+CASE 999
+	DRAWLINE
+	PRINTFORMW ≪안녕히「플레이어」, 앞으로도 좋은 운영을 기대하겠습니다≫
+	RETURN
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+;-------------------------------------------------
+;スパイテロ駆除
+;-------------------------------------------------
+@MISSION_SP
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪오늘도 정신 나간 이레귤러가 있는 듯 합니다. 한탄스럽네요≫
+PRINTFORML ≪테러는 사소한 규모지만, 이레귤러 자체는 간과할 수 없습니다≫
+PRINTFORML ≪이 의뢰는 아직 아무도 받지 않았습니다. 당신이 집행하시겠습니까?≫
+DRAWLINE
+PRINTFORML
+PRINTFORML
+PRINTFORML [0] - 예(전투개시)
+PRINTFORML [1] - 아니오
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	DRAWLINE
+	PRINTFORMW ≪임무를 수행할 대리인을 선택해주세요≫
+	CALL RPG_LIST_CHARA
+	L_INPUT = RESULT
+	SIF L_INPUT == 1000
+		GOTO INPUT_LOOP2
+	IF L_INPUT == 0
+		PRINTFORMW 당신은 선택할 수 없습니다.
+		GOTO INPUT_LOOP2
+	ELSEIF TALENT:L_INPUT:비전투원
+		PRINTFORMW 비전투원은 선택할 수 없습니다.
+		GOTO INPUT_LOOP2
+	ELSEIF TALENT:L_INPUT:부재 == 1
+		PRINTFORMW 부재이므로 선택할 수 없습니다.
+		GOTO INPUT_LOOP2
+	ELSE
+		Flag:調査キャラ = L_INPUT
+		Flag:依頼_スパイテロ駆除 = 1
+		Flag:의뢰_의뢰개시 = 1
+		Flag:의뢰_의뢰Lv = Flag:依頼_スパイテロ駆除_Lv
+		DRAWLINE
+		PRINTFORMW ≪수락했습니다. 좋은 성과를 기대하겠습니다≫
+		CALL RPG_BATTLE(FLAG:調査キャラ , 2 , MISSION_TER() , , 1)
+		IF BATTLE_WIN_P
+			CALL MISSION_SP_C
+			CALL MISSION_CLEAR
+		ELSE
+			CALL MISSION_MISS
+		ENDIF
+		Flag:依頼_スパイテロ駆除 = 0
+		Flag:依頼_スパイテロ駆除_Lv = 0
+		JUMP END_MISSION
+	ENDIF
+CASE 1
+	CALL MISSION_MAIN2
+CASEELSE
+	GOTO INPUT_LOOP2
+ENDSELECT
+
+
+;-------------------------------------------------
+;スパイテロ駆除クリア
+;-------------------------------------------------
+@MISSION_SP_C
+#DIM L_INPUT
+CALL CHARACTER_SCOUT1
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪수고하셨습니다, 「플레이어」. 그쪽이 이레귤러로군요≫
+PRINTFORML ≪이레귤러는 모든 인권이 동결되어 있습니다. 살처분을 해도 죄가 되지 않습니다≫
+PRINTFORML ≪선택은 포박해 온 당신의 몫입니다. 어떻게 해드릴까요?≫
+DRAWLINE
+PRINTFORMW
+DO
+	CALL INFO_STATUS_SINGLE(CHARANUM - 1)
+	DRAWLINE
+	PRINTFORML ≪수고하셨습니다, 「플레이어」. 그쪽이 이레귤러로군요≫
+	PRINTFORML ≪이레귤러는 모든 인권이 동결되어 있습니다. 살처분을 해도 죄가 되지 않습니다≫
+	PRINTFORML ≪선택은 포박해 온 당신의 몫입니다. 어떻게 해드릴까요?≫
+	PRINTFORML
+	PRINTFORML [0] - 소유한다(일부 행동이 제한된 주민으로서 소지합니다)
+	PRINTFORML [1] - 기억처리(기억을 지워 새 주민으로서 도시에 풀어줍니다)
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 0
+		PRINTFORML ≪알겠습니다. 이레귤러의 모든 권리를 당신에게 이양하겠습니다≫
+		PRINTFORML ≪만약을 위해 재범 방지용 뇌처리를 하겠습니다. 양해바랍니다≫
+		PRINTFORMW ≪이걸로 갱생을 시키든 가지고 놀든, 선택은 당신의 자유입니다≫
+	CASE 1
+		DRAWLINE
+		PRINTFORML ≪어라, 기억처리로 끝내시겠다니. 변함없이 상냥하신 분이네요≫
+		PRINTFORML ≪그럼, 이레귤러에게는 제 2의 인생을 살도록 하죠≫
+		PRINTFORMW ≪다음 인생에서, 도시 공헌을 기대해보죠≫
+		CALL CANCEL_SCOUT(CHARANUM - 1)
+	CASEELSE
+		CONTINUE
+	ENDSELECT
+	BREAK
+LOOP 1
+
+IF FLAG:依頼_スパイテロ駆除_Lv >= 30 && POSSIB(30)
+	;スパイテロ駆除Lv30以上、かつ30%の確率で発生
+	CALLFORM ART_UNIQUE_6_ABLE
+	IF RESULT
+		PRINTL  
+		PRINTFORML ≪그러고보니 이레귤러의 아지트를 수색할 때, 아티팩트를 발견했다고 합니다≫
+		PRINTFORML ≪악용되지 않은 것은 행운입니다. 그들이 감당하기에는 힘들테니까요≫
+		PRINTFORML ≪이건 그쪽으로 보내겠습니다. 적당히 처리하셔도 상관 없답니다≫
+		PRINTFORMW ≪쓸모없다고 할 만한 잡동사니는 아닌 것 같습니다≫
+		PRINTL 
+		CALL RPG_GET_ART_UNIQUE(6 , , 1)
+	ENDIF
+ELSE
+	;入手条件を満たしていれば確定入手
+	CALLFORM ART_UNIQUE_2_ABLE
+	IF RESULT
+		PRINTL  
+		PRINTFORML ≪그러고보니 이레귤러의 아지트를 수색할 때, 아티팩트를 발견했다고 합니다≫
+		PRINTFORML ≪악용되지 않은 것은 행운입니다. 그들이 감당하기에는 힘들테니까요≫
+		PRINTFORML ≪이건 그쪽으로 보내겠습니다. 적당히 처리하셔도 상관 없답니다≫
+		PRINTFORMW ≪능력은 아직 한 개 정도니≫
+		PRINTL 
+		CALL RPG_GET_ART_UNIQUE(2 , , 1)
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;이스からの駆除依頼
+;-------------------------------------------------
+@MISSION_IKI
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪이스가 오늘도 작성한 실험체를 방치해서 문제가 되고 있습니다. 한탄스럽습니다≫
+PRINTFORML ≪그녀들로부터 그것을 구제해달라는 요청이 왔습니다. 다소 손이 많이 갈테니 주의해주세요≫
+PRINTFORML ≪이 의뢰는 아직 아무도 받지 않았습니다. 당신이 집행하시겠습니까?≫
+DRAWLINE
+PRINTFORML
+PRINTFORML
+PRINTFORML [0] - 예(전투개시)
+PRINTFORML [1] - 아니오
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	DRAWLINE
+	PRINTFORMW ≪임무를 수행할 대리인을 선택해주세요≫
+	CALL RPG_LIST_CHARA
+	L_INPUT = RESULT
+	SIF L_INPUT == 1000
+		GOTO INPUT_LOOP2
+	IF TALENT:L_INPUT:비전투원
+		PRINTFORMW 비전투원은 선택할 수 없습니다.
+		GOTO INPUT_LOOP2
+	ELSEIF L_INPUT == 0
+		PRINTFORMW 당신은 선택할 수 없습니다.
+		GOTO INPUT_LOOP2
+	ELSEIF TALENT:L_INPUT:부재 == 1
+		PRINTFORMW 부재이므로 선택할 수 없습니다.
+		GOTO INPUT_LOOP2
+	ELSE
+		Flag:調査キャラ = L_INPUT
+		Flag:依頼_이스からの駆除依頼 = 1
+		Flag:의뢰_의뢰개시 = 1
+		Flag:의뢰_의뢰Lv = Flag:依頼_이스からの駆除依頼_Lv
+		DRAWLINE
+		PRINTFORMW ≪수락하셨습니다. 좋은 성과를 기대하겠습니다≫
+		CALL RPG_BATTLE(FLAG:調査キャラ , 0 , MISSION_TER() , , 1)
+
+		IF BATTLE_WIN_P
+			CALL MISSION_IKI_C
+			CALL MISSION_CLEAR
+		ELSE
+			CALL MISSION_MISS
+		ENDIF
+		Flag:依頼_이스からの駆除依頼 = 0
+		Flag:依頼_이스からの駆除依頼_Lv = 0
+		JUMP END_MISSION
+	ENDIF
+CASE 1
+	CALL MISSION_MAIN2
+CASEELSE
+	GOTO INPUT_LOOP2
+ENDSELECT
+
+
+;-------------------------------------------------
+;이스からの駆除依頼クリア
+;-------------------------------------------------
+@MISSION_IKI_C
+#DIM L_INPUT
+CALL CHARACTER_SCOUT1
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪수고하셨습니다, 「플레이어」. 무사히 끝난 것 같군요≫
+PRINTFORML ≪관계자 이스 중 한 명으로부터 교류 신청이 왔습니다. 관심을 산 모양이네요≫
+PRINTFORML ≪교류관계를 맺는 것을 결정하는 것은 당신의 자유입니다. 어떻게 해드릴까요?≫
+DRAWLINE
+PRINTFORMW
+DO
+	CALL INFO_STATUS_SINGLE(CHARANUM - 1)
+	DRAWLINE
+	PRINTFORML ≪수고하셨습니다, 「플레이어」. 무사히 끝난 것 같군요≫
+PRINTFORML ≪관계자 이스 중 한 명으로부터 교류 신청이 왔습니다. 관심을 산 모양이네요≫
+PRINTFORML ≪교류관계를 맺는 것을 결정하는 것은 당신의 자유입니다. 어떻게 해드릴까요?≫
+	PRINTFORML
+	PRINTFORML [0] - 허가한다(주민으로 등록됩니다)
+	PRINTFORML [1] - 거절한다(등록하지 않습니다)
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 0
+		PRINTFORML ≪알겠습니다. 이쪽이 상대편의 번호입니다≫
+		PRINTFORMW ≪많은 주민과 교류를 가지는 것이「플레이어」의 기본입니다. 이를 발판 삼아 신뢰를 얻어내보죠≫
+	CASE 1
+		DRAWLINE
+		PRINTFORML ≪어라, 그럼 신청은 삭제하겠습니다≫
+		PRINTFORMW ≪답장은 이쪽에서 처리해드리겠습니다≫
+		CALL CANCEL_SCOUT(CHARANUM - 1)
+	CASEELSE
+		CONTINUE
+	ENDSELECT
+	BREAK
+LOOP 1
+
+;의뢰 레벨 40 이상, 입수 조건을 충족하면 20% 확률로 아티팩트 입수
+CALL ART_UNIQUE_3_ABLE
+IF FLAG:依頼_이스からの駆除依頼 >= 40 && RESULT && POSSIB(20)
+	PRINTL 
+	PRINTFORML ≪참, 그리고≫
+	PRINTFORML ≪그녀들이 잃어버린 것으로 생각되는 노트를 회수했습니다. 이미 사본을 만들었으니 필요하시다면 받아가세요≫
+	PRINTFORMW ≪……비밀이랍니다?≫
+	PRINTL 
+	CALL RPG_GET_ART_UNIQUE(3 , , 1)
+ENDIF
+
+
+;-------------------------------------------------
+;거주자 구출／이레귤러 납치
+;턴 경과나 실패의 개념은 없다
+;-------------------------------------------------
+@MISSION_JN_S(ARG:0,ARG:1,ARG:2)
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪매우 한탄스러운 일입니다. 우리 도시 주민이 정신나간 이레귤러에게 납치감금되어 있습니다≫
+PRINTFORML ≪다행이도 상대는 한 명인 것 같습니다. 구출한다면 전투라 하기에도 민망할 겁니다≫
+PRINTFORML ≪하지만 신중한 타이밍이 요구됩니다…… 지금 구출하시겠습니까?≫
+DRAWLINE
+PRINTFORML
+PRINTFORML　※방치해도 캐릭터가 사라지지 않습니다.
+PRINTFORML [0] - 예(주민구출)
+PRINTFORML [1] - 아니오
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	DRAWLINE
+	PRINTFORML ≪신청확인…… 즉시 구출부대를 보내도록 하죠≫
+	PRINTFORMW 
+	CLEARLINE LINECOUNT
+	PRINTFORMW ……
+	PRINTFORMW ………………
+	PRINTFORMW …………………………
+	CLEARLINE LINECOUNT
+	PRINTFORML ≪무사히 구출할 수 있었네요. 주민의 관리는 맡기도록 하겠습니다≫
+	PRINTFORML ≪……자 그럼, 대역죄인인 이레귤러에게는 뇌를 뽑아내서≫
+	PRINTFORML ≪어항에 담궈 끝없는 고통을 주도록 하죠≫
+	PRINTFORMW 
+	ARG:0 = 8110
+	ARG:1 = 1
+	ARG:2 = 1
+    CALL MEMBER_LIST2_1(ARG:0,ARG:1,ARG:2)
+	CFLAG:(FLAG:범용변수):납치감금 = 0
+	TALENT:(FLAG:범용변수):부재 = 0
+	Flag:イベント誘拐中 = 0
+	PRINTFORML %조사처리(CALLNAME:(FLAG:범용변수),"를")% 다시 운용할 수 있게 되었다.
+	PRINTFORML 
+	PRINTFORMW 
+CASE 1
+	CALL MISSION_MAIN2
+CASEELSE
+	GOTO INPUT_LOOP2
+ENDSELECT
+
+
+;-------------------------------------------------
+;거주자 구출／매드 사이언티스트 납치
+;턴 경과나 실패의 개념은 없다
+;-------------------------------------------------
+@MISSION_JN_S2(ARG:0,ARG:1,ARG:2)
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪참으로 한탄스러운 일입니다. 우리 도시 주민이 매드 사이언티스트에게 실험 동물로 취급받고 있습니다≫
+PRINTFORML ≪시설이 교묘하게 은폐되어 있어서인지, 방어용 설비가 있는 것 같지는 않습니다. 구출한다면 별 일도 없을 겁니다≫
+PRINTFORML ≪다만 신중한 타이밍이 요구됩니다…… 지금 구출하시겠습니까?≫
+DRAWLINE
+PRINTFORML
+PRINTFORML　※방치해도 캐릭터가 사라지지 않습니다.
+PRINTFORML [0] - 예(주민구출)
+PRINTFORML [1] - 아니오
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	DRAWLINE
+	PRINTFORML ≪신청확인…… 즉시 구출부대를 보내도록 하죠≫
+	PRINTFORMW 
+	CLEARLINE LINECOUNT
+	PRINTFORMW ……
+	PRINTFORMW ………………
+	PRINTFORMW …………………………
+	CLEARLINE LINECOUNT
+	PRINTFORML ≪무사히 구출할 수 있었네요. 주민의 관리는 맡기겠습니다≫
+	PRINTFORML ≪……아쉽게도 매드 사이언티스트를 붙잡지 못한건가요……≫
+	PRINTFORML ≪구출부대가 도착했을 쯤에 이미 달아나버린 모양입니다……≫
+	PRINTFORMW 
+	ARG:0 = 8111
+	ARG:1 = 1
+	ARG:2 = 1
+    CALL MEMBER_LIST2_1(ARG:0,ARG:1,ARG:2)
+	CFLAG:(FLAG:범용변수):交配実験 = 0
+	CFLAG:(FLAG:범용변수):交配実験_임신 = 0
+	CFLAG:(FLAG:범용변수):交配実験_子宮内汚染度 = 0
+	TALENT:(FLAG:범용변수):부재 = 0
+	Flag:イベント誘拐中 = 0
+	PRINTFORML %조사처리(CALLNAME:(FLAG:범용변수),"를")% 다시 운용할 수 있게 되었습니다.
+	PRINTFORML 
+	PRINTFORMW 
+CASE 1
+	CALL MISSION_MAIN2
+CASEELSE
+	GOTO INPUT_LOOP2
+ENDSELECT
+
+
+;-------------------------------------------------
+;미션 클리어 분기
+;B는 분기?
+;@ BATTLE_MAIN에서 JUMP하는 구조가 바뀌었기 때문에 이 함수는 사용하지 않음
+;-------------------------------------------------
+@MISSION_CLEAR_B
+SIF Flag:依頼_スパイテロ駆除 == 1
+	CALL MISSION_SP_C
+
+SIF Flag:依頼_이스からの駆除依頼 == 1
+	CALL MISSION_IKI_C
+
+JUMP MISSION_CLEAR
+
+
+;-------------------------------------------------
+;미션 클리어 보상
+;-------------------------------------------------
+@MISSION_CLEAR
+#DIM L_MONEY
+
+L_MONEY = (Flag:의뢰_의뢰Lv*500)+RAND:(Flag:의뢰_의뢰Lv*500)
+
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪이상으로 의뢰 완료처리를 하겠습니다≫
+PRINTFORMW ≪의뢰 난도에 따른 보수를 준비했습니다. 받아주세요≫
+DRAWLINE
+PRINTFORMW 자금【￥{L_MONEY}】획득했다.
+MONEY += L_MONEY
+DRAWLINE
+PRINTFORMW ≪그럼 안녕히「플레이어」, 앞으로도 좋은 운영을 기대하겠습니다≫
+
+
+;-------------------------------------------------
+;ミッション失敗
+;-------------------------------------------------
+@MISSION_MISS
+
+
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪대리인의 역량 부족이였네요. 조금 더 육성에 신경써주세요≫
+PRINTFORMW ≪의뢰 자체는 타 「플레이어」에게 맡겨지니 안심해주세요≫
+DRAWLINE
+
+
+;-------------------------------------------------
+;전투 시의 지형을 추첨하는 함수
+;-------------------------------------------------
+@MISSION_TER
+#FUNCTION
+#DIM TER
+SELECTCASE CHUSEN(25 , 25 , 25 , 25)
+	CASE 0
+		;평지
+		TER = 1
+	CASE 1
+		;도심부
+		TER = 2
+	CASE 2
+		;숲
+		TER = 5
+	CASEELSE
+		;물가
+		TER = 6
+ENDSELECT
+RETURNF TER
+
+
+;-------------------------------------------------
+;임무 종료 함수
+;-------------------------------------------------
+@END_MISSION
+Flag:의뢰_의뢰Lv = 0
+Flag:의뢰_의뢰개시 = 0
+JUMP SYSTEM_MENU

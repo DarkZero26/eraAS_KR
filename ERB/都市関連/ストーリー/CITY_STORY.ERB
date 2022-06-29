@@ -1,0 +1,598 @@
+﻿
+
+@CITY_STORY_NAME
+#DIMS S_N
+
+IF FLAG:都市_ストーリー == 12
+	S_N = 여자회
+ELSEIF FLAG:都市_ストーリー == 11
+	S_N = 복습「니어」
+ELSEIF FLAG:都市_ストーリー == 10
+	S_N = 복습「직무」
+ELSEIF FLAG:都市_ストーリー == 9
+	S_N = 조수 쨩
+ELSEIF FLAG:都市_ストーリー == 8
+	S_N = 복습「아티팩트」
+ELSEIF FLAG:都市_ストーリー == 7
+	S_N = 복습「차세대 창조」
+ELSEIF FLAG:都市_ストーリー == 6
+	S_N = 점원 쨩
+ELSEIF FLAG:都市_ストーリー == 5
+	S_N = 후배 쨩
+ELSEIF FLAG:都市_ストーリー == 4
+	S_N = 점장
+ELSEIF FLAG:都市_ストーリー == 3
+	S_N = 복습「외계」
+ELSEIF FLAG:都市_ストーリー == 2
+	S_N = 복습「도시의 주민」
+ELSEIF FLAG:都市_ストーリー == 1
+	S_N = 복습「도시」
+ELSEIF FLAG:都市_ストーリー == 0
+	S_N = 복습「구서력과 외적」
+ENDIF
+
+PRINTFORM [120] - STORY【%S_N%】
+
+
+;-------------------------------------------------
+@CITY_STORY_0
+
+PRINTFORML ≪안녕하세요「플레이어」. 복습의 시간입니다. 오늘은 「구서력과 외적」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML ≪이 별에는 인간을 비롯한 수많은 지적 생명체가 생식하고 있습니다. 이 도시도 그 후예들에 의해 운영·유지되고 있네요.≫
+PRINTFORML ≪그보다 더 옛날은 나라가 얼마든지 형성되고 있어서, 이 별을 틈새 없이 활용하고 있었습니다. ≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML ≪그러나 구 20서력무렵, 갑자기 우주로부터 미지의 생명체가 내습, 분별 없이 이 별에 사는 생명체들을 살육하기 시작했습니다.≫
+PRINTFORML ≪대화 불가능, 행동원리 불명, 형상 불가해, 이상에 의해 우리는 이것을 공존 할 수 없는 존재로서 인식≫
+PRINTFORML ≪이후 적성 존재를 「외적」이라고 총칭해, 생존 경쟁으로 몸을 던진 것입니다.≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪이 커다란 위협에 모든 종족이 가질 수 있는 힘·기술을 구사해 저항했습니다만≫
+PRINTFORML ≪그 압도적인 전력 앞에 허무하게 지고 떠났습니다. 당시 존재하고 있던 나라들도 예외없이 멸망입니다.≫
+PRINTFORML ≪일부 예외는 있습니다만 살아 남은 얼마 안 되는 사람들은 「외적」의 위협으로부터 피하기 위해, 지하 생활을 피할 수 없게 되었습니다.≫
+PRINTFORML ≪그들은 이 도시가 생길 때까지… 약 1500년간 인내의 나날을 보내게 됩니다.≫
+PRINTFORMW 
+PRINTFORML ≪「외적」에게는 파벌이나 계통이 있는 것 같아, 원주민을 지하에 쫓아 버린 뒤는 파벌끼리로 싸우기 시작했습니다.≫
+PRINTFORML ≪당시부터 굉장한 장해라고도 생각되지 않는 것 같습니다. 정말로 유감스럽습니다.≫
+PRINTFORML ≪그렇지만 현재까지 우리가 이렇게 살아 있을 수 있는 것은,≫
+PRINTFORML ≪도시의 방위 기능과는 별도로 이 파벌 싸움에 열중한 것도 요인이라고 말할 수 있겠지요.≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+;-------------------------------------------------
+@CITY_STORY_1
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「도시」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪지하 생활을 계속하고 있던 생존자들, 그저 「외적」에게 계속 겁먹어만 있는 매일에 전환기가 찾아왔습니다.≫
+PRINTFORML ≪지하 깊이 자고 있던 유적… 거기로부터 아티팩트가 발굴된 것입니다.≫
+PRINTFORML ≪이름을 「실버 키」, 한정적으로 시공을 제어·조작할 수 있는 금단의 아티팩트.≫
+PRINTFORML ≪생존자들은 이것을 핵으로, 자신의 생활권을 지상에 만들 것을 결정한 것입니다.≫
+PRINTFORMW 
+PRINTFORML ≪「실버 키」의 영역내의 시공간을 안정시켜, 경계는 깊고 긴 안개가 계속되는 미궁을 만들어 침입을 막는 일에 성공,≫
+PRINTFORML ≪아주 일부는 들어 와 버립니다만, 비교적 안전하게 지상에서 활동할 수 있게 되었습니다.≫
+PRINTFORML ≪다음에 생존자들은 남은 기술을 총동원해 생활 기반을 굳히는 것을 시작합니다.≫
+PRINTFORML ≪구서력을 모방한 도시…… 이 도시를 만든 것입니다.≫
+PRINTFORMW 
+PRINTFORML ≪도시의 모형이 완성한 이후는, 문명·종의 계속, 생활권을 넓혀 가는 것을 목적으로 활동≫
+PRINTFORML ≪도시의 제어에는 「실버 키」에 인풋 한 학습기능 포함 AI를 이용… 그것이 나 「시티」인 것입니다.≫
+PRINTFORML ≪그리고 나 대신에 운영을 실시하는 것… 당신들 「플레이어」에 의해 도시의 역사가 시작된 것입니다.≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+
+;-------------------------------------------------
+@CITY_STORY_2
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「도시의 주민」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪당연히 나와 당신들 「플레이어」만이 있어도 도시는 발전하지 않습니다.≫
+PRINTFORML ≪거기서 등장하는 것이 구세대의 후예인 주민들입니다.≫
+PRINTFORML ≪인간을 비롯한 많은 종족들로 구성되어 있어, 살아남기 위해서 필사적으로 도시를 부흥시켜주고 있습니다.≫
+PRINTFORML ≪예외를 제외해, 그들은 행동의 자유와 일반적인 권리를 가지고 있어 그 근처는 구세대와 그다지 차이는 없습니다.≫
+PRINTFORMW 
+PRINTFORML ≪하지만 「시티」와 「플레이어」의 지시나 검열에는 자유·권리는 무시됩니다.≫
+PRINTFORML ≪정신 공간… 집합적 무의식을 제어하는 것으로 그들의 기억이나 행동은 온라인으로 파악할 수 있고, 또 인식이나 기억의 개찬도 가능합니다.≫
+PRINTFORML ≪당신들은 이것을 구사하는 것으로 도시의 발전의 촉진을 실시합니다. 매우 편리하네요.≫
+PRINTFORMW 
+PRINTFORML ≪그리고 도시에 특수한 법이 있습니다. 거주자에게는 육아의 권리는 없습니다. 「플레이어」인 당신도 예외가 아닙니다.≫
+PRINTFORML ≪출산에 대해서는 특별히 제한은 없습니다만, 「플레이어」와의 교배는 최우선 사항이 되고 있습니다.≫
+PRINTFORML ≪당신들은 매우 우수한 유전자를 가지고 있으니까요, 도시를 위해서 많이 자손을 늘려 주세요.≫
+PRINTFORML ≪그 때문에 이성과의 성교도 무제한입니다. 상대에게 연인이나 반려가 있어도 문제 없습니다.≫
+PRINTFORML ≪반대로 미성년에서도 같은 것을 말할 수 있습니다, 도시의 여성들은 생식 적성 능력이 높고, ○학생이라도 교미 가능해요.≫
+PRINTFORMW 
+PRINTFORML ≪왜 여기까지 출산·육아가 넓게 추천되고 있는가 하면, 「연간의 사망률」이 매우 높습니다.≫
+PRINTFORML ≪도시에서는 비교적 안전하다고는 해도, 「외적」의 피해가 없는 것이 아닙니다. 조사하러 가는 주민은 한층 더 사망률이 높습니다.≫
+PRINTFORML ≪그렇기 때문에 그것을 메꾸기 위해서 적극적인 아이 만들기가 요구되고 있습니다.≫
+PRINTFORML ≪……그런데 오늘은 분명히 아이만들기 했습니까? 어머나 아침부터 기세가 좋네요 멋져라!≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+
+
+;-------------------------------------------------
+@CITY_STORY_3
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「외계」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪우선 도시의 경계선 너머인 외계는 시공간이 불안정하게 되어 있습니다.≫
+PRINTFORML ≪어느 장소는 구세대인 채거나, 어느 장소는 「외적」의 침식을 받아 소굴화해 있거나 여러가지입니다.≫
+PRINTFORML ≪그러니까 나의 서포트없이 외출해서는 안 됩니다? 두 번 다시 돌아올 수 없게 될테니까.≫
+PRINTFORMW 
+PRINTFORML ≪조사 때는 내가 「실버 키」를 개입시켜 시공간을 안정시켜, 조사 구획을 직접적으로 조사할 수 있는 상태로 만듭니다.≫
+PRINTFORML ≪하지만 외계에는 당연 「외적」이 있으니까 조사에는 실력에 알맞은 구획을 선택합시다.≫
+PRINTFORML ≪부대의 편성도 확실히 해 나가면 강적 상대라도 의외로 대응할 수 있어요.≫
+PRINTFORML ≪일정 간격으로 중계지점도 배치되고 있으니까, 찾아내면 이용해 봐 주세요.≫
+PRINTFORML ≪더욱이 외계에는 유력한 아티팩트가 발견되는 일도 있으므로, 여력이 있는 때는 찾아 보는 건 어떻습니까.≫
+PRINTFORMW 
+PRINTFORML ≪그리고 외계에는 자유라는 이름의 무법을 요구해 도시로부터 멀어진 집단… 이레귤러가 있는 일도 있습니다.≫
+PRINTFORML ≪정신이 나가고 있는지 아군이어야 할 도시의 주민들에게 적대적입니다. 매우 한심스럽습니다.≫
+PRINTFORML ≪게다가 때로는 주민을 채어가 발정한 원숭이와 같이 강간까지 하는 상황, 매우 한심스럽습니다.≫
+PRINTFORML ≪조사에서 보였을 때는 사양말고 토벌 해 주세요. 그들에게 베풀 자비 따위 없습니다.≫
+PRINTFORMW 
+PRINTFORML ≪이레귤러는 아니고 뭔가의 이유로써 외계에 있는 사람도 있습니다.≫
+PRINTFORML ≪만약 만날 수 있었다면 도시의 이주를 권해 보는 것은 어떨까요. 드문 종족과 만날 수 있을수도 있습니다.≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+
+
+;-------------------------------------------------
+@CITY_STORY_4
+
+PRINTFORML 점장 씨「지금부터 가게를 닫을 건데… 이 뒤에 상담 좀 들어 줄래?」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 수십 분 후…
+PRINTFORML 
+PRINTFORML 【안쪽의 방】
+PRINTFORML 
+PRINTFORML 「…후훗, 지루한 것 같이 보여서 당신도 큰일이네」
+PRINTFORML 「나? …내 쪽은 「캐리어」로서의 일도 있지만, 도시를 배회하는 것만으로 좋으니까 편해요?」
+PRINTFORML 「인자를 흩뿌려 도시의 주민의 신체를 만지작거린다니 뒤숭숭하지만…… 이 시대라면 어쩔 수 없는 걸지도…」
+PRINTFORMW 
+PRINTFORML 「당신에게는 정말로 감사하고 있어. …그 사람이 죽었을 때는 자살도 생각하고 있었던 걸.」
+PRINTFORML 「그것을 당신이 신경 써줘서 나를 계속 유지해주었기 때문에, 그 슬픔으로부터 회복할 수 있었어」
+PRINTFORML 「뭐… 일시적인 의존처라고는 해도, 나를 섹스 절임으로 만든 건, 불평거리 하나둘쯤 있지만 말야」
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「왜냐하면…… 당신과 이렇게 이야기하고 있으면, 신체가 쑤셔 와 버리는 걸…」
+PRINTFORML 「당신도 그럴 기분이겠지…? ……「이 방」에서 담화하고 있는 이상은…%UNICODE(0x2661)%」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「응읏…%UNICODE(0x2661)%, 이렇게 느긋하게 섹스하는 것도, 나쁘지 않네요…」
+PRINTFORML 「좋아요… 큰 칼리로 질을 후벼파도록(듯이)하는 피스톤… 최고야%UNICODE(0x2661)%」
+PRINTFORML 「알겠어? 푹푹 하고 귀두가 안쪽에 닿고 있는 거…… 자궁이 말야…… 정자 갖고 싶어하는 걸…」
+PRINTFORML 「쿡, 이제 습성이 되고 있는 것 같아…… 왜냐면 당신의 자지의 형태를 기억해 버렸는걸%UNICODE(0x2661)%」
+PRINTFORML 「요는 자궁이 당신을, 번식하는 상대라고 인식하고 있다는 거야…」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「엣…「최근 권유가 많다」고…? 크읏%UNICODE(0x2661)%…그 아이의 여동생들이 슬슬 시설로부터 나오는 것 같아」
+PRINTFORML 「그렇게 하면 찻집의 경영도 편해지고… 나도 부담이 줄어들겠지?」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 「그러니까…… 또 한사람 늘릴까 하고%UNICODE(0x2661)%」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 「앙%UNICODE(0x2661)%, 갑자기 격렬해져………」
+PRINTFORML 「쿡, 이렇게 허리 흔들고… 미망인에게 교배하고 싶어졌을까? …나쁜 사람…%UNICODE(0x2661)%」
+PRINTFORML 「후훗…, 이것이 처음이 아니면서…… 큭큭%UNICODE(0x2661)%」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 「그래………「그 아이」도 아래의 아이들도 당신의 정자로 임신해서 낳은 걸」
+PRINTFORML 「처음은 상심에 절여진 것 같이 반 정도 억지로」
+PRINTFORML 「다음은 그 사람에게 사과하면서도 바래 버려」
+PRINTFORML 「그 다음은 사랑을 자아내면서 아이를 임신했다…」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 「나, 약한 여자니까… 결국 지지해 주는 사람이 필요해서, 그 연결로서 아이가 좀 더 갖고 싶은거야」
+PRINTFORML 「……다음 아이도 건강한 아이를 낳게 해줘, 사랑스러운 당신」
+PRINTFORML 
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 다음의 아침…
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「… 츄루…… 응… 어머나 일어난 거네, 좋은 아침…… 이 아이는 아침부터 불끈불끈한 상태가 됐지만」
+PRINTFORML 「후후, 좋아하지 아침 파이페라, 옛날은 거의 매일 해 줬었지?」
+PRINTFORML 「자, 한번 사정하고 기분 좋게 일 해 주세요%UNICODE(0x2661)%」
+PRINTFORML …결국 두 명은 격렬하게 교합해, 마중 나온 후배쨩에게 혼났다.
+PRINTFORMW 
+
+
+;-------------------------------------------------
+@CITY_STORY_5
+
+PRINTFORML 후배 쨩「앗 선배 안녕하세요. 지금 일이 일단락한 참이에요」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 【%CALLNAME:MASTER%의 집】
+PRINTFORML 
+PRINTFORML 「식사가 완성됐어요, 아무쪼록 드셔 주세요… 영양 만점이에요♪」
+PRINTFORML 「맛있습니까…… 좋았다아, 오늘 한 건 맛내기를 바꿔봐서 입맛에 맞을까 걱정이었던 거예요」
+PRINTFORML 「바로 한 그릇 더군요, 네 많이 있으니까 잔뜩 먹어 주세요!」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「변변치 못했습니다. …엣 「저의 오늘의 일」…입니까? 굉장한 것도 아니었어요?」
+PRINTFORML 「불온한 태도를 취하고 있던 공무원, 슈퍼에서 떠들고 있던 클레이머, 시설에 낙서 하고 있던 아동…」
+PRINTFORML 「눈에 거슬리는 사람들이라 저의 독단으로 「퇴거」시켜줬어요」
+PRINTFORML 「에헤헤, 칭찬해 주시다니… 저는 당연한 일을 한 것 뿐이에요」
+PRINTFORML 「「시티」님이나 「플레이어」인 선배님의 운영에 지장이 나오지 않게 불안의 싹을 자른다…」
+PRINTFORML 「그것이 선배의 칼날인 「엔포서」의 일이니까!」
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「그럼 저는 일하러 돌아가기 때문에, 선배는 천천히……」
+PRINTFORML 「후엣? … 그, 그렇게 갑자기 끌어 당기다니 무슨…%UNICODE(0x2661)%」
+PRINTFORML 「어느새 이렇게 크게…… 저로 흥분하고 있나요…? ……기뻐」
+PRINTFORML 「네, 자유롭게 사용해 주십시오…… 이 신체는 모두 선배의 것입니다%UNICODE(0x2661)%」
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「아아아%UNICODE(0x2661)%, 뒤로 하면 지배되고 있는 것 같아…%UNICODE(0x2661)%」
+PRINTFORML 「아인이니까일까요… 원시적인 이 자세라면… 더욱 더 흥분돼…%UNICODE(0x2661)%」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 「사정할때는… 차, 참지 마시고옷, 자궁에 아기 씨많이 쏟아내 주세요옷%UNICODE(0x2661)%, 그 쪽이 자궁이나 난자도 기뻐하앗…니까%UNICODE(0x2661)%」
+PRINTFORML 「…둘째돗, 열심히 낳을게요옷…… 그러니까 유전자 범벅으로 해주세욧%UNICODE(0x2661)%」
+PRINTFORML 「…읏아앗…아아아아앗%UNICODE(0x2661)%」
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 【후배의 집·욕실】
+PRINTFORML 
+PRINTFORML (하아…%UNICODE(0x2661)%…… 오늘은 가득 사랑받아 버렸네…%UNICODE(0x2661)%)
+PRINTFORML (지금 이 태내에 들어가 있는거네요… 선배의 정액, 선배의 정자, 선배의 유전자……… 선배 선배 선배……%UNICODE(0x2661)%)
+PRINTFORML 「빨리 만나고 싶네에… 두 명의 아기…」
+PRINTFORML 행복하게 하복부를 문지르는 소녀의 눈동자에 빛은 없고, 혼잣말은 잠꼬대와 같이 끝없이 계속되었다…
+PRINTFORMW 
+
+
+
+;-------------------------------------------------
+@CITY_STORY_6
+
+PRINTFORML 점원 쨩「주문하신 샌드위치입니다. ……그런데 오빠, 방금은 업무상 얘기였나요?」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 「아니, 비지니스풍의 슈트 입고 있었지만서도, 일부러 「그 방」갈 필요도 없잖…」
+PRINTFORML 「…뭐 대체로 예상은 가네요. 매에우 미인이었으니까요―」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 「별로 그거야 괜찮지만서도, 우리 종업원에게는 그다지 손을 대지 말아 주세요?」
+PRINTFORML 「한방에 임신부가 되면 큰일이니까, 최악의 경우 일인점포가 돼 버려요!」
+PRINTFORML 「어머ㄴ…… 점장이라면 별로 상관하지 않지만요. ……행복하게 되어 줬으면 하고요?」
+PRINTFORMW 
+PRINTFORML 「라고 할까 나 자신 슬슬 상대 찾아내지 않으면」
+PRINTFORML 「도대체 친구가 남자친구 잡아가고 있는데, 나만 아직도 처녀라던지……」
+PRINTFORML 「…우와앙, 나 그렇게 매력 없나요… 후배쨩조차 오빠와 아이 만든 것 같은데…」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 「점장과 그만큼 엣찌해놓고 딸인 나는 패스인가요! 뭐어 확실히 점장만큼 스타일 좋지 않지만서도!」
+PRINTFORML 「「피가 연결되고 있다」는 것도 아니고, 뭔가 이유라도 있나요?」
+PRINTFORML 「엣 비밀? 그러언―」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 수십분 후…
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 【가도】
+PRINTFORML 
+PRINTFORML ≪그녀는 차세대 창조의 대상 외였지요. 까닭에 유전자상에서도 부모의 유전자와 일치한다는 것입니다≫
+PRINTFORML ≪그리고 그녀의 부모님은 찻집의 점장과…… 이런 검열 제한을 걸고 있네요≫
+PRINTFORML ≪나에게는 무의미합니다만…… 여기는 당신 나름의 상냥함으로서 알리지 말아둘까요≫
+PRINTFORML 
+PRINTFORMW 
+
+
+
+;-------------------------------------------------
+@CITY_STORY_7
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「차세대 창조」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪「외적」과의 싸움이 되는 이상, 전투를 실시하는 것은 당연히 강한 사람이 바람직합니다.≫
+PRINTFORML ≪그러나, 순정의 교배로 자란 사람은 성장·면역등이 뛰어나다고는 말하기 힘든 것이 현상입니다.≫
+PRINTFORML ≪거기서 등장하는 것이 「차세대 창조」, 주민을 최적화시키는 「신생 장치」입니다.≫
+PRINTFORMW 
+PRINTFORML ≪대상이 되는 아이를 한 번 분해해, 유전자 레벨에서의 악성 유전의 제거·성장 촉진을 베풀어 재구성 시키는 구조가 되고 있습니다.≫
+PRINTFORML ≪생명의 진화를 큰폭으로 단축시키는 훌륭한 기술인 것입니다만, 그 대가로서 재구성 한 개체의 유전자상에서의 부모님과의 연결은 소멸하고 있습니다.≫
+PRINTFORML ≪겉모습이나 유용한 소질은 남기기 때문에, 이것도 저것도 없어지는 것은 아닙니다만.≫
+PRINTFORML ≪뭐 적극적으로 생각하면, 연결이 없어진 것으로 거리낌 없게 차세대에게도 아이를 잉태시킬 수 있다고 말할 수 있겠지요.≫
+PRINTFORMW 
+PRINTFORML ≪차세대 창조된 주민은 새로운 주민으로서 등록되므로, 당신으로부터 말을 걸어 교류 할 필요가 있습니다.≫
+PRINTFORML ≪새로운 인간으로서 재구성 되었으므로 당연이라고 말하면 당연하네요.≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+;-------------------------------------------------
+@CITY_STORY_8
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「아티팩트」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪외계의 시공간이 불안정하기 때문인지, 외계의 구획에는 특이한 효과를 가지는 것이 발견되는 일이 있습니다.≫
+PRINTFORML ≪무기부터 장식품까지 형태는 여러가지 있어서, 그것들의 총칭으로서 「아티팩트」라고 불리고 있습니다.≫
+PRINTFORMW 
+PRINTFORML ≪기본적으로 시공간의 일그러짐이 강한 장소일수록, 강력한 아티팩트가 발견되는 경향이 있네요.≫
+PRINTFORML ≪그래도, 일그러짐이 강한 구획은 대체로 위험한 「외적」이 발호 하고 있으니까,≫
+PRINTFORML ≪갑자기 고가의 물건은 노리지 않고, 단계적으로 모아 가면 좋겠죠.≫
+PRINTFORMW 
+PRINTFORML ≪어느 정도 깊은 장소까지 갈 필요는 있습니다만, 아티팩트는 「외적」을 쓰러트려 가면 자연히 모아집니다.≫
+PRINTFORML ≪그런데 내가 권장 하는 「어느 구획」은 최심부까지 가면 아티팩트를 복수 획득할 수 있어요.≫
+PRINTFORML ≪그러나 최심부에는 강력한 「외적」이 있으므로 주의를….≫
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+;-------------------------------------------------
+@CITY_STORY_9
+
+PRINTFORML 조수 쨩「보스! 이번 분기의 보고하러 왔어요옷!」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 【%CALLNAME:MASTER%의 서재】
+PRINTFORML 
+PRINTFORML 「이것이 오늘의 보고서가 됩니다. 후후응 이번은 좋은 성과라고 생각해요.」
+PRINTFORML 「거주자의 정보 조작도 나에게 걸리면 부처님 손바닥이에요―, 우훗, 모두 나의 손바닥 위입니닷.」
+PRINTFORML 「뭐, 자세하게는 보고서를 읽어 주세요…… 나는 「이쪽」의 시중을 들테니까…%UNICODE(0x2661)%」
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 수십분 후……
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「아뭇… 츄룻…… 응구읏%UNICODE(0x2661)%… 하앗…… 이렇게 크면 무는 것도 큰일이네요%UNICODE(0x2661)%」
+PRINTFORML 「레에에? …… 그 사람은 조금 효과가 나빴을지도요오……… 최악의 경우 보스가 살짝살짝 해주시면 도우미 룁니라」
+PRINTFORML 「수고를 끼친 만큼 이쪽에서 봉사하기 때문에 잘 부탁드립니다아%UNICODE(0x2661)%…… 응읏… 쥬르쥬릅! … 응으읏! … 읏!!」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 「……읏%UNICODE(0x2661)%…쥬룻…%UNICODE(0x2661)%……읏응읏! %UNICODE(0x2661)%……응굿%UNICODE(0x2661)%」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 「후아… 또 가꺼아트힌가효? ……쌓여있으혔네효…%UNICODE(0x2661)%」
+PRINTFORML 「됴아요… 츄루…읏…%UNICODE(0x2661)%…… 또, 입에… 많이……――읏!!!?%UNICODE(0x2661)%」
+PRINTFORML 「――…읏………………… 쥬우우우우…웃……응읏……하앗……%UNICODE(0x2661)%」
+PRINTFORML 「아─…………질척질척………꿀꺽…%UNICODE(0x2661)%……하아…………네, 잘 먹었습니다%UNICODE(0x2661)%」
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 「후우, 과연 보스의 상대는 힘듬다…%UNICODE(0x2661)%, 할 수 있으면 본방 하고 싶었지만 아직 일이 있으므로 아직 보류네요」
+PRINTFORML 「그러니까 아직 불끈불끈 하면 후배쨩이라도 범해서 상쾌해져 주세요%UNICODE(0x2661)%, 그게 아니면 점장씨랑 사랑이 있는 섹스일까요?♪」
+PRINTFORML 「만약 계속을 하고 싶으시면 밤에 전화 주세요,…… 자궁은 보스의 정액으로 예약이 가득 차 있으니까…%UNICODE(0x2661)%」
+PRINTFORML 
+PRINTFORML 「좋앗, 그러면 나는 이걸로 실례, 오늘도 노력해 주세요 보스―」
+PRINTFORMW 
+
+
+;-------------------------------------------------
+@CITY_STORY_10
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「직무」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪이 도시의 주민들에게는 몇개의 직무이 있습니다.≫
+PRINTFORML ≪역할은 여러가지입니다만, 도시에는 빠뜨릴 수 없어요.≫
+PRINTFORML ≪이번은 그것들을 간결하게 설명 합시다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪우선 「사회인」, 이것은 대표적이라고 할까 있어 마땅한 직무이군요.≫
+PRINTFORML ≪기본적으로 사회의 기능을 유지·발전시키는 역할을 가집니다.≫
+PRINTFORML ≪정사원·아르바이트 묻지 않고 이 카테고리에 포함되네요.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪다음 「학생」, 아직 면학의 몸인 주민가 이 직무에 해당합니다.≫
+PRINTFORML ≪다만, 면학에 힘쓰면서 사회에서 일하고 있는 사람도 있으므로, 미성년뿐이란 것은 아닙니다.≫
+PRINTFORML ≪특히 성교육은 힘을 쓰고 있어요. 올바른 지식·기술·인식이 보다 좋은 성행위로 연결됩니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪그 뒤에 「아이돌」, 「외적」에게 불안을 느끼는 사람들을 지지하고 분발하게 하는 역할을 가집니다.≫
+PRINTFORML ≪주로 용모와 성대가 뛰어난 사람이 선택되네요, 유아 체형이나 흉부가 큰 사람이 메이저입니까.≫
+PRINTFORML ≪당연히 주민으로부터 절대적인 인기를 가지고 있습니다만…, 대체로의 아이돌은 「플레이어」의 손아귀 안이군요.≫
+PRINTFORML ≪당신도 몇명 정도 둘러쌓여 있는 것은 아닌지…? ……와아, 이미 수정시킨 상태입니까! 멋져라 화환을 드릴게요.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪계속해서 「창녀」, 구세대에서는 뭔가 차가운 눈으로 보여지기 십상의 일자리입니다만, 이 도시에서는 유서 있는 일자리입니다.≫
+PRINTFORML ≪근로에 지친 신사분을 뛰어난 지체로 달래, 동시에 종자를 받아 아이를 낳습니다.≫
+PRINTFORML ≪사상자가 많은 이 도시에서는 매우 중요한 일자리이며, 그 때문에 급료는 높아지고 있습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪그리고 「치안 유지 국원」, 구세대에서 말하는 경찰·자위대 포지션일까요.≫
+PRINTFORML ≪각 구획에 배치되어 있어 이상이 있으면 이것을 진압하는 역할을 가집니다.≫
+PRINTFORML ≪조사대정도는 아닙니다만, 위험을 수반하므로 이것도 고연봉으로 인기입니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪아직 남아있는 「성직자」, 신앙은 사람의 버팀목이며, 그것들을 종교라는 형태로서 운영하는 일자리입니다.≫
+PRINTFORML ≪믿음이 깊은 사람, 혹은 깊은 지식이 있는 사람이 담당하는 것이 많습니다.≫
+PRINTFORML ≪덧붙여서 성행위는 추천되고 있습니다. 네에 「생육하고 번성하여 땅에 충만하라」란 좋은 격언이군요.≫
+PRINTFORML ≪예배당의 지하에 있는 많은 방에서, 성직자와 유권자가 사명에 세월을 보내는 꼴에는 감명을 받아요.≫
+PRINTFORML ≪…말하는 것을 잊고 있었습니다만, 그 이외에는 성실해요? 「플레이어」도 그녀들을 귀여워하는 것도 적당히…≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪마지막으로 「메이드」, 이것은 특별한 일자리로 입장이 있는 사람을 시중드는 역할을 가집니다.≫
+PRINTFORML ≪고로 될 수 있는 사람도 매우 한정되어 있어, 용모·기술·지식·작법·정신 모두가 우수하고 있지 않으면 오를 수가 없습니다.≫
+PRINTFORML ≪그리고 「플레이어」들을 시중드는 메이드는 「탑 메이드」라고 불려, 주민들이 종사할 수 있는 일자리로는 최고위에 상당합니다.≫
+PRINTFORML ≪「플레이어」가 고용하는 이상, 당신들의 첩으로서도 취급하기 때문에 그다지 휙휙 바꾸지 않도록.≫
+PRINTFORML ≪정말로 마음에 드는 아이를 메이드로 해 주세요.≫
+PRINTFORML 
+PRINTFORML ≪그리고 메이드와의 아이 만들기는 우선 사항이에요! 많이 자식을 낳게 해 주세요.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+
+;-------------------------------------------------
+@CITY_STORY_11
+
+PRINTFORML ≪안녕하세요 「플레이어」. 복습의 시간입니다. 오늘은 「니어」에 대해 이야기하겠습니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪「외적」의 위협에 계속 노출되는 우리에게 있어, 그들의 해명은 중요한 사항입니다.≫
+PRINTFORML ≪그 일환으로서 수정란에 「외적」의 유전자를 짜넣어 낳았던 것이 「니어」라는 종족입니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪일부러 수정란을 이용하는 것은, 차세대 창조를 할 수 있는 우리라도 유전자의 해석은 충분하다고는 말하지 못하고,≫
+PRINTFORML ≪동성끼리의 아이 따위는 세대를 넘을 때마다 덤으로 게놈 에러의 리스크를 품고 있습니다.≫
+PRINTFORML ≪따라 유전자의 편입시에는, 자웅으로부터의 정상적인 수정란을 베이스로 하는 것이 기본입니다.≫
+PRINTFORML ≪니어도 그 흐름으로 만들어진 인공 종족이라고 말할 수 있네요.≫
+PRINTFORMW 
+PRINTFORML ≪「외적」의 유전자를 계승하는 그녀들을 관찰하는 것으로 이해가 깊어져 가는 것이 이 계획의 중요 부분이며,≫
+PRINTFORML ≪일정기간의 관찰이 끝나면 비밀리에 처분됩니다. 트러블이 일어나지 않는다고는 할 수 없으니까.≫
+PRINTFORML ≪일반적으로는 해인의 아종으로서 오정보가 유포되고 있습니다. 그러나 개체수가 너무 적으므로 도시에서 보이는 일은 없을 것입니다.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML ≪……관리해 보고 싶다…고요? 뭐어 특이한 취향이군요.≫
+PRINTFORML ≪그러면 폐기장을 찾아가보시는 건 어떻습니까. 대기 처치가 되고 있는 개체가 있을지도예요.≫
+PRINTFORML ≪그러나 이 계획이 본격 궤도에 오르는 것은 도시가 꽤 충실하지 않으면 안 됩니다만.≫
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML ≪그럼, 오늘은 이 정도로 끝내도록 합시다. 수고하셨습니다 「플레이어」.≫
+PRINTFORML ≪다음은 또 잠시 후에 다시 실시합니다. 앞으로도 좋은 운영을 기대하고 있어요.≫
+PRINTFORMW 
+
+
+;-------------------------------------------------
+@CITY_STORY_12
+
+PRINTFORML 후배 쨩「기다렸지 두 사람 다, 좀 늦어 버렸네」
+PRINTFORML 조수 쨩「신경쓰지 않아도 괜찮슴다. 케이크 탐내고 있었고」
+PRINTFORML 점원 쨩「아, 너무 먹지 말아줘… 각자 부담이니까」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 조수 쨩「그런데 점원쨩은 처녀 탈출 한건지 모르겠네?」
+PRINTFORML 점원 쨩「푸흡……!」
+PRINTFORML 후배 쨩「안했네 이건」 조수 쨩「이대로라면 상폐녀가 되어 버리네요! ♪」
+PRINTFORML 점원 쨩「시끄러워, 만남이 없다고 만남이!」
+PRINTFORML 후배 쨩「찻집 꾸리고 있으니까 다른 직무에는 종사시키지 않고, 학교도 졸업하고 있으니까요…」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 점원 쨩「나는 차치하고 두 명은 어때? 후배쨩은 아이 있는거지?」
+PRINTFORML 후배 쨩「네, 오늘도 시설에 가서 만나고 왔어요%UNICODE(0x2661)%, 에헤헤, 선배를 닮으면 좋겠다」
+PRINTFORML 조수 쨩「우는 아이도 뚝 그치는 「엔포서」도, 사랑스러운 나의 아이에게는 망가져버리네―」
+PRINTFORML 점원 쨩「시설인가… 여동생들의 고아원의 심부름도 슬슬 끝나는 것 같고, 얼굴 좀 보여주러 갈까」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 후배 쨩「어? 조수쨩은 무엇 보고 있는 거야?」
+PRINTFORML 조수 쨩「응, 보스와 학생들의 보건 체육%UNICODE(0x2661)%」
+PRINTFORML 점원 쨩「우와………, 생생하네…엣, 앗젓저기로부터 그렇게 정액이…읏…절대 임신해버렷!」
+PRINTFORML 후배 쨩「좋겠다아… 좋겠다앗, 좋겠다앗!」 조수 쨩「후배쨩, 스테이」
+PRINTFORML 조수 쨩「상대는 전원 집안이 좋은 곳이니까, 이렇게 총애를 받은 것을 양친에게 알리는거」
+PRINTFORML 점원 쨩「이거 남자친구라든지 약혼자 있으면 어떻게 하는걸까…」
+PRINTFORML 조수 쨩「기본적으로 덮을까 묵인할까임다. 만약 생기면 이쪽에서 앞뒤 맞추는 흐름이 되어 있어요」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 점원 쨩「하아─, 그 사람 매일 이런 일 하고 있는 거야? 단순한 성욕 마인이잖…」
+PRINTFORML 후배 쨩「지금, 험담했어?」 점원 쨩「안 했어!!!」
+PRINTFORML 조수 쨩「제대로 보이지 않은 곳에서 일하고 있는 검다? 도시 기능이 만전으로 돌아가도록 매일 노력하고 있는 것은 보증해요」
+PRINTFORML 점원 쨩「그래? 틀림없이 취향인 여자를 등쳐먹는 도련님일까 생각하고 있었다고」
+PRINTFORML 후배 쨩「역시 험담하고 있네요?」 점원 쨩「죄송합니다!!!!」
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 조수 쨩「슬슬 시간임다. 또 짬이 있을 때 모이죠」
+PRINTFORML 후배 쨩「그렇네, 선배를 위해서 좀 더 일하지 않으면…」
+PRINTFORML 점원 쨩「아하하, 그러면… 다시 또 보자 두 사람 다!」
+PRINTFORMW 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

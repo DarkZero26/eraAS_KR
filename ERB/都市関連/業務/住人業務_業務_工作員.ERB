@@ -1,0 +1,83 @@
+﻿
+;-------------------------------------------------
+;주민업무 업무 공작원
+;-------------------------------------------------
+@WORK_T_Ku(ARG:0,ARG:1,ARGS:0)
+#DIM L_INPUT
+#DIM L_T
+#DIM L_F
+#DIM L_K
+#DIM L_N
+
+L_T = TARGET
+TARGET = ARG:0
+
+CLEARLINE LINECOUNT
+DRAWLINE
+
+CALL C_PICTURE(ARG:0,ARG:1)
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORM 　　　　　
+		IF !RAND:3
+			PRINTFORML 「%CSTR:어미YES%、할 수 있는 만큼 해봐%CSTR:어미ます%」
+		ELSEIF !RAND:2
+			PRINTFORML 「……잘 된것 같아%CSTR:어미肯定2%」
+		ELSE
+			PRINTFORML 「아직 방법이 있을 것 같아%CSTR:어미肯定2%」
+		ENDIF
+PRINTFORML 
+PRINTFORM 　　　　　
+PRINTFORML %타겟은% %CALLNAME:MASTER%에게 추진 받아, 아이돌 활동에 힘썼다…….
+PRINTFORMW 
+
+PRINTFORML 
+
+IF (Talent:비처녀 == 1 && Talent:합의 == 1) && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1) && RAND:10 >= 5
+	SETCOLOR 250,50,200
+	DRAWLINE
+
+	DRAWLINE
+	CALL JN_SEX_EXP
+	RESETCOLOR
+ENDIF
+
+
+
+
+
+
+
+PRINTFORMW
+
+
+
+
+
+EXP:업무경험 += 1
+PRINTFORML 【업무경험　　:{EXP:업무경험-1, 5 ,LEFT}→{EXP:업무경험, 5 ,RIGHT}】
+DRAWLINE
+IF Flag:도시_공적獲得機会 != 0
+	CFLAG:주민_業務ポイント += 5
+	L_K = (((EXP:업무경험/100)+1)*1000)+(EXP:업무경험*3)
+	Flag:도시_공적 += L_K
+	Flag:도시_공적獲得機会 = 0
+	PRINTFORML 추가로 %CALLNAME%의 활약이 「시티」에게 인정받아, 대량의 공적을 획득했다！
+	PRINTFORML 【공적　　:{Flag:도시_공적 - L_K, 10 ,LEFT}→{Flag:도시_공적, 10 ,RIGHT}】
+	DRAWLINE
+ENDIF
+PRINTFORMW 
+TARGET = L_T
+
+
+
+
+
+
+
+
+
+
+

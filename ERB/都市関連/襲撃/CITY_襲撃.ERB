@@ -1,0 +1,232 @@
+﻿
+;-------------------------------------------------
+;襲撃
+;-------------------------------------------------
+@CITY_RID
+
+SETCOLOR 250,50,50
+DRAWLINE
+DRAWLINE
+DRAWLINE
+PRINTFORML ≪「시티」의 권한에 따라「플레이어」에게 긴급 발령≫
+PRINTFORML ≪이질적인「외적」무리가 도시에 침입했습니다≫
+PRINTFORML ≪각「플레이어」는 부하를 동원해, 즉시 방어를 개시해 주세요≫
+PRINTFORML ≪방어 불가능 시에는 비상 시스템을 사용해 격퇴하겠지만, 도시에 악영향이 미칠 것입니다≫
+PRINTFORML ≪그 전에 일정 피해를 줌으로써, 「외적」의 전력을 줄여보죠≫
+PRINTFORML ≪안내는 이상입니다. 각자의 건투를 빕니다≫
+DRAWLINE
+DRAWLINE
+DRAWLINE
+PRINTFORMW 
+RESETCOLOR
+
+FLAG:도시_방위 = 5
+FLAG:도시_방위데미지 = 0
+FLAG:도시_방위蓄積데미지 = 0
+FLAG:도시_방위成功데미지 = ((FLAG:都市_Lv)*10)+RAND:((FLAG:都市_Lv)*10)
+
+
+;-------------------------------------------------
+;防衛戦
+;-------------------------------------------------
+@CITY_RID_B
+#DIM L_INPUT
+
+FLAG:도시_방위ターン = 5
+FLAG:도시_방위데미지 = 0
+
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORMW ≪방어를 수행할 대리인을 선택해 주세요≫
+CALL RPG_LIST_CHARA
+L_INPUT = RESULT
+SIF L_INPUT == 1000
+	JUMP SYSTEM_MENU
+IF TALENT:L_INPUT:비전투원
+	PRINTFORMW 비전투원은 선택할 수 없습니다.
+	GOTO INPUT_LOOP2
+ELSEIF L_INPUT == 0
+	PRINTFORMW 당신은 선택할 수 없습니다.
+	GOTO INPUT_LOOP2
+ELSE
+	;@RPG_BATTLEの仕様変更によりFLAG:調査キャラの変更は不要
+	;Flag:調査キャラ = L_INPUT
+	DRAWLINE
+	PRINTFORMW ≪확인했습니다. 방어를 개시합니다≫
+	CALL RPG_BATTLE(L_INPUT , RAND(3 , 7) , 2 , , 1 , 5)
+	IF BATTLE_WIN_E
+		;AS原作は敗北時はこの関数に飛ばないんだけど飛んでも問題ないように思える
+		JUMP CITY_RID_B_END
+	ELSE
+		;防衛戦は負けなければ時間切れ終了
+		JUMP CITY_RID_B_END
+	ENDIF
+ENDIF
+JUMP SYSTEM_MENU
+
+;-------------------------------------------------
+;防衛戦　終了
+;その日の戦闘終了
+;-------------------------------------------------
+@CITY_RID_B_END
+
+DRAWLINE
+PRINTFORML 　　　　　　　　　　　　　　　　　　　　　　　　　 금일의 방어 종료 　　　　　　　　　　　　　　　　　　　　　　　
+DRAWLINE
+PRINTFORMW 
+
+
+
+FLAG:도시_방위蓄積데미지 += FLAG:도시_방위데미지
+FLAG:ターン終了フラグ = 1
+JUMP SYSTEM_MENU
+
+;-------------------------------------------------
+;防衛戦 成功
+;@TURN_EVENTで呼ばれる
+;-------------------------------------------------
+@CITY_RID_B_CLEAR
+#DIM I_G
+#DIM DYNAMIC L_UNIQ_1
+#DIM DYNAMIC L_UNIQ_7
+
+Flag:도시_방위成功数 += 1
+ 
+I_G = 0
+DRAWLINE
+DRAWLINE
+DRAWLINE
+CALL PRINT_LABEL("　　　　　　　　　　　　　　　　　　　　　　방어　성공　　　　　　　　　　　　　　　　　　　　")
+PRINTFORML 
+DRAWLINE
+DRAWLINE
+DRAWLINE
+PRINTFORML ≪방어에 성공했습니다. 「플레이어」여러분, 훌륭했습니다≫
+PRINTFORML ≪그 과정에서 격퇴한「외적」으로부터 소재를 입수했습니다≫
+PRINTFORML ≪이것들을 자재로 하여 해체하고, 각「플레이어」에게 배분하겠니다≫
+PRINTFORML ≪「시티」는 앞으로도 당신들의 활약에 기대하고 있겠습니다≫
+PRINTFORML 【현재 방어 성공 횟수: {Flag:도시_방위成功数}】
+PRINTFORMW 
+
+
+REPEAT 5
+	IF Flag:都市_Lv >= RAND:50
+		;高品質
+		I_G = (RAND:6)+20
+	ELSE 
+		;中品質
+		I_G = (RAND:6)+10
+	ENDIF
+	PRINTS " "
+	CALL PRINT_LABEL(@"――――%조사처리(FLAGNAME:(2100+I_G),"를")% 입수했다――――")
+	FLAG:(2100+I_G) += 1
+REND
+
+;カネミツMk-7
+CALL ART_UNIQUE_1_ABLE
+L_UNIQ_1 = RESULT
+;人理の指輪
+CALL ART_UNIQUE_7_ABLE
+L_UNIQ_7 = RESULT
+
+;目標値を上回る데미지を与えたならボーナス
+IF FLAG:都市_Lv >= 50 && L_UNIQ_7 && FLAG:도시_방위蓄積데미지 >= FLAG:도시_방위成功데미지 * 3
+	PRINTL  
+	PRINTFORML ≪이번 방위전에서는 눈부신 활약을 하셨네요. 목표 가해치를 크게 웃도는 수치입니다≫
+	PRINTFORML ≪「시티」는 당신에게 큰 기대를 걸고 있습니다. 이건 그 증거라고 할 수 있겠죠≫
+	CALL RPG_GET_ART_UNIQUE(7 , , 1)
+ELSEIF FLAG:都市_Lv >= 20 && L_UNIQ_1 && FLAG:도시_방위蓄積데미지 >= FLAG:도시_방위成功데미지 * 3
+	PRINTL  
+	PRINTFORML ≪이번 방위전에서는 눈부신 활약을 하셨네요. 목표 가해치를 크게 웃도는 수치입니다≫
+	PRINTFORML ≪「시티」는 당신에게 큰 기대를 걸고 있습니다. 이건 그 증거라고 할 수 있겠죠≫
+	CALL RPG_GET_ART_UNIQUE(1 , , 1)
+ENDIF
+
+;ゲノム
+I_G = (RAND:20)
+PRINTS " "
+CALL PRINT_LABEL(@"――――%조사처리(FLAGNAME:(2500+I_G),"를")% 입수했다――――")
+FLAG:(2500+I_G) += 1
+
+
+
+CALL CITY_RID_END
+
+;-------------------------------------------------
+;防衛戦 失敗
+;-------------------------------------------------
+@CITY_RID_B_MISS
+#DIM CC_D1
+#DIM CC_D2
+
+
+DRAWLINE
+DRAWLINE
+DRAWLINE
+CALL PRINT_LABEL("　　　　　　　　　　　　　　　　　　　　　　방어　실패　　　　　　　　　　　　　　　　　　　　")
+PRINTFORML 
+DRAWLINE
+DRAWLINE
+DRAWLINE
+PRINTFORML ≪방위선이 붕괴되었으므로, 비상 시스템이 기동되었습니다≫
+PRINTFORML ≪이것으로 당면한 문제에는 대처할 수 있을 것 같습니다≫
+PRINTFORML ≪하지만 시스템의 여파가 도시에 악영향을 끼친 듯 합니다≫
+PRINTFORML ≪각「플레이어」는 이를 바탕으로, 부흥에 힘써 주십시오≫
+PRINTFORMW 
+
+
+Flag:都市_Lv -= (Flag:都市_Lv/9)+1
+Flag:都市_경험치 = 0
+
+CC_D1 = RAND:7
+CC_D2 = 50+RAND:5
+
+Flag:(4001+CC_D1) -= (Flag:(4001+CC_D1)/9)+1
+SIF Flag:(4001+CC_D1) <= 1
+	Flag:(4001+CC_D1) = 1
+Flag:(4101+CC_D1) = 0
+
+Flag:(4001+CC_D2) -= (Flag:(4001+CC_D2)/9)+1
+SIF Flag:(4001+CC_D2) <= 1
+	Flag:(4001+CC_D2) = 1
+Flag:(4101+CC_D2) = 0
+Flag:도시_방위損壊率 += 20+RAND:10
+
+IF Flag:도시_방위損壊率 >= 100
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW ≪파손률 100％, 도시의 기능 유지는 불가능하게 되었습니다≫
+	PRINTFORMW ≪도시 경계선으로부터 공간침식 확인, 시스템에 막대한 피해가 발생≫
+	PRINTFORMW ≪백업……불가능. 시스템의 긴급 전송…… 불가능≫
+	PRINTFORMW ≪　　　　　으로 재접속을 시ㄷㅗㅗㅗㅗㅗ――――――――
+	QUIT
+ENDIF 
+
+
+CALL CITY_RID_END
+;-------------------------------------------------
+;襲撃　終わり
+;-------------------------------------------------
+@CITY_RID_END
+
+
+
+FLAG:도시_방위蓄積데미지 = 0
+FLAG:都市_襲撃 = 30+RAND:30
+FLAG:도시_방위 = 0
+
+
+
+
+
+
+
+
+
+
+
+

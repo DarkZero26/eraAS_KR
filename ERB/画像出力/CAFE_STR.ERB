@@ -1,0 +1,53 @@
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 喫茶店での会話の口上の文字列を返します。
+;;
+;; 引数
+;;   ARG     キャラ番号を表す整数。
+;; 戻値
+;;   口上の文字列。
+;;
+@CAFE_STR_KANKEIDANKAI(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+IF CFlag:ARG:관계단계 >= 2
+	IF !RAND:5
+		L_S = 「時間は沢山取ってある%CSTR:ARG:어미ので%、長話でも問題ない%CSTR:ARG:어미許可%」
+	ELSEIF !RAND:4
+		L_S = 「%CSTR:ARG:一人称%との会話は楽しいの%CSTR:ARG:어미問う%…？…%CSTR:ARG:어미微笑%、%CSTR:ARG:어미相槌%」
+	ELSEIF !RAND:3
+		L_S = 「聞いてもらいたい話あ%CSTR:ARG:어미聞く%？、遠慮なんていらない%CSTR:ARG:어미許可%」
+	ELSEIF !RAND:2
+		L_S = 「もうこうして会話するのが当たり前みたいになってきて%CSTR:ARG:어미ます%」
+	ELSE
+		L_S = 「%CSTR:ARG:二人称%はいつもここにいるの%CSTR:ARG:어미問う%？、探しやすくていいの%CSTR:ARG:어미逆説%」
+	ENDIF
+ELSEIF CFlag:ARG:관계단계 >= 1
+	IF !RAND:5
+		L_S = 「今日は空いて%CSTR:ARG:어미問う6%？」
+	ELSEIF !RAND:4
+		L_S = 「最近%CSTR:ARG:二人称%と%CSTR:ARG:어미丁寧%話するのが楽しみな%CSTR:ARG:어미繋ぎ%%CSTR:ARG:어미です%」
+	ELSEIF !RAND:3
+		L_S = 「今度はどんな何を話する%CSTR:ARG:어미問う%」
+	ELSEIF !RAND:2
+		L_S = 「%CSTR:ARG:어미微笑%…何でもない%CSTR:ARG:어미です2%」
+	ELSE
+		L_S = 「まだ時間ある%CSTR:ARG:어미ので%大丈夫%CSTR:ARG:어미です%」
+	ENDIF
+ELSE
+	IF !RAND:5
+		L_S = 「少し%CSTR:ARG:어미丁寧%話する程度なら…」
+	ELSEIF !RAND:4
+		L_S = 「どうか%CSTR:ARG:어미問う4%…？」
+	ELSEIF !RAND:3
+		L_S = 「%CSTR:ARG:어미YES%、少しくらいなら大丈夫%CSTR:ARG:어미です%」
+	ELSEIF !RAND:2
+		L_S = 「……？」
+	ELSE
+		L_S = 「話がしたいだなんて、変わったことしている%CSTR:ARG:어미応答3%」
+	ENDIF
+ENDIF
+
+RETURNF L_S
+

@@ -1,0 +1,26 @@
+eraAS ver 0.411のキャラ情報表示がほんの少し派手になるリファクタリングパッチです。
+BIG Patchになっちゃったので、適用は見送りでも仕方ないかも。
+
+一通りバグチェック済みですが、変更箇所のpatchファイルも添付しときます。
+改変自由に。 by M
+
+NEW:
+・PRINT_STATUS.ERB	ラベル型の表示を集約したところ。もし今後デザイン変更したかったら、ここを起点に作業すればいいんじゃないかな？
+
+CHANGE：
+・各ERB				ラベル型表示を PRINT_LABEL / PRINT_STATUS /PRINT_RANGE_STATUS に置換。
+
+・COLOR.ERB			css 的に、COLOR関数の引数に用途名を入れて使用できるようにした、してしまった… これは意見が分かれるかも。
+・_default.config	着色に伴って表示位置がガタガタするので、デフォルト表示モードを Graphics からTEXTRENDERER に変更。
+・Random_Chara.ERB	傾向のあまりに矛盾するキャラが出にくくなるように弄ってみた。と、いっても制約は緩めなので心持程度。
+・CITY_TALK.ERB		色定義を COLOR.ERB へ
+・INFO_STATUS.ERB	フェロモン情報などでハートをピンクに、その他いろいろ着色
+・INFO_STR.ERB		MASTERのダイス情報(すべて0)は空白文字列になるように変更
+・CAFE_INFO.ERB		TEXTRENDERERに変更してもきちんと表示できるように、危険日と悩み有無の表示順を入れ替え
+・RPG_BATTLE.ERB		色定義を COLOR.ERB へ
+
+Fix:
+・CITY_SCOUT.ERB		小柄体型/幼児体型でCFlag:住人_体格がセットされない不具合に対処しました
+・INFO.ERB			交流情報/設定で正常に表示されないのを修正
+・LIB_PRINT.ERB		一応どこに組み込んでも誤作動しないハート表示
+

@@ -1,0 +1,20 @@
+﻿;-------------------------------------------------
+;
+;-------------------------------------------------
+@ENEMY_11(L_STATUS , LS_STATUS)
+#DIMS REF LS_STATUS
+#DIM REF L_STATUS
+#DIM TEMP
+
+LS_STATUS:CON_敵_NAME = 부패한 「외적」
+TEMP = FLAG:日替わり区画難易度 * 2
+
+L_STATUS:CON_敵_EB = 100
+L_STATUS:CON_敵_HP = 120
+L_STATUS:CON_敵_ATK = 30 + TEMP
+L_STATUS:CON_敵_DEF = 20 + TEMP
+L_STATUS:CON_敵_HIT = 30 + TEMP
+L_STATUS:CON_敵_SPD = 20 + TEMP
+L_STATUS:CON_敵_弱点 = 3
+L_STATUS:CON_敵_耐性 = 4
+RETURN

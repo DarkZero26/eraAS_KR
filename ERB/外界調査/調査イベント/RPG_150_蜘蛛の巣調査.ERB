@@ -1,0 +1,89 @@
+﻿;-------------------------------------------------
+;蜘蛛の巣調査
+;-------------------------------------------------
+@RPG_EVENT_150(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+L_G = RAND:20
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 150
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:거미집 조사】
+PRINTFORML 
+PRINTFORML Eihort가 둘러쳤을 거대한 거미집을 발견한다.
+PRINTFORML 주위를 둘러봐도 주인은 부재인 듯 하며, %조사처리(CALLNAME:L_I,"는")% 서둘러 조사를 시도한다.
+PRINTFORML 거미줄에 걸리지 않게끔 발을 들여놓자, 거미줄의 중심에는 용해된 의문의 고깃덩어리가 자리 잡고 있었다.
+PRINTFORML 붙잡은 먹이를 먹기 좋게 가공한 것 같지만, 이 상태라면 귀중한 게놈을 채취할 수 있다.
+PRINTFORML %조사처리(CALLNAME:L_I,"는")% 욕심내지 않고 손바닥 크기만큼 잘라내, 소재로 활용하기로 했다…….
+PRINTFORML 
+PRINTFORML 
+PRINTFORMW 
+PRINTFORML %조사처리(FlagNAME:(2500+L_G),"를")% 2개 입수했다.
+PRINTFORML 
+PRINTFORML 
+PRINTFORMW 
+
+
+Flag:(2500+L_G) += 2
+
+
+RESETCOLOR
+DRAWLINE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

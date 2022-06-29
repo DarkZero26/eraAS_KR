@@ -1,0 +1,302 @@
+﻿;-------------------------------------------------
+;지원주택イベント
+;-------------------------------------------------
+@TURN_EVENT_F_7
+#DIM L_K
+
+
+L_K = (RAND:3)+1
+
+
+DRAWLINE
+SETCOLOR 150,150,250
+PRINTFORML 【자원봉사자 이벤트(시설):%CALLNAME%】
+IF TALENT:성직자
+	IF	!RAND:3
+		PRINTFORML %타겟은% 다른 성직자와 신도들과 함께 식사 봉사를 하고 있다.
+	ELSEIF !RAND:2
+		PRINTFORML %타겟은% 모금으로 구입한 물품을 지원주택에 사는 사람들에게 배포하고 있다.
+	ELSE
+		PRINTFORML %타겟은% 의료용 기재로 의사를 볼 수 없는 사람들의 컨디션을 체크하고 있다.
+	ENDIF
+	PRINTFORML 은혜를 입은 사람들로부터 감사의 말을 받아, %CALLNAME%의 마음도 맑아져 갔다…….
+ELSEIF TALENT:치안유지국원
+	IF	!RAND:3
+		PRINTFORML %타겟은% 자원봉사로 지원 주택이 있는 구획을 순찰하고 방범에 눈을 번뜩이고 있다.
+	ELSEIF !RAND:2
+		PRINTFORML %타겟은% 지원 물자를 배급받는 사람들이 혼란을 겪지 않도록 정렬을 철저히 하고 있다.
+	ELSE
+		PRINTFORML %타겟은% 낡은 건물 수리와 쓰레기 줍기를 통해 지역의 미관 유지에 힘쓰고 있다.
+	ENDIF
+	PRINTFORML 얼마 안되는 시간이지만 치안이 좋아진 것으로 사람들에게 감사받아 %CALLNAME%의 마음도 맑아져 갔다…….
+ELSE
+	PRINTFORML %타겟은% 다른 멤버와 함께 자원봉사에 참가하고 있다.
+	PRINTFORML 지원받는 사람들에게 감사받아 %CALLNAME%의 마음도 맑아져 갔다…….
+ENDIF
+PRINTFORML  
+RESETCOLOR
+SIF RAND:100 >= 20 && CFLAG:주민_모럴 <= 30 && CFLAG:特別保護 == 0
+	CALL TURN_EVENT_F_7_1
+
+CALL TURN_EVENT_NNK
+IF CFLAG:주민_카르마 > 2
+	PRINTFORML %CALLNAME%의 카르마가 감소했다.
+	PRINTFORMW 카르마　{CFLAG:주민_카르마} → {CFLAG:주민_카르마-L_K}
+ENDIF 
+
+CFLAG:주민_카르마 -= L_K
+
+
+
+;-------------------------------------------------
+;지원주택イベント密会
+;-------------------------------------------------
+@TURN_EVENT_F_7_1
+
+
+;화간계ＮＴＲ(어느쪽인가 하면 바람기), 라고나 할까 위험한 자는 이 도시에서는 지원 못 받을 것 같다.
+DRAWLINE
+SETCOLOR 250,150,50
+PRINTFORML 【지원주택:어느 주택】
+IF CFLAG:支援_密会_進展 >= 40 && CFLAG:支援_密会_性行為 >= 10 && TALENT:ＮＴＲ도 == 0
+	PRINTFORML 최근, 「플레이어」보다 그의 곁에 있는 일이 더 많아졌다.
+	PRINTFORML 사람으로서 그 사람을 싫어하게 된 것도, 못마땅해 하는 것도 아니다.
+	PRINTFORML 그저 여자로서의 자신이 그를 원하고 있다….
+	PRINTFORML 
+	PRINTFORML 그는 자신의 신분을 알고 나서 『두번째로도 상관없다』라고 말한다.
+	PRINTFORML 그래도 좋은 남자로 남으려 매진하는 모습에 이미 이쪽에서 반해버렸다.
+	PRINTFORML 
+	PRINTFORML 기회가 된다면 오늘도 살을 맞대겠지….
+	PRINTFORML 최근에는 피임도 하지 않게 되어 경우에 따라서는 임신할 가능성이 있다.
+	PRINTFORML 하지만 그의 아이라면……
+	PRINTFORML 
+	PRINTFORML ……낳아 주고 싶다고 속으로 생각하고 있다.
+	PRINTFORML 
+	PRINTFORML 【%타겟은% ＮＴＲ당했다……】
+	PRINTFORML 
+	TALENT:ＮＴＲ도 = 1
+	CSTR:ＮＴＲキャラ名 = 지원 주택의 청년
+ELSEIF CFLAG:支援_密会_進展 == 30
+	PRINTFORML 결과적으로 일은 대성공으로 끝나 %타겟은% 「포상」을 받게 되었다.
+	PRINTFORML %타겟은% 샤워를 하면서 앞으로 할 일에 대해 생각한다.
+	PRINTFORML 「플레이어」의 물건일 터인 이 몸을, 스스로 한 남자에게 맡긴다.
+	PRINTFORML 일단 아슬아슬한 책임 범위이기 때문에 위반은 아니지만 은닉해야 할 행위가 될 것이다.
+	PRINTFORML 하지만 그 배덕감이 %타겟을% 달아오르게 해 등골이 오싹해지는 것을 느꼈다…….
+	PRINTFORML 
+	PRINTFORML 상대되는 청년은 침실에서 기다리며 침대에 앉아 아직도 떨고 있다.
+	PRINTFORML 「무엇이 일어날지」 짐작이 가는지 바지 너머로 페니스가 팔팔히 발기하고 있었다.
+	PRINTFORML 
+	PRINTFORML 그렇게 몇 분 정도 지나고 샤워를 하고 온 %타겟이% 목욕 타월 차림으로 그의 앞에 나타났다.
+	PRINTFORML 그의 옆에 앉아 천천히 몸을 어루만지면서 기대어, 두 사람은 침대로 쓰러진다.
+	PRINTFORML %타겟은% 바지에서 페니스를 꺼내어 그것을 상당한 물건으로, 그것을 맛있어 보인다는 듯이 보면서 입맛을 다신다.
+	PRINTFORML 흥분한 나머지 움직이지를 않는 그를 내려다보며 자신의 비소로 그의 귀두를 가져다 대고 조금씩 여자의 성역으로 초대해 간다.
+	PRINTFORML 뿌리까지 물어 들어갈 무렵에는 자궁구까지 범해져, 교미 도식을 이루게 된다.
+	PRINTFORML 
+	PRINTFORML 합법적이지만 배덕적이기도 한 교류에 두 사람이 도취되는 것도 상상하기 어렵지 않고,
+	PRINTFORML 첫 성관계는 밤새도록 계속되었다…….
+	PRINTFORML 
+	PRINTFORML 【두 사람의 관계가 육체에까지 미쳤다……】
+	PRINTFORML 
+	SIF CSTR:첫섹스상대명 == ""
+		CSTR:첫섹스상대명 = 지원 주택의 청년
+	SIF CSTR:첫키스상대명 == "" 
+		CSTR:첫키스상대명 = 지원 주택의 청년
+	SIF CSTR:첫정음상대명 =="" 
+		CSTR:첫정음상대명 = 지원 주택의 청년
+	SIF CSTR:첫펠라상대명 ==""
+		CSTR:첫펠라상대명 = 지원 주택의 청년
+	SIF CSTR:첫A섹스상대명 ==""
+		CSTR:첫A섹스상대명 = 지원 주택의 청년
+	SIF CSTR:첫절정상대명 ==""
+		CSTR:첫절정상대명 = 지원 주택의 청년
+	SIF CSTR:첫질사상대명 ==""
+		CSTR:첫질사상대명 = 지원 주택의 청년
+	
+	TALENT:비처녀 = 1
+	TCVAR:履歴_EXP_処女喪失 = 1
+	EXP:Ｖ경험 += (RAND:5+1)+1
+	EXP:성교경험 += (RAND:5+1)+1
+	EXP:질싸경험 += (RAND:2+1)+1
+	EXP:봉사쾌락경험 += (RAND:3+1)+1
+ELSEIF CFLAG:支援_密会_進展 == 20
+	PRINTFORML 이제 한 걸음밖에 남지 않은 관계가 되었지만, 그 때의 키스 이후 육체적 교류는 하고 있지 않다.
+	PRINTFORML 그래서인지 그가 숨어서 자위하고 있다. 물론 망상 대상은 %조사처리(CSTR:一人称,"겠")%지.
+	PRINTFORML 하지만 그것을 추하다고는 생각하지 않고 오히려 그만큼 자신을 찾고 있다는 것에 조금 우월감이 있었다.
+	PRINTFORML …계기가 있다면…… 그런 생각이 많아졌고, 그리고 오늘 그 기회가 찾아 왔다.
+	PRINTFORML 
+	PRINTFORML 오늘부터 그는 큰 업무를 맡게 될 것 같다.
+	PRINTFORMW 
+	PRINTFORML 업무 준비를 하고 있는 그의 등뒤로 다가가 살짝 몸을 기댄다.
+	PRINTFORML 
+	PRINTFORML 놀라는 그는 둘째치고 %타겟은% 입을 귓가에 대고 이렇게 속삭인다.
+	PRINTFORML 「이번 일을 성공시킨다면…… 「상」을 줄게%UNICODE(0x2661)%」
+	PRINTFORML 자기 나름대로의 이성의 저항, 만약 여의치 않으면 이 임무를 그만둔다.
+	PRINTFORML …하지만, 만약 성공한다면…….
+	PRINTFORML 
+	PRINTFORML 【두 사람의 관계가 조금 깊어진 것 같다……】
+	PRINTFORML 
+ELSEIF CFLAG:支援_密会_進展 == 15
+	PRINTFORML ……역시 자신은 그에게 여자로 보여지고 있다….
+	PRINTFORML 매일의 교류에서 이것을 확신한 %타겟은% 살짝 미소짓는다.
+	PRINTFORML 한결같은 모습을 몇 번이고 보고 있는 %조사처리(CALLNAME,"로")%서는 그 호의가 기분 좋았던 것이다.
+	PRINTFORML 원래 도덕성이 부족한 자신으로서는 성적인 일 같은 것을 요구받으면 응해 버리는 경향이 있다.
+	PRINTFORML 하지만 「플레이어」를 위해 이제는 그만둬야 할 것인가…… 반문하는 나날이 계속 되었다.
+	PRINTFORMW 
+	PRINTFORML 고민을 거듭하던 어느 날, 어느 축하 행사에서 술을 마시게 되었는데 때마침 취해버렸다.
+	PRINTFORML 그렇게 서로 열에 들뜬 듯 거리를 좁히고 살며시 입을 맞춘다.
+	PRINTFORML 헉 하며 거리를 벌리지만 동시에 무의식적으로 그를 찾고 있다는 것을 자각해 버린다.
+	PRINTFORML 그는 진심이었던 것처럼 『좋아합니다.』라고 직설적으로 고백하고 말았다.
+	PRINTFORML %조사처리(CSTR:一人称,"는")% 마침내 마음이 움직여져, 무심코 얼굴을 붉히며 고개를 끄덕인다.
+	PRINTFORML …더는 가지지 못할지도 모른다…….
+	PRINTFORML 
+	PRINTFORML 【두 사람의 관계가 조금 깊어진 것 같다……】
+	PRINTFORML 
+	EXP:키스경험 += 1
+ELSEIF CFLAG:支援_密会_進展 == 10
+	PRINTFORML 최근들어 청년에게서 뜨거운 시선을 느낀다….
+	PRINTFORML 그렇게 느낀 %타겟이% 그에게 시선을 보내면 청년은 겸연쩍은 듯 고개를 돌린다.
+	PRINTFORML ……설마 할 필요도 없이 호의를 받고 있는 것이겠지, 물론 이성애 쪽으로.
+	PRINTFORML 
+	PRINTFORML 본래라면 거리를 두어야 하겠지만, 왠지 그럴 기분이 되지 않는다.
+	PRINTFORML 뇌리에 %CALLNAME:MASTER%의 모습이 어른거려도 지금의 생활의 편안함은 저항하기 힘들다.
+	PRINTFORML 무엇보다 열심히 노력하는 그의 모습을 보고 있노라면 도와주고 싶다는 생각이 든다.
+	PRINTFORML 이 임무를 그만둘지 말지는…… 빨리 결정하는 것이 좋을지도 모른다.
+	PRINTFORML 
+	PRINTFORML 【두 사람의 관계가 조금 깊어진 것 같다……】
+	PRINTFORML 
+ELSEIF CFLAG:支援_密会_進展 == 5
+	PRINTFORML 청년과 %CALLNAME%의 교류도 익숙해지기 시작할 무렵….
+	PRINTFORML %CALLNAME%의 헌신 덕분에 청년의 얼굴에 미소가 보이는 일도 많아졌다.
+	PRINTFORML 최근에는 직업을 갖게 되어 그의 인생에도 광명이 보이는 듯 했다.
+	PRINTFORML 『이것저것 %CALLNAME% 씨 덕분』이라고 쑥스러운 듯이 감사의 말을 %CALLNAME%에게 보낸다.
+	PRINTFORML %CALLNAME%도 %CALLNAME%대로 보람찼다고 그다지 싫지도 않은 듯이 미소지었다…….
+	PRINTFORML 
+	PRINTFORML 【두 사람의 관계가 조금 깊어진 것 같다……】
+	PRINTFORML 
+ELSEIF CFLAG:支援_密会_進展 == 0
+	PRINTFORML %타겟이% 임명받은 주택으로 가자 한 청년이 그녀와 마주쳤다.
+	PRINTFORML 대충 인사를 마치고 그를 관찰한다. 일견 순한 인상을 주지만, 표정은 어딘가 체념이 어른거린다.
+	PRINTFORML 어두운 이유를 듣자하니, 어떠한 소동으로 가족과 집을 잃은 것 같다.
+	PRINTFORML 침울해진 그를 %타겟은% 슬며시 격려하고, 이어서 지원의 상세를 전언받고 작업에 들어간다.
+	PRINTFORML 
+	PRINTFORML 【금일부로 %CALLNAME%의 새로운 업무가 시작되었다……】
+	PRINTFORML 
+ELSE
+	PRINTFORML %타겟은% 청년의 생활을 지원하면서 그와 담소를 나누고 있다.…….
+ENDIF 
+
+SIF RAND:100 >= 20 && CFLAG:支援_密会_進展 >= 40
+	CALL TURN_EVENT_F_7_2
+RESETCOLOR
+
+CFLAG:支援_密会_進展 += 1
+
+
+;-------------------------------------------------
+;지원주택イベント密会
+;-------------------------------------------------
+@TURN_EVENT_F_7_2
+#DIM L_TMP
+#DIM L_VAL
+
+
+L_TMP = CFLAG:危険日
+L_VAL = (DAY % 7)
+
+;３日に一回危険日
+L_TMP /= 2
+L_VAL /= 2
+
+
+DRAWLINE
+;――――――――――――――――――――汎用台詞開始――――――――――――――――――――
+		IF !RAND:10
+		PRINTFORML 「질내…… 문질러져…%UNICODE(0x2661)% ……아앗 …앗 앗 앗 앗 하응%UNICODE(0x2661)%」
+		ELSEIF !RAND:9
+		PRINTFORML 「…뒤…로부터…%UNICODE(0x2661)% ……푹푹…… 찔려서… 읏……%UNICODE(0x2661)%」
+		ELSEIF !RAND:8
+		PRINTFORML 「아핫%UNICODE(0x2661)% ……학 …으읏…… 후아…%UNICODE(0x2661)%」
+		ELSEIF !RAND:7
+		PRINTFORML 「응… 앗…… 읏… 후앗………%UNICODE(0x2661)%」
+		ELSEIF !RAND:6
+		PRINTFORML 「앗 앗 앗 앗 아앗…… 응하아앗!…%UNICODE(0x2661)%」
+		ELSEIF !RAND:5
+		PRINTFORML 「…우앗… 앗… 안에… 잔뜩… 해줘……%UNICODE(0x2661)%」
+		ELSEIF !RAND:4
+		PRINTFORML 「들어… 맞아… 섯%UNICODE(0x2661)% …아아앗!…아흣 …하아아앙!%UNICODE(0x2661)%」
+		ELSEIF !RAND:3
+		PRINTFORML 「후아아…… 하…… ㅈ… 잔… 뜩…… 나와… 하아아아응…♪」
+		ELSEIF !RAND:2
+		PRINTFORML 「후앗!…… 응… 흐아…… 아… 아핫%UNICODE(0x2661)%」
+		ELSE
+		PRINTFORML 「…기분…… 앗… 좋아… 서…%UNICODE(0x2661)% ……가버ㄹㅕ… 히야아아앗%UNICODE(0x2661)%」
+		ENDIF
+;――――――――――――――――――――汎用台詞終了――――――――――――――――――――
+	IF RAND:7 == 0 && TALENT:ＮＴＲ도 == 1
+		PRINTFORML 그가 업무 관련으로 우울해하는 것을 격려하기 위해, 특별히 배란제를 먹고 섹스에 이른다.
+		PRINTFORML 여자를 기쁘게 하는 것이 있다는 것, 그 씨를 바라는 여자가 있다는 것, 그것들을 귓가에 속삭여지며 그는 점점 움직임이 격렬해져 간다.
+		PRINTFORML 그리고 혀까지 섞는 딥키스를 나누면서 고환에 쌓인 잉태즙을 자궁으로 냅다 쏟아 넣었다.
+		PRINTFORML 한 방울도 놓치지 않도록 %타겟은% 그의 허리에 다리를 감아 정액을 정성스럽게 태로 삼켜 간다.
+		PRINTFORMW 진심 교미는 아침이 되어도 계속되어, 그떄까지 두 사람만의 방에서 교성이 그치는 일은 없었다…….
+	ELSEIF RAND:6 == 0 && TALENT:ＮＴＲ도 == 1
+		PRINTFORML 초박 콘돔으로 섹스를 하다가 격렬한 행위를 버티지 못한 콘돔이 찢어져 버린다.
+		PRINTFORML 두 사람은 이를 눈치채지 못한 채 계속 교미를 하다가 그대로 질내사정을 해버리는 것으로 위화감을 눈치챈다.
+		PRINTFORML 빼내어 보니 육봉이 농후한 정액을 흘리며 모습을 드러냈고, 그것은 훌륭히 씨뿌리기를 완료했다.
+		PRINTFORMW 사과하는 그를 달래면서 「흥분되니까 가끔씩 하자」라면서, 초박 콘돔은 이후에도 쓰게 되었다…….
+	ELSEIF RAND:5 == 0 && TALENT:ＮＴＲ도 == 1
+		PRINTFORML 기분 전환의 일환으로 둘이서 러브호텔에 온 것은 좋았지만, 상비하던 콘돔을 전부 써버리고 말았다.
+		PRINTFORML 그럼에도 성욕을 주체하지 못하는 그를 보고 %타겟은% 특별히 생삽입 섹스를 허락하기로 했다.
+		PRINTFORML 상상치도 못한 전개에 성욕을 폭발시킨 그는 %타겟을% 덮치고는 교미를 재개했다.
+		PRINTFORMW 자궁이 아기씨로 가득 차는 것은 시간 문제였다…….
+	ELSEIF RAND:4 == 0 && TALENT:ＮＴＲ도 == 1
+		PRINTFORML 오늘은 그가 노력한 보상으로 노콘 섹스를 하고 있다.
+		PRINTFORML 생삽입으로 범할 수 있다… 그리고 자궁에 자신의 유전자를 각인시키자 그는 흥분이 식지 않은 듯 계속해서 허리를 움직인다.
+		PRINTFORML 그렇게 뜨거운 정액이 자궁 안으로 풀려 나오자 씨뿌리기의 쾌감에 부르르 떠는 그를 살며시 포옹했다.
+		PRINTFORMW 암컷으로서 이 수컷을 환영하듯 태를 하얗게 물들여 갔다…….
+	ELSEIF RAND:3 == 0
+		PRINTFORML 드물게 %타겟이% 그에게 걸터 앉은 모습으로 허리를 음란하게 흔들고 있다.
+		PRINTFORML 평소에 격렬함의 답례인지 찔꺽찔꺽 강한 물소리를 낼 정도로 계속해서 방아를 찧는다.
+		PRINTFORMW 어떻게든 견디려고 하는 모습에 두근거리면서 그를 범해 갔다…….
+	ELSEIF RAND:2 == 0
+		PRINTFORML %타겟은% 후배위로 육봉에 용서없이 범해진다.
+		SIF TALENT:거유  || TALENT:폭유
+			PRINTFORML 부딪칠 때마다 훌륭한 가슴이 출렁이며 외설스럽게 형태를 바꾼다.
+		PRINTFORML 청년이 움직이기 편한 자세여서인지 움직임이 평소보다 더 격렬하다.
+		PRINTFORMW 원하는 것에 고양되면서 %타겟은% 더욱 교성을 질렀다…….
+	ELSE
+		PRINTFORML 청년에게 몸을 맡기고, 그의 필사적인 피스톤에 %타겟은% 흐트러지면서 숨을 몰아쉰다.
+		PRINTFORML 이쪽의 성감대를 찾듯이 움직이는 방법을 바꾸어 자궁 전체르 정성스럽게 범해 간다.
+		PRINTFORMW 신선한 쾌감에 %타겟은% 절정을 몇 번이고 반복했다.…….
+	ENDIF
+
+
+
+;임신
+IF L_TMP == L_VAL && RAND:10 >= 3 && FLAG:임신機能 == 1 && TALENT:ＮＴＲ도 == 1 && TALENT:수정 == 0 && TALENT:임신 == 0
+	TALENT:수정 += 1
+	CFLAG:임신フラグ = 70
+	SIF Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1
+		TALENT:피탁란 = 1
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML 【청년의 아이를 수정해버렸다……】
+	PRINTFORML
+	PRINTFORML
+	PRINTFORMW
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+CFLAG:支援_密会_性行為 += 1
+CALL JN_SEX_EXP
+

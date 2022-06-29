@@ -1,0 +1,312 @@
+﻿
+;-------------------------------------------------
+;인공유물생성
+;-------------------------------------------------
+@AF_LABO_Craft
+#DIM L_INPUT
+#DIM P_S 
+#DIM Y_N
+#DIMS LSTR
+
+
+Y_N = 0
+CALL AF_LABO_Craft2
+
+
+SaveStr:500 = 「하ー이, 「플레이어」씨, 안녕인거야！」
+SaveStr:501 = 「여기서는 LP와 공적을 사용해서, 개조나 인공 아티팩트를 만드는거야！」
+SaveStr:502 = 「인공 아티팩트는, 「플레이어」씨의 주민들이 쓸 수 있는거야.」
+SaveStr:505 = 「자 자 그럼, 오늘의 용건을 빨리 들려줬으면 하는거야！」
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 【인구유물연구소】
+DRAWLINE
+PRINTFORML 　　　　　|%SaveStr:500%
+PRINTFORML 　　　　　|%SaveStr:501%
+PRINTFORML 　　　　　|%SaveStr:502%
+PRINTFORML 　　　　　|%SaveStr:503%
+PRINTFORML 　　　　　|%SaveStr:504%
+PRINTFORML 　　　　　|%SaveStr:505%
+PRINTFORML 　　　　　|%SaveStr:506%
+PRINTFORML 　　　　　|%SaveStr:507%
+PRINTFORML 　　　　　|%SaveStr:508%
+PRINTFORML 　　　　　|【소유LP:{FLAG:도시_현재LP}】
+PRINTFORML 　　　　　|【공적　:{FLAG:도시_공적}】
+DRAWLINE
+
+P_S = -900
+LSTR = <img src='NPC_5' height = '850'  ypos = '{P_S}'>
+HTML_PRINT LSTR
+
+IF Y_N == 0
+	PRINTLC [100] - 여신의 영약
+	PRINTLC [101] - 아로마 -Primadonna-
+	PRINTLC [102] - 유해석
+	PRINTFORML
+	PRINTLC [103] - AI전속피험자
+	PRINTLC [104] - AF식 강화수술
+	PRINTLC [105] - 대성녀의 심장
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML [999] - 돌아간다
+	INPUT
+	L_INPUT = RESULT
+
+	CALL AF_LABO_Craft2
+
+	SELECTCASE L_INPUT
+	CASE 100
+		SaveStr:500 = 「와ー오！ 이거는 주민에게「극상의암컷」을 부여하는 아티팩트인거야！」
+		SaveStr:501 = 「이 영약을 마시면, 오늘부로 남자들에게 인기만점인거야！」
+		SaveStr:502 = 「「플레이어」씨도, 상대는 예쁜게 좋은거야？」
+		FLAG:범용변수 = 100
+		FLAG:범용변수2 = 150
+		FLAG:범용변수3 = 800
+	CASE 101
+		SaveStr:500 = 「호ー우！ 이거는 주민에게「마돈나」를 부여하는 아티팩트인거야！」
+		SaveStr:501 = 「사용하면 직장이나 학급에서 대인기를 끌 수 있는거야！ 그렇지만 인기가 너무 많아지는거는 주의해야 하는거야.」
+		SaveStr:502 = 
+		FLAG:범용변수 = 101
+		FLAG:범용변수2 = 50
+		FLAG:범용변수3 = 100
+	CASE 102
+		SaveStr:500 = 「홋호ー우！ 이거는 주민에게「모유체질」를 부여하는 아티팩트인거야！」
+		SaveStr:501 = 「언제 어디서나, 젖이 나오는거야. 게다가 매우 달콤해지는건 덤인거야！」
+		SaveStr:502 = 
+		FLAG:범용변수 = 102
+		FLAG:범용변수2 = 50
+		FLAG:범용변수3 = 100
+	CASE 103
+		SaveStr:500 = 「와ー오！ 이거는 아티팩트가 아니고 내 수술을 받을 수 있는 카드를 발급받는거야！」
+		SaveStr:501 = 「이게 있으면 카르마에 상관없이 수술 해줄거야！ 대신 만날 가능성은 기대하지 말았으면 하는거야…….」
+		SaveStr:502 = 
+		FLAG:범용변수 = 103
+		FLAG:범용변수2 = 20
+		FLAG:범용변수3 = 50
+	CASE 104
+		SaveStr:500 = 「와ー오！ 이거는 아티팩트가 아니고 LP를 사용해서 강화수술을 하는거야！」
+		SaveStr:501 = 「스테이터스가 대폭 상승하는거야！ 이거는 몇 번이고 같은 사람에게 시술할 수 있는거야！」
+		SaveStr:502 = 「그 렇 지 만, 2회 이상부터는 스테이터스 상승치가 낮아지니 주의해줬으면 하는거야.」
+		FLAG:범용변수 = 104
+		FLAG:범용변수2 = 200
+		FLAG:범용변수3 = 500
+	CASE 105
+		SaveStr:500 = 「와ー오!!! 이거는 주민에게「성녀의혈족」을 부여하는 아티팩트인거야！」
+		SaveStr:501 = 「모체・난자 레벨이 대폭 ＵＰ！ 게다가「성녀의자궁」은 덤인거야！」
+		SaveStr:502 = 「한때 도시의 인구 증가에 크게 공헌한 대성녀 님의 DNA를 재현하는 아티팩트인거야.」
+		SaveStr:503 = 「이걸 심은 주민은 DNA가 변화해서 대성녀 님의 혈통이 되어버리는거야！」
+		SaveStr:504 = 「「시티」마마도 대성녀 님을 아직까지도 칭찬하는거야.」
+		SaveStr:505 = 「그래서인지 이미 죽었다는 것이 너무 슬픈거야…….」
+		SaveStr:506 = 「그、그렇다 치더라도…… 아와와…… 이것의 작성에 종사할 수 있다니, 영광인거야！」
+		FLAG:범용변수 = 105
+		FLAG:범용변수2 = 400
+		FLAG:범용변수3 = 5000
+	CASE 999
+		RETURN
+	CASEELSE
+		GOTO INPUT_LOOP
+	ENDSELECT
+	SaveStr:508 =  「자 자 그럼, 이거에는「{FLAG:범용변수2}의 LP」와「{FLAG:범용변수3}의 공적」이 필요한거야！ 「플레이어」씨, 어떻게 할거야？」
+	Y_N = 1
+ELSE
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORM [0] - 네　　　　
+	PRINTFORML [1] - 아니오
+	INPUT
+	L_INPUT = RESULT
+
+	CALL AF_LABO_Craft2
+
+	SELECTCASE L_INPUT
+	CASE 0
+		CALL AF_LABO_Craft3
+	CASEELSE
+		SaveStr:500 = 「알겠다는거야！ 다음 용건을 들려줬으면 하는거야！」
+	ENDSELECT
+	Y_N = 0
+	FLAG:범용변수 = 0
+	FLAG:범용변수2 = 0
+	GOTO INPUT_LOOP
+ENDIF
+
+
+GOTO INPUT_LOOP
+
+
+;-------------------------------------------------
+;人工遺物生成 文章リセット
+;-------------------------------------------------
+@AF_LABO_Craft2
+
+SaveStr:500 = 
+SaveStr:501 = 
+SaveStr:502 = 
+SaveStr:503 = 
+SaveStr:504 = 
+SaveStr:505 = 
+SaveStr:506 = 
+SaveStr:507 = 
+SaveStr:508 = 
+
+
+
+;-------------------------------------------------
+;人工遺物生成 購入
+;-------------------------------------------------
+@AF_LABO_Craft3
+#DIM L_I
+#DIM L_S
+#DIM L_INPUT
+
+$INPUT_LOOP
+L_I = 0
+L_S = 0
+L_INPUT = 0
+
+IF FLAG:도시_현재LP < FLAG:범용변수2
+	SaveStr:500 = 「미안, LP가 부족한거야…….」
+	RETURN
+ENDIF
+
+IF FLAG:도시_공적 < FLAG:범용변수3
+	SaveStr:500 = 「미안, 공적치가 부족한거야…….」
+	RETURN
+ENDIF
+
+CLEARLINE LINECOUNT
+PRINTFORML 「적용・사용할 주민을 골라줘인거야！」
+CALL LIST_CHARA
+
+
+L_INPUT = RESULT
+L_I = RESULT
+
+IF L_INPUT == MASTER
+	PRINTFORMW 「어…… 「플레이어」씨는 안돼는거야……. 다른 사람으로 부탁할게인거야.」
+	GOTO INPUT_LOOP
+ENDIF
+
+SELECTCASE L_INPUT
+CASE 1000
+	SaveStr:500 = 「알겠다는거야！ 다음 용건을 들려줬으면 하는거야！」
+	RETURN
+CASEELSE
+
+ENDSELECT	
+
+
+IF FLAG:범용변수 == 105
+	IF TALENT:L_I:성녀의혈족 == 1
+		L_S = 2
+	ELSE
+		TALENT:L_I:성녀의혈족 = 1
+		L_S = 1
+		TALENT:L_I:성녀의자궁 = 1
+		CFLAG:L_I:수정최대내구치 = CFLAG:L_I:수정최대내구치/8
+		CFLAG:L_I:수정현재내구치 = CFLAG:L_I:수정최대내구치
+		CFLAG:L_I:수정확률 = 100
+		CFLAG:L_I:모체레벨 += 60
+		CFLAG:L_I:난자레벨 += 60
+		CFlag:L_I:임신원망   += 70
+	ENDIF
+ELSEIF FLAG:범용변수 == 104
+	IF TALENT:L_I:강화거주자 == 1
+		L_S = 1
+		CFlag:L_I:주민_최대체력 += 20
+		CFlag:L_I:주민_현재체력 += 20
+		CFlag:L_I:주민_최대기력 += 40
+		CFlag:L_I:주민_현재기력 += 40
+		CFlag:L_I:주민_ATK      += 10
+		CFlag:L_I:주민_DEF      += 10
+		CFlag:L_I:주민_HIT      += 10
+		CFlag:L_I:주민_SPD      += 10
+		CFlag:L_I:주민_LUK      += 5
+		CFlag:L_I:주민_최대BRE  += 20
+		CFlag:L_I:주민_현재BRE  += 20
+	ELSE
+		TALENT:L_I:강화거주자 = 1
+		L_S = 1
+		CFlag:L_I:주민_최대체력 += 100
+		CFlag:L_I:주민_현재체력 += 100
+		CFlag:L_I:주민_최대기력 += 200
+		CFlag:L_I:주민_현재기력 += 200
+		CFlag:L_I:주민_ATK      += 50
+		CFlag:L_I:주민_DEF      += 50
+		CFlag:L_I:주민_HIT      += 50
+		CFlag:L_I:주민_SPD      += 50
+		CFlag:L_I:주민_LUK      += 25
+		CFlag:L_I:주민_최대BRE  += 100
+		CFlag:L_I:주민_현재BRE  += 100
+	ENDIF
+ELSEIF FLAG:범용변수 == 103
+	IF TALENT:L_I:AI전속피험자 == 1
+		L_S = 2
+	ELSE
+		TALENT:L_I:AI전속피험자 = 1
+		L_S = 1
+	ENDIF
+ELSEIF FLAG:범용변수 == 102
+	IF TALENT:L_I:모유체질 == 1
+		L_S = 2
+	ELSE
+		TALENT:L_I:모유체질 = 1
+		L_S = 1
+	ENDIF
+ELSEIF FLAG:범용변수 == 101
+	IF TALENT:L_I:마돈나 == 1
+		L_S = 2
+	ELSE
+		TALENT:L_I:마돈나 = 1
+		L_S = 1
+		CFlag:L_I:무자각한암컷 += 10
+		CFlag:L_I:페로몬 += 10
+		CFlag:L_I:암컷의본능   += 10
+		CFlag:L_I:성적인흥미 += 10
+		CFlag:L_I:수컷에관심 += 10
+		CFlag:L_I:성교원망   += 10
+		CFlag:L_I:임신원망   += 10
+	ENDIF
+ELSEIF FLAG:범용변수 == 100
+	IF TALENT:L_I:극상의암컷 == 1
+		L_S = 2
+	ELSE
+		TALENT:L_I:극상의암컷 = 1
+		L_S = 1
+		CFlag:L_I:무자각한암컷 += 25
+		CFlag:L_I:페로몬 += 25
+		CFlag:L_I:암컷의본능   += 25
+		CFlag:L_I:성적인흥미 += 25
+		CFlag:L_I:수컷에관심 += 25
+		CFlag:L_I:성교원망   += 25
+		CFlag:L_I:임신원망   += 25
+	ENDIF
+ENDIF
+
+IF L_S == 2
+	SaveStr:500 = 「으～음, 이 주민에게는 쓸 수 없는것 같다는거야…….」
+	RETURN
+ENDIF
+
+
+
+IF L_S == 1
+	FLAG:도시_현재LP -= FLAG:범용변수2
+	SaveStr:500 = 「하ー이！ 조금 기다려줘인거야！」
+	SaveStr:501 = 　　　　　　　　가가가가가각！　　　기기잇　　기이이이이이ー익！！
+	SaveStr:502 = 　　　　각각가각！　덜커ー엉！！！
+	SaveStr:503 = 　　　　　　　비비빗　비이이이잇！　끼리릭！！！
+	SaveStr:504 =  ――――――――――――…삐요오옹！
+	SaveStr:505 = 
+	SaveStr:506 = 「와ー오！ 설험 성공인거야！」
+	SaveStr:507 = 
+	SaveStr:508 =
+	RETURN
+ENDIF
+
+
+
+
+

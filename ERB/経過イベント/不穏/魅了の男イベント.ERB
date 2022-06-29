@@ -1,0 +1,116 @@
+﻿;-------------------------------------------------
+;매료の男イベント
+;-------------------------------------------------
+@TURN_EVENT_FON_MRYU
+
+
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【매혹의 사내 이벤트(불온):%CALLNAME%】
+PRINTFORML 
+PRINTFORML %타겟이% 카페에서 차를 즐기는 중에 색기가 감도는 남자에게 합석을 신청받았다.
+PRINTFORML 지금은 홀로 느긋하게 있고 싶었던 %타겟은% 다른 빈자리가 있다는 이유로 거절하지만,
+PRINTFORML 어깨를 출 늘어뜨리고 아쉬운 듯 떠나려는 모습에 마음이 움직여져 본의 아니게 승낙한다.
+PRINTFORML 처음에는 남자를 경계하던 %조사처리(CALLNAME,"였")%지만, 속셈을 알지 못하게 하는 남자의 침착한 모습이나
+PRINTFORML 지적인 말투에 경계가 희미해져 간다.
+PRINTFORML %타겟은% 묻지도 않았는데 사적인 이야기를 남자에게 말하기 시작해 요염한 광휘를 발했다.
+PRINTFORML 남자의 눈동자에 시선이 빨려 들어가 눈을 뗄 수 없게 된다.
+PRINTFORMW 이윽고 의식이 몽롱해지기 시작한 %CALLNAME%의 손을 잡고 일어선 남자는 카페를 뒤로 했다…….
+PRINTFORML 
+PRINTFORML 러브호텔로 이끌린 %타겟은% 남자의 폭력적인 애무를 받고 있었다.
+PRINTFORML 몽롱한 의식 속에서 알려져 버린 성감대나 약점을 아플 정도의 힘으로 계속 애무당해 %CALLNAME%의 육체는
+PRINTFORML 수컷의 강한 애무에 길들여져 간다.
+PRINTFORML 그렇게 %CALLNAME%의 육체에 수컷과 암컷의 지배 관계를 가르쳐 주면서, 
+PRINTFORML 절정으로 사고가 날아간 타이밍에 %CALLNAME%의 귓가에 속삭인다.
+PRINTFORML 여성을 낮추며 남성을 치켜세우고, 생식 본능에 따라 자식을 낳는 것이 '선'이라는 시티의 방침을 과격하게 장식한 말을.
+PRINTFORML 평소의 %타겟이라%면 하나의 의견으로서 흘려 듣는 말도 몽롱한 의식에 박혀 들어가면
+PRINTFORML 그것이 올바른 것처럼 느껴져 %CALLNAME%의 의식 깊숙이 뿌리를 박아 간다.
+PRINTFORML 잔뜩 시간을 들여 %CALLNAME%의 육체를 길들이고 말로 된 독을 풀은 남자는 기절한 %타겟과%
+PRINTFORML 한 번도 성교하지 않고 그대로 러브호텔을 떠났다.
+PRINTFORML 남겨진 %CALLNAME%의 육체는 성적 충족감을 얻을 수 있었지만 생식 본능은 그렇지 않고, 자궁이 발하는 기아감으로
+PRINTFORMW 심층 의식이 서서히 침식되어 갔다…….
+PRINTFORML 
+PRINTFORML 귀가한 %타겟은% 오늘 하루의 기억이 흐릿한 것에 의아해하면서도 극도의 피로감에 깊이 생각하지 않고 잠에 들었다.
+PRINTFORML 이 날을 경계로 %타겟은% 동성에게 매력을 느끼지 않게 되기 시작하고, 이성을 연애 대상으로 보게 되었다…….
+PRINTFORML 
+
+
+;백합공주の場合
+IF TALENT:백합공주 == 1
+	TALENT:백합공주 = 0
+	TALENT:동성애 = 1
+	SIF TALENT:남혐 == 1
+		TALENT:남혐 = 0
+	TALENT:바이 = 1
+;동성애の場合
+ELSEIF TALENT:동성애 == 1
+	TALENT:동성애 = 0
+	;남혐ではない
+	IF TALENT:남혐 == 0
+		TALENT:남미새 = 1
+		TALENT:바이 = 0
+	;남혐
+	ELSE
+		TALENT:남혐 = 0
+	ENDIF
+;동성애ではない場合
+ELSE
+	;남혐ではない
+	IF TALENT:남혐 == 0
+		TALENT:남미새 = 1
+		TALENT:바이 = 0
+	;남혐
+	ELSE
+		TALENT:남혐 = 0
+		TALENT:바이 = 0
+	ENDIF
+ENDIF
+
+
+
+
+SIF CSTR:첫섹스상대명 == ""
+	CSTR:첫섹스상대명 = 매혹의 사내
+SIF CSTR:첫키스상대명 == "" 
+	CSTR:첫키스상대명 = 매혹의 사내
+SIF CSTR:첫절정상대명 ==""
+	CSTR:첫절정상대명 = 매혹의 사내
+
+EXP:키스경험 += (RAND:4)
+EXP:Ｖ경험 += (RAND:5)
+EXP:Ａ경험 += (RAND:5)
+EXP:Ｂ경험 += (RAND:5)
+EXP:Ｃ경험 += (RAND:5)
+EXP:절정경험 += (RAND:4)+1
+
+
+
+
+RESETCOLOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

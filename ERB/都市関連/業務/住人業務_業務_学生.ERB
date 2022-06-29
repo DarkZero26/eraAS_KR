@@ -1,0 +1,334 @@
+﻿
+;-------------------------------------------------
+;주민業務　業務　학생
+;-------------------------------------------------
+@WORK_T_St(ARG:0,ARG:1,ARGS:0)
+#DIM L_INPUT
+#DIM L_T
+#DIM L_K
+
+L_T = TARGET
+TARGET = ARG:0
+
+CLEARLINE LINECOUNT
+DRAWLINE
+
+CALL C_PICTURE(ARG:0,ARG:1)
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORM 　　　　　
+		IF !RAND:3
+			PRINTFORML 「%CSTR:어미YES%、할 수 있는 만큼 해봐%CSTR:어미ます%」
+		ELSEIF !RAND:2
+			PRINTFORML 「……잘 된것 같아%CSTR:어미肯定2%」
+		ELSE
+			PRINTFORML 「아직 방법이 있을 것 같아%CSTR:어미肯定2%」
+		ENDIF
+PRINTFORML 
+PRINTFORM 　　　　　
+PRINTFORML %타겟은% %CALLNAME:MASTER%에게 추진되어, 보다 학업에 힘썼다…….
+PRINTFORMW 
+
+
+IF (Talent:비처녀 == 1 && Talent:합의 == 1) && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1) && RAND:10 >= 5
+SETCOLOR 250,50,200
+DRAWLINE
+	IF !RAND:6
+		PRINTFORML 번식 행위가 어떤 것인지, 직접 체험하고 배우는 것도 중요하다.
+		PRINTFORML %마스터를% 위해 젊은 암컷을 모은 %타겟은%, 그러한 제목으로 학장실을 대절했다.
+		PRINTFORML 
+		IF !RAND:6
+			PRINTFORML 철벽으로 유명한 여교사는 학생들에게 모범을 보이려고 %CALLNAME:MASTER%의 위에서 허리를 흔들고 있었다.
+			PRINTFORML 하지만 조금 전까지 처녀였던 여교사의 허리놀림이 능숙치 않은 듯, %마스터는% 좀처럼 사정하지 않는다.
+			PRINTFORML 보다 못한 %타겟이% 조언을 시작하자 여교사는 드디어 %마스터를% 사정으로 이끌 수 있었다.
+			PRINTFORML 첫 질내사정에 행복에 겨운 듯한 표정을 지은 여교사였지만, 곧이어 표정을 다잡더니 학생들에게로 돌아섰다.
+			PRINTFORML 자신이 경험한 것을 그 자리에서 신중히 설명하기 시작한 여교사는 학생들에게 자리를 양보하기 위해 허리를 들어올렸다.
+			PRINTFORML 하지만 %마스터는% 허리를 꽉 붙잡고, 이번에는 직접 주도권을 쥐고 여교사의 질육을 맛보기 시작했다.
+			PRINTFORML 예정에 없던 %CALLNAME:MASTER%의 폭거에 항의의 목소리를 낸 여교사도, 얼마 안 있어 %CALLNAME:MASTER%의 한 마리 암컷으로 전락한다.
+			PRINTFORML 그 후, %CALLNAME:MASTER%의 성기술에 농락당한 참가자들을 흘긋 보고, %타겟은% 느긋히 교미를 즐겼다…….
+		ELSEIF !RAND:5
+			PRINTFORML 고귀한 가문의 그녀는 장래에는 어느 대기업의 메이드를 거쳐 「플레이어」를 섬기는 톱메이드가 되겠다는 꿈을 뜨겁게 밝히고 있었다.
+			PRINTFORML 그 때의 늠름하고 희망에 차 있던 표정을 잘 기억하고 있던 %타겟은%, 한순간 눈앞의 음란함에 허덕이는 암컷과 그녀의 모습이 겹치지 않았다.
+			PRINTFORML 옛 가문에 전해 내려오는 방중술로 %마스터를% 헤롱거리게 만들겠다고 으스대던 그녀는, 그 방중술로 자신의 육체를
+			PRINTFORML 임신하기 쉬운 상태로 스스로 변화시켰고, %CALLNAME:MASTER%의 정액을 몇 번이고 자궁으로 받아들였다.
+			PRINTFORML 어느 쪽이 상대 손아귀 위에 있는지는 일목요연하고, 그녀는 으스대던 일을 사과하며 %CALLNAME:MASTER%에게 유린당하고 있었다.
+			PRINTFORML 머지않아 일도 교미도 장래에 걸쳐 %CALLNAME:MASTER%의 전속이 될 것을 맹세한 그녀는, 계약 대용 종자로 절정을 맞이했다.
+			PRINTFORML 그 모습을 지켜보던 %CALLNAME%의 모습을 눈치챈 %마스터는%, 기절해 있던 그녀를 억지로 깨워 첫 번째 일을 명했다.
+			PRINTFORML 「그렇게 긴장하지 마세요. 조금만, 저처럼 기분 좋게 임신할 수 있게 해드릴 뿐이니까.」
+			PRINTFORML 그렇게 미소지은 그녀으 표정은 평소보다 훨씬 어른스러워 보였지만, 자궁이 쑤시는 쾌감에 아무런 생각도 할 수 없게 되어 버렸다…….
+		ELSEIF !RAND:4
+			PRINTFORML %CALLNAME:MASTER%의 위에서는 %CALLNAME%의 친구가 허리를 흔들고 있었다.
+			PRINTFORML 일심불란히 아기씨를 찾아 가슴을 출렁이며 엉덩이를 튕기는 그 모습은, 완전히 발정한 암컷이다.
+			PRINTFORML 청초하고 순진무구한 아가씨 같은 분위기로 이성에게 인기인 그녀가, 그런 교태를 부리고 있다고 누가 믿을 수 있을까.
+			PRINTFORML 적어도 동석한 %타겟은% 변모한 모습에 경탄해, 그 혼란스러움에 못박혀 있다.
+			PRINTFORML 등이 활처럼 휘어진 친구가 황홀한 표정을 지으며 %CALLNAME:MASTER%의 정액을 자궁에 받아들이고 육봉을 뺀다.
+			PRINTFORML 갈 곳 잃은 육봉이 아직도 천장을 가리키며 건강한 것을 확인한 %타겟은% 빼앗기기 전에 덮친다.
+			PRINTFORML 이미 다른 아가씨에게 몇 발이고 싼 바람둥이 자지에 애용 중인 암컷 구멍을 떠올리게 하기 위해 %타겟은% 테크닉을 구사하여 사정을 이끌었다…….
+		ELSEIF !RAND:3
+			PRINTFORML 숏컷이 특징적인 %CALLNAME%의 친구는, %CALLNAME:MASTER%에게 등뒤에서 범해져 멍해진 표정을 짓고 있었다.
+			PRINTFORML 이성에게는 「선머슴」이라고 바보 취급 받고 있는 그녀도, %CALLNAME:MASTER%의 페니스가 삽입되면 한 마리 암컷이 된다.
+			PRINTFORML 난폭하게 허리가 부딪칠 때마다 짐승같이 헐떡이며, 사정할 때마다 여성스럽고 교태를 부리는 표정으로 변해간다.
+			PRINTFORML 이젠 몇번 째인지도 모르는 씨뿌리기를 끝낸 %마스터는% 더러워진 페니스를 %CALLNAME%에게 들이댔다.
+			PRINTFORML 즉각 그의 앞에 무릎 꿇고 애액과 정액, 그리고 파과혈로 더러워진 육봉을 정성껏 입으로 청소하고 요도에 남은 정액도 빨아올린다.
+			PRINTFORML 육봉이 깨끗해지자 입을 뗀 %타겟을% 범하기 시작한 %마스터는% 그날로 몇 명의 젊은 암컷을 따먹었다…….
+		ELSEIF !RAND:2
+			PRINTFORML %마스터와% 배면좌위로 교미하고 있는 %CALLNAME%의 친구는 얌전하기로 소문난 아가씨였다.
+			PRINTFORML 별로 감정을 드러내지 않고 을 도서실 한쪽에서 홀로 책을 읽던, 성적인 것과는 무관해 보이는 아가씨.
+			PRINTFORML 하지만 그녀의 클리토리스는 클리자위를 너무 많이 해 비대화했고, 이를 알아챈 %CALLNAME:MASTER%에게 보기 좋게 농락당하고 있었다.
+			PRINTFORML 손 끝으로 잡고 튕길 때마다 움찔움찔 온몸을 떨며, 꾹 다문 입가에 침을 흘리며 가버린 표정을 띠고 있다.
+			PRINTFORML 약점을 괴롭히며 암컷의 기쁨을 철저히 교육받고 마무리로 아기씨가 쏟아 부어진 그녀는 더할 나위 없는 암컷의 얼굴을 하고 있었다.
+			PRINTFORML 옆에서 지켜보던 %타겟을% 끌어안은 %마스터는%, 왜인지 집요하게 클리토리스를 집중공격하기 시작한다.
+			PRINTFORML 그 의미를 깨달은 %타겟은% 쓰러진 친구와 %마스터를% 번갈아 보며 잠자코 조교를 받아들일 수밖에 없었다…….
+		ELSE
+			PRINTFORML %CALLNAME:MASTER%에게 교배 프레스로 범해지는 친구를 보고, %타겟은% 역시 암컷의 본능에는 이길 수 없다고 생각했다.
+			PRINTFORML 아기 만들기에 힘쓰는 두 사람 옆에는 이미 씨뿌리기를 하고 방치된 암컷 한 마리가 행복한 표정으로 천장을 쳐다보고 있다.
+			PRINTFORML 그녀들은 레즈 커플로, 특히 %CALLNAME:MASTER%에게 깔려있는 아가씨는 남혐으로 유명했다.
+			PRINTFORML 이번에는 연인의 「남자와의 섹스도 경험해 보고 싶지만, 무서우니 같이」라는 부탁에 눌려 마지못해 참가하고 있었다.
+			PRINTFORML 질내사정만큼은 하지 않겠다는 약속이었지만 이미 %CALLNAME:MASTER%의 콘돔은 빠지고 그 허리에는 두 다리가 휘감겨 있다.
+			PRINTFORML 입으로는 싫다고 하지만 이미 수컷의 맛을 알고 함락된 것이 틀림없다.
+			PRINTFORML 레즈 커플에게 암컷으로서의 역할을 확실히 가르친 %마스터는% %타겟을% 끌어안는다.
+			PRINTFORML 동성에게 애무당하며 범해진다는 상황에 %타겟은% 평소보다 몇 배는 느끼면서 다인 플레이를 즐겼다…….
+		ENDIF
+	ELSEIF !RAND:5
+		PRINTFORML 상담하고 싶은 것이 있다며 %마스터를% 불러낸 %타겟은% 봉투 한 통을 내밀었다.
+		PRINTFORML 요즘 때엔 귀한 종이를 쓴 편지의 수신인은 %타겟으로%, 뒷면에는 발송인으로 생각되는 인물의 이름이 적혀 있다.
+		PRINTFORML %마스터가% 봐도 되냐고 시선으로 묻자, %타겟은% 고개를 끄덕인다.
+		PRINTFORML 내용은 지극히 평범한 고풍스런 연애편지였다.
+		PRINTFORML 
+		;小학생
+		IF TALENT:학생 == 5
+			PRINTFORML 어림에도 불구하고 암컷으로서의 작법을 철저히 주입당한 %CALLNAME%의 존재는 성욕에 눈을 뜨기 시작한 동년대 소년들에게는 독이다.
+			PRINTFORML 나이에 걸맞는 무방비함으로 주위의 성욕을 끌어내면서도, 결코 손에 넣을 수 없으니.
+			PRINTFORML 
+			PRINTFORML 편지를 보던 %CALLNAME:MASTER%의 앞에 무릎을 꿇은 %타겟은% 양복 바지로부터 육봉을 꺼내고 사랑스럽게 입을 맞춘다.
+			PRINTFORML 우수한 유전자를 찾아 봉사하는 한 마리 암컷이 된 %CALLNAME%에게, 여러모로 미숙한 반 친구들은 고려할 가치도 없다.
+			PRINTFORML 성숙한 수컷에게 교미 상대로 인정받아 그 정을 일상적으로 태내로 받아들이고 있는 것이다.
+			PRINTFORML 일부러 허접한 수컷이라고 하기도 뭣한 어중간한 상대에게 교미 허가를 내 주기는 커녕 생각조차 귀찮다.
+			PRINTFORML %마스터로%부터 돌려받은 편지를 주저없이 바닥에 내던진 %타겟은% 스스로 육봉을 질내로 불러들인다.
+			PRINTFORML 숙련된 테크닉과 약점을 모조리 꿰고 있는 쾌락의 고문에 교성을 지르면서 %타겟은% %마스터와%의 한때의 정교를 즐긴다.
+			PRINTFORML 이내 농후한 씨뿌리기 섹스가 끝날 무렵에는 정액과 애액으로 뭉그러진 편지가 바닥에 내쳐져 있었다…….
+		;中학생
+		ELSEIF TALENT:학생 == 4
+			PRINTFORML 반 친구에게 받아 고백받은 것이라며 %타겟은% 뺨에 홍조를 띠면서 기쁜 듯이 말한다.
+			PRINTFORML %CALLNAME%의 육체에서 행동에 이르기까지 이 발송인에게도 매력적으로 비쳤을 것이 쉬이 상상된다.
+			PRINTFORML 그것은 %타겟을% 여자로 개발해 개화시킨 %마스터가% 숙지하는 바이다.
+			PRINTFORML 그런고로 맛 좋은 곳만 가져가려는 반 친구도, 고백에 표정을 반짝이는 %CALLNAME%도 그냥 보고 지나칠 수 없다.
+			PRINTFORML 
+			CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK2000
+			PRINTFORML 
+			PRINTFORML %마스터는% %CALLNAME%에게 전부 벗으라고 명령하고, 어른의 장난감을 써서 각 부위를 괴롭힌다.
+			PRINTFORML 조수를 뿜고 침을 흘리며 삽입을 간청해도 %마스터는% 결코 손을 놓지 않는다.
+			PRINTFORML 이제는 몇 번째인지도 모르는 절정을 맞이해 머리카락이 흐트러진 %타겟은% %CALLNAME:MASTER%의 분노를 확실히 이해했다.
+			PRINTFORML 자신이 누구의 소유물인가, 이렇게 쾌락이라는 먹이를 주고 성욕을 채워주는 자는 누구인가.
+			PRINTFORML 그것을 문자 그대로 몸에 철처히 가르치고 상기시키려 하는 것이라고.
+			PRINTFORML %타겟은% 사죄의 말을 하면서 도게자를 하고 미천한 육체에 누구의 소유물인지를 상기시키게 해달라고 간청했다.
+			PRINTFORML %마스터는% 두번 다시 잊지 못하게 네 발로 기는 %타겟을% 뒤에서 꿰뚫어 범하며 자비없이 정액을 배설했다.
+			PRINTFORML 그 뜨거움에 등이 휘며 절정할 무렵에는 %CALLNAME% 안으로부터 고백받은 일 따위는 흔적도 없이 지워져 있었다…….
+		;高校生
+		ELSEIF TALENT:학생 == 3
+			PRINTFORML 이미 %CALLNAME:MASTER% 전용 성처리 도구인 %타겟은% 타인에게 사용될 생각이 없다.
+			PRINTFORML 뒤탈이 없도록 거절해 달라고 말하고 보수는 몸으로 지불하자 %타겟은% 옷을 벗었다.
+			PRINTFORML 하지만 %CALLNAME%의 가랑이를 타고 내려오는 애액을 알아챈 %마스터가% 그것을 손가락으로 건져내자 %타겟은% 아차 하는 표정을 지었다.
+			PRINTFORML 
+			PRINTFORML 「죄송…… 해요…… 안아줬으면 해서！　……속인거에요！」
+			PRINTFORML 
+			PRINTFORML 잠시 조사하면 거짓말이 들통남에도, %타겟은% 바쁜 %CALLNAME:MASTER%에게 안아줬으면 해서 이번 일을 꾸며낸 것이다.
+			PRINTFORML 그 사실을 자백하게 된 %CALLNAME%의 양 구멍에는 바이브가 삽입되고 유두와 클리토리스에는 전동 캡이 부착돼 있다.
+			PRINTFORML 사정을 듣기 위한 쾌락 조교는 거짓말을 한 벌의 쾌락 고문으로 변화했고 %타겟은% 두 번 다시 거짓말을 하지 않을 것을 약속했다.
+			PRINTFORML 쾌락 고문에서 해방된 %타겟은% 미련스럽게 %CALLNAME:MASTER%의 고간을 바라보고 있고, %마스터는% 어쩔 수 없이 안아주기로 했다…….
+		;大학생、학생
+		ELSE
+			PRINTFORML 글내용을 확인하고 있던 %CALLNAME:MASTER%에게 아양떨며 기댄 %타겟은% 눈을 치뜨고 요염히 미소짓는다.
+			PRINTFORML 분명 반 친구가 이런 실수를 저지른 것은 수컷으로서의 마킹이 불충분했기 때문이다, 라면서.
+			PRINTFORML 도발적인 %CALLNAME%의 말에 %마스터는% %타겟을% 끌어안고 무릎 위에 앉혔다.
+			PRINTFORML 
+			CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+			PRINTFORML 
+			PRINTFORML 농후한 키스를 하면서 한 방울이라도 더 정액을 받으려고 %타겟은% 힘껏 엉덩이를 흔들고 있었다.
+			PRINTFORML 마킹 기회를 준비치 않는 것은 수컷의 태만이지만, 마킹 성과를 얻지 못하는 것은 암컷의 태만이다.
+			PRINTFORML 허리를 오르내리는 데 맞춰 자궁 안에서 정액이 찰박찰박 소리를 내도 %타겟은% 움직임을 멈추지 않는다.
+			PRINTFORML 결국 그 날의 마킹은 %타겟이% 탈진해 기절할 때까지 계속되었다…….
+		ENDIF
+	ELSEIF !RAND:4
+		PRINTFORML 하교길, 대중교통을 이용하던 %타겟은% 차내에서 %마스터와% 딱 마주쳤다.
+		PRINTFORML 일에 치여 사는 %CALLNAME:MASTER%에게 응석 부릴 기회가 적은 %타겟은% 차내 혼잡을 기회로 몸을 기대며 응석 부리기 시작한다.
+		PRINTFORML 젊은 암컷의 육체에 눌린 %마스터는% 팔을 휘감아 안고서 옷 안쪽으로 손을 넣는다.
+		PRINTFORML 갑작스러운 일에 경직된 %조사처리(CALLNAME,"였")%지만 %CALLNAME:MASTER%의 소망을 헤아려 조용히 몸을 열었다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK10
+		PRINTFORML 
+		PRINTFORML %타겟은% 승객에게 허덕이는 소리가 들리지 않도록 손가락을 물고 %CALLNAME:MASTER%의 애무에 몸을 맡기고 있었다.
+		PRINTFORML 이미 약점이 파악돼 성감대가 예민할 정도로 개발된 이상 저항해도 소용없다.
+		PRINTFORML 옷 밑에서 핑 하고 솟은 유두를 집히고, 발기돼 껍질이 벗겨진 클리토리스를 문질러져 성감이 높아져 간다.
+		PRINTFORML 하지만 %타겟은% 결코 질구멍과 엉덩이 구멍을 만지려 하지 않고 계속 유두와 클리토리스만을 괴롭힌다.
+		PRINTFORML 만족하지 못한 %타겟이% 허리를 흔들어 클리토리스에서 질로 손가락을 미끄러뜨리려 하지만 교묘하게 회피되고 만다.
+		PRINTFORML 이윽고 절정이 가까워져 어느 쪽의 구멍도 견딜 수 없다고 계속 호소하는 상황에 %타겟이% 빠지자, 불시에 뜨거운 감촉이 고간에 닿았다.
+		PRINTFORML 친숙한 감촉, 모를 수가 없는 그 뜨거움에 %타겟이% 고개를 들자 %마스터는% 고개를 끄덕였다.
+		IF TALENT:학생 == 5 || TALENT:학생 == 4 || TALENT:작은체형
+			PRINTFORML %타겟은% 까치발을 하고 가느다란 손가락으로 뜨거운 선단을 비소로 이끌며 엉덩이를 내밀었다.
+			PRINTFORML 선단이 끈적하게 질구를 통과하자 그 기세대로 자궁구와 요도구가 키스를 해 %타겟을% 절정으로 몰아간다.
+			PRINTFORML 절정으로 두 다리에 힘이 빠진 %CALLNAME%의 자궁구는 요도구와 딥키스를 나누게 되어 영거리에서 정액을 받아냈다.
+		ELSE
+			PRINTFORML 지겹도록 대기중이던 %타겟은% 평소보다 다소 거친 손놀림으로 뜨거운 선단을 비소로 이끌고 허리를 내렸다.
+			PRINTFORML 뜨겁고 녹아내린 질을 헤치고 찌르는 육봉에 %타겟은% 절정을 참으며 거친 호흡을 반복한다.
+			PRINTFORML 아직 가버리고 싶지 않다고 욕심 부리는 %CALLNAME%의 노력은 %CALLNAME:MASTER%의 허리놀림 한 번에 없던 것이 되었다.
+		ENDIF
+		PRINTFORML 「히긋！　ーーーー읏！」
+		PRINTFORML 순간적으로 %마스터가% 입을 막았기에 %CALLNAME%의 가버리는 소리를 승객들이 듣는 일은 없었다.
+		PRINTFORML 하지만 넘치는 쾌감과 치한 섹스라는 극한 상태로 긴장의 끈이 끊어진 것인지, %타겟은% 실신하고 말았다…….
+	ELSEIF !RAND:3
+		;코스프레 섹스(라기보단 학생이 입을 법한 의상으로 섹스？)
+		PRINTFORML 「……어때？」
+		IF !RAND:4
+			;道着袴
+			PRINTFORML 도복 하카마를 입은 %타겟은% 학교에서 배웠다는 형태를 %CALLNAME:MASTER%에게 피로했다.
+			PRINTFORML 움직임에 망설임과 서투름이 느껴졌지만, 이제 막 배웠다는 점을 생각하면 잘한 것이다.
+			PRINTFORML %CALLNAME:MASTER%의 평가에 기분이 좋아진 %타겟은% 달려들어 %CALLNAME:MASTER%의 가슴팍에 머리를 비벼댄다.
+			IF TALENT:학생 == 5 || TALENT:학생 == 4
+				;小학생、中학생
+				PRINTFORML 작은 동물이 따르는 듯한 행동에 흐뭇함을 느낀 %조사처리(CALLNAME:MASTER,"였")%지만, 아직 딱딱함이 남아있는 미숙한 육체와 땀냄새로
+				PRINTFORML %타겟과%의 섹스를 떠올려 버려 어느새 고간을 융기시켜 버린다.
+				PRINTFORML 안겨서 밀착하던 %타겟이% 눈치채지 못할 리 없고, 밀어 붙여지는 딱딱한 감촉에 소악마 같은 미소를 지었다.
+			ELSE
+				;高校生、학생
+				PRINTFORML 좋아하는 상대의 냄새를 두르려 하는 모습에 사랑스러움을 느낀 %조사처리(CALLNAME:MASTER,"였")%지만, 여성스럽고 부드러운 육감과 땀냄새로
+				PRINTFORML %타겟과%의 섹스를 떠올려 버려 어느새 고간을 융기시켜 버린다.
+				PRINTFORML 이를 눈치챈 %타겟은% 눈을 치뜨고 %마스터를% 바라보고, 애태우듯 천천히 양복 바지의 지퍼를 내렸다.
+			ENDIF
+			PRINTFORML 
+			CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+			PRINTFORML 
+			PRINTFORML 앞가슴이 풀어진 하카마를 반쯤 벗긴 상태에서 %마스터는% %CALLNAME% 아래에 깔려 있었다.
+			PRINTFORML 처음에는 「원수에게 져 범해지는 소녀 설정으로」라고 해서 싫은 기색을 보였으나, 한 번 질내사정과 함께 가버리고 나서는
+			PRINTFORML 그런 설정도 잊고 그저 섹스를 즐기고 있었다.
+			PRINTFORML 슬슬 끝낼까 생각한 %마스터가% 마지막으로 어디에 싸주면 좋겠는지 묻자, %타겟은% 쾌락으로 녹아버린 표정을 지으면서
+			PRINTFORML 「네 자식 같은건 절대로 안 낳을 거니까」
+			PRINTFORML 라면서 기대에 눈을 반짝이며 질내사정을 졸라 왔다.
+			PRINTFORML 뜻밖의 %CALLNAME%의 한마디에 정복욕이 솟아오른 %마스터는% 이전 이상으로 자궁구를 난폭히 찔러 올리며 거리낌없이 질내사정했다.
+			PRINTFORML 거부의 비명을 지르면서도 확실하게 두 다리를 허리에 감아 질 안쪽으로 사정을 받아들인 %타겟은% 평소보다 오래 가는 사정에 암컷의 기쁨을 느끼고 있었다…….
+		ELSEIF !RAND:3
+			;치어걸
+			PRINTFORML 튜브톱에 플리츠 스커트, 양손에는 폼폼이라는 치어걸 차림으로 %타겟은% 댄스를 피로했다.
+			PRINTFORML 감상을 물어보며 안겨드는 %CALLNAME%에게 %마스터는% 건강해진 부분을 밀어붙인다.
+			PRINTFORML 건강해진 버섯을 옷 위로 부드럽게 쓰다듬은 %타겟은% 요염히 미소지으며 무릎을 꿇었다.
+			PRINTFORML 
+			CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK12
+			PRINTFORML 
+			PRINTFORML %CALLNAME:MASTER%의 페니스를 입에 물고 뒷줄기에 혀를 기면서 음낭을 부드럽게 어루만진다.
+			PRINTFORML 취향을 숙지한 %CALLNAME%의 봉사에 %마스터는% 쌓여있던 정액을 토해낸다.
+			PRINTFORML 혀 위에서 정액을 굴리며 맛과 향을 즐긴 %타겟은% 목구멍을 울리며 모조리 삼켰다.
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 올라타고, 오늘은 자신이 움직일 테니 쉬고 있으라며 허리를 흔들기 시작한다.
+			PRINTFORML 지친 %CALLNAME:MASTER%의 페니스를 응석받이로 이끈 %타겟은% 태내에 정액을 받고 행복하게 미소지었다…….
+		ELSEIF !RAND:2
+			;체조복(부르마)
+			PRINTFORML 체육복으로 부르마르 입고 나타난 %타겟을% 보고 %마스터는% 동작을 멈췄다.
+			PRINTFORML 매너리즘에 빠지지 않도록 평소와는 다른 의상으로 나타난 %CALLNAME%에게 %CALLNAME:MASTER%의 고간은 빠르게 반응한다.
+			PRINTFORML 그 모습에 작전 성공을 확신한 %타겟은% 엉덩이를 매혹하듯이 하여 흐트러진 부르마를 바로한다.
+			PRINTFORML 부자연스러운 행동임에도 교미 권유는 전해진 듯 %마스터는% %타겟을% 밀어 넘어뜨렸다.
+			PRINTFORML 
+			CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+			PRINTFORML 
+			PRINTFORML %타겟은% %마스터를% 안짱다리로 걸치고 스쿼트를 하며 대딸을 해주고 있었다.
+			PRINTFORML 목표 횟수에 도달하기 전에 절정하거나, 엉덩이가 닿는다면 처음부터 다시 세는 가혹한 메뉴다.
+			PRINTFORML 비소로부터 격렬한 물소리를 울리면서 %타겟은% 수 번째의 목표 횟수 달성에 임박해 속도를 올렸다.
+			PRINTFORML 앞으로 몊 회 안에 목표 달성이라는 점에서, 깊게 육봉을 문 순간을 노려 %마스터가% 질내사정한다.
+			PRINTFORML 사정에 맞춰 가버리도록 조교된 %타겟은% 당연히 버틸 수 있을 리가 없고, 절정을 맞이해 횟수가 초기화 되었다.
+			PRINTFORML 아헤가오를 지으며 원망 담긴 시선을 던진 %조사처리(CALLNAME,"였")%지만 희희하며 다시 스쿼트를 시작한다.
+			PRINTFORML 이후 몇 번이고 도전해도 목표를 달성하지 못한 %CALLNAME%의 고간에서는 많은 양의 애액과 정액이 흘러넘치고 있었다…….
+		ELSE
+			;학교 수영복/스쿨미즈
+			PRINTFORML 학교 수영복을 입고 나타난 %타겟을% 보고 %마스터는% 동작을 멈췄다.
+			PRINTFORML 매너리즘에 빠지지 않도록 평소와는 다른 의상으로 나타난 %CALLNAME%에 %CALLNAME:MASTER%의 고간은 빠르게 반응한다.
+			PRINTFORML 그 모습을 보고 작전 성공을 확신한 %타겟은% 매트 플레이의 요령으로 몸을 밀어붙였다.
+			PRINTFORML 매끈매끈한 스쿨미즈의 옷감이라는 평소와는 다른 감촉에 %마스터는% 이르게 정액을 흩뿌린다.
+			PRINTFORML 들러붙은 정액에 감색의 천이 하얗게 물들어 스며들면서 그 색이 짙어져 간다.
+			PRINTFORML %마스터는% 어깨끈을 벗겨 스쿨미즈를 끌어내려 가슴에 달라붙고, 대면좌위로 %타겟을% 관통했다.
+			PRINTFORML 이미 끈적히 녹아내린 %CALLNAME%의 질육은 기뻐하며 페니스를 받아들이고, 아기씨를 받아들이기 위해 열심히 봉사한다.
+			PRINTFORML 발기한 유두를 가볍게 이로 물려, 가버리도록 재촉된 %타겟은% 등을 활처럼 젖히며 절정했다.
+			PRINTFORML 콸콸 쏟아지는 뜨거운 정액을 태내에서 느끼며 %타겟은% 주어진 쾌락에 빠져갔다…….
+		ENDIF
+	ELSEIF !RAND:2
+		PRINTFORML %타겟은% 시험 결과 지역 1위인 보상으로 %마스터와% 하루간 섹스에 빠지게 되었다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK1000
+		PRINTFORML 
+		PRINTFORML %CALLNAME:MASTER%에게 안기면서 %타겟은% 마치 오나홀이 된 기분이었다.
+		PRINTFORML 자신의 페이스로 %CALLNAME:MASTER%에게 안기는 문란한 하루를 보내는 것이라 생각했지만 그렇게 되지 않았던 것이다.
+		PRINTFORML 당연한 소리지만, %CALLNAME:MASTER%에겐 일이 산더미라 바쁘다.
+		PRINTFORML 물론 %CALLNAME%도 그것은 알고 있었기 때문에 다소 시간을 맞춰줄 것이라 생각했다.
+		PRINTFORML 하지만 현실은 달랐다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK1000
+		PRINTFORML 
+		PRINTFORML %마스터가% 부르면 언제든지 몸을 대줄 것을 요구받았다.
+		PRINTFORML 통근 중에 치한 플레이로 질내사정 당하고, 페로몬을 잔뜩 풍기는 암컷을 보았다며 화장실에서 대용 암컷 구멍으로서 씨받이가 되고,
+		PRINTFORML 할 일이 일단 안정되었다며 워크 데스크 아래에서 씨뿌리기 받고, 부족하다며 비상용 계단에서 자궁에 정액이 배설되고…….
+		PRINTFORML %타겟이% 요구해도 응하지도 않으면서 %마스터는% 멋대로 씨뿌리기 교미를 즐기고 있었다.
+		PRINTFORML 그것을 기쁘게 받아들이고 마는 것도 좋지 않지만, 이미 쾌락에 얽매인 육체에 거부권은 없었다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK1000
+		PRINTFORML 
+		PRINTFORML 귀가하자마자 현관 앞 벽에 밀어붙여져, 배면입위로 소중한 장소에 아기씨가 쏟아지면서 %타겟은% 생각하고 있었다.
+		PRINTFORML 이런 문란한 하루를 보내는 것도, 나쁘지 않을지도 모른다고…….
+	ELSE
+		PRINTFORML 학교 시험이 다가와 %타겟은% %CALLNAME:MASTER%에게 부탁해 공부를 도움받기로 했다.
+		PRINTFORML 처음 두 시간 정도는 성실히 공부했지만, 건강한 수컷과 암컷이 좁은 방에 있으면 그렇고 그런 분위기가 되는 것도 별 수 없다.
+		IF TALENT:학생 == 5
+			PRINTFORML 무엇보다 %타겟은% 아직 초등학생, 번식이 막 가능하게 된 자궁은 정액을 찾아 마지않는다.
+			PRINTFORML 미숙할 적에 박힌 쾌락의 맛이 잊혀지지 않는 육체를 미숙한 정신이 통제할 수 있을 리 없었다.
+		ELSEIF TALENT:학생 == 4
+			PRINTFORML 여하튼 %타겟은% 중학생, 잉태에 발정난 자궁을 주체하지 못해 폭주하는 것도 어쩔 수 없는 소리다.
+			PRINTFORML 자궁을 중심으로 타오르는 성욕의 불길을 끄기 쉽지 않아 빠른 해결법으로 교미를 택하는 것도 무리는 아니다.
+		ELSEIF TALENT:학생 == 3
+			PRINTFORML 여하튼 %타겟은% 고등학생, 성숙한 육체는 자궁에 제 역할을 하도록 본능을 자극하는 것이다.
+			PRINTFORML 생식본능을 자극 받아, 짝으로 인정한 수컷이 곁에 있는 상황에서 씨를 받을 기회를 눈 뜨고 놓칠 수 없었다.
+		ELSE
+			PRINTFORML 여하튼 %타겟은% 암컷으로서 육체적으로나 정신적으로나 성숙해, 만반의 상태로 수컷을 기다리고 있었다.
+			PRINTFORML 자궁은 늘 욱신대고, 이 기회를 놓치지 않고 유전자를 받아 아이를 낳고자 성욕을 계속 자극하고 있었던 것이다.
+		ENDIF
+		PRINTFORML 딥키스를 시작으로 타액을 교환하고 지금부터 교미를 한다며 %CALLNAME%의 육체를 일깨운다.
+		PRINTFORML 스위치가 한 번 켜지면 이후엔 젊은 육체와 넘쳐 흐르는 성욕으로 일이 진행된다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML %CALLNAME:MASTER%의 형태에 적응된 질벽은 육봉을 자연스럽게 받아들여 부드럽게 얽히며 사정을 유도한다.
+		PRINTFORML 공부도 섹스처럼 쉽게 할 수 있었으면 좋겠다며 %타겟은% 배운 대로 허리를 흔든다.
+		PRINTFORML %마스터가% 질내사정하고 잠시 여운에 잠겨 있을 때 %타겟은% 청소 펠라를 했다.
+		PRINTFORML 암컷으로서 만점의 움직임에 머리를 쓰다듬어지고, %타겟은% 기쁜 듯이 눈을 가늘게 떴다…….
+	ENDIF
+DRAWLINE
+PRINTFORMW
+CALL JN_SEX_EXP
+RESETCOLOR
+
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+EXP:업무경험 += 1
+PRINTFORML 【업무경험　　:{EXP:업무경험-1, 5 ,LEFT}→{EXP:업무경험, 5 ,RIGHT}】
+DRAWLINE
+IF Flag:도시_공적獲得機会 != 0
+	CFLAG:주민_業務ポイント += 5
+	L_K = (((EXP:업무경험/100)+1)*1000)+(EXP:업무경험*3)
+	Flag:도시_공적 += L_K
+	Flag:도시_공적獲得機会 = 0
+	PRINTFORML 추가로 %CALLNAME%의 활약이 「시티」에게 인정받아, 대량의 공적을 획득했다！
+	PRINTFORML 【공적　　:{Flag:도시_공적 - L_K, 10 ,LEFT}→{Flag:도시_공적, 10 ,RIGHT}】
+	DRAWLINE
+ENDIF
+PRINTFORMW 
+TARGET = L_T
+
+

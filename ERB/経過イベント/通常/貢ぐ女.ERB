@@ -1,0 +1,32 @@
+﻿;-------------------------------------------------
+;貢ぐ女
+;-------------------------------------------------
+@TURN_EVENT_NORMAL_MTGONN
+#DIM I_G
+
+I_G = RAND:6
+
+DRAWLINE
+PRINTFORML 【헌상하는 여자：%CALLNAME%】
+IF !RAND:4
+	PRINTFORML %타겟은% 상점가의 추첨기에서 뽑은 물건을 %CALLNAME:MASTER%에게 사용해달라며 들고 왔다…….
+ELSEIF !RAND:3
+	PRINTFORML %타겟은% 노점에서 %CALLNAME:MASTER%에게 도움이 될 만한 진귀한 물건을 싼 값에 찾아 구입했다…….
+ELSEIF !RAND:2
+	PRINTFORML %타겟은% 친구로부터 용도를 모른다며 넘겨받은 물건 중에 %마스터가% 모으는 물건을 발견했다…….
+ELSE
+	PRINTFORML %타겟은% 도시의 외곽 부근에서 희귀한 것을 발견해 %CALLNAME:MASTER%에게 보내 줬다…….
+ENDIF
+;低品質のアイテム入手
+FLAG:(2100+I_G) += 1
+PRINTFORML %조사처리(FLAGNAME:(2100+I_G),"를")% 입수했다.
+	
+
+DRAWLINE
+
+
+
+
+
+
+

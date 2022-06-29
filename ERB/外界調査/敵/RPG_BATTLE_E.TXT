@@ -1,0 +1,548 @@
+
+;-------------------------------------------------
+;敵設定
+;SIDE、DNUM、BONUSの添え字0はM兵装、1はS兵装用
+;SIDE:1、DNUM:1が0の場合はM兵装の6～8割の数値を用いる
+;-------------------------------------------------
+@RPG_BATTLE_E(ARG)
+#DIM E_T
+#DIM E_W
+#DIM E_W2
+#DIM E_AB
+#DIM E_EB     ;取得経験値への固定加算値
+#DIM R_EB     ;レア敵の各種ステータスへの固定加算値？
+#DIM FLOORLV  ;深度による敵レベル
+#DIM SIDE , 2 ;サイコロの面
+#DIM DNUM , 2 ;ロール回数
+#DIM BONUS , 2;固定加算値
+#DIM DICE_M   ;主兵装のダイスID。未設定ならコモンダイスからランダム抽選
+#DIM DICE_S   ;副兵装のダイスID。未設定ならコモンダイスからランダム抽選
+R_EB = 0
+E_EB = 0
+E_AB = 0
+CALL DICE_LOTTERY
+DICE_M = RESULT
+CALL DICE_LOTTERY
+DICE_S = RESULT
+VARSET SIDE
+VARSET DNUM
+VARSET BONUS
+
+;今のところ調査区域51[腐敗聖堂]のみで使用
+FLOORLV = FLAG:調査深度 / 20
+
+IF Flag:依頼_イスからの駆除依頼 == 1
+	SAVESTR:敵_名前 = 暴走した実験体
+	E_T = ((Flag:依頼_イスからの駆除依頼_Lv)/2)+1
+	;特定レベルから専用ダイス
+	SIF Flag:依頼_イスからの駆除依頼_Lv >= 40
+		DICE_M = 4
+	E_EB = 10
+	E_W = RAND:5
+	E_W2 = RAND:5
+	Flag:敵_弱点 = RAND:5
+	Flag:敵_耐性 = RAND:5
+ELSEIF Flag:EP追撃方法 == 1
+	SAVESTR:敵_名前 = 他勢力のエージェント
+	E_T = (Flag:EP敵戦力/2)+1
+	DICE_M = 5
+	E_W = RAND:5
+	E_W2 = RAND:5
+	Flag:敵_弱点 = RAND:5
+	Flag:敵_耐性 = RAND:5
+ELSEIF Flag:依頼_スパイテロ駆除 == 1
+	SAVESTR:敵_名前 = イレギュラー
+	E_T = ((Flag:依頼_スパイテロ駆除_Lv)/2)+1
+	E_W = RAND:5
+	E_W2 = RAND:5
+	Flag:敵_弱点 = RAND:5
+	Flag:敵_耐性 = RAND:5
+ELSEIF Flag:都市_防衛 != 0
+	IF !RAND:4
+		SAVESTR:敵_名前 = 『ダゴン:Lv{(FLAG:都市_Lv/3)+5}』
+		E_T = (FLAG:都市_Lv/3)+5
+		R_EB = FLAG:都市_Lv
+		DICE_M = 6
+		DICE_S = 7
+		E_W = 1
+		E_W2 = 1
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 1
+	ELSEIF !RAND:3
+		SAVESTR:敵_名前 = 『ルリム・シャイコース:Lv{(FLAG:都市_Lv/3)+5}』
+		E_T = (FLAG:都市_Lv/3)+5
+		R_EB = FLAG:都市_Lv
+		DICE_M = 6
+		DICE_S = 7
+		E_W = 4
+		E_W2 = 4
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = 2
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = 『ガタノトーア:Lv{(FLAG:都市_Lv/3)+5}』
+		E_T = (FLAG:都市_Lv/3)+5
+		R_EB = FLAG:都市_Lv
+		DICE_M = 6
+		DICE_S = 7
+		E_W = 3
+		E_W2 = 3
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 3
+	ELSE
+		SAVESTR:敵_名前 = 『ラーン＝テゴス:Lv{(FLAG:都市_Lv/3)+5}』
+		E_T = (FLAG:都市_Lv/3)+5
+		R_EB = FLAG:都市_Lv
+		DICE_M = 6
+		DICE_S = 7
+		E_W = 2
+		E_W2 = 2
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 4
+	ENDIF
+ELSEIF Flag:調査区域 == 90 && (Flag:調査深度 >= Flag:日替わり区画深度限界)
+	IF !RAND:3
+		SAVESTR:敵_名前 = ロイガー
+		E_EB = Flag:日替わり区画難易度*25
+		R_EB = Flag:日替わり区画難易度*15
+		E_T = 1+Flag:日替わり区画難易度
+		E_W = 0
+		E_W2 = 0
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 2
+		Flag:敵_レア = 1
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = ハイドラ
+		E_EB = Flag:日替わり区画難易度*25
+		R_EB = Flag:日替わり区画難易度*15
+		E_T = 1+Flag:日替わり区画難易度
+		E_W = 1
+		E_W2 = 1
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 1
+		Flag:敵_レア = 1
+	ELSE
+		SAVESTR:敵_名前 = シアエガ
+		E_EB = Flag:日替わり区画難易度*25
+		R_EB = Flag:日替わり区画難易度*15
+		E_T = 1+Flag:日替わり区画難易度
+		E_W = 2
+		E_W2 = 2
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 4
+		Flag:敵_レア = 1
+	ENDIF
+ELSEIF  Flag:調査区域 == 90
+	IF !RAND:3
+		SAVESTR:敵_名前 = 異形化した人間
+		E_EB = 3
+		E_T = 2
+		E_W = 0
+		E_W2 = 1
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 0
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = 腐った「外敵」
+		E_EB = 5
+		E_T = 2
+		E_W = 3
+		E_W2 = 0
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = 4
+	ELSE
+		SAVESTR:敵_名前 = 狂信者
+		E_EB = 3
+		E_T = 2
+		E_W = 0
+		E_W2 = RAND:5
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = -1
+	ENDIF
+ELSEIF POSSIB(3) && FLAG:調査区域 != 50 && FLAG:調査区域 != 51
+	;ダイスは共通
+	DICE_M = 8
+	DICE_S = 9
+	IF !RAND:3
+		SAVESTR:敵_名前 = ヴルトゥーム
+		E_EB = 500
+		R_EB = 40
+		E_T = 12
+		E_W = 0
+		E_W2 = 0
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 2
+		Flag:敵_レア = 1
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = ロードビヤーキー
+		E_EB = 500
+		R_EB = 40
+		E_T = 12
+		E_W = 1
+		E_W2 = 1
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = 1
+		Flag:敵_レア = 1
+	ELSE
+		SAVESTR:敵_名前 = ニョグダ
+		E_EB = 500
+		R_EB = 40
+		E_T = 12
+		E_W = 2
+		E_W2 = 2
+		Flag:敵_弱点 = 0
+		Flag:敵_耐性 = 4
+		Flag:敵_レア = 1
+	ENDIF
+ELSEIF Flag:調査区域 == 50
+	;IF RAND:100 >= (50+((FLAG:支援_後方合計HIT+FLAG:支援_後方合計SPD)/4))-(Flag:調査深度/40)
+	IF RAND:100 >= 97
+		SAVESTR:敵_名前 = 塵を踏むもの[クァチル・ウタウス]
+		E_EB = 4000
+		R_EB = 2000
+		DICE_M = 10
+		DICE_S = 11
+		E_T = 40
+		E_W = 4
+		E_W2 = 0
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 4
+		Flag:敵_レア = 100
+	ELSE
+		SAVESTR:敵_名前 = 不死老人
+		E_EB = 45
+		E_T = 32
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 1
+	ENDIF
+ELSEIF Flag:調査区域 == 51
+	;実験的に調査深度に応じて能力を高めてみる
+	;クトゥルフ詳しくないのでイカした名前などありましたら書き換えてください
+	;IF RAND:100 >= (50+((FLAG:支援_後方合計HIT+FLAG:支援_後方合計SPD)/4))-(Flag:調査深度/40)
+	IF POSSIB(3)
+		SAVESTR:敵_名前 = 異界の秩序[ガベージコレクタ(\@FLOORLV == 0 ? "零" # {FLOORLV}\@型)]
+		E_EB = 4500
+		R_EB = 2500 + FLOORLV * 15
+		E_T = 40 + FLOORLV * 3
+		DICE_M = 12
+		DICE_S = 13
+		E_W = 4
+		E_W2 = 0
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 1
+		Flag:敵_レア = 100
+	ELSEIF !RAND:4
+		SAVESTR:敵_名前 = 古き信心
+		E_EB = 20
+		E_T = 40 + FLOORLV * 2
+		SIDE:0 = 6
+		DNUM:0 = 12
+		BONUS:0 = 4
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = 0
+	ELSEIF !RAND:3
+		SAVESTR:敵_名前 = ヘ音記号状黒体
+		E_EB = 40
+		E_T = 45 + FLOORLV * 2
+		SIDE:0 = 15
+		DNUM:0 = 4
+		BONUS:0 = 7
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 1
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = 神のつめあか
+		E_EB = 55
+		E_T = 50 + FLOORLV * 2
+		SIDE:0 = 10
+		DNUM:0 = 6
+		BONUS:0 = 12
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 0
+		Flag:敵_耐性 = 3
+	ELSE
+		SAVESTR:敵_名前 = 攻撃型論理妖精　v{FLOORLV}
+		E_EB = 50
+		E_T = 50 + FLOORLV * 3
+		SIDE:0 = 6
+		DNUM:0 = 13
+		BONUS:0 = 9
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 1
+	ENDIF
+ELSEIF Flag:調査区域 == 5
+	IF RAND:100 >= (50+((FLAG:支援_後方合計HIT+FLAG:支援_後方合計SPD)/4))-(Flag:調査深度/20)
+		SAVESTR:敵_名前 = 迷宮の主[アイホート]
+		E_EB = 4000
+		R_EB = 80
+		DICE_M = 8
+		DICE_S = 9
+		E_T = 12
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 3
+		Flag:敵_レア = 1
+	ELSE
+		SAVESTR:敵_名前 = アイホートの雛
+		E_EB = 15
+		E_T = 12
+		SIDE:0 = 10
+		DNUM:0 = 2
+		BONUS:0 = 7
+		E_W = 1
+		E_W2 = 2
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 3
+	ENDIF
+ELSEIF Flag:調査区域 >= 4 && Flag:調査深度 > 100
+	IF !RAND:3
+		SAVESTR:敵_名前 = イタカァ
+		E_EB = 40
+		E_T = 7
+		SIDE:0 = 8
+		DNUM:0 = 4
+		BONUS:0 = 0
+		E_W = 1
+		E_W2 = 0
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 3
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = イ＝ス
+		E_EB = 40
+		E_T = 7
+		SIDE:0 = 6
+		DNUM:0 = 4
+		BONUS:0 = 1
+		E_W = 3
+		E_W2 = 4
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 4
+	ELSE
+		SAVESTR:敵_名前 = ショゴスロード
+		E_EB = 35
+		E_T = 7
+		SIDE:0 = 5
+		DNUM:0 = 5
+		BONUS:0 = 2
+		E_W = 0
+		E_W2 = 1
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 0
+	ENDIF
+ELSEIF Flag:調査区域 >= 3 && Flag:調査深度 > 60
+	IF !RAND:3
+		SAVESTR:敵_名前 = 落とし子
+		E_EB = 30
+		E_T = 4
+		SIDE:0 = 5
+		DNUM:0 = 3
+		BONUS:0 = 0
+		E_W = 4
+		E_W2 = 2
+		Flag:敵_弱点 = 0
+		Flag:敵_耐性 = 4
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = 深きもの
+		E_EB = 23
+		E_T = 4
+		SIDE:0 = 4
+		DNUM:0 = 4
+		BONUS:0 = 2
+		E_W = 2
+		E_W2 = 0
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 0
+	ELSE
+		SAVESTR:敵_名前 = ビヤーキー
+		E_EB = 21
+		E_T = 4
+		SIDE:0 = 6
+		DNUM:0 = 2
+		BONUS:0 = 0
+		E_W = 0
+		E_W2 = 1
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = 2
+	ENDIF
+ELSEIF Flag:調査区域 >= 2 && Flag:調査深度 > 30
+	IF !RAND:3
+		SAVESTR:敵_名前 = ムーンビースト
+		E_EB = 18
+		E_T = 3
+		SIDE:0 = 4
+		DNUM:0 = 3
+		BONUS:0 = 0
+		E_W = 0
+		E_W2 = 1
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = 2
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = 星の精
+		E_EB = 16
+		E_T = 3
+		SIDE:0 = 3
+		DNUM:0 = 3
+		BONUS:0 = 2
+		E_W = 0
+		E_W2 = 4
+		Flag:敵_弱点 = 1
+		Flag:敵_耐性 = 4
+	ELSE
+		SAVESTR:敵_名前 = 古きもの
+		E_EB = 14
+		E_T = 3
+		SIDE:0 = 6
+		DNUM:0 = 2
+		BONUS:0 = 0
+		E_W = 0
+		E_W2 = RAND:5
+		Flag:敵_弱点 = 0
+		Flag:敵_耐性 = 1
+	ENDIF
+ELSEIF  Flag:調査深度 > 15
+	IF !RAND:3
+		SAVESTR:敵_名前 = ショゴス
+		E_EB = 10
+		E_T = 2
+		SIDE:0 = 3
+		DNUM:0 = 2
+		BONUS:0 = 0
+		E_W = 0
+		E_W2 = 1
+		Flag:敵_弱点 = 4
+		Flag:敵_耐性 = 0
+	ELSEIF !RAND:2
+		SAVESTR:敵_名前 = ミ＝ゴ
+		E_EB = 7
+		E_T = 2
+		SIDE:0 = 4
+		DNUM:0 = 1
+		BONUS:0 = 0
+		E_W = 3
+		E_W2 = 0
+		Flag:敵_弱点 = 2
+		Flag:敵_耐性 = 4
+	ELSE
+		SAVESTR:敵_名前 = インスマス
+		E_EB = 4
+		E_T = 2
+		SIDE:0 = 2
+		DNUM:0 = 2
+		BONUS:0 = 2
+		E_W = 0
+		E_W2 = RAND:5
+		Flag:敵_弱点 = 3
+		Flag:敵_耐性 = -1
+	ENDIF
+ELSE
+	SAVESTR:敵_名前 = 隠れ人
+	E_T = 1
+	DICE_M = 14
+	DICE_S = 15
+	E_W = RAND:5
+	E_W2 = RAND:5
+	Flag:敵_弱点 = -1
+	Flag:敵_耐性 = -1
+ENDIF
+
+E_AB = Flag:調査区域
+
+SIF Flag:調査区域 == 50
+	E_AB = Flag:日替わり区画難易度*3
+	
+SIF Flag:EP追撃方法 == 1
+	E_AB = 1
+
+;Flag:敵_最大体力 = (E_AB*10)+(Flag:調査深度/5)+(RAND:(5+E_T)*E_T)+6+R_EB
+;体力を高めに出すためにE_Tを一時増加
+E_T += 10
+Flag:敵_最大体力 = (E_AB*10)+(Flag:調査深度/5)+(RAND:(5+E_T)*E_T)+6+R_EB
+E_T -= 10
+Flag:敵_現在体力 = Flag:敵_最大体力
+;Flag:敵_ATK = (RAND:(E_T*4)+(E_AB*2))+(RAND:(4+E_T)*E_T)+2+R_EB
+Flag:敵_ATK = (RAND:(E_T*3)+(E_AB*2))+(RAND:(4+E_T)*E_T)+2+R_EB
+Flag:敵_DEF = (RAND:(E_T*2)+(E_AB))+(RAND:(2+E_T)*E_T)+2+R_EB
+Flag:敵_HIT = (RAND:(E_T*3)+(E_AB*2))+(RAND:(4+E_T)*E_T)+2+R_EB
+Flag:敵_SPD = (RAND:(E_T*3)+(E_AB))+(RAND:(3+E_T)*E_T)+2+R_EB
+Flag:敵_最大BRE = 0
+Flag:敵_現在BRE = 0
+
+Flag:敵_M兵装 = DICE_M
+CALLFORM DICE_SIDE_{DICE_M}
+Flag:敵_M兵装ダメージ = RESULT
+CALLFORM DICE_ROLLNUM_{DICE_M}
+Flag:敵_M兵装ダイス = RESULT
+CALLFORM DICE_BONUS_{DICE_M}
+Flag:敵_M兵装ボーナス = RESULT
+
+Flag:敵_S兵装 = DICE_S
+CALLFORM DICE_SIDE_{DICE_S}
+Flag:敵_S兵装ダメージ = RESULT
+CALLFORM DICE_ROLLNUM_{DICE_S}
+Flag:敵_S兵装ダイス = RESULT
+CALLFORM DICE_BONUS_{DICE_S}
+Flag:敵_S兵装ボーナス = RESULT
+
+;副兵装が汎用品なら主兵装と同等の能力になってしまうので弱体化
+CALLFORM DICE_COMMON_{DICE_S}
+IF RESULT
+	;ダイスロール数はそのまま
+	Flag:敵_S兵装ダイス = Flag:敵_S兵装ダイス
+	Flag:敵_S兵装ダメージ = Flag:敵_S兵装ダメージ * RAND(60 , 80) / 100
+	Flag:敵_S兵装ボーナス = Flag:敵_S兵装ボーナス * RAND(60 , 80) / 100
+	Flag:敵_S兵装ダメージ = MAX(Flag:敵_S兵装ダメージ , 1)
+ENDIF
+
+
+;オリジナルを残しておく
+[SKIPSTART]
+Flag:敵_M兵装 = E_W
+Flag:敵_M兵装ダイス = (RAND:(E_T))+1
+Flag:敵_M兵装ダメージ = (RAND:(E_T))+(E_T*3)
+Flag:敵_M兵装ボーナス = (RAND:(E_T*2))+1
+
+Flag:敵_S兵装 = E_W2
+Flag:敵_S兵装ダイス = (RAND:(E_T))+1
+Flag:敵_S兵装ダメージ = (RAND:(E_T))+(E_T*2)
+Flag:敵_S兵装ボーナス = (RAND:(E_T))+1
+[SKIPEND]
+
+IF Flag:都市_防衛 != 0
+	Flag:敵_最大体力 = Flag:敵_最大体力*5000
+	Flag:敵_現在体力 = Flag:敵_最大体力
+	Flag:敵_SPD = 10
+	Flag:敵_DEF = 5
+ENDIF
+IF Flag:調査区域 == 90 && (Flag:調査深度 >= Flag:日替わり区画深度限界)
+	Flag:敵_最大体力 += Flag:敵_最大体力/2
+	Flag:敵_現在体力 = Flag:敵_最大体力
+ENDIF
+SIF Flag:敵_レア != 0
+	Flag:敵_SPD = 10
+
+Flag:敵_取得経験値 = 1+(E_T*E_AB)+E_EB 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

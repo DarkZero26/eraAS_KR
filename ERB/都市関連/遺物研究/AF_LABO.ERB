@@ -1,0 +1,520 @@
+﻿
+;-------------------------------------------------
+;遺物研究
+;-------------------------------------------------
+@AF_LABO
+#DIM L_INPUT
+
+SIF Flag:도시_최대LP <= 50
+	Flag:도시_최대LP = 50
+
+
+FLAG:유연_연구중 = 1
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML %AL_WORDS()%
+DRAWLINE
+CALL AL_STATUS
+
+PRINTFORM [0] -  연구 대상 설정　
+SIF FLAG:유연_연구대상 > 0
+	PRINTFORML [1] -  연구 대상 세부
+SIF FLAG:유연_연구대상 > 0
+	PRINTFORM [2] -  리더 임명 　　　
+SIF FLAG:유연_연구대상 > 0
+	PRINTFORML [3] -  서포터 임명 　
+PRINTFORM [10] - 소생 수술 　　　
+PRINTFORM [20] - 인공 유물 생성
+PRINTFORML
+PRINTFORML [4] -  능력 표시
+PRINTFORML
+PRINTFORM [50] - 자원봉사자 모집 　　
+PRINTFORML [51] - 자원봉사 종료 　
+PRINTFORML
+PRINTFORM [999] - 돌아간다　　
+PRINTFORML [998] - 해설
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 0
+	; CALL AF_LABO_0
+	CALL AL_ARTIFACT_LIST
+CASE 1
+	CLEARLINE LINECOUNT
+	CALLFORM AL_Profile_{FLAG:유연_연구대상}
+CASE 2
+	CALL AF_LABO_2
+CASE 3
+	CALL AF_LABO_3
+CASE 4
+	CALL AF_LABO_4
+CASE 10
+	CALL AF_LABO_10
+CASE 20
+	CALL AF_LABO_Craft
+CASE 50
+	CALL CITY_SCOUT
+CASE 51
+	CALL AF_LABO_DELETE
+CASE 998
+	CLEARLINE LINECOUNT
+	PRINTFORML 자원봉사자들에게 유물을 조사시키는 것으로 연구해, 유용한 데이터를 획득하는 시설.
+	PRINTFORML 
+	PRINTFORML 연구에 성공했을 시 LP가 상승하며, 상승한 LP는 아티팩트를 강화시키는데 쓰인다.
+	PRINTFORML 유물연구를 위한 방법은 아래와 같다.
+	PRINTFORML 1.<자원봉사자 모집>으로 캐릭터를 가입시킨다.
+	PRINTFORML 2.연구대상을 선택한다.
+	PRINTFORML 3.자원봉사자들 중 한 명을 리더로 임명한다. (서포터는 임의. 일부 ＋보정)
+	PRINTFORML 4.턴 경과 중 성공 여부 이벤트가 발생, 성공할 경우 LP를 획득한다.
+	PRINTFORML 
+	PRINTFORML 주의！　연구 시 리더 or 서포터는 육체・정신 대미지를 받는다.
+	PRINTFORML 　　　　육체 or 정신 대미지가 100을 넘으면 그 자원봉사자는 사망한다.
+	PRINTFORMW 
+CASE 999
+	FLAG:유연_연구중 = 0
+	RETURN
+CASE -111
+	PRINTFORMW 테스트 가동 중...
+	CALL AL_CHARA_SELECT
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+RESTART
+
+
+
+;-------------------------------------------------
+;遺物研究 リーダー任命
+;-------------------------------------------------
+@AF_LABO_2
+#DIM L_CHECK
+#DIM L_CHECK2
+#DIM L_INPUT
+
+L_CHECK = 0
+L_CHECK2 = 0
+FOR L_CHECK, CHARANUM - 1, -1, -1
+	SIF FLAG:유연_リーダー == CFLAG:L_CHECK:개별번호
+		L_CHECK2 = 1
+	SIF TALENT:L_CHECK:자원봉사자 == 3 && (FLAG:유연_リーダー != CFLAG:L_CHECK:개별번호)
+		TALENT:L_CHECK:자원봉사자 = 1
+NEXT
+SIF L_CHECK2 == 0
+	FLAG:유연_リーダー = 0
+	
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 리더를 담당할 자원봉사자를 선택해주세요. (정원 1명)
+DRAWLINE
+CALL MEMBER_LIST_B
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	IF FLAG:유연_リーダー != 0 && FLAG:유연_リーダー != CFLAG:L_INPUT:개별번호
+		PRINTFORMW 이미 리더를 맡고 있습니다.
+	ELSEIF TALENT:L_INPUT:자원봉사자 <= 2
+		SIF TALENT:L_INPUT:자원봉사자 == 2
+			FLAG:유연_サポーター総数 -= 1
+		TALENT:L_INPUT:자원봉사자 = 3
+		FLAG:유연_リーダー = CFLAG:L_INPUT:개별번호
+		PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 리더로 임명했습니다.
+	ELSEIF TALENT:L_INPUT:자원봉사자 == 3  && FLAG:유연_リーダー == CFLAG:L_INPUT:개별번호
+		TALENT:L_INPUT:자원봉사자 = 1
+		FLAG:유연_リーダー = 0
+		PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 제명했습니다.
+	ENDIF
+	GOTO INPUT_LOOP
+ENDSELECT
+
+;-------------------------------------------------
+;遺物研究 サポータ―任命
+;-------------------------------------------------
+@AF_LABO_3
+#DIM L_INPUT
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 서포터를 담당할 자원봉사자를 선택해주세요. (정원 3명)
+DRAWLINE
+CALL MEMBER_LIST_B
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	IF TALENT:L_INPUT:자원봉사자 == 2
+		TALENT:L_INPUT:자원봉사자 = 1
+		FLAG:유연_サポーター総数 -= 1
+		SIF FLAG:유연_サポーター総数 <= 0
+			FLAG:유연_サポーター総数 = 0
+		PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 제명했습니다.
+	ELSEIF FLAG:유연_サポーター総数 >= 3
+		PRINTFORMW 서포터는 3명까지입니다.
+	ELSEIF TALENT:L_INPUT:자원봉사자 == 1
+		TALENT:L_INPUT:자원봉사자 = 2
+		FLAG:유연_サポーター総数 += 1
+		PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 임명했습니다.
+	ENDIF
+	GOTO INPUT_LOOP
+ENDSELECT
+
+;-------------------------------------------------
+;遺物研究 能力表示
+;-------------------------------------------------
+@AF_LABO_4(ARG)
+#DIM L_INPUT
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 능력을 표기하고 싶은 자원봉사자를 선택해주세요.
+DRAWLINE
+CALL MEMBER_LIST_B
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+ARG = RESULT
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	CALL INFO_STATUS_MAIN(ARG)
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+
+;-------------------------------------------------
+;遺物研究 蘇生手術
+;-------------------------------------------------
+@AF_LABO_10
+#DIM CHECK
+#DIM L_INPUT
+
+CHECK = 0
+
+	
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 소생시킬 자원봉사자를 선택해주세요.
+DRAWLINE
+CALL MEMBER_LIST_B
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+CHECK = RESULT
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	IF CFLAG:CHECK:주민_육체데미지 >= 100 || CFLAG:CHECK:주민_정신데미지 >= 100
+		CLEARLINE LINECOUNT
+		PRINTFORML %조사처리(CALLNAME:CHECK,"를")% 소생시키는데에 자금 {CFLAG:CHECK:주민_유연_総数*1000}　이 필요합니다.
+		PRINTFORML 괜찮겠습니까？(현재 자금 {money})
+		PRINTFORML 
+		PRINTFORML [0] - 네
+		PRINTFORML [1] - 아니오
+		INPUT
+		L_INPUT = RESULT
+		SELECTCASE L_INPUT
+		CASE 0
+		IF CFLAG:CHECK:주민_유연_総数*1000 > MONEY
+			PRINTFORMW 자금이 부족합니다.
+			GOTO INPUT_LOOP
+		ELSE
+			MONEY -= CFLAG:CHECK:주민_유연_総数*1000
+			CFLAG:CHECK:주민_육체데미지 = 50
+			CFLAG:CHECK:주민_정신데미지 = 50
+			PRINTFORMW %조사처리(CALLNAME:CHECK,"를")% 소생시켰습니다.
+			GOTO INPUT_LOOP
+		ENDIF
+		CASEELSE
+			GOTO INPUT_LOOP
+		ENDSELECT
+	ELSEIF CFLAG:CHECK:주민_육체데미지 < 100 && CFLAG:CHECK:주민_정신데미지 < 100
+		PRINTFORMW %조사처리(CALLNAME:CHECK,"는")% 죽지 않았습니다.
+		GOTO INPUT_LOOP
+	ENDIF
+	GOTO INPUT_LOOP
+ENDSELECT
+
+;-------------------------------------------------
+;遺物研究 자원봉사자終了
+;-------------------------------------------------
+@AF_LABO_DELETE
+#DIM L_INPUT
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 삭제할 자원봉사자를 선택해주세요.
+DRAWLINE
+CALL MEMBER_LIST_B
+PRINTFORML
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	SIF TALENT:L_INPUT:자원봉사자 >= 2
+		FLAG:유연_サポーター総数 -= 1
+	CALL CANCEL_SCOUT(L_INPUT)
+	GOTO INPUT_LOOP
+ENDSELECT
+
+;-------------------------------------------------
+;遺物研究 遺物選択
+;-------------------------------------------------
+@AF_LABO_0
+#DIM L_N
+#DIM L_INPUT
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+
+L_N = 0
+
+DRAWLINE
+PRINTFORML 연구할 유물을 선택해주세요.
+DRAWLINE
+$AL_LOOP
+TRYCCALLFORM AL_Check_{L_N}
+CATCH
+ENDCATCH
+IF RESULT == 1
+	PRINTFORML [{L_N}] %SaveStr:500%
+ELSE
+
+ENDIF
+L_N += 1
+RESULT = 0
+SIF L_N < 100
+	GOTO AL_LOOP
+DRAWLINE
+PRINTFORML [999] - 돌아간다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 999
+	RETURN
+CASEELSE
+	CALLFORM AL_Set_{L_INPUT}
+	PRINTFORMW 연구대상을 설정했습니다.
+	RETURN
+ENDSELECT
+RESTART
+
+
+
+;-------------------------------------------------
+;遺物研究 セリフ
+;-------------------------------------------------
+
+@AL_WORDS
+#FUNCTIONS
+#DIMS DYNAMIC WORDS
+STRDATA WORDS
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『주민의 내일을 풍요롭게 하는 연구기관, ＡＬＣ에 오신 것을 환영합니다！』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『ＡＬＣ는 도시 활성화에 힘씁니다！』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『자원봉사자 여러분, 오늘도 수고하셨습니다！ 함께 힘내봅시다.』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『신입 자원봉사자 분들은 교습소로 이동해주시길 바랍니다.』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『오늘은「플레이어」가 시찰을 위해 방문하십니다. 실수가 없도록 잘 부탁드립니다.』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『도시에 번영을, 사람들에게 희망을！』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『「외적」에게 지지 않는 강한 사회를！ＡＬＣ는 정진하고 있습니다.』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『불가사의한 물건・낯선 물건이 있으시다면 저희에게 상담해주세요！』
+	ENDLIST
+	DATALIST
+		DATAFORM 【연구기관ＡＬＣ】　　　　Artifact･Laboratory･Corporation
+		DATAFORM 『미지를 힘으로 바꿔 보다 나은 미래를, 그것을 이루는 것이 ＡＬＣ입니다.』
+	ENDLIST
+	[SKIPSTART]
+	;増設用
+	DATALIST
+		DATAFORM 
+		DATAFORM 
+	ENDLIST
+	[SKIPEND]
+ENDDATA
+RETURNF WORDS
+
+
+;-------------------------------------------------
+;遺物ステータス
+;-------------------------------------------------
+@AL_STATUS
+#DIM DYNAMIC AL_LEEDER
+#DIM DYNAMIC AL_SUPPORT, 4
+CALL AL_RELOAD_VOLUNTEER_LIST(AL_LEEDER, AL_SUPPORT)
+IF FLAG:유연_연구대상 > 0
+	PRINTFORML 【연구대상:%SaveStr:500%】
+ELSE
+	PRINTFORML 【연구대상:None】
+ENDIF
+
+FLAG:유연_합계경험치 = 0
+FLAG:유연_합계属性 = 0
+
+PRINTFORM %" " * 34%
+IF INRANGE(AL_LEEDER, 1, CHARANUM - 1)
+	PRINTFORM 【主任:%CALLNAME:AL_LEEDER, 14%】
+	FLAG:유연_합계경험치 += CFLAG:AL_LEEDER:주민_유연_総数
+	IF CFLAG:AL_LEEDER:주민_속성 == 2
+		FLAG:유연_합계属性 -= 1
+	ELSEIF CFLAG:AL_LEEDER:주민_속성 == 1
+		FLAG:유연_합계属性 += 1
+	ENDIF
+ELSE
+	PRINTFORM 【주임:%"None", 14%】
+ENDIF
+FOR LOCAL, 0, 3
+	IF INRANGE(AL_SUPPORT:LOCAL, 1, CHARANUM - 1)
+		PRINTFORM 【조수:%CALLNAME:(AL_SUPPORT:LOCAL), 14%】
+		FLAG:유연_합계경험치 += (CFLAG:(AL_SUPPORT:LOCAL):주민_유연_総数+1)/3
+		IF CFLAG:(AL_SUPPORT:LOCAL):주민_속성 == 2
+			FLAG:유연_합계属性 -= 1
+		ELSEIF CFLAG:(AL_SUPPORT:LOCAL):주민_속성 == 1
+			FLAG:유연_합계属性 += 1
+		ENDIF
+	ELSE
+		PRINTFORM 【조수:%"None", 14%】
+	ENDIF
+NEXT
+PRINTFORML 
+IF FLAG:유연_연구대상 > 0
+	PRINTFORML 연구횟수　:{FLAG:(16000+FLAG:유연_연구대상), 10}회
+	PRINTFORML 연구비용　:{FLAG:유연_비용, 10}
+	PRINTFORML 위험성　　:%AL_STATUS_BAR(FLAG:유연_위험성)%
+	PRINTFORML 연구이익　:%AL_STATUS_BAR(FLAG:유연_연구이익)%
+	PRINTFORML 육체대미지:%AL_STATUS_BAR(FLAG:유연_육체데미지)%
+	PRINTFORML 정신대미지:%AL_STATUS_BAR(FLAG:유연_정신데미지)%
+ELSE
+	PRINTFORML %"\n" * 6%
+ENDIF
+
+
+CALL AL_PICTURE_VOLUNTEER_LEEDER(AL_LEEDER)
+CALL AL_PICTURE_VOLUNTEER_SUPPORT(AL_SUPPORT)
+PRINTFORM %" " * 34%
+IF INRANGE(AL_LEEDER, 1, CHARANUM - 1)
+	SIF CFLAG:AL_LEEDER:주민_유연_総数 >= 999
+		CFLAG:AL_LEEDER:주민_유연_総数 = 999
+	PRINTFORM 【EXP:{CFLAG:AL_LEEDER:주민_유연_総数, 3}|B:{CFLAG:AL_LEEDER:주민_육체데미지, 3}|M:{CFLAG:AL_LEEDER:주민_정신데미지, 3}】
+ELSE
+		PRINTFORM 【EXP:%"", 3%|B:%"", 3%|M:%"", 3%】
+ENDIF
+FOR LOCAL, 0, 3
+	IF INRANGE(AL_SUPPORT:LOCAL, 1, CHARANUM - 1)
+	SIF CFLAG:(AL_SUPPORT:LOCAL):주민_유연_総数 >= 999
+		CFLAG:(AL_SUPPORT:LOCAL):주민_유연_総数 = 999
+		PRINTFORM 【EXP:{CFLAG:(AL_SUPPORT:LOCAL):주민_유연_総数, 3}|B:{CFLAG:(AL_SUPPORT:LOCAL):주민_육체데미지, 3}|M:{CFLAG:(AL_SUPPORT:LOCAL):주민_정신데미지, 3}】
+	ELSE
+		PRINTFORM 【EXP:%"", 3%|B:%"", 3%|M:%"", 3%】
+	ENDIF
+NEXT
+PRINTFORML
+PRINTFORM 　　　　　　　　　　　　　　　　　【『피험반』　　캐리어:Lv{FLAG:유연_합계경험치/30}
+
+IF FLAG:유연_합계属性 >= 2
+	PRINTFORM 　　속성:선
+ELSEIF FLAG:유연_합계属性 <= -2
+	PRINTFORM 　　속성:악
+ELSE
+	PRINTFORM 　　속성:중립
+ENDIF
+
+PRINTFORML 　　】
+
+@AL_RELOAD_VOLUNTEER_LIST(AL_LEEDER, AL_SUPPORT)
+#DIM REF     AL_LEEDER
+#DIM REF     AL_SUPPORT
+#DIM         C_ID
+#DIM DYNAMIC SUP_CNT
+FOR C_ID, 1, CHARANUM
+	SELECTCASE TALENT:C_ID:자원봉사자
+	CASE 3
+		AL_LEEDER = C_ID
+	CASE 2
+		AL_SUPPORT:SUP_CNT = C_ID
+		SUP_CNT ++
+	CASEELSE
+		CONTINUE
+	ENDSELECT
+NEXT
+
+
+
+@AL_PICTURE_VOLUNTEER_LEEDER(C_ID)
+#DIM C_ID
+IF C_ID == 0
+	PRINTFORML
+ELSEIF TALENT:C_ID:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(C_ID, 2000, -506, -450, 850)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(C_ID, 2000, -506, -450, 850)
+ENDIF
+
+
+
+@AL_PICTURE_VOLUNTEER_SUPPORT(C_LIST)
+#DIM REF C_LIST
+#DIM     LIST_ID
+FOR LIST_ID, 0, 3
+	IF C_LIST:LIST_ID == 0
+		PRINTFORML
+	ELSEIF TALENT:(C_LIST:LIST_ID):NPC == 0
+		HTML_PRINT C_PICTURE_HTML(C_LIST:LIST_ID, 3200 + LIST_ID * 1176, -604 - LIST_ID * 98, 0, 850)
+	ELSE
+		HTML_PRINT C_PICTURE_NPC_HTML(C_LIST:LIST_ID, 3200 + LIST_ID * 1176, -604 - LIST_ID * 98, 0, 850)
+	ENDIF
+NEXT
+
+
+
+
+
+
+
+
+

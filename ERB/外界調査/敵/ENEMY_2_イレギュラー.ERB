@@ -1,0 +1,22 @@
+﻿;-------------------------------------------------
+;이레귤러
+;依頼スパイテロ駆除専用
+;-------------------------------------------------
+@ENEMY_2(L_STATUS , LS_STATUS)
+#DIM REF L_STATUS
+#DIMS REF LS_STATUS
+#DIM TEMP
+
+LS_STATUS:CON_敵_NAME = 이레귤러
+TEMP = (FLAG:依頼_スパイテロ駆除_Lv / 2) + 1
+
+L_STATUS:CON_敵_EB = TEMP * 2
+L_STATUS:CON_敵_HP = TEMP * 10 + 30
+L_STATUS:CON_敵_ATK = TEMP * TEMP
+L_STATUS:CON_敵_DEF = TEMP * TEMP
+L_STATUS:CON_敵_HIT = TEMP * TEMP
+L_STATUS:CON_敵_SPD = TEMP * TEMP
+L_STATUS:CON_敵_LUK = 0
+L_STATUS:CON_敵_弱点 = RAND:5
+L_STATUS:CON_敵_耐性 = RAND:5
+RETURN

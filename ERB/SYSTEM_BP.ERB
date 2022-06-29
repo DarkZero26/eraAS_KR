@@ -1,0 +1,18 @@
+﻿@SYSTEM_BP
+#DIM L_P
+
+
+$INPUT_LOOP_1
+
+IF FLAG:도시_현재BP > 0 && FLAG:도시_현재TP < FLAG:도시_최대TP
+	FLAG:도시_현재TP += 1
+	FLAG:도시_현재BP -= 1
+ENDIF
+
+SIF FLAG:도시_현재BP > 0 && FLAG:도시_현재TP < FLAG:도시_최대TP
+	GOTO INPUT_LOOP_1
+
+
+
+
+

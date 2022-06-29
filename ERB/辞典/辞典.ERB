@@ -1,0 +1,388 @@
+﻿;-------------------------------------------------
+;사전
+;-------------------------------------------------
+@OPTION_ZITEN
+#DIM L_INPUT
+
+
+CLEARLINE LINECOUNT
+SETCOLOR 250,0,0
+DRAWLINE
+PRINTFORML 요청된 권한 확인, 신청을 수락하였습니다.
+PRINTFORML 프로그램을 기동합니다.
+DRAWLINE
+RESETCOLOR
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORMW 
+$INPUT_LOOP
+SETCOLOR 0,0,0
+SETBGCOLOR 255,255,255
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 어서오세요.
+PRINTFORML 열람하고 싶은 항목을 선택하세요.
+DRAWLINE
+PRINTFORML 
+PRINTLC [ 0] 관리 추천
+PRINTLC [ 1] 주민 공략
+PRINTLC [ 2] 함락
+PRINTLC [ 3] 전투 관련
+PRINTLC [ 4] 탐색
+PRINTLC [ 5] 임신 조건
+PRINTLC [ 6] 종족
+PRINTLC [ 7] 결산
+PRINTLC [ 8] 습격
+PRINTLC [10] 각 포인트에 대해서
+PRINTLC [11] 초반의 추천 공략
+PRINTLC [12] 표면사회 / 뒷사회
+PRINTLC [13] 거주자 업무
+PRINTLC [14] 기능
+PRINTLC [15] 아티팩트
+PRINTLC [16] 주민 목록 표시항목
+PRINTLC [17] 아카이브
+PRINTLC [18] 유니크 캐릭터
+PRINTLC [20] 카르마＆모럴
+PRINTFORML
+PRINTFORML [999] 그만둔다
+INPUT
+L_INPUT = RESULT
+CLEARLINE LINECOUNT
+
+SELECTCASE L_INPUT
+CASE 0
+	PRINTFORML 전제로서「외계 조사」는 나중에 다루고 대략적으로 설명하자면,
+	PRINTFORML ・주민 공략 편
+	PRINTFORML 1 카페에서 거주 희망자(이하 주민)을 찾아 등록, 일단 대화를 하면서 호감도를 높여 간다.
+	PRINTFORML 2 어느정도 대화가 진행되면, 주민이 안고 있는 고민이 나타난다.
+	PRINTFORML 3 고민을 해결하고 친밀해진다. (작은 고민에서 큰 고민 순으로 해결, 합의가 이루어지면 더 이상 고민을 해결할 필요가 없음.)
+	PRINTFORML 4 설득하여 합의를 얻어내고, 이후 호감도를 올리면서「경향 변경」으로 선호하는 경향을 선택한다.
+	PRINTFORML 5 경향이 진행되면「관계구축」에서 해당하는 √를 선택해 함락시켜간다. (한 단락의 기준은 함락소질『심취』『애인』『정부』중 하나의 취득)
+	PRINTFORML 6 함락 소질을 취득했다면 일단 공략 완료, 조금 더 육성하거나 새로운 주민을 찾는다.
+	PRINTFORML 
+	PRINTFORML ・도시 발전편
+	PRINTFORML 1 턴 경과로 주민들이 도시를 발전시킨다. (합의를 얻고 있다면 ＋보정)
+	PRINTFORML 2 어느 정도 발전시키면 시설이 해방된다.
+	PRINTFORML 3 효율을 올리기 위해 새로운 주민을 공략하거나, 직무를 임명시킨다.
+	PRINTFORML 가 됩니다.
+	PRINTFORMW 
+	PRINTFORML 외계 조사는 현재 플레이버 요소가 강하기 때문에, 볼일이 없으면 할 필요가 없습니다.
+	PRINTFORML 다만, 일부 종족•소질은 외계조사에서의 이벤트에서만 얻을 수 있는 것이 있으므로 주의해 주세요.
+	PRINTFORML 
+	PRINTFORMW 
+CASE 1
+	PRINTFORML 주민은『카페』에서 만나는 것으로 주민등록을 할 수 있습니다.
+	PRINTFORML 등록된 주민과 대화함으로써 호감도와 고민의 해석도를 올립시다.
+	PRINTFORMW 
+	PRINTFORML 해석이 100％가 되면 대략적인 정보가 공개됩니다. 공개된 정보를 바탕으로 적절한 해결 방법을 선택합시다.
+	PRINTFORML 결과가 나올 때까지 며칠이 필요합니다. 해결도가 100％가 될 때까지 시도해봅시다.
+	PRINTFORML 어떠한 경향의 고민을 안고 있는가는 일생 생활 정보에서 뭔가가 느껴지는 정도이긴 하지만 나오는 경우가 있습니다.
+	PRINTFORMW 
+CASE 2
+	PRINTFORML 고민을 몇 가지 해결하면 확실한 신뢰를 얻고 설득함으로써 『합의』를 취득할 수 있습니다.
+	PRINTFORML 하지만 성행위를 한다고 해도 함락이 취득되지는 않습니다.
+	PRINTFORML 『카페』에서의 대화에서 새롭게『사적인 행동』의 항목이 추가되므로, 좋아하는 함락 소질√를 선택해줍시다.
+	PRINTFORMW 
+	PRINTFORML 턴 종료시 √에 따른 함락도가 상승합니다. 어느 정도 함락도가 상승하면『관계 구축』으로 함락을 취득하세요.
+	PRINTFORML 최대까지 축적되었다면 소질을 획득합니다. 다만 획득할 수 있는 소질은 하나까지입니다.
+	PRINTFORML ・심취　순종√의 소질
+	PRINTFORML ・애인　연애√의 소질
+	PRINTFORML ・정부　음란√의 소질
+	PRINTFORMW 
+CASE 3
+	PRINTFORML 【스테이터스】
+	PRINTFORML HP　　　체력　　0이 될 시 행동 불능.
+	PRINTFORML SP　　　기력　　0이 될 시 행동 불능. 30％ 이하일 시 받는 대미지 증가.
+	PRINTFORML GUTS　　근성　　행동에 관한 소비 SP를 억제.
+	PRINTFORML BRAVE 　용기　　높을수록 전투에서 유리한 행동을 할 수 있다.
+	PRINTFORML SAN 　　정신　　공포계에 대한 내성.
+	PRINTFORML ATK 　　공격력　주는 대미지에 추가 보정.
+	PRINTFORML DEF 　　방어력　받는 대미지를 경감.
+	PRINTFORML HIT 　　손재주　명중에 보정. 확률적으로 대미지 완화.
+	PRINTFORML SPD 　　민첩성　회피에 보정. 높을수록 선제 행동을 취한다. 확률적으로 FAST ATTACK이 발생.
+	PRINTFORML LUK 　　행운　　아이템 입수에 추가 보정. 사고에 전반적으로 대응.
+	PRINTFORML BRE 　　배리어　장기를 무효화하는 장벽.
+	PRINTFORMW
+	PRINTFORML 【무장】
+	PRINTFORML 대미지는 무장의『공격 회수』『최대 대미지』『추가 대미지』로 정해진다.
+	PRINTFORML ・예시)　2D6+2
+	PRINTFORML          공격 회수 2회, 1회 공격에 1～6의 무작위 피해、그 합계에 2의 추가 대미지 가산.
+	PRINTFORMW 
+CASE 4
+	PRINTFORML 【외계조사】
+	PRINTFORML 『조사구역』과『조사 캐릭터』를 선택해서 외계를 조사해봅시다.
+	PRINTFORML 『조사구역』은 레벨이 높을수록 위험합니다. 처음에는 습격이 없는 레벨 0으로 조사해봅시다.
+	PRINTFORML 행동할 때마다 SP를 소비합니다. 0이 되면 조사할 수 없게 됩니다.
+	PRINTFORML 높은 레벨이 되면 장기가 생기고 HP가 줄어듭니다. 배리어가 없다면 공략은 어려워지겠죠.
+	PRINTFORMW 
+	PRINTFORML 【아이템】
+	PRINTFORML 조사를 하면 아이템을 입수할 수 있는 경우가 있습니다.
+	PRINTFORML 레벨과 심도가 높을수록 좋은 물건을 구할 수 있습니다.
+	PRINTFORML 이러한 소재는 『차세대개량』에서 사용합니다.
+	PRINTFORMW  
+CASE 5
+	PRINTFORML 임신 조건은 아래와 같습니다.
+	PRINTFORML ・설정에서 임신 스위치가 ON
+	PRINTFORML ・위험일
+	PRINTFORML ・수정 내구치가 0 (위험일에 질내사정으로 내구치가 감소)
+	PRINTFORML 　감소치는 당신의 남체 레벨・정자 레벨에 따른다.
+	PRINTFORML ・수정 내구치가 0일 때 질내사정하면 수정 확률로 수정 판정을 한다.
+	PRINTFORML 이상을 만족하면 주민은 임신합니다.
+	PRINTFORMW 임신에서 출산까지 약 30일(약 60턴)이 필요합니다.
+CASE 6
+	$INPUT_LOOP_SZ
+	CLEARLINE LINECOUNT
+	PRINTFORML [ 0] 인간　　　　[11] 정령
+	PRINTFORML [ 1] 엘프　　　　[12] 흡혈귀
+	PRINTFORML [ 2] 야마　　　　[13] 니어
+	PRINTFORML [ 3] 아인
+	PRINTFORML [ 4] 오토마타
+	PRINTFORML [ 5] 천사
+	PRINTFORML [ 6] 용인
+	PRINTFORML [ 7] 이스
+	PRINTFORML [ 8] 해인
+	PRINTFORML [ 9] 조인
+	PRINTFORML [10] 오니
+	PRINTFORML
+	PRINTFORML [999] 돌아간다
+	INPUT
+	L_INPUT = RESULT
+	CLEARLINE LINECOUNT
+	SELECTCASE L_INPUT
+	CASE 0
+		PRINTFORML 고도 문명을 이룩한 만물의 영장(자칭), 개개인의 힘은 대단치 않지만, 기술 진보에 대해서는 타의 추종을 불허한다.
+		PRINTFORML 현대 사회도 인간이 관리하고 있으며, 종을 통틀어 가장 번영한 종족.
+		PRINTFORML 과학의 진보로 노화는 극복되고 있다.
+		PRINTFORML 【출현 조건】---
+		PRINTFORML 【출현 장소】「카페」
+	CASE 1
+		PRINTFORML 불로장생의 종족, 한때는 자연과 더불어 살았지만, 문명성장과 더불어 자연파도 이제는 소수다.
+		PRINTFORML 남녀 모두 번식능력이 매우 약해, 순혈과의 임신 확률은 매우 낮다.
+		PRINTFORML 【출현 조건】『시설』희귀종 보호시설＆『시설』학원 레벨 5 이상
+		PRINTFORML 【출현 장소】「카페」
+		PRINTFORML 
+	CASE 2
+		PRINTFORML 붉은 각인이 특징인 종족, 쾌락주의적이고 호기심이 왕성하여 인간이 만들어내는 오락에 흥미진진, 그래서인지 인간과는 사이가 좋다.
+		PRINTFORML 예로부터 밤의 권속이라 일컬어지기 때문에, 흔히 나쁜 종족으로 오해받기 십상.
+		PRINTFORML 【출현 조건】『시설』러브 호텔＆『시설』고급 카지노＆『시설』게임 센터 레벨 5 이상
+		PRINTFORML 【출현 장소】「카페」
+		PRINTFORML 
+	CASE 3
+		PRINTFORML 동물의 귀와 꼬리를 가진 종족, 성질은 종류에 따라 다양하고 강한 자는 굉장한 힘을 자랑한다.
+		PRINTFORML 허나 대다수는 인간과 다르지 않은 성능.
+		PRINTFORML 【출현 조건】『시설』품종 개량 시설＆『시설』지원 주택 레벨 5 이상
+		PRINTFORML 【출현 장소】「카페」
+		PRINTFORML 
+	CASE 4
+		PRINTFORML 고대 문명의 유산 중 하나, 나노머신・실리콘・고대 부품으로 이루어진 기계인간, 겉보기에는 인간과 큰 차이가 거의 없다.
+		PRINTFORML 현대 문명 차원에서도 재현은 불가능하며, 가동 전의 개체가 유적 안쪽에 잠들어 있다고 한다.
+		PRINTFORML 무슨 업인지 여성 개체는 확률은 매우 낮지만 임신이 가능하다.
+		PRINTFORML 【출현 조건】『시설』연구 시설 레벨 20 이상
+		PRINTFORML 【출현 장소】「카페」
+	CASE 5
+		PRINTFORML 과거에 한 번 멸종한 종족, 흰색 내지 검은색 날개와 아름다운 외모를 지닌 것으로 알려져 있다.
+		PRINTFORML 현재는 남아있는 유전자를 이용해 재현한 것이 극히 적지만 존재하고 있다.
+		PRINTFORML 【출현 조건】『시설』병원 레벨 20 이상
+		PRINTFORML 【출현 장소】「카페」
+		PRINTFORML 
+	CASE 6
+		PRINTFORML 멸종위기종, 난감한 성격을 가진 사람이 많다, 그러나 대체로 능력이 높은 종족.
+		PRINTFORML 생존권이 좁아진 현재에도, 자신이 주민으로 있을 수 없다면 살아갈 수 없다…
+		PRINTFORML 【출현 조건】도시 레벨 50 이상
+		PRINTFORML 【출현 장소】「카페」
+		PRINTFORML 
+	CASE 7
+		PRINTFORML 시간의 비밀을 밝혀낸 위대한 종족, 정신의 교환으로 실질적 불로의 존재. 그 중에서도 인류파의 파벌이 된 괴짜.
+		PRINTFORML 육체피로를 무시하고 책만 보고 있어서인지 근시가 되어 모두가 안경을 착용하고 있다.
+		PRINTFORML 상당히 극단적인 성능을 가지고 있다, 수행부대라면 든든한 아군이 될 것이다.
+		PRINTFORML 【출현 조건】「이스로부터의 구제 의뢰」완수
+		PRINTFORML 
+	CASE 8
+		PRINTFORML 인간보다 훨씬 이전에 종족으로써 완성되었던 존재, 그러나 외적의 출현으로 바다에서 추방되었다.
+		PRINTFORML 아무튼 임신하지 않는 체질이라서, 오래전부터 일부 사람들과 은밀히 교류하고 있었다.
+		PRINTFORML 스테이터스는 용인급까지는 아니지만, 양호한 수준을 가지고 있다.
+		PRINTFORML 【출현 장소】「카페」(저확률)
+		PRINTFORML 
+	CASE 9
+		PRINTFORML 등에 새의 날개가 있는 종족, 보통「외적」이 덜 찾아오는 숲 오지에서 집단생활을 한다.
+		PRINTFORML 과일을 매우 좋아하고 번식력도 사람보다 높지만, 자유분방한 성격이 많아서인지 오래는 못 사는 모양이다.
+		PRINTFORML 재빠른 움직임이 가능하여 적을 농락하며, 반면 내구력이 낮다.
+		PRINTFORML 【출현 조건】구역 레벨 1 이상＆심도 30 이상
+		PRINTFORML 【출현 장소】조사 이벤트「상처 입은 조인」완수
+	CASE 10
+		PRINTFORML 두 개의 뿔이 난 갈빛 피부의 종족(드물게 다른 모습을 한 자도 있다), 종족이 총출동해 절찬리에「외적」과 교전중.
+		PRINTFORML 대부분이 특이한 성격을 가지고 있으며, 무엇보다 싸움을 좋아하는 성격을 가지고 있다.
+		PRINTFORML 화력•내구력이 뛰어나지만, 털털한 성격이 문제인지 명중•회피가 상당히 낮다.
+		PRINTFORML 운용 시 명중 보강이 필요하며, 보강이 완료될 때까지 수반에는 적합하지 않다.
+		PRINTFORML 【출현 조건】구역 레벨 3 이상＆심도 50 이상
+		PRINTFORML 【출현 장소】조사 이벤트「오니와의 만남」
+	CASE 11
+		PRINTFORML 절멸 직전이라 알려진 환상의 종족, 선명한 나비의 날개를 가지고 있다.
+		PRINTFORML 엘프 이상으로 자연과 동화되었기 때문에, 「외적」의 출현으로 인해 먹고 살 양식을 잃고 말았다.
+		PRINTFORML 지금은 도시에 있는 식물 군락을 근거지로, 일부 개체가 근근히 살아가고 있다.
+		PRINTFORML 공격 쪽은 빈약하나 속도・명중・행운이 매우 높다.
+		PRINTFORML 【출현 장소】「카페」(초저확률)
+	CASE 12
+		PRINTFORML 인간이 사후에 마술로 되살아나고, 그 과정에서 변질•파생된 종족.
+		PRINTFORML 용인에 필적할 만한 괴력을 가진 반면, 신진대사에 타인의 피가 필요하다.
+		PRINTFORML 또한 햇빛을 싫어해, 대부분의 개체가 밤에 활동하기를 좋아한다.
+		PRINTFORML 그 생태에서 사람 위이 서는 관리직을 담당하는 자가 많다.
+		PRINTFORML 【출현 조건】도시 레벨 25 이상＆밤
+		PRINTFORML 【출현 장소】「카페」(저확률)
+	CASE 13
+		PRINTFORML 「외적」규명을 위해 우수한 암컷에게「외적」의 유전자를 섞은 수정란을 착상시켜 낳게 한 인공 종족.
+		PRINTFORML 일반인에게는 해인의 아종으로 알려져 있으며, 실제로 도시에서 활동하며, 그 생태를 관찰하고 있다.
+		PRINTFORML 그리고 어느정도 조사를 마친 개체는 조용히 처분되고, 폐기장에는 처분 대기 중인 개체가 잠들어 있다.
+		PRINTFORML 전투면에서는 평균상의 성능에 더해 체력・기력이 높고, 특히 장기에 대한 높은 내성이 특징.
+		PRINTFORML 본래 자연계에 없는 종족이기에, 해인 이상으로 임신하기 어렵다.
+		PRINTFORML 【출현 조건】폐기장＆연구시설 레벨 150
+		PRINTFORML 【출현 장소】「폐기장」(저확률)
+	CASE 999
+		GOTO INPUT_LOOP
+	ENDSELECT
+	PRINTFORMW
+	GOTO INPUT_LOOP_SZ
+CASE 7
+	PRINTFORML 90일이 경과하면, 해당 기간에 주민이 기여한 포인트를 발표합니다.
+	PRINTFORML 포인트 양에 따라 보너스를 받을 수 있습니다.
+	PRINTFORML 사용하지 않고 이번 분기의 포인트를 다음으로 미루는 것도 가능하며, 다만 한 번 사용하면 모두 리셋됩니다.
+	PRINTFORMW 
+CASE 8
+	PRINTFORML 습격 당일이 되면 대형 외적이 도시로 습격해 옵니다.
+	PRINTFORML 일정 턴까지 지정된 누계 피해를 입히면 격퇴에 성공합니다.
+	PRINTFORML 실패 시 도시는 타격을 받고, 도시 레벨 등이 저하됩니다.
+	PRINTFORMW 
+CASE 10
+	PRINTFORML 【TP】주민과의 대화 등에 사용되는 포인트
+	PRINTFORML 【AP】주민의 고민 해결에 사용하는 포인트, 고민을 해결하여 최대치를 늘릴 수 있다.
+	PRINTFORML 【SP】서포트를 사용할 때 사용하는 포인트
+	PRINTFORML 【LP】인공유물생성・아티팩트 강화에 사용하는 포인트, 유물 연구에서 최대치를 늘릴 수 있다.
+	PRINTFORML 【BP】TP를 회복할 수 있는 포인트, 주민이 임신할 경우 최대치가 늘어난다.
+	PRINTFORMW 
+CASE 11
+	PRINTFORML 초반에는 주민 공략에 시간이 걸리기 마련입니다.
+	PRINTFORML 빠르게 공략하고 싶다면「쉽게반함」또는「즉각함락」을 가진 주민을 공략합시다.
+	PRINTFORML 통상의 주민과 비교하면,「쉽게반함」가 2배,「즉각함락」이 5배의 속도로 공략됩니다.
+	PRINTFORML 지원 지시와 병용한다면 상당한 시간 단축을 할 수 있을 것입니다.
+	PRINTFORML 
+	PRINTFORMW 
+CASE 12
+	PRINTFORML 수치에 의해 이하의 것에 추가 보정이 걸립니다.
+	PRINTFORML 【도시】경험치에 추가 보정
+	PRINTFORML ・표면사회　　학원, 게임센터, 병원, 경기시설, 에스테, 상점가, 지원주택
+	PRINTFORML ・뒷사회　　　러브호텔, 희귀종보호시설, 연구시설, 카지노, 품종개량시설, 폐기장
+	PRINTFORML 
+	PRINTFORML 【전투】스테이터스에 추가 보정
+	PRINTFORML ・표면사회　　체력, 기력, BRE
+	PRINTFORML ・뒷사회　　　ATK, DEF, HIT, SPD, LUK 
+	PRINTFORMW 
+CASE 13
+	PRINTFORML 업무 중인 주민에게 간섭해 보다 효율적으로 일하게 합니다.
+	PRINTFORML 【-!-】마크가 나왔을 때는 「시티」에게 평가되며, 대량의 공적 포인트를 획득할 수 있습니다.
+	PRINTFORML 
+	PRINTFORML 일정 이상 업무를 하면 기여치가 상승합니다. 기여치가 높을수록 필요한 업무량이 많아집니다.
+	PRINTFORML 
+	PRINTFORMW
+	PRINTFORML - 이하 직무별 성질 -
+	PRINTFORML 
+	PRINTFORML 【사회인】　　　공헌치 상승에 필요한 업무 포인트를 많이 받는다.
+	PRINTFORML 【아이돌】　　　팬 인원 수 합계에 따라 전 주민의 공헌에 ＋보정. 보정을 받는 쪽은 직무에 따라 보정의 정도가 다르다.
+	PRINTFORML 【학생】　　　　턴 종료시 확률적으로 업무 포인트가 상승한다. 다른 직무와 양립 가능.
+	PRINTFORML 【창부】　　　　매춘 경험에 따라서 최종 공헌치에 추가 보정. 올리기 쉽지만 상한선이 있다.
+	PRINTFORML 【치안유지국원】전투 경험치가 들어오고, 턴 종료 시에도 소량의 전투 경험치를 받는 경우가 있다.
+	PRINTFORML 【메이드】　　　턴 종료 시, 업무 경험에 따라 AP를 소량 회복한다.
+	PRINTFORML 【성직자】　　　턴 종료 시에 확률적으로 카르마가 감소한다.
+	PRINTFORML 【무직】　　　　아이돌 팬 보정을 많이 받는다.
+	PRINTFORMW 
+CASE 14
+	PRINTFORML 이하 실장되어 효과가 발생하는 기능
+	PRINTFORML 【눈독】1층 탐색 횟수에 추가 보정.　　　　　【귀동냥】다음 전투 발생 확률을 확인할 수 있다.
+	PRINTFORML 【치료】전투 종료 시 체력 회복. 　　　　　　【락픽】　일부 이벤트 발생 확률에 필요.
+	PRINTFORML 【은신】인카운트 시 전투를 회피할 수 있다.　【해체】　전투 승리 시 아이템 획득.
+	PRINTFORML 【해독】일부 이벤트 발생 확률에 필요.
+	PRINTFORMW 
+CASE 15
+	PRINTFORML ・기본 성능
+	PRINTFORML 전투 숭리 시 드물게 입수할 수 있는 무구. (심도가 높을수록 입수하기 쉽다.)
+	PRINTFORML 5개까지 장비할 수 있으며, 그 종합치의 일부를 부대의 스테이터스에 반영할 수 있다.
+	PRINTFORML 탐색 캐릭터에게는 각 스테이터스에 「아티팩트 각 수치 합계 ÷ 10」가 가산된다.
+	PRINTFORML 부대에서는 부대 각 종합치에「부대 각 수치 합계 × 아티팩트 각 수치 합계％」가 가산된다.
+	PRINTFORML 
+	PRINTFORML ・이능
+	PRINTFORML 아티팩트의 특별한 능력으로 인해 전투 중에 다양한 혜택을 받을 수 있다.
+	PRINTFORML 같은 부류의 능력이 있는 경우, 발생률 또는 효과가 상승한다.
+	PRINTFORML 
+	PRINTFORML 【무능】효과 없음
+	PRINTFORML 【흡혈】확률 발동, 가한 대미지의 일부를 흡수하여 체력을 회복시킨다.
+	PRINTFORML 【핵열】확률 발동, 가한 대미지에 따른 방어 무시 속성의 추가 공격.
+	PRINTFORML 【침식】확률 발동, 적의 현재 체력에 따른 독 피해, 방어 시 무효화된다.
+	PRINTFORML 【시간】확률 발동, 재행동한다.
+	PRINTFORML 【공간】확률 발동, 상대에게 받는 피해를 0.1배로 받는다.
+	PRINTFORML 
+	PRINTFORML 즉 높은 수치를 가진 장비를 갖출수록 강해진다.
+	PRINTFORMW 이능은 하나로 통일하거나 확정 발동을 노리는 것이 좋다.
+CASE 16
+	PRINTFORML 독자적으로 실장한 것을 중심으로 설명합니다.
+	PRINTFORML 【 ID 】각 주민의 고유 번호. 　　　　　【기밀】각 주민의 기밀 개체 레벨.
+	PRINTFORML 【부대】소속 부대를 나타낸다.　　　　　【시설】배속하고 있는 시설을 나타낸다.
+	PRINTFORML 【관리】주민이「플레이어」에게 얼마나 관리되고 있는가를 나타낸다. 레귤러 지정•특별 보호 등으로 상승한다.
+	PRINTFORML 【친교】10의 자리가 함락 소질의 종류, 1의 자리가 취득된 각인의 합계를 나타낸다.（반발각인은 포함되지 않는다.）
+	PRINTFORML 【공략】관계구축이 가능한 상태를 알려준다. 1의 자리가 관계의 방향성, 자릿수가 취득 가능한 레벨을 나타낸다.
+	PRINTFORML 　　　　4자리라면 함락 가능.
+	PRINTFORML 【출신】100의 자리가 「구세대인」같은 내력을, 10의 자리 이하가 종족을 나타낸다.
+	PRINTFORML 【난도】해당 수치가 높을 수록, 고민 해결의 난도가 올라간다.
+	PRINTFORML 【지위】수치가 클 수록 신분이 높고, 2가 상류계급, 3이 귀족이다.
+	PRINTFORML 【직업】100의 자리가 직업의 종류, 10의 자리가 창부 활동의 유무, 1의 자리가 연령층을 나타낸다.
+	PRINTFORMW 　　　　101이라면 직업 설정이 되어 있지 않다.
+CASE 17
+	PRINTFORML 외계 조사중, 특정한 조건으로 아카이브를 입수할 수 있습니다.
+	PRINTFORML 입수한 아카이브는 메인 메뉴 - 「아카이브」에서 열람할 수 있습니다.
+	PRINTFORML 
+	PRINTFORML 【입수 조건】구역 레벨 3 이상, 심도 50 이상. 전투 승리 시 저확률로 입수.
+	PRINTFORMW
+CASE 18 ; 텐코, 쿠우코의 가입 조건 완화. 원본은 20, 40.
+	PRINTFORML 조건을 만족하면 특별한 캐릭터를 입수할 수 있습니다.
+	PRINTFORML 전용 외형 외에도, 일부 대사가 전용 대사로 출력됩니다.
+	PRINTFORML 각 유니크 캐릭터의 가입 조건은 이하와 같습니다.
+	PRINTFORML 【히나】 　　학원 레벨 50 이상 & 함락된 주민 1명 이상
+	PRINTFORML 【아쿠아】 　희귀종 보호 시설 레벨 50 이상 & 함락된 주민 5명 이상
+	PRINTFORML 【여동생】 　30일 경과
+	PRINTFORML 【텐코】 　　방어 성공 횟수 20 & 도시 레벨 60 이상
+	PRINTFORML 【쿠우코】 　방어 성공 횟수 40 & 도시 레벨 80 이상
+	PRINTFORML 【후배 쨩】　격파수 누계 100 이상
+	PRINTFORML 【점장 씨】　150일 경과
+	PRINTFORMW
+CASE 20
+	PRINTFORML 【모럴】
+	PRINTFORML 낮을수록 도덕에 신경쓰지 않게 된다. 성적 이벤트가 발생할 가능성이 있음.
+	PRINTFORML 
+	PRINTFORML 【카르마】
+	PRINTFORML 높을수록 죄가 많다. 주민들에게 피해가 미치는 이벤트가 발생한다.
+	PRINTFORMW
+CASE 999
+	RESETCOLOR
+	RESETBGCOLOR
+	RETURN
+CASEELSE
+ENDSELECT
+
+
+
+
+GOTO INPUT_LOOP
+
+
+
+
+
+
+
+
+
+

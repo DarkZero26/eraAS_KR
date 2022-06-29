@@ -1,0 +1,61 @@
+﻿2018/11/23
+eraAS_ver0.36用NPC画像処理変更パッチ
+
+※プレイ専の方にはほぼ関係しないパッチです
+
+eraAS_ver0.36用RPGのUI改造パッチで作った@RPG_PAIR_TALKでNPCの画像が使えなかった（左右反転できなかった）ため作成
+
+
+
+◆対象環境
+[era0000121]eraAS ver0.36
+＋[era0000130]eraAS_ver0.36用RPGのUI改造パッチ
+
+上記環境以外の動作は未検証
+
+
+
+◆せつめい
+@C_PICTURE_HTMLの処理を参考に、
+@C_PICTURE_NPC_HTML/@C_PICTURE_NPC_HTML_NAKEDを作成しました
+引数の種類を@C_PICTURE_HTML/@C_PICTURE_HTML_NAKEDと揃えてあるので
+画像出力でNPCキャラ用に専用処理を組む負担が減りました
+
+IF Talent:C_T:NPC == 0
+	HTML_PRINT C_PICTURE_HTML(C_T, L_X, L_Y, 0, 850)
+ELSE
+	HTML_PRINT C_PICTURE_NPC_HTML(C_T, L_X, L_Y, 0, 850)
+ENDIF
+
+こんな感じで共通の引数で使用関数を変更するだけで表示可能です
+
+@C_PICTURE_NPC_HTML/@C_PICTURE_NPC_HTML_NAKEDでの使用に切り替えて
+従来の@C_PICTURE_NPC2は削除しました
+
+
+
+◆内容
+・NPC画像出力処理を@C_PICTURE_NPC_HTML/@C_PICTURE_NPC_HTML_NAKEDに
+・新規関数@C_PICTURE_SEMEN
+　調教中の子宮内精液に対応する画像番号を返す
+・@C_PICTURE_BUST/@C_PICTURE_NINSIN
+　使用箇所を増やした
+・@CHARACTER_NPC_SCOUT2(ARG:0)
+　NPCの口調設定処理変更、CSV側で設定されてるものを優先するように
+　チャームポイントや癖、신장等もCSVでの設定を想定してみる（してみただけ）
+・@CHARACTER_NPC_T(L_I)
+　페로몬系の최대値を99に拡張したけどCSVの方は変更してない
+　仮にCSV側で99対応で変更した場合、召喚コストの調整も必須と思われる
+・SHOP画面での文章パターンを追加
+
+
+
+◆つくったひと：morph
+・morphのつくった以外のところの扱いはつくったひとに聞いて下さい
+・配布・改造・流用、好きにしてください
+・でも、その際のサポートは自分でやってね
+
+※　era＝R-18全般の常識的な取り扱いとして例えば以下のような事はやめて下さい
+
+・未成年者がいっぱいいる場所で広める
+・R-18以外のモノをメインに扱ってる場所で取り上げる

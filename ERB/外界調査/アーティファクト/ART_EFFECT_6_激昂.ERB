@@ -1,0 +1,91 @@
+﻿;-------------------------------------------------
+;アーティファクトの効果テンプレート
+;6は効果IDで置き換える
+
+;유니크アーティファクト用テストヘッド
+;また攻撃時、防御時の効果が違うエフェクトでもある
+;-------------------------------------------------
+;名前をRESULTSに入れて返す。全角２字
+@ART_EFFECT_6_NAME
+RESULTS = 격앙
+RETURN
+
+
+;この効果が生成可能か返す
+;1なら可能、0なら不可。RANKが対象アーティファクトのRANK
+@ART_EFFECT_6_ABLE(RANK)
+#DIM RANK
+;ランクによらず不可
+RETURN 0
+
+
+;---攻撃前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_6_ATKPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_6_ATKPRE(STRENGTH)
+#DIM STRENGTH
+BOOST_A:攻撃 = 30
+PRINTFORML 【격앙 Lv{STRENGTH}】눈앞의 적에게 어떻게 할 수 없는 증오를 느꼈다.
+RETURN 1
+
+
+;---攻撃後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_6_ATKAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_6_ATKAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;---防御前効果---
+;そのアーティファクト効果が発動するかどうか
+;RETURN 0なら発動せず、1なら発動
+;STRENGTHにはエフェクトの合計値が入っている
+@ART_EFFECT_6_DEFPRE_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;_TRIGGERで1が返されると実行される関数
+;BOOST_Aは攻撃者の、BOOST_Dは防御者の能力ブースト幅を入れる
+;たとえばBOOST_A:攻撃に15を入れると攻撃者の攻撃が15%増しになる
+;配列の添え字はRPG_BATTLE_VAR.ERH参照
+@ART_EFFECT_6_DEFPRE(STRENGTH)
+#DIM STRENGTH
+PRINTFORML 【격앙 Lv{STRENGTH}】격렬한 분노에 지배당해 방어를 소홀히 하고 있다.
+BOOST_D:防御 = -20
+RETURN 1
+
+
+;---防御後効果---
+;説明は_PRE_TRIGGER参照
+;EX_A、EX_Dの各効果はRPG_BATTLE_VAR.ERHに
+@ART_EFFECT_6_DEFAFTER_TRIGGER(STRENGTH)
+#DIM STRENGTH
+RETURN 0
+
+
+@ART_EFFECT_6_DEFAFTER(STRENGTH)
+#DIM STRENGTH
+RETURN 1
+
+
+;エフェクトの説明
+@ART_EFFECT_6_EXPLANATION
+RESULTS = 【異能　:　　격앙】소유자에게 분노를 부여, 방어를 희생하여 공격 능력을 끌어올리는 이능을 초래한다.
+RETURN

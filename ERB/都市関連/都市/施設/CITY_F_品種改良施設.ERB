@@ -1,0 +1,73 @@
+﻿
+;-------------------------------------------------
+;시설　품종개량시설
+;-------------------------------------------------
+@CITY_F_54
+CALL MANAGE_CHARA_SELECT("MNG_特殊_品種改良")
+
+
+;-------------------------------------------------
+;ゲノム移植2
+;-------------------------------------------------
+@CITY_F_54_GI2(L_C_ID)
+#DIM L_C_ID  ;対象の登録番号
+#DIM L_GENOM ;ループ処理用、参照しているゲノム≒FLAGやCFLAGのID
+#DIM L_INPUT ;
+CLEARLINE LINECOUNT
+CALL INFO_STATUS_HEADER(L_C_ID)
+CALL C_PICTURE_S(L_C_ID)
+DRAWLINE
+PRINTFORML 이식할 게놈을 선택해주세요.（이식 비용:300000 - 소지금:{MONEY}）
+DRAWLINE
+PRINTFORM 　
+FOR L_GENOM, 2500, 2520
+	SIF CFLAG:L_C_ID:(L_GENOM - 700) != 0
+		SETCOLOR COLOR("水色")
+	SIF FLAG:L_GENOM <= 0
+		SETCOLOR COLOR("灰色")
+	PRINTFORM [{L_GENOM - 2500, 2}]【%FLAGNAME:L_GENOM%: {FLAG:L_GENOM, 3}개】
+	RESETCOLOR
+	IF L_GENOM % 5 == 4
+		PRINTFORML
+		PRINTFORM 　
+	ENDIF
+NEXT
+
+
+PRINTFORML
+PRINTFORML [999] 돌아간다
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+	CASE 999
+		RETURN
+	CASE 0 TO 19
+		IF MONEY < 300000
+			PRINTFORMW 자금이 부족합니다.
+			RESTART
+		ELSEIF FLAG:(2500 + L_INPUT) <= 0
+			PRINTFORMW 게놈이 없습니다.
+			RESTART
+		ELSEIF CFLAG:L_C_ID:(1800 + L_INPUT) != 0
+			PRINTFORMW 이미 이식되었습니다.
+			RESTART
+		ENDIF
+		PRINTFORML %CALLNAME:L_C_ID%에게 %조사처리(CFLAGNAME:(1800 + L_INPUT),"를")% 이식했습니다.
+		PRINTFORMW 일부 스테이터스가 2 상승, 기능 포인트가 5 가산되었습니다.
+		CFLAG:L_C_ID:주민_최대체력 += 2
+		CFLAG:L_C_ID:주민_현재체력 += 2
+		CFLAG:L_C_ID:주민_최대기력 += 2
+		CFLAG:L_C_ID:주민_현재기력 += 2
+		CFLAG:L_C_ID:주민_ATK      += 2
+		CFLAG:L_C_ID:주민_DEF      += 2
+		CFLAG:L_C_ID:주민_HIT      += 2
+		CFLAG:L_C_ID:주민_SPD      += 2
+		CFLAG:L_C_ID:주민_최대BRE  += 2
+		CFLAG:L_C_ID:주민_현재BRE  += 2
+		CFLAG:L_C_ID:주민_技能ポイント += 5
+		
+		CFLAG:L_C_ID:(1800 + L_INPUT) = 1
+		FLAG:(2500 + L_INPUT) -= 1
+		MONEY -= 300000
+ENDSELECT
+RESTART

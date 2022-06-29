@@ -1,0 +1,20 @@
+
+まず口上を作成したあとファイル名(必須ではないが判別しやすいように)と関数のK0000の「0000」を他と被っていない任意の数字に変更。
+
+
+その後口上フォルダにあるKOJO_FUNC.ERBを開き
+
+;特殊口上
+	;IF 
+		;TRYCALLFORM KOJO_ENCOUNTER_K0000(ARGS)
+	;ENDIF
+
+の部分を
+	IF 
+		TRYCALLFORM KOJO_ENCOUNTER_K0000(ARGS)
+	ENDIF
+に直し「IF」の部分にその口上になる条件をつけ、「0000」を先程変更した数字と同じにする。
+例:「条件がイレギュラーで、数字が2000」
+	IF TALENT:イレギュラー
+		TRYCALLFORM KOJO_ENCOUNTER_K2000(ARGS)
+	ENDIF

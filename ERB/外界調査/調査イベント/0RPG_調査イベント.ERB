@@ -1,0 +1,128 @@
+﻿;-------------------------------------------------
+;調査イベント
+;-------------------------------------------------
+@RPG_EVENT_MAIN(ARG)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_I2
+#DIM EVID
+
+L_I2 = TARGET
+ARG = Flag:調査キャラ
+TARGET = ARG
+L_I = ARG
+
+;以下のイベントは得られる物が大きすぎるフロアイベントとして独立
+[SKIPSTART]
+IF RAND:100 > 95
+	IF !RAND:7 && Flag:調査イベント発生中 == 0 && Flag:調査区域 == 0
+		;軟体動物の群れ
+		CALL RPG_EVENT_803
+	ELSEIF !RAND:6 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 0 && Flag:調査深度 >= 30 
+		;성노예救出
+		CALL RPG_EVENT_401
+	ELSEIF !RAND:5 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 30 
+		;傷ついた조인
+		CALL RPG_EVENT_500
+	ELSEIF !RAND:4 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 3 && Flag:調査深度 >= 50 
+		;오니との出会い
+		CALL RPG_EVENT_501
+	ELSEIF !RAND:3 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 2 && Flag:調査深度 >= 70 
+		;冷凍カプセル
+		CALL RPG_EVENT_400
+	ELSEIF !RAND:2 && Flag:調査イベント発生中 == 0 && CFLAG:L_I:特別保護 == 0 && Flag:イベント誘拐中 == 0 && CFlag:L_I:주민_카르마 >= 40 
+		IF !RAND:2
+			;拉致
+			CALL RPG_EVENT_800
+		ELSE
+			;交配実験
+			CALL RPG_EVENT_801
+		ENDIF
+	ELSE
+	ENDIF
+ENDIF
+
+IF RAND:10 > 8
+	IF Flag:調査イベント発生中 == 0 && Flag:調査区域 == 0 && CFLAG:犬_出産回数 <= 10
+		;犬の花嫁
+		CALL RPG_EVENT_802
+	ELSEIF Flag:調査イベント発生中 == 0 && Flag:調査区域 == 0 && CFLAG:犬_出産回数 >= 11
+		;自らの業と向き合い、さらなる禁忌を
+		CALL RPG_EVENT_804
+	ENDIF
+ENDIF
+
+
+;アイテム入手イベント
+;주민_技能による判定は各イベント関数へコピーした
+IF RAND:100 > (95-((FLAG:支援_후방合計HIT+FLAG:支援_후방合計SPD)/8))
+	IF !RAND:3 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 20 
+		;古代遺物発見
+		CALL RPG_EVENT_102
+	ELSEIF !RAND:2 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 20 && CFLAG:L_I:주민_技能_해독 > RAND:100
+		;書物閲覧
+		CALL RPG_EVENT_101
+	ELSEIF  Flag:調査イベント発生中 == 0 && Flag:調査区域 == 5 && Flag:調査深度 >= 20 && RAND:100 > 20
+		;蜘蛛の巣調査
+		CALL RPG_EVENT_150
+	ELSEIF  Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 50 && CFLAG:L_I:주민_技能_락픽 > RAND:100
+		;ゲノム入手
+		CALL RPG_EVENT_100
+	ENDIF
+ENDIF
+[SKIPEND]
+
+
+;TURN_EVENT_HNYUは関数内でTRYCALLFORMをしているもののそこから先の定義が見当たらない
+;現状何をしているか불명
+CALL TURN_EVENT_HNYU
+
+CALL RPG_EVENT_MAIN_END
+
+
+TARGET = L_I2
+
+
+;-------------------------------------------------
+;ミニ調査イベント
+;-------------------------------------------------
+@RPG_MINIEVENT_MAIN(ARG)
+#DIM EVID
+#DIM L_I
+L_I = ARG
+
+;ミニイベント抽選
+TRYCCALLFORM DUNGEON_{FLAG:調査区域}_MINIEV
+
+CATCH
+	;汎用の抽選関数
+	CALL DUNGEON_MINIEV
+ENDCATCH
+EVID = RESULT
+
+CALLFORM RPG_EVENT_{EVID}
+
+CALL TURN_EVENT_HNYU
+
+CALL RPG_EVENT_MAIN_END
+
+RETURN
+
+
+;-------------------------------------------------
+;調査イベント 終わり処理
+;-------------------------------------------------
+@RPG_EVENT_MAIN_END(ARG)
+#DIM L_INPUT
+#DIM L_I
+
+
+
+
+
+Flag:調査イベント発生中 = 0
+Flag:조사이벤트번호 = 0
+
+
+
+

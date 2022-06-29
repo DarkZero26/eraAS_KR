@@ -1,0 +1,1355 @@
+﻿;-------------------------------------------------
+;アーティファクト
+;-------------------------------------------------
+@RPG_ARTIFACT(PAGE = 0)
+#DIM       PAGE          ;현재参照中のページ
+#DIM CONST PAGE_NUM = 30 ;ページ内のアーティファクトの数
+#DIM       ART_EQUIP     ;装備対象スロット
+#DIM       ART_ID        ;アーティファクトのID
+#DIM       L_INPUT       ;RESULT分岐用
+CLEARLINE LINECOUNT
+DRAWLINE
+CALL RPG_ARTIFACT_LIST(1 + PAGE * PAGE_NUM , 1 + (PAGE + 1) * PAGE_NUM)
+
+DRAWLINE
+
+IF PAGE <= 0
+	PRINTFORM 　　　　　　
+ELSE
+	PRINTBUTTON "[100] 이전", 100
+	PRINTFORM 　
+ENDIF
+IF PAGE >= 3
+	PRINTFORM 　　　　　　
+ELSE
+	PRINTBUTTON "[150] 다음", 150
+	PRINTFORM 　
+ENDIF
+PRINTFORM 　[300] 정리　
+SIF Flag:遺物_連続消去 == 1
+	SETCOLOR 100,250,250
+PRINTFORM 　[400] 연속소거　
+RESETCOLOR
+PRINTFORM 　[500] 정렬　　
+PRINTFORM 　[600] 비장비AF일괄소거　　
+PRINTFORML [999] 돌아간다
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 100
+	PAGE = LIMIT(PAGE - 1, 0, 2)
+CASE 150
+	PAGE = LIMIT(PAGE + 1, 0, 2)
+CASE 300
+	CALL RPG_ARTIFACT_KILL_BLANK
+CASE 400
+	Flag:遺物_連続消去 = !Flag:遺物_連続消去
+CASE 500
+	CALL RPG_ARTIFACT_SORT
+	PRINTFORMW 아티팩트를 다섯 항목의 합계치 순으로 정렬했습니다.
+CASE 600
+		CLEARLINE LINECOUNT
+		PRINTFORML 현재 장비하고 있지 않은 아티팩트를 전부 소거하시겠습니까？
+		PRINTFORML 
+		PRINTFORM [100] 예　　
+		PRINTFORML [999] 아니오
+		INPUT
+		L_INPUT = RESULT
+		SELECTCASE L_INPUT
+		CASE 100
+			CALL RPG_ARTIFACT_ALL_DELETE
+			PRINTFORML 
+			PRINTFORMW 소거했습니다.
+		CASE 999
+			RESTART
+		ENDSELECT
+	
+CASE 999
+	Flag:遺物_連続消去 = 0
+	CALL RPG_ARTIFACT_KILL_BLANK
+	JUMP RPG_MAIN
+CASEELSE
+	ART_ID = L_INPUT
+	SIF !INRANGE(ART_ID, 1, 90)
+		RESTART
+	SIF Flag:(15000 + ART_ID) == 0
+		RESTART
+	IF Flag:遺物_連続消去 == 1
+		SIF Flag:(15300 + ART_ID) == 0
+			CALL RPG_ARTIFACT_DELETE(ART_ID)
+		RESTART
+	ENDIF
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	CALL SHOW_ARTIFACT_DATA(ART_ID)
+	DRAWLINE
+	PRINTFORML 
+	PRINTFORM [100] 장비　
+	PRINTFORM [101] 강화(LP필요)　
+	PRINTFORML [150] 소거　
+	PRINTFORML [999] 돌아간다
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 100
+		IF Flag:(15300 + ART_ID) != 0
+			ART_EQUIP = FINDELEMENT(FLAG, ART_ID, 15901, 15906)
+			PRINTFORML 【%SaveStr:(5000 + ART_ID)%】%조사만처리(SaveStr:(5000 + ART_ID),"를")% 슬롯 {ART_EQUIP - 15900}에서 제외하시겠습니까？
+			PRINTFORM [100] 예　　
+			PRINTFORML [999] 아니오
+			INPUT
+			SELECTCASE RESULT
+			CASE 100
+				PRINTFORML 【%SaveStr:(5000 + ART_ID)%】의 장비를 해제했습니다.
+				Flag:ART_EQUIP = 0
+				Flag:(15300 + ART_ID) = 0
+			CASE 999
+			ENDSELECT
+			RESTART
+		ENDIF
+		DO
+			CLEARLINE LINECOUNT
+			FOR ART_EQUIP, 1, 6
+				IF Flag:(15900 + ART_EQUIP) == 0
+					PRINTFORML [{ART_EQUIP}] 【슬롯 {ART_EQUIP}】＝미장비＝
+				ELSE
+					PRINTFORML [{ART_EQUIP}] 【슬롯 {ART_EQUIP}】【%SaveStr:(5000+(Flag:(15900 + ART_EQUIP)))%】%조사만처리(SaveStr:(5000+(Flag:(15900 + ART_EQUIP))),"가")% 장비되어 있습니다.
+				ENDIF
+			NEXT
+			PRINTFORML [999] 돌아간다
+			INPUT
+			ART_EQUIP = RESULT
+			SELECTCASE ART_EQUIP
+			CASE 999
+			CASEELSE
+				SIF !INRANGE(ART_EQUIP, 1, 5)
+					CONTINUE
+				Flag:(15300 + (Flag:(15900 + ART_EQUIP))) = 0
+				Flag:(15900 + ART_EQUIP) = ART_ID
+				Flag:(15300 + ART_ID) = 1
+				PRINTFORMW 슬롯 {ART_EQUIP}에 %조사처리(SaveStr:(5000 + ART_ID),"를")% 장비했습니다.
+			ENDSELECT
+			BREAK
+		LOOP 1
+	CASE 101
+		CLEARLINE LINECOUNT
+		PRINTFORML LP를 소비하여 강화하시겠습니까？
+		PRINTFORML 
+		PRINTFORM [100]  1회분 강화한다(LP10필요)　
+		PRINTFORM [101]  5회분 강화한다(LP50필요)　
+		PRINTFORML [999] 아니오
+		INPUT
+		L_INPUT = RESULT
+		SELECTCASE L_INPUT
+		CASE 100
+			IF Flag:도시_현재LP <= 9
+				PRINTFORML 
+				PRINTFORMW LP가 부족합니다.
+				RESTART
+			ENDIF
+			Flag:(15400 + ART_ID) += 1
+			Flag:(15500 + ART_ID) += 1
+			Flag:(15600 + ART_ID) += 1
+			Flag:(15700 + ART_ID) += 1
+			Flag:(15800 + ART_ID) += 1
+			PRINTFORML 
+			PRINTFORMW 강화했습니다.
+			Flag:도시_현재LP -= 10
+		CASE 101
+			IF Flag:도시_현재LP <= 49
+				PRINTFORML 
+				PRINTFORMW LP가 부족합니다.
+				RESTART
+			ENDIF
+			Flag:(15400 + ART_ID) += 5
+			Flag:(15500 + ART_ID) += 5
+			Flag:(15600 + ART_ID) += 5
+			Flag:(15700 + ART_ID) += 5
+			Flag:(15800 + ART_ID) += 5
+			PRINTFORML 
+			PRINTFORMW 강화했습니다.
+			Flag:도시_현재LP -= 50
+		CASE 999
+			RESTART
+		ENDSELECT
+	CASE 150
+		IF Flag:(15300 + ART_ID) != 0
+			PRINTFORML 
+			PRINTFORMW 장비중이므로, 소거할 수 없습니다.
+			RESTART
+		ENDIF
+		CLEARLINE LINECOUNT
+		PRINTFORML 정말로 소거하시겠습니까？
+		PRINTFORML 
+		PRINTFORM [100] 예　　
+		PRINTFORML [999] 아니오
+		INPUT
+		L_INPUT = RESULT
+		SELECTCASE L_INPUT
+		CASE 100
+			CALL RPG_ARTIFACT_DELETE(ART_ID)
+			PRINTFORML 
+			PRINTFORMW 소거했습니다.
+		CASE 999
+			RESTART
+		ENDSELECT
+	CASE 999
+		RESTART
+	ENDSELECT
+	DRAWLINE
+ENDSELECT
+RESTART
+
+
+
+;アーティファクトの処分
+@RPG_ARTIFACT_DELETE(ART_ID)
+#DIM ART_ID;1～90
+SIF Flag:(15300 + ART_ID)
+	Flag:FINDELEMENT(FLAG, ART_ID, 15901, 15906) = 0
+Flag:(15000 + ART_ID) = 0
+Flag:(15100 + ART_ID) = 0
+Flag:(15200 + ART_ID) = 0
+Flag:(15300 + ART_ID) = 0
+Flag:(15400 + ART_ID) = 0
+Flag:(15500 + ART_ID) = 0
+Flag:(15600 + ART_ID) = 0
+Flag:(15700 + ART_ID) = 0
+Flag:(15800 + ART_ID) = 0
+Flag:(18000 + ART_ID) = 0
+Flag:(18100 + ART_ID) = 0
+SaveStr:(5000 + ART_ID)  = 
+SaveStr:(5100 + ART_ID)  = 
+SaveStr:(5200 + ART_ID)  = 
+SaveStr:(5300 + ART_ID)  = 
+SaveStr:(5400 + ART_ID)  = 
+SaveStr:(5500 + ART_ID)  = 
+
+;アーティファクトの一括処分
+@RPG_ARTIFACT_ALL_DELETE
+FOR LOCAL,1,91
+	IF Flag:(15300 + LOCAL) == 0
+		SIF Flag:(15300 + LOCAL)
+			Flag:FINDELEMENT(FLAG, LOCAL, 15901, 15906) = 0
+		Flag:(15000 + LOCAL) = 0
+		Flag:(15100 + LOCAL) = 0
+		Flag:(15200 + LOCAL) = 0
+		Flag:(15300 + LOCAL) = 0
+		Flag:(15400 + LOCAL) = 0
+		Flag:(15500 + LOCAL) = 0
+		Flag:(15600 + LOCAL) = 0
+		Flag:(15700 + LOCAL) = 0
+		Flag:(15800 + LOCAL) = 0
+		Flag:(18000 + LOCAL) = 0
+		Flag:(18100 + LOCAL) = 0
+		SaveStr:(5000 + LOCAL)  = 
+		SaveStr:(5100 + LOCAL)  = 
+		SaveStr:(5200 + LOCAL)  = 
+		SaveStr:(5300 + LOCAL)  = 
+		SaveStr:(5400 + LOCAL)  = 
+		SaveStr:(5500 + LOCAL)  = 
+	ENDIF
+NEXT
+;アーティファクトデータの詳細表示
+@SHOW_ARTIFACT_DATA(ART_ID)
+#DIM ART_ID;1～90
+#DIM CNT
+#DIMS EXPL , 5 ;EXPLANATION
+PRINTFORML ――――――――――――【%SaveStr:(5000 + ART_ID)%】――――――――――――
+
+;유니크アーティファクト専用の説明
+IF FLAG:(18100 + ART_ID)
+	CALLFORM ART_UNIQUE_{FLAG:(18100 + ART_ID)}_EXPLANATION(EXPL)
+	IF RESULT
+		DRAWLINE
+		FOR CNT , 0 , VARSIZE("EXPL")
+			SIF EXPL:CNT == ""
+				CONTINUE
+			PRINTFORML %EXPL:CNT%
+		NEXT
+		DRAWLINE
+	ENDIF
+ENDIF
+
+PRINTFORML %SaveStr:(5100 + ART_ID)%
+PRINTFORML %SaveStr:(5200 + ART_ID)%
+PRINTFORML %SaveStr:(5300 + ART_ID)%
+PRINTFORML %SaveStr:(5500 + ART_ID)%
+PRINTFORML %SaveStr:(5400 + ART_ID)%
+
+
+
+;アーティファクトデータの1行表示
+@SHOW_ARTIFACT_DATA_SIMPLE(ART_ID)
+#DIM ART_ID;1～90
+#DIM DYNAMIC CLR
+#DIMS CONST ART_FROM = "전문명", "고대"  , "이세계", "생체"  , "불명"  , "외우주"
+#DIMS ART_ABL
+IF !INRANGE(ART_ID, 1, 90)
+	SETCOLOR COLOR("伏字")
+	PRINTFORML [--]＝범위외＝
+	RESETCOLOR
+	RETURN
+ELSEIF Flag:(15000 + ART_ID) == 0
+	SETCOLOR COLOR("伏字")
+	PRINTFORML [{ART_ID, 2}]＝미등록＝
+	RESETCOLOR
+	RETURN
+ENDIF
+
+SIF Flag:(15300 + ART_ID) == 1
+	SETCOLOR 100,250,250
+PRINTFORM [{ART_ID, 2}]【%SaveStr:(5000 + ART_ID), 40, LEFT%】
+
+;装備中の色が付いてないときだけ
+IF FLAG:(18100 + ART_ID) > 0
+	IF GETCOLOR() == GETDEFCOLOR()
+		CLR = 1
+		SETCOLORBYNAME YELLOW
+	ENDIF
+	PRINT <SP>
+	SIF CLR
+		RESETCOLOR
+ELSE
+	PRINT <  >
+ENDIF
+
+CALLFORM ART_EFFECT_{FLAG:(15200 + ART_ID)}_NAME
+ART_ABL = %RESULTS%
+
+PRINTFORM [Rank{(Flag:(15000 + ART_ID) < 100 ? FLAG:(15000 + ART_ID) # 99) , 2 , RIGHT}:%ART_FROM:(Flag:(15100 + ART_ID)), 6, RIGHT%:%ART_ABL%:
+PRINTFORM ATK{(Flag:(15400 + ART_ID)), 4,RIGHT}:
+PRINTFORM DEF{(Flag:(15500 + ART_ID)), 4,RIGHT}:
+PRINTFORM HIT{(Flag:(15600 + ART_ID)), 4,RIGHT}:
+PRINTFORM SPD{(Flag:(15700 + ART_ID)), 4,RIGHT}:
+PRINTFORM LUK{(Flag:(15800 + ART_ID)), 4,RIGHT}
+PRINTFORM ]
+IF FLAG:(18000 + ART_ID) >= 0 && CFLAGNAME:(FLAG:(18000 + ART_ID)) != ""
+	PRINTFORM [%REPLACE(CFLAGNAME:(FLAG:(18000 + ART_ID)) , "ゲノム" , "")%]
+ELSE
+	PRINTFORM [--]
+ENDIF
+SIF Flag:(15300 + ART_ID) == 1
+	PRINTFORM 장비중
+PRINTFORML 
+RESETCOLOR
+
+
+;アーティファクトのオートソート
+;ART_IDの範囲が異なる
+@RPG_ARTIFACT_SORT
+#DIM  ART_ID          ;ループ用のアーティファクトID、0～98で他とは使用範囲がずれていることに注意
+#DIM  ART_RANK,     90;以降、アーティファクトのステータス系
+#DIM  ART_FROM,     90
+#DIM  ART_ABL,      90
+#DIM  ART_SET,      90
+#DIM  ART_ATK,      90
+#DIM  ART_DEF,      90
+#DIM  ART_HIT,      90
+#DIM  ART_SPD,      90
+#DIM  ART_LUK,      90
+#DIM  ART_GRADE,    90;ステ合計値
+#DIM  ART_EQUIP,    90;装備スロット
+#DIM  ART_GENOME,   90;ゲノム適性
+#DIM  ART_UNIQUE,   90;유니크フラグ
+#DIMS ART_名称,     90;以後、文字列系
+#DIMS ART_製造元,   90
+#DIMS ART_異能,     90
+#DIMS ART_계급,     90
+#DIMS ART_都市評価, 90
+#DIMS ART_発見者,   90
+
+VARSET ART_GRADE, -1
+VARSET ART_EQUIP
+FOR ART_ID, 0, 90
+	ART_RANK:ART_ID = FLAG:(15001 + ART_ID)
+	ART_FROM:ART_ID = FLAG:(15101 + ART_ID)
+	ART_ABL:ART_ID  = FLAG:(15201 + ART_ID)
+	ART_SET:ART_ID  = FLAG:(15301 + ART_ID)
+	SIF ART_SET:ART_ID
+		ART_EQUIP:ART_ID = FINDELEMENT(FLAG, ART_ID + 1, 15901, 15906)
+	ART_ATK:ART_ID  = FLAG:(15401 + ART_ID)
+	ART_DEF:ART_ID  = FLAG:(15501 + ART_ID)
+	ART_HIT:ART_ID  = FLAG:(15601 + ART_ID)
+	ART_SPD:ART_ID  = FLAG:(15701 + ART_ID)
+	ART_LUK:ART_ID  = FLAG:(15801 + ART_ID)
+	ART_GRADE:ART_ID -= (ART_ATK:ART_ID + ART_DEF:ART_ID + ART_HIT:ART_ID + ART_SPD:ART_ID + ART_LUK:ART_ID)
+	ART_GENOME:ART_ID = FLAG:(18001 + ART_ID)
+	ART_UNIQUE:ART_ID = FLAG:(18101 + ART_ID)
+
+	ART_名称:ART_ID     '= SAVESTR:(5001 + ART_ID)
+	ART_製造元:ART_ID   '= SAVESTR:(5101 + ART_ID)
+	ART_異能:ART_ID     '= SAVESTR:(5201 + ART_ID)
+	ART_계급:ART_ID     '= SAVESTR:(5301 + ART_ID)
+	ART_都市評価:ART_ID '= SAVESTR:(5401 + ART_ID)
+	ART_発見者:ART_ID   '= SAVESTR:(5501 + ART_ID)
+NEXT
+ARRAYMSORT ART_GRADE, ART_RANK, ART_FROM, ART_ABL, ART_SET, ART_EQUIP, ART_ATK, ART_DEF, ART_HIT, ART_SPD, ART_LUK, ART_GENOME, ART_UNIQUE, ART_名称, ART_製造元, ART_異能, ART_계급, ART_都市評価, ART_発見者
+
+FOR ART_ID, 0, 90
+	FLAG:(15001 + ART_ID) = ART_RANK:ART_ID
+	FLAG:(15101 + ART_ID) = ART_FROM:ART_ID
+	FLAG:(15201 + ART_ID) = ART_ABL:ART_ID
+	FLAG:(15301 + ART_ID) = ART_SET:ART_ID
+	SIF ART_EQUIP:ART_ID
+		Flag:(ART_EQUIP:ART_ID) = ART_ID + 1
+	FLAG:(15401 + ART_ID) = ART_ATK:ART_ID
+	FLAG:(15501 + ART_ID) = ART_DEF:ART_ID
+	FLAG:(15601 + ART_ID) = ART_HIT:ART_ID
+	FLAG:(15701 + ART_ID) = ART_SPD:ART_ID
+	FLAG:(15801 + ART_ID) = ART_LUK:ART_ID
+	FLAG:(18001 + ART_ID) = ART_GENOME:ART_ID
+	FLAG:(18101 + ART_ID) = ART_UNIQUE:ART_ID
+	SAVESTR:(5001 + ART_ID) '= ART_名称:ART_ID
+	SAVESTR:(5101 + ART_ID) '= ART_製造元:ART_ID
+	SAVESTR:(5201 + ART_ID) '= ART_異能:ART_ID
+	SAVESTR:(5301 + ART_ID) '= ART_계급:ART_ID
+	SAVESTR:(5401 + ART_ID) '= ART_都市評価:ART_ID
+	SAVESTR:(5501 + ART_ID) '= ART_発見者:ART_ID
+NEXT
+
+
+
+;アーティファクトの整理
+;ART_IDの範囲が異なる
+;以前の番号配置は保ったまま、空白だけを詰める
+@RPG_ARTIFACT_KILL_BLANK
+#DIM  ART_ID          ;ループ用のアーティファクトID、0～89で他とは使用範囲がずれていることに注意
+#DIM  ART_RANK,     90;以降、アーティファクトのステータス系
+#DIM  ART_FROM,     90
+#DIM  ART_ABL,      90
+#DIM  ART_SET,      90
+#DIM  ART_ATK,      90
+#DIM  ART_DEF,      90
+#DIM  ART_HIT,      90
+#DIM  ART_SPD,      90
+#DIM  ART_LUK,      90
+#DIM  ART_GRADE,    90;配置記憶用
+#DIM  ART_EQUIP,    90;装備スロット
+#DIM  ART_GENOME,   90;ゲノム適性
+#DIM  ART_UNIQUE,   90;유니크フラグ
+#DIMS ART_名称,     90;以後、文字列系
+#DIMS ART_製造元,   90
+#DIMS ART_異能,     90
+#DIMS ART_계급,     90
+#DIMS ART_都市評価, 90
+#DIMS ART_発見者,   90
+VARSET ART_GRADE, -1
+VARSET ART_EQUIP
+FOR ART_ID, 0, 90
+	ART_RANK:ART_ID = FLAG:(15001 + ART_ID)
+	ART_FROM:ART_ID = FLAG:(15101 + ART_ID)
+	ART_ABL:ART_ID  = FLAG:(15201 + ART_ID)
+	ART_SET:ART_ID  = FLAG:(15301 + ART_ID)
+	SIF ART_SET:ART_ID
+		ART_EQUIP:ART_ID = FINDELEMENT(FLAG, ART_ID + 1, 15901, 15906)
+	ART_ATK:ART_ID  = FLAG:(15401 + ART_ID)
+	ART_DEF:ART_ID  = FLAG:(15501 + ART_ID)
+	ART_HIT:ART_ID  = FLAG:(15601 + ART_ID)
+	ART_SPD:ART_ID  = FLAG:(15701 + ART_ID)
+	ART_LUK:ART_ID  = FLAG:(15801 + ART_ID)
+	ART_GENOME:ART_ID = FLAG:(18001 + ART_ID)
+	ART_UNIQUE:ART_ID = FLAG:(18101 + ART_ID)
+	ART_GRADE:ART_ID = ART_ID + 1
+	SIF ART_RANK:ART_ID == 0
+		ART_GRADE:ART_ID = 100000 + ART_ID
+		;末尾に送るために適当に大きな数字入れてるだけです
+	ART_名称:ART_ID     '= SAVESTR:(5001 + ART_ID)
+	ART_製造元:ART_ID   '= SAVESTR:(5101 + ART_ID)
+	ART_異能:ART_ID     '= SAVESTR:(5201 + ART_ID)
+	ART_계급:ART_ID     '= SAVESTR:(5301 + ART_ID)
+	ART_都市評価:ART_ID '= SAVESTR:(5401 + ART_ID)
+	ART_発見者:ART_ID   '= SAVESTR:(5501 + ART_ID)
+NEXT
+ARRAYMSORT ART_GRADE, ART_RANK, ART_FROM, ART_ABL, ART_SET, ART_EQUIP, ART_ATK, ART_DEF, ART_HIT, ART_SPD, ART_LUK, ART_GENOME, ART_UNIQUE, ART_名称, ART_製造元, ART_異能, ART_계급, ART_都市評価, ART_発見者
+FOR ART_ID, 0, 90
+	FLAG:(15001 + ART_ID) = ART_RANK:ART_ID
+	FLAG:(15101 + ART_ID) = ART_FROM:ART_ID
+	FLAG:(15201 + ART_ID) = ART_ABL:ART_ID
+	FLAG:(15301 + ART_ID) = ART_SET:ART_ID
+	SIF ART_EQUIP:ART_ID
+		Flag:(ART_EQUIP:ART_ID) = ART_ID + 1
+	FLAG:(15401 + ART_ID) = ART_ATK:ART_ID
+	FLAG:(15501 + ART_ID) = ART_DEF:ART_ID
+	FLAG:(15601 + ART_ID) = ART_HIT:ART_ID
+	FLAG:(15701 + ART_ID) = ART_SPD:ART_ID
+	FLAG:(15801 + ART_ID) = ART_LUK:ART_ID
+	FLAG:(18001 + ART_ID) = ART_GENOME:ART_ID
+	FLAG:(18101 + ART_ID) = ART_UNIQUE:ART_ID
+	SAVESTR:(5001 + ART_ID) '= ART_名称:ART_ID
+	SAVESTR:(5101 + ART_ID) '= ART_製造元:ART_ID
+	SAVESTR:(5201 + ART_ID) '= ART_異能:ART_ID
+	SAVESTR:(5301 + ART_ID) '= ART_계급:ART_ID
+	SAVESTR:(5401 + ART_ID) '= ART_都市評価:ART_ID
+	SAVESTR:(5501 + ART_ID) '= ART_発見者:ART_ID
+NEXT
+
+
+
+;-------------------------------------------------
+;アーティファクト入手
+;-------------------------------------------------
+@RPG_ARTIFACT_GET(ARG)
+#DIM L_I
+#DIM L_A
+#DIM L_Lv
+#DIM L_LOOP
+#DIM A_H
+#DIMS A_N1
+#DIMS A_N2
+#DIMS A_N3
+#DIMS A_N4
+#DIMS A_NAME
+#DIMS A_TEXT1
+#DIMS A_TEXT2
+#DIMS A_TEXT3
+#DIMS A_TEXT4
+#DIMS A_TEXT5
+
+
+L_I = ARG
+L_Lv = 0
+A_H = 0
+L_A = 0
+L_LOOP = 1
+A_N1 = 
+A_N2 = 
+A_N3 = 
+A_N4 = 
+A_NAME = 
+A_TEXT1 = 
+A_TEXT2 = 
+A_TEXT3 = 
+A_TEXT4 = 
+A_TEXT5 = 
+
+;インベントリの空き調査、空きがなけりゃ中断
+CALL RPG_ARTIFACT_FINDBRANK
+L_A = RESULT
+IF L_A == -1
+	PRINTW 아티팩트 창고가 가득 찼다…….
+	RETURN
+ENDIF
+
+
+IF Flag:調査区域 == 90
+	;ランクの設定
+	Flag:(15000+L_A) = 1+(RAND:(((Flag:調査深度*2)/4)+1)+(((Flag:日替わり区画難易度*10)+1)/5))
+
+	;ランクの上限
+	SIF Flag:(15000+L_A) >= (Flag:日替わり区画難易度+1)*10
+		Flag:(15000+L_A) = (Flag:日替わり区画難易度+1)*10
+	;ランクの上限　최대
+	SIF Flag:(15000+L_A) >= 99
+		Flag:(15000+L_A) = 99
+
+	;製品
+	Flag:(15100+L_A) = RAND:5
+
+	;能力
+	Flag:(15200+L_A) = RAND:4
+
+	;装備初期化
+	Flag:(15300+L_A) = 0
+
+	A_H = 10
+	;無能補正
+	SIF Flag:(15200+L_A) == 0
+		A_H = 15
+
+	;ATK補正。(ランク+1)/2 + RAND:(ランク*2)*無能補正/10 + (日替わり区画難易度*10+1)/3
+	Flag:(15400+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:(Flag:(15000+L_A)*2)*A_H)/10)+(((Flag:日替わり区画難易度*10)+1)/3)
+
+	;DEF補正
+	Flag:(15500+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:(Flag:(15000+L_A)*2)*A_H)/10)+(((Flag:日替わり区画難易度*10)+1)/3)
+
+	;HIT補正
+	Flag:(15600+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:(Flag:(15000+L_A)*2)*A_H)/10)+(((Flag:日替わり区画難易度*10)+1)/3)
+
+	;SPD補正
+	Flag:(15700+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:(Flag:(15000+L_A)*2)*A_H)/10)+(((Flag:日替わり区画難易度*10)+1)/3)
+
+	;LUK補正
+	Flag:(15800+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:(Flag:(15000+L_A)*2)*A_H)/10)+(((Flag:日替わり区画難易度*10)+1)/3)
+ELSE
+	;ランクの設定
+	Flag:(15000+L_A) = 1+(RAND:(((Flag:調査深度)/4)+1)+((Flag:調査区域+1)/5))
+
+	;ランクの上限
+	SIF Flag:(15000+L_A) >= (Flag:調査区域+1)*10
+		Flag:(15000+L_A) = (Flag:調査区域+1)*10
+	;ランクの上限　최대
+	SIF Flag:(15000+L_A) >= 99
+		Flag:(15000+L_A) = 99
+
+	;製品
+	Flag:(15100+L_A) = RAND:6
+
+	;能力
+	CALL RPG_ARTIFACT_SELECT_EFFECT(FLAG:(15000 + L_A))
+	Flag:(15200+L_A) = RESULT
+
+	;装備初期化
+	Flag:(15300+L_A) = 0
+
+	A_H = 10
+	;無能補正
+	SIF Flag:(15200+L_A) == 0
+		A_H = 15
+
+	;ATK補正。(ランク+1)/2 + RAND:(ランク*2)*無能補正/10 + (調査区域の番号+1)/3
+	Flag:(15400+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:((Flag:(15000+L_A))*2)*A_H)/10)+((Flag:調査区域+1)/3)
+
+	;DEF補正
+	Flag:(15500+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:((Flag:(15000+L_A))*2)*A_H)/10)+((Flag:調査区域+1)/3)
+
+	;HIT補正
+	Flag:(15600+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:((Flag:(15000+L_A))*2)*A_H)/10)+((Flag:調査区域+1)/3)
+
+	;SPD補正
+	Flag:(15700+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:((Flag:(15000+L_A))*2)*A_H)/10)+((Flag:調査区域+1)/3)
+
+	;LUK補正
+	Flag:(15800+L_A) = ((Flag:(15000+L_A)+1)/2)+((RAND:((Flag:(15000+L_A))*2)*A_H)/10)+((Flag:調査区域+1)/3)
+ENDIF
+
+
+
+
+
+
+
+;名前
+IF Flag:(15100+L_A) == 0
+	IF !RAND:13
+		A_N1 = 『회고』
+	ELSEIF !RAND:12
+		A_N1 = 『영광』
+	ELSEIF !RAND:11
+		A_N1 = 『계승』
+	ELSEIF !RAND:10
+		A_N1 = 『잔재』
+	ELSEIF !RAND:9
+		A_N1 = 『유품』
+	ELSEIF !RAND:8
+		A_N1 = 『잔영』
+	ELSEIF !RAND:7
+		A_N1 = 『망해』
+	ELSEIF !RAND:6
+		A_N1 = 『상기』
+	ELSEIF !RAND:5
+		A_N1 = 『황혼』
+	ELSEIF !RAND:4
+		A_N1 = 『낙명』
+	ELSEIF !RAND:3
+		A_N1 = 『희망』
+	ELSEIF !RAND:2
+		A_N1 = 『혁명』
+	ELSE
+		A_N1 = 『여명』
+	ENDIF
+ELSEIF Flag:(15100+L_A) == 1
+	IF !RAND:13
+		A_N1 = 『효광』
+	ELSEIF !RAND:12
+		A_N1 = 『전승』
+	ELSEIF !RAND:11
+		A_N1 = 『봉인』
+	ELSEIF !RAND:10
+		A_N1 = 『태고』
+	ELSEIF !RAND:9
+		A_N1 = 『원초』
+	ELSEIF !RAND:8
+		A_N1 = 『미개』
+	ELSEIF !RAND:7
+		A_N1 = 『심부』
+	ELSEIF !RAND:6
+		A_N1 = 『추억』
+	ELSEIF !RAND:5
+		A_N1 = 『해명』
+	ELSEIF !RAND:4
+		A_N1 = 『각성』
+	ELSEIF !RAND:3
+		A_N1 = 『선인』
+	ELSEIF !RAND:2
+		A_N1 = 『진조』
+	ELSE
+		A_N1 = 『시원』
+	ENDIF
+ELSEIF Flag:(15100+L_A) == 2
+	IF !RAND:13
+		A_N1 = 『성사』
+	ELSEIF !RAND:12
+		A_N1 = 『격절』
+	ELSEIF !RAND:11
+		A_N1 = 『환상』
+	ELSEIF !RAND:10
+		A_N1 = 『신비』
+	ELSEIF !RAND:9
+		A_N1 = 『마법』
+	ELSEIF !RAND:8
+		A_N1 = 『공상』
+	ELSEIF !RAND:7
+		A_N1 = 『유현』
+	ELSEIF !RAND:6
+		A_N1 = 『몽상』
+	ELSEIF !RAND:5
+		A_N1 = 『병행』
+	ELSEIF !RAND:4
+		A_N1 = 『무한』
+	ELSEIF !RAND:3
+		A_N1 = 『포말』
+	ELSEIF !RAND:2
+		A_N1 = 『호접』
+	ELSE
+		A_N1 = 『이상』
+	ENDIF
+ELSEIF Flag:(15100+L_A) == 3
+	IF !RAND:13
+		A_N1 = 『자율』
+	ELSEIF !RAND:12
+		A_N1 = 『：３』
+	ELSEIF !RAND:11
+		A_N1 = 『맥동』
+	ELSEIF !RAND:10
+		A_N1 = 『생명』
+	ELSEIF !RAND:9
+		A_N1 = 『개안』
+	ELSEIF !RAND:8
+		A_N1 = 『신생』
+	ELSEIF !RAND:7
+		A_N1 = 『윤회』
+	ELSEIF !RAND:6
+		A_N1 = 『혈율』
+	ELSEIF !RAND:5
+		A_N1 = 『수인』
+	ELSEIF !RAND:4
+		A_N1 = 『포식』
+	ELSEIF !RAND:3
+		A_N1 = 『소생』
+	ELSEIF !RAND:2
+		A_N1 = 『재탄』
+	ELSE
+		A_N1 = 『고동』
+	ENDIF
+ELSEIF Flag:(15100+L_A) == 4
+	IF !RAND:13
+		A_N1 = 『막연』
+	ELSEIF !RAND:12
+		A_N1 = 『모호』
+	ELSEIF !RAND:11
+		A_N1 = 『미해』
+	ELSEIF !RAND:10
+		A_N1 = 『미궁』
+	ELSEIF !RAND:9
+		A_N1 = 『공막』
+	ELSEIF !RAND:8
+		A_N1 = 『부학』
+	ELSEIF !RAND:7
+		A_N1 = 『암중』
+	ELSEIF !RAND:6
+		A_N1 = 『진상』
+	ELSEIF !RAND:5
+		A_N1 = 『미지』
+	ELSEIF !RAND:4
+		A_N1 = 『불명』
+	ELSEIF !RAND:3
+		A_N1 = 『진실』
+	ELSEIF !RAND:2
+		A_N1 = 『몽롱』
+	ELSE
+		A_N1 = 『틈새』
+	ENDIF
+ELSEIF Flag:(15100+L_A) == 5
+	IF !RAND:13
+		A_N1 = 『퇴행』
+	ELSEIF !RAND:12
+		A_N1 = 『지배』
+	ELSEIF !RAND:11
+		A_N1 = 『혼돈』
+	ELSEIF !RAND:10
+		A_N1 = 『심연』
+	ELSEIF !RAND:9
+		A_N1 = 『절망』
+	ELSEIF !RAND:8
+		A_N1 = 『거절』
+	ELSEIF !RAND:7
+		A_N1 = 『외지』
+	ELSEIF !RAND:6
+		A_N1 = 『암흑』
+	ELSEIF !RAND:5
+		A_N1 = 『공포』
+	ELSEIF !RAND:4
+		A_N1 = 『광기』
+	ELSEIF !RAND:3
+		A_N1 = 『기이』
+	ELSEIF !RAND:2
+		A_N1 = 『백치』
+	ELSE
+		A_N1 = 『모독』
+	ENDIF
+ENDIF
+
+
+IF !RAND:23
+	A_N2 = 물컹물컹한　
+ELSEIF !RAND:22
+	A_N2 = 변이한　
+ELSEIF !RAND:21
+	A_N2 = 의지를　가진　
+ELSEIF !RAND:20
+	A_N2 = 오염된　
+ELSEIF !RAND:19
+	A_N2 = 폭주하는　
+ELSEIF !RAND:18
+	A_N2 = 끝없이　우는　
+ELSEIF !RAND:17
+	A_N2 = 극의에　달한　
+ELSEIF !RAND:16
+	A_N2 = 종언을속삭이는　
+ELSEIF !RAND:15
+	A_N2 = 승리를　부르는　
+ELSEIF !RAND:14
+	A_N2 = 각성한　
+ELSEIF !RAND:13
+	A_N2 = 어둠을　먹는　
+ELSEIF !RAND:12
+	A_N2 = 빛을　걸친　
+ELSEIF !RAND:11
+	A_N2 = 위대한　
+ELSEIF !RAND:10
+	A_N2 = 격동하는　
+ELSEIF !RAND:9
+	A_N2 = 아직　썩지　않은　
+ELSEIF !RAND:8
+	A_N2 = 거무스름한　
+ELSEIF !RAND:7
+	A_N2 = 반짝이는　
+ELSEIF !RAND:6
+	A_N2 = 해방된　
+ELSEIF !RAND:5
+	A_N2 = 금지된　
+ELSEIF !RAND:4
+	A_N2 = 미쳐　날뛰는　
+ELSEIF !RAND:3
+	A_N2 = 세련된　
+ELSEIF !RAND:2
+	A_N2 = 피로　물든　
+ELSE
+	A_N2 = 단련된　
+ENDIF
+
+
+IF !RAND:23
+	A_N3 = 벽람의　
+ELSEIF !RAND:22
+	A_N3 = 용기의　
+ELSEIF !RAND:21
+	A_N3 = 수수께끼의　하얀　
+ELSEIF !RAND:20
+	A_N3 = 파괴의　
+ELSEIF !RAND:19
+	A_N3 = 구원의　
+ELSEIF !RAND:18
+	A_N3 = 요정의　
+ELSEIF !RAND:17
+	A_N3 = 멸망의　
+ELSEIF !RAND:16
+	A_N3 = 불멸의　
+ELSEIF !RAND:15
+	A_N3 = 마도의　
+ELSEIF !RAND:14
+	A_N3 = 영웅의　
+ELSEIF !RAND:13
+	A_N3 = 존귀한　
+ELSEIF !RAND:12
+	A_N3 = 수호의　
+ELSEIF !RAND:11
+	A_N3 = 예지의　
+ELSEIF !RAND:10
+	A_N3 = 왕의　
+ELSEIF !RAND:9
+	A_N3 = 신들의　
+ELSEIF !RAND:8
+	A_N3 = 마인의　
+ELSEIF !RAND:7
+	A_N3 = 황금의　
+ELSEIF !RAND:6
+	A_N3 = 청람의　
+ELSEIF !RAND:5
+	A_N3 = 거대한　
+ELSEIF !RAND:4
+	A_N3 = 칠흑의　
+ELSEIF !RAND:3
+	A_N3 = 순백의　
+ELSEIF !RAND:2
+	A_N3 = 통곡의　
+ELSE
+	A_N3 = 붉은　
+ENDIF
+
+
+
+
+
+IF Flag:(15000+L_A) >= 60
+	IF !RAND:15
+		A_N4 = 신궁
+	ELSEIF !RAND:14
+		A_N4 = 신의　도끼
+	ELSEIF !RAND:13
+		A_N4 = 성의　채찍
+	ELSEIF !RAND:12
+		A_N4 = 성총
+	ELSEIF !RAND:11
+		A_N4 = 반지
+	ELSEIF !RAND:10
+		A_N4 = 성검
+	ELSEIF !RAND:9
+		A_N4 = 대보옥
+	ELSEIF !RAND:8
+		A_N4 = 신의　방패
+	ELSEIF !RAND:7
+		A_N4 = 신기
+	ELSEIF !RAND:6
+		A_N4 = 신옥
+	ELSEIF !RAND:5
+		A_N4 = 신장
+	ELSEIF !RAND:4
+		A_N4 = 신창
+	ELSEIF !RAND:3
+		A_N4 = 마도서
+	ELSEIF !RAND:2
+		A_N4 = 신도
+	ELSE
+		A_N4 = 신검
+	ENDIF
+ELSEIF Flag:(15000+L_A) >= 40
+	IF !RAND:15
+		A_N4 = 마의　쇠뇌
+	ELSEIF !RAND:14
+		A_N4 = 마의　갑주
+	ELSEIF !RAND:13
+		A_N4 = 영의　도끼
+	ELSEIF !RAND:12
+		A_N4 = 마총
+	ELSEIF !RAND:11
+		A_N4 = 암기
+	ELSEIF !RAND:10
+		A_N4 = 고검
+	ELSEIF !RAND:9
+		A_N4 = 영기
+	ELSEIF !RAND:8
+		A_N4 = 마도구
+	ELSEIF !RAND:7
+		A_N4 = 팔찌
+	ELSEIF !RAND:6
+		A_N4 = 마창
+	ELSEIF !RAND:5
+		A_N4 = 마검
+	ELSEIF !RAND:4
+		A_N4 = 요도
+	ELSEIF !RAND:3
+		A_N4 = 대낫
+	ELSEIF !RAND:2
+		A_N4 = 영도
+	ELSE
+		A_N4 = 영검
+	ENDIF
+ELSEIF Flag:(15000+L_A) >= 20
+	IF !RAND:15
+		A_N4 = 부적
+	ELSEIF !RAND:14
+		A_N4 = 사슬
+	ELSEIF !RAND:13
+		A_N4 = 연사　쇠뇌
+	ELSEIF !RAND:12
+		A_N4 = 호구
+	ELSEIF !RAND:11
+		A_N4 = 전투도끼
+	ELSEIF !RAND:10
+		A_N4 = 대태도
+	ELSEIF !RAND:9
+		A_N4 = 마장
+	ELSEIF !RAND:8
+		A_N4 = 낫
+	ELSEIF !RAND:7
+		A_N4 = 대검
+	ELSEIF !RAND:6
+		A_N4 = 대궁
+	ELSEIF !RAND:5
+		A_N4 = 보옥
+	ELSEIF !RAND:4
+		A_N4 = 쌍권총
+	ELSEIF !RAND:3
+		A_N4 = 쌍검
+	ELSEIF !RAND:2
+		A_N4 = 명도
+	ELSE
+		A_N4 = 명검
+	ENDIF
+ELSE
+	IF !RAND:15
+		A_N4 = 채찍
+	ELSEIF !RAND:14
+		A_N4 = 외투
+	ELSEIF !RAND:13
+		A_N4 = 석궁
+	ELSEIF !RAND:12
+		A_N4 = 장갑
+	ELSEIF !RAND:11
+		A_N4 = 도끼
+	ELSEIF !RAND:10
+		A_N4 = 활
+	ELSEIF !RAND:9
+		A_N4 = 창
+	ELSEIF !RAND:8
+		A_N4 = 목걸이
+	ELSEIF !RAND:7
+		A_N4 = 표
+	ELSEIF !RAND:6
+		A_N4 = 갑옷
+	ELSEIF !RAND:5
+		A_N4 = 방패
+	ELSEIF !RAND:4
+		A_N4 = 총
+	ELSEIF !RAND:3
+		A_N4 = 지팡이
+	ELSEIF !RAND:2
+		A_N4 = 도
+	ELSE
+		A_N4 = 검
+	ENDIF
+ENDIF
+
+
+SaveStr:(5000+L_A) = %A_N1%%A_N2%%A_N3%%A_N4%
+
+
+CALL RPG_ARTIFACT_MADEIN_STR(FLAG:(15100 + L_A))
+SAVESTR:(5100 + L_A) = %RESULTS%
+
+
+CALL RPG_ARTIFACT_ABILITY_STR(FLAG:(15200 + L_A))
+SAVESTR:(5200 + L_A) = %RESULTS%
+
+
+CALL RPG_ARTIFACT_RANK_STR(FLAG:(15000 + L_A))
+SAVESTR:(5300 + L_A) = %RESULTS%
+
+
+CALL RPG_ARTIFACT_EVALUATION_STR(FLAG:(15000 + L_A))
+SAVESTR:(5400 + L_A) =%RESULTS%
+
+
+SaveStr:(5500+L_A) = 【발견자:　　　　】%CALLNAME:L_I%
+
+
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 아티팩트 【%SaveStr:(5000+L_A)%】%조사만처리(SaveStr:(5000+L_A),"를")% 입수했다！
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+DRAWLINE
+PRINTFORMW
+
+RETURN L_A
+
+
+;-------------------------------------------------
+;ゲノムアーティファクト加算
+;@RPG_ARTIFACT_GETを実行、その後でゲノム適性を付与している
+;ARG:1に1以上を受け取るとその%でゲノム適性付き武器を生成する
+;-------------------------------------------------
+@RPG_ARTIFACT_GENOME_GET(ARG , ARG:1 = 0)
+#DIM DYNAMIC GART_GENOME
+#DIM DYNAMIC GART_VAR
+#DIM GART_CNT
+
+CALL RPG_ARTIFACT_GET(ARG)
+
+
+IF ARG:1 > 0 && POSSIB(ARG:1)
+	;定義済みのゲノムの個数をカウント
+	;CFLAGにある移植されたゲノムを記録する部分のCFLAGNAMEが非0ならそのゲノムが定義されていると見なす
+	FOR GART_CNT , 1800 , 1900
+		SIF CFLAGNAME:GART_CNT != ""
+			GART_VAR++
+	NEXT
+
+	;@RPG_ARTIFACT_GETで何個目のアーティファクトに新規追加を行ったかをRESULTへ返すよう改変している
+	FLAG:(18000 + RESULT) = 1800 + RAND:GART_VAR
+ENDIF
+RETURN RESULT
+
+
+
+;-------------------------------------------------
+;アーティファクト加算
+;-------------------------------------------------
+@RPG_ARTIFACT_PLUS(ARG)
+#DIM ART_EQUIP ;装備スロットID
+#DIM ART_ID    ;実際のアーティファクトID
+#DIM ART_L_T    ;調査キャラ
+#DIM GENOME_BOOST
+
+FLAG:遺物_ATK合計値 = 0
+FLAG:遺物_DEF合計値 = 0
+FLAG:遺物_HIT合計値 = 0
+FLAG:遺物_SPD合計値 = 0
+FLAG:遺物_LUK合計値 = 0
+Flag:遺物_吸血合計値 = 0
+Flag:遺物_核熱合計値 = 0
+Flag:遺物_侵食合計値 = 0
+Flag:遺物_時間合計値 = 0
+Flag:遺物_空間合計値 = 0
+Flag:遺物_ゲノム適性合計値 = 0
+
+;ゲノム適性によるアーティファクトの能力上昇幅。20ならアーティファクトの全能力を120%に引き上げる
+GENOME_BOOST = 20
+
+FOR ART_EQUIP, 1, 6
+	ART_ID = Flag:(15900 + ART_EQUIP)
+	SIF !INRANGE(ART_ID, 1, 90)
+		CONTINUE
+	FLAG:遺物_ATK合計値 += Flag:(15400 + ART_ID)
+	FLAG:遺物_DEF合計値 += Flag:(15500 + ART_ID)
+	FLAG:遺物_HIT合計値 += Flag:(15600 + ART_ID)
+	FLAG:遺物_SPD合計値 += Flag:(15700 + ART_ID)
+	FLAG:遺物_LUK合計値 += Flag:(15800 + ART_ID)
+	
+	IF Flag:(15200 + ART_ID) == 5
+		Flag:遺物_空間合計値 += 1
+	ELSEIF Flag:(15200 + ART_ID) == 4
+		Flag:遺物_時間合計値 += 1
+	ELSEIF Flag:(15200 + ART_ID) == 3
+		Flag:遺物_侵食合計値 += 1
+	ELSEIF Flag:(15200 + ART_ID) == 2
+		Flag:遺物_核熱合計値 += 1
+	ELSEIF Flag:(15200 + ART_ID) == 1
+		Flag:遺物_吸血合計値 += 1
+	ENDIF
+
+	;アーティファクトのゲノム適性を調査キャラが所有しているなら能力増加
+	IF CHECK_GENOME_ART(ARG) > 0
+		FLAG:遺物_ATK合計値 += Flag:(15400 + ART_ID) * GENOME_BOOST / 100
+		FLAG:遺物_DEF合計値 += Flag:(15500 + ART_ID) * GENOME_BOOST / 100
+		FLAG:遺物_HIT合計値 += Flag:(15600 + ART_ID) * GENOME_BOOST / 100
+		FLAG:遺物_SPD合計値 += Flag:(15700 + ART_ID) * GENOME_BOOST / 100
+		FLAG:遺物_LUK合計値 += Flag:(15800 + ART_ID) * GENOME_BOOST / 100
+		FLAG:遺物_ゲノム適性合計値++
+	ENDIF
+NEXT
+FLAG:遺物_ATK合計値 = FLAG:遺物_ATK合計値/5
+FLAG:遺物_DEF合計値 = FLAG:遺物_DEF合計値/5
+FLAG:遺物_HIT合計値 = FLAG:遺物_HIT合計値/5
+FLAG:遺物_SPD合計値 = FLAG:遺物_SPD合計値/5
+FLAG:遺物_LUK合計値 = FLAG:遺物_LUK合計値/5
+
+
+ART_L_T = FLAG:調査キャラ
+
+IF TALENT:ART_L_T:《대성여우천신》
+	FLAG:遺物_ATK合計値 += FLAG:종교시설
+	FLAG:遺物_DEF合計値 += FLAG:종교시설
+	FLAG:遺物_HIT合計値 += FLAG:종교시설
+	FLAG:遺物_SPD合計値 += FLAG:종교시설
+	FLAG:遺物_LUK合計値 += FLAG:종교시설
+ENDIF
+
+[SKIPSTART]
+FLAG:支援_수반合計ATK += ((FLAG:支援_수반合計ATK)*(FLAG:遺物_ATK合計値))/100
+FLAG:支援_수반合計DEF += ((FLAG:支援_수반合計DEF)*(FLAG:遺物_DEF合計値))/100
+FLAG:支援_수반合計HIT += ((FLAG:支援_수반合計HIT)*(FLAG:遺物_HIT合計値))/100
+FLAG:支援_수반合計SPD += ((FLAG:支援_수반合計SPD)*(FLAG:遺物_SPD合計値))/100
+
+FLAG:支援_후방合計HIT += ((FLAG:支援_후방合計HIT)*(FLAG:遺物_HIT合計値))/100
+FLAG:支援_후방合計SPD += ((FLAG:支援_후방合計SPD)*(FLAG:遺物_SPD合計値))/100
+
+
+FLAG:支援_회수合計LUK += ((FLAG:支援_회수合計LUK)*(FLAG:遺物_LUK合計値))/100
+FLAG:支援_회수合計SPD += ((FLAG:支援_회수合計SPD)*(FLAG:遺物_SPD合計値))/100
+[SKIPEND]
+
+
+;-------------------------------------------------
+;アーティファクトのリスト表示
+;アーティファクトID(START)からID(END)までリストで表示
+;-------------------------------------------------
+@RPG_ARTIFACT_LIST(START = -1 , END = -1)
+#DIM START
+#DIM END
+#DIM CNT
+SIF INRANGE(START , 1 , 91) == 0 || INRANGE(END , 1 , 91) == 0
+	THROW 引数が不正です  START={START}  END={END}
+
+FOR CNT , START , END
+	CALL SHOW_ARTIFACT_DATA_SIMPLE(CNT)
+NEXT
+RETURN
+
+
+;-------------------------------------------------
+;アーティファクト記録配列の中から空いている場所(ID)を探して返す
+;見つからなければ-1
+;-------------------------------------------------
+@RPG_ARTIFACT_FINDBRANK
+#DIM BRANK
+BRANK = FINDELEMENT(Flag, 0, 15001, 15100) - 15000
+IF !INRANGE(BRANK, 1, 90)
+	RETURN -1
+ELSE
+	RETURN BRANK
+ENDIF
+
+;-------------------------------------------------
+;アーティファクトの製造元をフラグの数値から表示する関数
+;-------------------------------------------------
+@RPG_ARTIFACT_MADEIN_STR(MADEIN)
+#DIM MADEIN
+SELECTCASE MADEIN
+	CASE 5
+		RESULTS = 【제조원:　외우주】「외적」과 동일한 인자를 보유한 위험한 아티팩트.
+	CASE 4
+		RESULTS = 【제조원:　　불명】현 시점에서는 해명할 수 없는 출처 불명의 아티팩트.
+	CASE 3
+		RESULTS = 【제조원:　　생체】무구로도 사용 가능하지만, 생명 활동하고 있는 특이한 아티팩트.
+	CASE 2
+		RESULTS = 【제조원:　이세계】이 곳의 물건이 아닌, 다른 세계에서 제조되었을 아티팩트.
+	CASE 1
+		RESULTS = 【제조원:　　고대】전 문명 이전, 아주 먼 태초에 제조된 아티팩트.
+	CASE 0
+		RESULTS = 【제조원:　전문명】외적에 의해 멸망한 이전 문명 때 제조된 아티팩트.
+	CASEELSE
+		THROW 予期しない分岐  MADEIN={MADEIN}
+ENDSELECT
+RETURN
+
+
+;-------------------------------------------------
+;アーティファクトの持つ特殊能力に関する説明
+;-------------------------------------------------
+@RPG_ARTIFACT_ABILITY_STR(ABILIT)
+#DIM ABILIT
+CALLFORM ART_EFFECT_{ABILIT}_EXPLANATION
+;RESULTSを返値として返していることを明示するため無意味な展開をする
+RESULTS = %RESULTS%
+RETURN
+
+
+;-------------------------------------------------
+;アーティファクトのランクに関する説明
+;-------------------------------------------------
+@RPG_ARTIFACT_RANK_STR(RNK)
+#DIM RNK
+SELECTCASE RNK
+	CASE IS >= 80
+		RESULTS = 【계급　:금기병장】외계 심부에서만 입수할 수 있는 오버 테크놀러지. 전 문명이였다면 봉인 당했을 일품.
+	CASE IS >= 60
+		RESULTS = 【계급　:결전병장】최상위에 위치한 고가의 아티팩트. 주력으로서 부대에 있어 큰 버팀목이 된다.
+	CASE IS >= 40
+		RESULTS = 【계급　:전술병장】희귀한 상위의 아티팩트. 대장급의 주민 정도에게만 알려져 있다.
+	CASE IS >= 20
+		RESULTS = 【계급　:일반병장】중위의 아티팩트로, 전 부대에서 널리 운용되고 있다.
+	CASEELSE
+		RESULTS = 【계급　:분류불요】아티팩트로서는 하위에 위치하며, 그리 드물지도 않다.
+ENDSELECT
+RETURN
+
+
+;-------------------------------------------------
+;アーティファクトに対する都市からのひとこと
+;-------------------------------------------------
+@RPG_ARTIFACT_EVALUATION_STR(RNK)
+#DIM RNK
+IF RNK >= 80
+	IF !RAND:5
+		RESULTS = 【도시평가　　　 】≪타「플레이어」조차 좀처럼 발견할 수 없는 일품이네요！≫
+	ELSEIF !RAND:4
+		RESULTS = 【도시평가　　　 】≪도시 전체가 봐도 국보가 될 수 있을 정도의 오버 테크놀러지입니다. 소중히 쓰도록 하죠.≫
+	ELSEIF !RAND:3
+		RESULTS = 【도시평가　　　 】≪용케 심층에서 찾으셨네요！ 자, '참 잘했어요' 도장을 드리겠습니다.≫
+	ELSEIF !RAND:2
+		RESULTS = 【도시평가　　　 】≪연구부문에 종사하는 분들도 매우 기뻐하시더군요. 정말 멋집니다！≫
+	ELSE
+		RESULTS = 【도시평가　　　 】≪평균 비교를 할 필요도 없을 정도의 가치가 있는 아티팩트네요！≫
+	ENDIF
+ELSEIF RNK >= 60
+	IF !RAND:5
+		RESULTS = 【도시평가　　　 】≪이건 귀합니다！ 용케 찾으셨군요.≫
+	ELSEIF !RAND:4
+		RESULTS = 【도시평가　　　 】≪훌륭합니다. 오랫동안 주력으로 운용할 수 있겠어요.≫
+	ELSEIF !RAND:3
+		RESULTS = 【도시평가　　　 】≪「시티」로서도 기쁜 일품입니다.≫
+	ELSEIF !RAND:2
+		RESULTS = 【도시평가　　　 】≪「외적」과의 싸움에서 많은 활약을 펼칠 것입니다.≫
+	ELSE
+		RESULTS = 【도시평가　　　 】≪평균 비교 90 이상의 우등생이로군요. 기쁘네요.≫
+	ENDIF
+ELSEIF RNK >= 40
+	IF !RAND:5
+		RESULTS = 【도시평가　　　 】≪좋은 걸 찾으셨네요. 꼭 활용해보세요.≫
+	ELSEIF !RAND:4
+		RESULTS = 【도시평가　　　 】≪제법 귀중한 물건이군요. 충분히 전력이 될 것입니다.≫
+	ELSEIF !RAND:3
+		RESULTS = 【도시평가　　　 】≪귀중품이 될 수 있는 물건이네요. 운용에도 문제 없습니다.≫
+	ELSEIF !RAND:2
+		RESULTS = 【도시평가　　　 】≪이 이상이 되면 총 수도 적어지니 귀중한거랍니다？≫
+	ELSE
+		RESULTS = 【도시평가　　　 】≪평균 비교 75의 기대치를 가지고 있네요. 다른 부대에서도 주력급입니다.≫
+	ENDIF
+ELSEIF RNK >= 20
+	IF !RAND:5
+		RESULTS = 【도시평가　　　 】≪이거라면 운용 가능이네요. 안전히 쓰실 수 있겠죠.≫
+	ELSEIF !RAND:4
+		RESULTS = 【도시평가　　　 】≪한 마디 더 하고 싶지만, 이정도라면 문제 없겠죠.≫
+	ELSEIF !RAND:3
+		RESULTS = 【도시평가　　　 】≪일반적인 물건이군요. 사용에 지장은 없겠죠.≫
+	ELSEIF !RAND:2
+		RESULTS = 【도시평가　　　 】≪이것을 바탕으로 한 단계 더 나아가도록 하죠.≫
+	ELSE
+		RESULTS = 【도시평가　　　 】≪평균 비교 50점 대의 물건이네요. 다음을 기대하겠습니다.≫
+	ENDIF
+ELSE
+	IF !RAND:5
+		RESULTS = 【도시평가　　　 】≪그렇게 유용해 보이지는 않네요. 조만간 다른 것으로 교환 하도록 하죠.≫
+	ELSEIF !RAND:4
+		RESULTS = 【도시평가　　　 】≪이건 쓸 데 없네요.≫
+	ELSEIF !RAND:3
+		RESULTS = 【도시평가　　　 】≪돌멩이와 다를 바 없지 않을까요.≫
+	ELSEIF !RAND:2
+		RESULTS = 【도시평가　　　 】≪다음 물건을 기대하겠습니다.≫
+	ELSE
+		RESULTS = 【도시평가　　　 】≪한심할 정도로 궁상스럽습니다…….≫
+	ENDIF
+ENDIF
+RETURN
+
+
+;-------------------------------------------------
+;対象となるアーティファクトのランクから生成可能なエフェクトを一つ選び返す関数
+;-------------------------------------------------
+@RPG_ARTIFACT_SELECT_EFFECT(RNK)
+#DIM RNK
+#DIM CNT
+#DIM EFF , DEFINE_ART_EFF
+#DIM EFFNUM
+VARSET EFF , -1
+VARSET EFFNUM
+
+;生成可能なエフェクトを数え上げ
+FOR CNT , 0 , DEFINE_ART_EFF
+	TRYCCALLFORM ART_EFFECT_{CNT}_ABLE(RNK)
+		SIF RESULT == 1
+			EFF:(EFFNUM++) = CNT
+	CATCH
+		
+	ENDCATCH
+NEXT
+
+RETURN EFF:(RAND:EFFNUM)
+

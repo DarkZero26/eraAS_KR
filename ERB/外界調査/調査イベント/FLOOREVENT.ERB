@@ -1,0 +1,160 @@
+﻿;-------------------------------------------------
+;フロアイベント
+;-------------------------------------------------
+@FLOOREVENT
+#DIM FE
+;フロアイベントがない(=-1)なら処理終了
+SIF FLOOREVENT:NOWFLOOR == -1
+	RETURN
+
+;フロア配列の終端、もしくは0ならルート選択
+IF NOWFLOOR >= VARSIZE("FLOOREVENT") || FLOOREVENT:NOWFLOOR == 0
+	CALL RPG_SELECTROUTE
+	RESTART
+ENDIF
+
+CALLFORM FLOOREVENT_{FLOOREVENT:NOWFLOOR}
+FE = RESULT
+TRYCCALLFORM RPG_EVENT_{FE}
+
+CATCH
+	SETCOLORBYNAME RED
+	PRINTFORML フロアイベント({FLOOREVENT:NOWFLOOR})で定義された@RPG_EVENT_{FE}は未定義です
+	PRINTFORMW ダンジョンのフロアイベント定義関数、またはイベントファイルにミスがある可能性があります
+	RESETCOLOR
+ENDCATCH
+FLAG:調査イベント発生中 = 0
+Flag:조사이벤트번호 = 0
+RETURN
+
+
+;-------------------------------------------------
+;人材加入系のイベント
+;-------------------------------------------------
+@FLOOREVENT_1
+#DIM FE
+;카르마が高いと不幸系イベントに巻き込まれる恐れあり
+;どのダンジョンでも強制発生しうる。発生したらそれ以外の処理は起きない
+IF POSSIB(10) && Flag:調査イベント発生中 == 0 && CFLAG:(FLAG:調査キャラ):特別保護 == 0 && Flag:イベント誘拐中 == 0 && CFlag:(FLAG:調査キャラ):주민_카르마 >= 40 
+	IF !RAND:2
+		;拉致
+		FE = 800
+	ELSE
+		;交配実験
+		FE = 801
+	ENDIF
+	RETURN FE
+ENDIF
+
+TRYCCALLFORM DUNGEON_{FLAG:調査区域}_PERSON
+
+CATCH
+	;専用定義が見つからなかった場合の汎用処理
+	CALLFORM RPG_FE_PERSON_COMMON
+ENDCATCH
+FE = RESULT
+RETURN FE
+
+
+;-------------------------------------------------
+;人材加入系イベントの汎用関数
+;とりあえず元からあった処理部をそのまま適用
+;-------------------------------------------------
+@RPG_FE_PERSON_COMMON
+#DIM EVID
+IF !RAND:7 && Flag:調査イベント発生中 == 0 && Flag:調査区域 == 0
+	;軟体動物の群れ
+	EVID = 803
+ELSEIF !RAND:6 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 0 && Flag:調査深度 >= 30 
+	;성노예救出
+	EVID = 401
+ELSEIF !RAND:5 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 30 
+	;傷ついた조인
+	EVID = 500
+ELSEIF !RAND:4 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 3 && Flag:調査深度 >= 50 
+	;오니との出会い
+	EVID = 501
+ELSEIF !RAND:3 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 2 && Flag:調査深度 >= 70 
+	;冷凍カプセル
+	EVID = 400
+;これら不幸系イベントの発生は@FLOOREVENT_1で一括して行う
+;ELSEIF !RAND:2 && Flag:調査イベント発生中 == 0 && CFLAG:(FLAG:調査キャラ):特別保護 == 0 && Flag:イベント誘拐中 == 0 && CFlag:(FLAG:調査キャラ):주민_카르마 >= 40 
+;	IF !RAND:2
+;		;拉致
+;		CALL RPG_EVENT_800
+;	ELSE
+;		;交配実験
+;		CALL RPG_EVENT_801
+;	ENDIF
+ELSE
+	;イベント発生無しを防ぐために성노예をここに置く
+	;성노예救出
+	EVID = 401
+ENDIF
+RETURN EVID
+
+
+;-------------------------------------------------
+;アイテム入手系のイベント
+;-------------------------------------------------
+@FLOOREVENT_2
+TRYCCALLFORM DUNGEON_{FLAG:調査区域}_ITEM
+	
+CATCH
+	;専用定義が見つからなかった場合の汎用処理
+	CALLFORM RPG_FE_ITEM_COMMON
+ENDCATCH
+RETURN RESULT
+
+
+;-------------------------------------------------
+;アイテム入手系イベントの汎用関数
+;とりあえず元からあった処理部をそのまま適用
+;-------------------------------------------------
+@RPG_FE_ITEM_COMMON
+#DIM ITID
+IF !RAND:3 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 20 
+	;古代遺物発見
+	ITID = 102
+ELSEIF !RAND:2 && Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 20
+	;書物閲覧
+	ITID = 101
+ELSEIF  Flag:調査イベント発生中 == 0 && Flag:調査区域 == 5 && Flag:調査深度 >= 20 && RAND:100 > 20
+	;蜘蛛の巣調査
+	ITID = 150
+ELSEIF  Flag:調査イベント発生中 == 0 && Flag:調査区域 >= 1 && Flag:調査深度 >= 50
+	;ゲノム入手
+	ITID = 100
+ELSE
+	;キャンプ跡地発見
+	ITID = 103
+ENDIF
+RETURN ITID
+
+
+;-------------------------------------------------
+;通常敵との強制戦闘
+;-------------------------------------------------
+@FLOOREVENT_3
+#DIM BAT
+CALL RPG_BATTLE_DUNGEON(FLAG:調査キャラ , 0)
+RETURN
+
+
+;-------------------------------------------------
+;レア敵との強制戦闘
+;-------------------------------------------------
+@FLOOREVENT_4
+#DIM BAT
+CALL RPG_BATTLE_DUNGEON(FLAG:調査キャラ , 1)
+RETURN
+
+
+;-------------------------------------------------
+;ダンジョン定義関数で定義された敵との強制戦闘
+;FLOOREVENT_4との違いはダンジョン定義関数に全ての処理を投げること
+;-------------------------------------------------
+@FLOOREVENT_5
+#DIM BAT
+CALLFORM DUNGEON_{FLAG:調査区域}_SPBATTLE()
+RETURN

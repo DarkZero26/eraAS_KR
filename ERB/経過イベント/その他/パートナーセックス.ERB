@@ -1,0 +1,87 @@
+﻿;-------------------------------------------------
+;パートナーセックス
+;-------------------------------------------------
+@PARTNER_SEX
+#DIM L_N
+#DIM L_N_K
+#DIM L_I
+#DIMS MSG
+#DIM D_T
+
+D_T = TARGET
+L_I = FLAG:범용변수2
+
+SIF !FLAG:육종이벤트
+	RETURN
+	
+SIF !FLAG:임신機能
+	RETURN
+SETCOLOR COLOR("ピンク")
+
+L_N = (RAND:(1+(CFlag:MASTER:정자레벨)*CFlag:MASTER:남체레벨))+(CFLAG:L_I:수정최대내구치/5)
+	MSG = 수정내구치:{CFLAG:L_I:수정현재내구치} → {CFLAG:L_I:수정현재내구치-L_N}
+CFLAG:L_I:수정현재내구치 -= L_N
+
+SIF CFLAG:L_I:수정현재내구치 <= 0
+	CFLAG:L_I:수정현재내구치 = 0
+IF CFLAG:L_I:수정현재내구치 == 0
+	 L_N_K = RAND:100
+	IF TALENT:L_I:임신하기쉬움 == 1
+		L_N_K -= 20
+	ELSEIF TALENT:L_I:임신하기어려움 == 1
+		L_N_K += 20
+	ENDIF
+	IF (CFLAG:L_I:수정확률) > L_N_K
+		TALENT:L_I:수정 += 1
+		SIF TALENT:L_I:교제중 == 1 || TALENT:L_I:결혼함 == 1　|| TALENT:L_I:백합결혼 == 1　
+			TALENT:L_I:탁란 = 1
+		CFLAG:L_I:임신フラグ = 1
+		CFLAG:MASTER:男体경험치 += 1
+		IF CFLAG:MASTER:男体경험치 >= CFlag:MASTER:남체레벨*2
+			CFLAG:MASTER:男体경험치 = 0
+			CFlag:MASTER:남체레벨 += 1
+		ENDIF
+		MSG = 수정했습니다
+	ELSE
+		MSG = 수정하지 않았습니다…
+	ENDIF
+ELSE
+
+ENDIF
+TARGET = L_I
+CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK1000
+TARGET = D_T
+PRINTFORML 　　　　　　　　　【파트너에게 교배:%MSG%】
+RESETCOLOR
+
+EXP:L_I:Ｖ경험 += 1
+EXP:L_I:절정경험 += 1
+EXP:L_I:성교경험 += 1
+EXP:L_I:질싸경험 += 1
+FLAG:도시_파트너섹스 = 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

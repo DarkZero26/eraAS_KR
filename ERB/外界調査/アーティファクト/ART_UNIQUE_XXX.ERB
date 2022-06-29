@@ -1,0 +1,75 @@
+﻿[SKIPSTART]
+;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;XXXは유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_XXX_NAME
+RESULTS = 
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_XXX_ABLE
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_XXX_RANK
+RETURN 1
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_XXX_ATK
+RETURN HOGE
+
+
+@ART_UNIQUE_XXX_DEF
+RETURN HOGE
+
+
+@ART_UNIQUE_XXX_HIT
+RETURN HOGE
+
+
+@ART_UNIQUE_XXX_SPD
+RETURN HOGE
+
+
+@ART_UNIQUE_XXX_LUK
+RETURN HOGE
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_XXX_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_XXX_ABILITY
+RETURN 0
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_XXX_MADEIN
+RETURN 
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_XXX_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 
+EXPL:1 = 
+EXPL:2 = 
+EXPL:3 = 
+EXPL:4 = 
+RETURN 1
+[SKIPEND]

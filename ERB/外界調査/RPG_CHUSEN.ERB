@@ -1,0 +1,53 @@
+﻿;-------------------------------------------------
+;抽選関数
+;-------------------------------------------------
+{
+@CHUSEN(
+	TARG:0 = -1,
+	TARG:1 = -1,
+	TARG:2 = -1,
+	TARG:3 = -1,
+	TARG:4 = -1,
+	TARG:5 = -1,
+	TARG:6 = -1,
+	TARG:7 = -1,
+	TARG:8 = -1,
+	TARG:9 = -1,
+	TARG:10 = -1,
+	TARG:11 = -1,
+	TARG:12 = -1,
+	TARG:13 = -1,
+	TARG:14 = -1,
+	TARG:15 = -1,
+	TARG:16 = -1,
+	TARG:17 = -1,
+	TARG:18 = -1,
+	TARG:19 = -1
+)
+}
+#FUNCTION
+#DIM TARG , 20
+#DIM GOUKEI
+#DIM ATARI
+#DIM CNT
+
+GOUKEI = 0
+
+FOR CNT , 0 , VARSIZE("TARG")
+	SIF TARG:0 < 0
+		THROW TARG変数の指定がされていません  TARG:0={TARG:0}
+	SIF TARG:CNT < 0
+		BREAK
+	GOUKEI += TARG:CNT
+NEXT
+
+ATARI = RAND:GOUKEI
+GOUKEI = 0
+
+FOR CNT , 0 , VARSIZE("TARG")
+	GOUKEI += TARG:CNT
+	SIF GOUKEI > ATARI
+		RETURNF CNT
+NEXT
+
+THROW 予期しないエラー

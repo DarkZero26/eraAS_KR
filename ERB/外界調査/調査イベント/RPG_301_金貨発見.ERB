@@ -1,0 +1,43 @@
+﻿;-------------------------------------------------
+;金貨発見
+;-------------------------------------------------
+@RPG_EVENT_301(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+#DIM COINNUM
+COINNUM = RAND(1 , 6)
+L_G = 5000 + RAND(1 , MAX(FLAG:調査深度 , 2)) * 70 * COINNUM
+L_G = MIN(L_G , 70000)
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 301
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:금화 발견】
+PRINTFORML 
+PRINTFORML %조사처리(CALLNAME:L_I,"는")% 폐허가 된 집에서 너저분해진 동전을 {COINNUM}개 발견했다.
+PRINTFORML 가까이 들여보니 황금빛 광채가 보인다. 어쩌면 이것은 금화가 아닐까？
+PRINTFORML 좋은 보물을 발견했을지도 모른다. 기대감과 함꼐 동전을 주머니 속에 넣었다…….
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+IF RAND:3 == 0
+	PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 자금 {L_G}만큼 획득했다.
+ELSE
+	WAIT
+	RESETCOLOR
+	PRINTFORMW 후일, 그것은 도금된 싸구려에 불과하다는 것으로 판명났다…….
+	L_G = 0
+ENDIF
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+
+MONEY += L_G
+RESETCOLOR
+DRAWLINE

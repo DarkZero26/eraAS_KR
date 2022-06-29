@@ -1,0 +1,297 @@
+﻿;===============================================================================
+;===============================================================================
+;유니크
+;===============================================================================
+;===============================================================================
+;=================================================
+;   sub CHARACTER_SCOUT_POS
+;=================================================
+;   DB:EXPUP位置
+;-------------------------------------------------
+; Input:
+;  ARGS					対象値
+; Output:
+;  RETURNF				位置
+;-------------------------------------------------
+
+;=================================================
+;加入条件
+;=================================================
+@Unique_Check(ARG:0)
+
+IF FLAG:陽菜イベント == 0 && FLAG:학원 >= 50 && Flag:陥落人数 >= 1
+	FLAG:陽菜イベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+IF FLAG:アクアイベント == 0 && FLAG:희귀종보호시설 >= 50 && Flag:陥落人数 >= 5
+	FLAG:アクアイベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+IF FLAG:妹イベント == 0 && DAY >= 30
+	FLAG:妹イベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+IF FLAG:天狐イベント == 0 && Flag:도시_방위成功数 >= 20 && Flag:都市_Lv >= 60
+	FLAG:天狐イベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+IF FLAG:空狐イベント == 0 && Flag:도시_방위成功数 >= 40 && Flag:都市_Lv >= 80
+	FLAG:空狐イベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+IF FLAG:後輩ちゃんイベント == 0 && FLAG:敵_撃破数累計 >= 100
+	FLAG:後輩ちゃんイベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+IF FLAG:店長さんイベント == 0 && DAY >= 150
+	FLAG:店長さんイベント = 1
+	FLAG:유니크加入イベント発生 = 1
+ENDIF
+
+
+;=================================================
+;加入イベント
+;=================================================
+@Unique_Add(ARG:0)
+#DIM L_INPUT
+#DIM L_M
+#DIM L_I
+#DIM L_NM
+#DIM N_S
+
+
+IF FLAG:陽菜イベント == 1
+	ARG:0 = 100
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:陽菜イベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML ≪안녕하세요 「플레이어」, 날마다 노력하는 것 같아 다행입니다≫
+	PRINTFORMW 
+	PRINTFORML ≪그런 당신에게 새로운 임무입니다. 여깁니다, 히나≫
+	PRINTFORML 「네 「시티」!, 여기 계신 오빠가 제 담당자인거네요!」
+	PRINTFORML ≪네, 그 말대로. 「플레이어」에게도 설명해드리겠습니다. 그녀는 야마 히나…… 보시다시피 학생인 주민입니다≫
+	PRINTFORMW 
+	PRINTFORML ≪일단 중요한 정밀검사를 끝냈으니 당신에게 관리를 맡기도록 하겠습니다≫
+	PRINTFORML ≪웬 검사…… 라 생각되신다면 프로필을 참조하시길…… 그럼, 부탁드리겠습니다≫
+	PRINTFORMW 「어—그러니까, 무슨 이야기인지는 잘 모르겠지만…… 아무튼 앞으로 잘 부탁해, 오빠!」
+	PRINTFORML 
+	PRINTFORMW 【히나가 관리 대상으로 추가되었습니다】
+ENDIF
+IF FLAG:アクアイベント == 1
+	ARG:0 = 101
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:アクアイベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML ≪안녕하세요 「플레이어」, 날마다 노력하는 것 같아 다행입니다≫
+	PRINTFORMW 
+	PRINTFORML ≪그런 당신에게 새로운 임무입니다. 들어오세요, 아쿠아≫
+	PRINTFORML 「……네」
+	PRINTFORML ≪그녀는 해인 아쿠아, …놀라셨나요? 보시다시피 현 시대에는 멸종위기종인 인어 개체입니다≫
+	PRINTFORMW 
+	PRINTFORML ≪그 때문에 다른 사람들에게 노려졌기에 소심해져 있으므로 엄중한 관리가 필요하게 되어……≫
+	PRINTFORML ≪당신이라면 문제없겠죠…… 라는 생각이 번뜩 났답니다. 소중하게 대해주세요≫
+	PRINTFORMW 「……잘 부탁드립니다」
+	PRINTFORML 
+	PRINTFORMW 【아쿠아가 관리 대상으로 추가되었습니다】
+ENDIF
+IF FLAG:妹イベント == 1
+	ARG:0 = 102
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:妹イベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML ≪안녕하세요 「플레이어」, 날마다 노력하는 것 같아 다행…≫
+	PRINTFORML 「오빠? 오빠!! 오빠!!! 보고 싶었어요!」
+	PRINTFORMW 
+	PRINTFORML ≪자자, 그렇게 야단법석 떨지 말아주세요. 당신이 「플레이어」의 여동생이라면 그에 맞는 태도를 보여주세요≫
+	PRINTFORML 「아읏, 죄송해요 「시티」…」
+	PRINTFORML ≪착하지 착해, 이제부터 그를 지탱해주는거에요?≫
+	PRINTFORMW 
+	PRINTFORML ≪당신에게도 일단 설명을 드리자면, 여동생 개체의 배포입니다. 지지자는 하나라도 많은게 좋겠죠≫
+	PRINTFORML ≪관리 및 권한도 당신에게 이양되어 있습니다. 자유롭게 대해주세요≫
+	PRINTFORMW 「에헤헷, 잔뜩 힘낼게 오빠!」
+	PRINTFORML 
+	PRINTFORMW 【여동생이 관리 대상으로 추가되었습니다】
+ENDIF
+IF FLAG:天狐イベント == 1
+	ARG:0 = 103
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:天狐イベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML ≪안녕하세요 「플레이어」. 지난 번 방위선, 고생하셨습니다≫
+	PRINTFORMW 
+	PRINTFORML ≪그런 당신에게 새로운 임무입니다. 들어와주세요, 「메시아」 이나리 텐코≫
+	PRINTFORML 「…흠, 네녀석이 첩의 관리자인가…… 이 얼굴, 몇 번 본 적이 있구나」
+	PRINTFORML ≪네에, 「메시아」는 「플레이어」와 동격이였다면 대면할 기회는 있었겠죠≫
+	PRINTFORMW 
+	PRINTFORML ≪저번 방위선에서 신사가 붕괴해버렸기에 재건축 및 엄중화를 겸해,「플레이어」에게 관리를 맡기기로 했습니다≫
+	PRINTFORML 「음, 다른 주민과 똑같이 대해라, 다른 자들과는 적당히 말을 맞춰둬야 하지 않겠느냐」
+	PRINTFORML ≪네, 부탁드립니다. 「플레이어」도 그녀의 힘을 유효하게 활용하세요≫
+	PRINTFORMW 「이나리 텐코, 신명(神名)은 《대성도하천신(대성여우천신)》, 다시 한 번 잘 부탁하겠네? 쿠후훗」
+	PRINTFORML 
+	PRINTFORMW 【텐코가 관리 대상으로 추가되었습니다】
+ENDIF
+IF FLAG:空狐イベント == 1
+	ARG:0 = 104
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:空狐イベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML 텐코　「「플레이어」, 잠시 할 이야기가 있느니라. 아까운 시간은 뺏지 않겠네」
+	PRINTFORMW 
+	PRINTFORML 텐코　「자, 언니가 오셨다네! 자, 자!」
+	PRINTFORML 쿠우코「…밀지 마, 텐코. 딱히 부끄러워 한다던가는 아니니까」
+	PRINTFORML 텐코　「어떻다고 생각하느냐? 은거가 길어져 낯을 가리는게 아닌지 첩은 언니가 걱정되는게다」
+	PRINTFORMW 
+	PRINTFORML 텐코　「네녀석에게도 소개해주마. 이 분은 쿠우코…… 선대 천호인 첩의 언니니라」
+	PRINTFORML 텐코　「천호를 은퇴했다면서 은거한 채로 있었기에, 억지로 끌고 온거라네!」
+	PRINTFORML 텐코　「네녀석이라면 적확하게 운용할 수 있을테니, 모처럼의 힘…… 이대로 썩혀둘 수도 없으니까 말이다! 쿠후훗」
+	PRINTFORMW 쿠우코「이나리 쿠우코, 신명(神名)은 《대성도하공신(대성여우공신)》. ……저기, 된다면 잘 봐줄 수 있을까?」
+	PRINTFORML 
+	PRINTFORMW 【쿠우코가 관리 대상으로 추가되었습니다】
+ENDIF
+IF FLAG:後輩ちゃんイベント == 1
+	ARG:0 = 105
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:後輩ちゃんイベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML 후배 쨩「선배, 선배! 낭보에요, 낭보!!!」
+	PRINTFORMW 
+	PRINTFORML 후배 쨩「≪시티≫로부터 허락이 내려와서 저, 드디어 선배의 관리하에 들어갔어요!」
+	PRINTFORML 후배 쨩「매일매일 직접 담판한 보람이 있었어요! 에헤헷」
+	PRINTFORML ≪솔직히 말해서 귀찮게 굴어서 견딜 수가 없었네요≫
+	PRINTFORMW 
+	PRINTFORML 「그러니 이제부터는 잘 자유롭게 다루셔도 좋으니까요……%UNICODE(0x2661)%」
+	PRINTFORML ≪그녀를 전투운용할 때는 프로필을 한 번 참조해주세요≫
+	PRINTFORMW 
+	PRINTFORML 
+	PRINTFORMW 【후배 쨩이 관리 대상으로 추가되었습니다】
+ENDIF
+
+IF FLAG:店長さんイベント == 1
+	ARG:0 = 106
+	CALL CHARACTER_UNIQUE_SCOUT1(ARG:0)
+	FLAG:店長さんイベント = 2
+	FLAG:유니크加入イベント発生 = 0
+	PRINTFORML 점장 씨「어머, 요즘 활발히 일하고 있나보네. 관심 간다%UNICODE(0x2661)%」
+	PRINTFORMW 
+	PRINTFORML 점장 씨「내 쪽은 그 아이에게 가게 운영을 맡길 정도가 되서 조금 여유가 생겼어」
+	PRINTFORML 점장 씨「…그러니까 그때처럼 다시 나를 「관리」해줄 수 있을까？」
+	PRINTFORML 점장 씨「모두들처럼 싸우지는 못하지만, 내 힘은 너에게 도움이 될거라고 생각해」
+	PRINTFORMW 
+	PRINTFORML 점장 씨「…킥킥, 기쁜 듯한 얼굴이네. 안아준 여자를 그렇게 탐냈던 거려나?」
+	PRINTFORML 점장 씨「아무튼 앞으로 또 잘부탁해…… 사랑스러운 당신%UNICODE(0x2661)%」
+	PRINTFORMW 
+	PRINTFORML 
+	PRINTFORMW 【점장 씨가 관리 대상으로 추가되었습니다】
+ENDIF
+
+JUMP SYSTEM_MENU
+
+
+
+;=================================================
+;=================================================
+
+@CHARACTER_UNIQUE_SCOUT1(ARG:0)
+#DIM S_LOOP
+#DIM S_RACE
+#DIM S_MEMBER
+#DIM L_I
+#DIMS S_NAME
+
+ADDCHARA ARG:0
+
+
+CALL CHARACTER_UNIQUE_SCOUT2
+
+
+L_I = CHARANUM -1
+ARG:0 = L_I
+
+
+
+
+
+;-------------------------------------------------
+; 名前　性格　素質　経験　設定
+;-------------------------------------------------
+@CHARACTER_UNIQUE_SCOUT2(ARG:0)
+#DIM L_I
+#DIM S_MIND
+#DIM S_RACE
+#DIMS M_TALK
+#DIMS T_TALK1
+#DIMS T_TALK2
+
+L_I = CHARANUM -1
+
+ARG:0 = L_I
+
+
+SIF Talent:L_I:비처녀 == 1
+	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+SIF Talent:L_I:Ａ비처녀 == 1
+	TCVAR:L_I:履歴_EXP_Ａ処女喪失 = 1
+
+M_TALK  = %CSTR:L_I:一人称%
+T_TALK1 = %CSTR:L_I:二人称%
+T_TALK2 = %CSTR:L_I:二人称2%
+
+SIF T_TALK2 == ""
+	T_TALK2 = %T_TALK1%
+
+
+;性格と口調の設定
+SIF CFLAG:L_I:使用口上 == 0
+	CALL CHARACTER_SCOUT_MIND_REPEAT(L_I)
+SIF !STRLENS(CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "一人称")))
+	CSTR:L_I:一人称 '= CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "一人称"))
+SIF !STRLENS(CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "二人称")))
+	CSTR:L_I:二人称 '= CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "二人称"))
+
+SIF !STRLENS(CSTR:L_I:チャームポイント)
+	CALL CHARACTER_SCOUT_CHARM_POINT(L_I)
+SIF !STRLENS(CSTR:L_I:癖)
+	CALL CHARACTER_SCOUT_KUSE(L_I)
+SIF !CFLAG:L_I:신장
+	CALL CHARACTER_SCOUT_BODYSIZE(L_I)
+
+CALL CHARACTER_SCOUT_EXTRA(ARG:0)
+;悩みの設定
+SIF CALLNAME:L_I == ""
+	CALLNAME:L_I = %NAME:L_I%
+
+
+CSTR:L_I:一人称 = %M_TALK%
+CSTR:L_I:二人称 = %T_TALK1%
+CSTR:L_I:二人称2 = %T_TALK2%
+
+
+
+MAXBASE:L_I:체력 = 200
+BASE:L_I:체력 = MAXBASE:L_I:체력
+MAXBASE:L_I:절정 = FLAG:최대値_절정
+MAXBASE:L_I:무드 = FLAG:최대数_무드
+
+CFLAG:L_I:使用口上 = NO:L_I
+CFLAG:L_I:危険日 = RAND:6
+
+FLAG:개별번호カウント += 1
+CFLAG:L_I:개별번호 = FLAG:개별번호カウント
+
+CALL CHARACTER_SCOUT_PROFILE(ARG:0)
+;初期プロフィール
+
+
+
+
+
+
+
+
+

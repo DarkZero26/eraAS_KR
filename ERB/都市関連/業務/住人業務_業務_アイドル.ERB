@@ -1,0 +1,353 @@
+﻿
+;-------------------------------------------------
+;주민業務　業務　아이돌
+;-------------------------------------------------
+@WORK_T_Ai(ARG:0,ARG:1,ARGS:0)
+#DIM L_INPUT
+#DIM L_T
+#DIM L_F
+#DIM L_K
+#DIM L_N
+
+L_T = TARGET
+TARGET = ARG:0
+
+CLEARLINE LINECOUNT
+DRAWLINE
+
+CALL C_PICTURE(ARG:0,ARG:1)
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORM 　　　　　
+		IF !RAND:3
+			PRINTFORML 「%CSTR:어미YES%、할 수 있는 만큼 해봐%CSTR:어미ます%」
+		ELSEIF !RAND:2
+			PRINTFORML 「……잘 된것 같아%CSTR:어미肯定2%」
+		ELSE
+			PRINTFORML 「아직 방법이 있을 것 같아%CSTR:어미肯定2%」
+		ENDIF
+PRINTFORML 
+PRINTFORM 　　　　　
+PRINTFORML %타겟은% %CALLNAME:MASTER%에게 추천되어, 아이돌 활동에 매진했다…….
+PRINTFORMW 
+
+PRINTFORML 
+
+IF (Talent:비처녀 == 1 && Talent:합의 == 1) && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1) && RAND:10 >= 5
+SETCOLOR 250,50,200
+DRAWLINE
+	IF !RAND:9
+		PRINTFORML 「…읏 ……응」
+		PRINTFORML 가벼운 잠에서 깨어났다. 아무래도 절정에 이르고는 잠들어 버린 듯 하다.
+		PRINTFORML 시선을 옆으로 돌리자 팀원 한 명이 그에게 범해지고 있다. 배후에서 격렬하게 허리를 부딪히자 녹아내리는 교성을 끊임없이 내뱉고 있다.
+		PRINTFORML …어쩌다 이 지경이 되었는지 생각해보자, 스폰서인 그에게 팀원 5명이서 만나러 갔던 것을 떠올린다.
+		PRINTFORML 언제나 지원해주는 「감사」를 담은 것이지만, 처음엔 잘도 전원 동의했다며 놀랐을 터이다.
+		PRINTFORML 나중에서야 알았지만 다른 4명은 그의 도움과 추천이 있어 아이돌이 될 수 있었다고 하며, 뒤이어 이미 육체관계까지…….
+		PRINTFORML 손놀림의 속도에 조금 어이없기도 했지만, 지원과 인지를 해주기에 그나마 나을 것이라 생각하기로 한다.
+		PRINTFORML 
+		PRINTFORML 그렇게 생각하고 있는 사이 범해지고 있던 팀원은 헐떡이면서 절정하고, 그도 이제 사정한 것 같다. 그 팀원도 질내사정으로 만족스러운 듯이 쓰러진다.
+		PRINTFORML 그러자 다른 팀원이 아양 떠는 목소리로 그에게 다가간다. 이쪽도 움직이지 않으면 영원히 기다리게 될 것 같다.
+		PRINTFORML 그렇게 생각한 %타겟은%, 가랑이에서 정액을 흘리면서 모두의 곁으로 다가갔다…….
+	ELSEIF !RAND:8
+		PRINTFORML 제법 큰 공연장에서 하는 라이브라고 해서 평소보다 긴장해, 리허설에서는 평소에 하지 않던 실수를 해서 침울해진 %조사처리(CALLNAME,"지만")%
+		PRINTFORML %마스터가% 대기실에 들어오면 그것을 잊었다는 듯이 기쁜 얼굴이 되어 다른 사람이 없는 것이 다행스럽게 껴안아 온다.
+		PRINTFORML 하지만 보고에서 %타겟이% 리허설에서 잘 풀리지 않았던 일을 들은 %CALLNAME:MASTER%에게 그 일을 듣자 서먹하게 고개를 숙여 버린다.
+		PRINTFORML 그런 %타겟을% %마스터는% 부둥켜안으며 실전에서는 잘 할 수 있을거라고 하면서 북돋우지만 %타겟은% 아직 실패의 이미지로 고민하고 있다.
+		PRINTFORML %마스터는% %타겟을% 부둥켜안은 채 밀어 넘어뜨리고 속옷을 잡아당겨 억지로 육봉을 삽입하여 %타겟을% 범하기 시작했다.
+		PRINTFORML 
+		PRINTFORML 「ゃ…%CSTR:어미拒絶%%UNICODE(0x2661)%…もう数時間後には本番%CSTR:어미問う3%…こんなぁっ%UNICODE(0x2661)%…%CSTR:어미拒絶%%UNICODE(0x2661)%」
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML 처음에는 약간 저항하던 %조사처리(CALLNAME,"였")%지만 곧 암컷의 본능에 넘어가 쾌락에 휩쓸려 허리놀림을 맞추어 안쪽까지 찌르게 하려 했고,
+		PRINTFORML %CALLNAME:MASTER%의 허리가 움찔거리며 떨리자 곧 사정하겠다는 것을 감지, 다리를 허리에 감으며 다급하게 말을 이었다.
+		PRINTFORML 
+		PRINTFORML 「いっ…衣装っ%UNICODE(0x2661)%…本番用でぇっ%UNICODE(0x2661)%…ナカっ膣内にぃっ…全部膣内に出し%CSTR:어미命令強%%UNICODE(0x2661)%」
+		PRINTFORML 
+		PRINTFORML 허리를 밀착해 %CALLNAME%의 질내에 끈적하고 농후한 정액을 쏟아붓는 %마스터는% 아직 수그러들지 않은 육봉으로
+		PRINTFORML 자궁구를 쿡쿡 애태우듯 자극하면서 실전에서 잘하게 된다면 이번에는 여기에 쏟아부어 주겠다고 말하며 부드럽게 입을 맞추었다.
+		PRINTFORML 「…っ%UNICODE(0x2661)%…%CSTR:어미感謝%%UNICODE(0x2661)%…それと、約束%CSTR:어미拒否%…%CSTR:어미微笑%%UNICODE(0x2661)%」
+		PRINTFORML 
+		PRINTFORML 라이브 실전에서 평균 이상으로 많은 팬들을 멋진 노래와 춤으로 매료시켜, 자신을 감싸는 환성에 최고의 미소로 화답하며 빛나는 %CALLNAME%.
+		PRINTFORML 공연장 시설의 한 방에서 모니터 너머로 그것을 지켜보는 %마스터는% 그 모습을 보며 시간을 확인, 라이브도 슬슬 막바지에 접어들고,
+		PRINTFORML 마지막 곡이 시작하기 직전에 모니터에 비춰진 %타겟이% 한순간 몸을 떠는 듯 했으나 관객이 위화감을 느끼지 못하게 하려는 듯 노래를 시작했다.
+		IF TALENT:기계
+		;기계の乙女
+			PRINTFORML 「～～♪～～윽%UNICODE(0x2661)%～읏%UNICODE(0x2661)%～～～♪♪～～흣%UNICODE(0x2661)%%UNICODE(0x2661)%%UNICODE(0x2661)%」
+			PRINTFORML %마스터가% 조작하는 단말기에 쾌락신호를 보내자 약간의 삑사리가 나거나 안무 실수를 할 뻔하면서도
+			PRINTFORML 어떻게든 마지막 곡을 마치고 라이브에 성공한 %타겟은% 공연장에 모인 팬들에게 인사를 하고 무사히 마무리한다.
+		ELSE
+			PRINTFORML 「～～♪～～흣！～！？～～～♪♪～～읏？！%UNICODE(0x2661)%」
+			PRINTFORML 실전 직전까지 섹스하느라 미처 처리하지 못한 정액이 몇 시간 동안 계속된 라이브와 춤으로 승부팬티에서 흘러나올 뻔하면서도
+			PRINTFORML 어떻게든 마지막 곡을 마치고 라이브에 성공한 %타겟은% 공연장에 모인 팬들에게 인사를 하고 무사히 마무리한다.
+		ENDIF
+		PRINTFORML 하지만 %CALLNAME:MASTER%에게는 평소의 라이브에서 보여주는 고양과는 다른 의미로 홍조를 띤 %CALLNAME%의 표정이나 스커트 너머로
+		PRINTFORML 사타구니를 억누르는 모습에 조금 지나쳤나 생각하면서 약속을 지키기 위해 라이브를 마친 %CALLNAME%의 앞으로 발걸음을 옮긴다.
+		PRINTFORML 
+		PRINTFORML %타겟은% 팬들에게 웃는 얼굴로 손을 흔들면서도 종종걸음으로 무대 구석으로 이동했다. 마중 나온 스탭에게 인사도 간략히 끝내고
+		PRINTFORML 급하게 대기실로 돌아가 의상을 전부 벗어 던져 가랑이에서 백탁의 액체를 늘어뜨리며 비치되어 있는 샤워룸으로 뛰어든다.
+		PRINTFORML 「あぁ%UNICODE(0x2661)%…こんなにっ…たくさん%UNICODE(0x2661)%…ぁ…あぶなかったぁ…%UNICODE(0x2661)%」
+		PRINTFORML 수도를 열어 따뜻한 물을 머리에서부터 받으면서 비소에 손가락을 넣자 농후한 정자가 흘러나오는 것을 보고 쾌감을
+		PRINTFORML 느끼면서도 어떻게든 누구에게도 들키지 않고 끝났던 일에 %타겟은% 색기 어린 안도의 소리를 흘린다…….
+		PRINTFORML 
+		PRINTFORML 라이브가 끝나 안심한 탓인지 갑작스럽게 피로가 %CALLNAME%의 몸을 감싸는 감각에 사로잡혀 의식을 놓은 채
+		PRINTFORML 한참 샤워를 하는 도중 돌연 샤워실의 문이 열리고 %마스터가% 들어온다.
+		PRINTFORML %마스터는% %타겟을% 위로의 말을 건내면서 그 매력적인 지체를 어루만지듯 부드럽게 주무르고,
+		PRINTFORML 기분 좋게 마사지에 몸을 맡기면서 %타겟은% 어리광 부리듯 %CALLNAME:MASTER%에게 키스를 졸라왔다.
+		PRINTFORML %마스터는% 장난으로 아이돌인 주제에 팬들에게 미안하지도 않냐면서 %타겟을% 놀린다.
+		PRINTFORML 
+		PRINTFORML 「きっと…大丈夫%CSTR:어미応答%%UNICODE(0x2661)%…%CSTR:一人称%の팬수はやさしいからぁ%UNICODE(0x2661)%」
+		IF TALENT:ＮＴＬ
+		;寝取り済み
+			PRINTFORML 「아이돌止めろなんてっ…あの人…%CSTR:반려名前%みたいな事言わない%CSTR:어미褒める%%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORML 「%CSTR:一人称%がエッチで卑しい아이돌でもぉ%UNICODE(0x2661)%…ゆるしてくれ%CSTR:어미ます%%UNICODE(0x2661)%」
+		ENDIF
+		PRINTFORML 팬이 듣는다면 졸도하거나 격노하여 커뮤니티를 불태울 만한 발언에 %마스터는% 돌연
+		PRINTFORML 관계가 들통나지 않게끔 주의를 주며 %CALLNAME%의 질 안쪽까지 육봉을 삽입해 자궁구를 몇 번이고 쳐 올린다.
+		PRINTFORML 
+		PRINTFORML 「%CSTR:어미YES%っ%UNICODE(0x2661)%…ひみつぅ%UNICODE(0x2661)%…ヒミツに%CSTR:어미問う2%%UNICODE(0x2661)%…秘密のカンケイさせて%CSTR:어미希望%っ…%UNICODE(0x2661)%%UNICODE(0x2661)%」
+		PRINTFORML 
+		PRINTFORML 꽉 조이면서 육봉에 달라붙는 듯한 %CALLNAME%의 암컷구멍을 굴복시킨 %마스터는% 마무리라는 듯이
+		PRINTFORML 가장 깊은 곳에 귀두를 문질러 자궁의 안까지 육봉을 밀어 넣으려 하면서 가차없이 사정하여 아이돌의 자궁을 자신의 유전자로 채웠다…….
+		PRINTFORML 
+	ELSEIF !RAND:7
+		PRINTFORML 모라사장을 어루만지는 파도와 그 속을 걷는 %CALLNAME%, 레저 시설 내에 조성된 해안가 모래사장을 본뜬 수영장을 전세하여
+		PRINTFORML 이제 막 그라비아를 촬영하고 있는 중인 %타겟은% 면적이 작은 대담한 비키니 수영복을 입고
+		PRINTFORML 선정적인 자세나 포즈로 피사체가 되어 때로는 꽤 아슬아슬한 각도에서 국부를 강조하는 것까지 찍었다.
+		IF TALENT:거유 || TALENT:폭유
+			PRINTFORML 그리고 카메라맨이 더 과격한 주문을 해 %타겟은% 팬들의 시선을 사로잡고 놓아주지 않는 매력적인 가슴에서
+			PRINTFORML 수영복을 벗기고 손이나 손가락, 때로는 음료수 등의 소도구를 사용하여 유두와 유륜이 아슬아슬하게 보이기 직전까지 피부를 노출,
+			PRINTFORML 촬영 끝물에는 수영복 하의를 위로 잡아당겨 도끼자국이 두드러지는 팬들이 탐낼만한 한 장을 촬영해 무사히 마무리했다.
+		ELSEIF TALENT:빈유 || TALENT:절벽
+			PRINTFORML 다시 카메라맨으로부터 주문을 받은 %타겟은% 물가에 엎드려 파도에 몸을 적시면
+			PRINTFORML 그 슬렌더한 지체를 덮는 작고 하얀 비키니가 비쳐 유두와 유륜의 색이 희미하게 떠올라 버린다.
+			PRINTFORML 역시 이것으로 %CALLNAME%도 얼굴을 붉게 물들이지만 어떻게든 마지막까지 촬영을 해 몇 장의 젖은 비키니 사진을 찍고 마무리했다.
+		ELSE
+			PRINTFORML 카메라맨의 주문에 부응하는 %타겟은% 약간 수줍어 하면서도 매력적인 몸을 아낌없이 쓰며 즐거운듯이 촬영을 계속했고
+			IF TALENT:큰엉덩이 || TALENT:거대엉덩이
+				PRINTFORML 큰 바위 그늘에 숨는 듯한 장면에서 바위에 한 손을 짚고 큰 엉덩이를 강조하면서 수영복 끈을 푸는 듯한 야한 행동을 촬영하고 마무리한다.
+			ELSE
+				PRINTFORML 밸런스 잡힌 멋진 프로포션의 성적인 사진을 여러 장 찍고 무사히 마무리한다.
+			ENDIF
+		ENDIF
+		PRINTFORML 
+		PRINTFORML 
+		PRINTFORML 촬영이 끝난 %타겟은% 철수하기 시작한 스탭들을 바라보며 기다리다가 뒤늦게 찾아온 %CALLNAME:MASTER%에게
+		PRINTFORML 오늘의 일이 끝났으니 스탭들이 돌아간다면 둘이서 남은 전세 시간동안 즐기자면서 만면에 웃음을 띄운다.
+		PRINTFORML %마스터는% %CALLNAME%에게 이끌리는 대로 둘이서 어지간한 장소를 돌면서 놀고는, 다음은 바위 그늘 쪽으로 이끌려
+		PRINTFORML 촬영 중에 발견했다는 바위와 남국풍의 관엽식물에 가려져 주위에서 볼 수 없는 곳에서 %CALLNAME:MASTER%의 수영복을 무릎 밑까지 내려
+		PRINTFORML 육봉을 부드럽게 다루며 야한 미소를 지으면서 귀두에 키스를 하고 그대로 육봉을 빨며 기쁜 듯이 눈을 치뜨고 바라본다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK12
+		PRINTFORML 「…ぷあぁっ%UNICODE(0x2661)%…んっ…%CSTR:어미拒絶%%UNICODE(0x2661)%…こっちよりぃ…%UNICODE(0x2661)%…こっち%UNICODE(0x2661)%…%CSTR:어미微笑%%UNICODE(0x2661)%」
+		PRINTFORML 
+		PRINTFORML %타겟은% %CALLNAME:MASTER%에게 가르침 받은 펠라치오로 육봉을 꼿꼿히 세우고 유혹하는 듯한 시선으로 %마스터를% 바라보고 말하면서
+		PRINTFORML 수영복을 벗고 바위에 등을 대 한쪽 다리를 들어올려 끈적하고 야한 소리를 내며 두 손가락으로 비소를 열자 그곳에서 애액이 흘러나왔다.
+		PRINTFORML 
+		PRINTFORML 「들어왔다아%UNICODE(0x2661)%…가장 깊은 곳까지이%UNICODE(0x2661)%…%CSTR:二人称%의 자지%UNICODE(0x2661)%…좋아%UNICODE(0x2661)%…정말 좋아아%UNICODE(0x2661)%」
+		PRINTFORML 
+		PRINTFORML 많은 팬을 가진 아이돌이 %CALLNAME:MASTER%에게만 보여주는 음탕한 모습에 흥분하여 %CALLNAME%의 질을 터질듯한 육봉으로 안쪽까지 단번에 찔러 넣는다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML 기세에 몸을 맡겨 %CALLNAME%의 안쪽까지 범해 허덕이게 하면 %마스터는% 참지 못하고 그대로 질내에 내겠다고 단언한다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK1000
+		PRINTFORML 
+		PRINTFORML %CALLNAME%도 그것을 듣고 허덕이는 목소리로 대답하면서 끌어안고 다리를 휘감아 %CALLNAME:MASTER%의 씨뿌리기를 받아들여
+		PRINTFORML 두 사람은 서로 껴안고 이어진 채 한동안의 여운에 잠겨 있다가 아직 가시지 않은 성욕에 레저 시설을 나와서 카페로 차를 몰았다…….
+	ELSEIF !RAND:6 && TALENT:임신
+		PRINTFORML %CALLNAME%의 컨디션이 좋지 않아 팬클럽 회원 한정 생방송 미니라이브를 급히 토크 이벤트로 변경했지만
+		PRINTFORML 다행히 팬클럽으로부터의 큰 불만과 혼란이 없어 %마스터는% 안심하고 무사히 이벤트를 개시할 수 있었다.
+		PRINTFORML 「%CSTR:一人称%の体調の所為で予定を変更して本当に%CSTR:어미謝罪%…突然%CSTR:어미逆説%今日はトークイベントを楽しんで%CSTR:어미希望2%」
+		IF TALENT:결혼함 || TALENT:교제중
+			IF TALENT:ＮＴＬ && TALENT:탁란
+				PRINTFORML 약간 미안한 표정으로 카메라를 향해 고개를 숙이고 팬들에게 사과하는 %CALLNAME%의 배는 %CALLNAME:MASTER%의 아이를 품어 뚜렷하게 부풀어 있다.
+			ELSE
+				PRINTFORML 미안한 표정으로 카메라를 향해 고개를 숙이고 팬들에게 사과하는 %CALLNAME%의 배는 누군가의 아이를 배어 부풀어 버리고 있다.
+			ENDIF
+		ELSE
+		;あなた
+			PRINTFORML 조금 불편해 보이는 얼굴로 카메라를 향해 고개를 숙이고 팬들에게 사과하는 %CALLNAME%의 배는 %CALLNAME:MASTER%의 아이를 품어 뚜렷하게 부풀어 있다.
+		ENDIF
+		IF TALENT:예의바름
+			PRINTFORML 「라이브를 대신할 수 있을지는 모르겠지만, 이번에는 특별히 살짝만이라면 엣찌한 질문에도 대답하겠습니다！」
+			PRINTFORML %타겟은% 부끄러움을 참으면서 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용을 담은
+			PRINTFORML 질문을 여러번 받지만 그 예의바른 성격이라 그런지 뺨을 붉게 물들이면서도 제법 솔직하게 대답하고 있다.
+		ELSEIF TALENT:쿨
+			PRINTFORML 「라이브를 대신할 수 있을지는 모르겠지만, 이번에는 특별히 살짝만이라면 엣찌한 질문에도 대답해줄게♪」
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 들은 대로 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용을 담은
+			PRINTFORML 질문을 여러번 받지만 부끄러움을 느끼지 않겠다는 듯 다정하게 반응하면서 즐겁게 대답하고 있다.
+		ELSEIF TALENT:츤츤
+			PRINTFORML 「라이브를 대신할 수 있을지는 몰라도, 이번에 특별히 이 %타겟이% 조금 엣찌한 질문에도 대답해줄테니까！」
+			PRINTFORML %타겟은% 수치심에 화난 듯이 말하면서 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용을 담은
+			PRINTFORML 질문을 여러번 집요하게 받자 얼굴을 확 붉히며 질문에 격하게 반응해 팬들을 즐겁게 하고 있다.
+		ELSEIF TALENT:마이페이스
+			PRINTFORML 「라이브를 대신할 수 있을지는 몰라도 이번에는 특별히 조금 엣찌한 질문에도 대답해버릴게～♪」
+			PRINTFORML %타겟은% 부끄러워하면서도 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용을 담은
+			PRINTFORML 질문을 여러번 받지만 그 마이페이스 때문인지 뺨을 붉게 물들이면서도 평소의 모습으로 솔직하게 대답하고 있다.
+		ELSEIF TALENT:고압적
+			PRINTFORML 「그것을 대신할 수 있을지는 모르겠지만, 이번은 특별히 %타겟이% 조금은 야한 질문에도 대답해주기로 했어…♪」
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 들은 대로 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용의
+			PRINTFORML 질문을 여러번 받지만 평소와는 다른 독특한 색기를 풍기며 부푼 배를 쓰다듬으며 다정하게 대답하고 있다.
+		ELSEIF TALENT:거칠다
+			PRINTFORML 「그리고 말이야…… 라이브를 대신할 수 있을지는 모르겠는데 이번엔 약간만이라면 너네들의 야한 질문에도 대답해줄 수 있다고！…으으……」
+			PRINTFORML %타겟은% 수치심에 화내거나 곤란해 하면서도 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용의
+			PRINTFORML 질문을 몇번이고 받아 평소 모습에서는 생각할 수 없을 정도로 뺨을 확 붉히며 당황하면서도 대답해 버리고 있다.
+		ELSEIF TALENT:약함
+			PRINTFORML 「그… 그리고 라이브를 대신할 수 있을지는 모르겠지만 이번엔 특별히 조… 조금이라면 엣찌한 질문에도 대답해버릴게요오…！」
+			PRINTFORML %타겟은% 부끄러움에 눈물을 글썽이면서 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용의
+			PRINTFORML 질문으로만 여러번 받자 예상대로 나약한 성격에서인지 뺨을 새빨갛게 물들이고 솔직하게 대답해 버리고 있다.
+		ELSEIF TALENT:기품높음
+			PRINTFORML 「라이브를 대신할 수 있을지는 모르겠습니다만 이번 %CSTR:一人称%, 특별히 약간 야한 질문에도 답하기로 했답니다…♪」
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 들은 대로 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용을 몇 가지 포함한 질문을
+			PRINTFORML 여러번 받으면서도 기품있는 독특한 색기를 풍기며 부푼 배를 쓰다듬으며 다정하게 대답하고 있다.
+		ELSEIF TALENT:보이쉬함
+			PRINTFORML 「그리고… 라이브르 대신할 수 있을진 모르겠는데 이번에 특별히 너네들의 변태같은 질문에도 조금 답해주겠어！…그, 그렇게 난리치지 마！」
+			PRINTFORML %타겟은% 부끄러움에 화내면서도 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용을 담은
+			PRINTFORML 질문을 몇번이고 받아 평소 모습에서는 생각할 수 없을 정도로 뺨을 확 붉히며 당황하면서도 대답해 버리고 있다.
+		ELSEIF TALENT:요염함
+			PRINTFORML 「그렇지… 라이브를 대신할 수 있을지는 몰라도 이번에 특별히 살~짝 엣찌한 질문에도 대답해버릴게♪」
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용의 질문을 계속 받지만
+			PRINTFORML 즐거운 듯이 다정하게 반응하면서 대답해 때로는 질문받은 내용 이상의 것까지 말하고 있다.
+		ELSEIF TALENT:친근함
+			PRINTFORML 「참, 라이브를 대신할 수 있을지는 모르겠는데 이번에는 특별히 살짝 엣찌한 질문에도 대답해줄거니까아♪」
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용의 질문을 몇번이고 받자
+			PRINTFORML 부끄러워하면서도 친한 동성 친구와 이야기할 때처럼 재미있다는 듯 다정하게 대답하고 있다.
+		ELSEIF TALENT:고풍스러움
+			PRINTFORML 「풍류를 노래하는 것을 대체할 수 있을지는 모르겠으나 이 한때, %타겟이% 특별히 그대들의 약간의 음탕한 질문에 답하기로 했느니라…♪」
+			PRINTFORML %타겟은% %CALLNAME:MASTER%에게 들은 대로 인사를 하고 이후 선언한 대로 팬들로부터 성적인 내용을 담은 질문에
+			PRINTFORML 몇 번이고 다가오는 부끄러움을 참으면서 가능한 한 붙임성 있게 반응해 즐거운 듯이 대답하고 있다.
+		ELSEIF TALENT:어린애같음
+			PRINTFORML 「앗！…그리고 라이브를 대신할 수 있을지는 모르겠지만… 이번에 특별히 엣찌？…한 질문에 %타겟이% 대답해버릴거야♪ …에헤헷♪」
+			PRINTFORML %타겟은% 의미마저 잘 이해하지 못한 채 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용의 질문을 연달아서 받지만
+			PRINTFORML 역시 의미를 잘 모르는 모양으로, 이상한 대답으로 웃음을 자아내거나 팬티 색 질문에 부끄러워 하면서 즐거운 듯이 대답하고 있다.
+		ELSEIF TALENT:깜찍함
+			PRINTFORML 「그러니까… 그리고 라이브를 대신할 수 있을지는 모르겠지만… 이번에는 말이죠… 특별히 살짝 엣찌한 질문에도 대답하겠습니다！…부끄러워요오…♪」
+			PRINTFORML  %타겟은% 부끄러움에 뺨을 확 붉히면서 %CALLNAME:MASTER%에게 들은 대로 인사를 하고 팬들로부터 성적인 내용의
+			PRINTFORML 질문공세를 받자 더욱 뺨을 붉게 물들이며 혼란스럽게 대답해 버리고 있다.
+		ELSE
+			PRINTFORML 이 부분은 원래 표시되지 않습니다. / 이게 나오면 캐릭터 성격 설정에 문제가 발생했다고 봐야 할 듯.
+		ENDIF
+		PRINTFORML 
+		PRINTFORML 여러가지 질문과 대답이 오갔던 토크 이벤트도 슬슬 마무리할 시간에 가까워져 %타겟이% 앞으로 얼마동안은 컨디션에 따라서 라이브나 댄스같은
+		PRINTFORML 이벤트를 미뤄진다며 팬들에게 다시 한 번 전달하면서 고개를 숙이고 그 후에 이 아이를 낳으면 다시 지금과 같이 활동을 재개하겠다고 선언,
+		PRINTFORML 제도에 의해 주민들에게 널리 인지되는 여성들은 정기적으로 그 중에서 무작위로 선정되어 아이를 낳아 시티에 기여해야 한다고
+		PRINTFORML 배운 팬들은 %CALLNAME%에게, '임신 축하해요', '건강한 아기를 낳아줘요' 같은 축하 메세지를 보내며 행사는 끝이 났다…….
+		PRINTFORML 
+	ELSEIF !RAND:5 && (TALENT:거유 || TALENT:폭유)
+		PRINTFORML 현재 인기 있는 코스튬을 보여주는데 쓸데없이 색기 넘치는 의상이다. 특히 가슴 아래쪽은 커다란 구멍이 뚫려있는, 이른바 「파이즈리 홀」이라는 것이다.
+		PRINTFORML 특별히 %CALLNAME% 정도의 풍만한 유방이라면 흉부가 매우 강조되어, 구멍에서 남반구의 살집이 과장될 정도로 노출되고 있다.
+		PRINTFORML 이쪽의 시선을 눈치챈 것인지, 히죽대며 웃음 짓는 %타겟이% 이쪽을 침대에 앉히고
+		PRINTFORML 천천히 페니스를 꺼내어 한 번 입에 머금고, 충분히 적신 후 그것을 빡빡한 파이즈리 홀에 삽입했다.
+		PRINTFORML 
+		PRINTFORML 마시멜로처럼 부드러운 젖가슴에 범해지면서, 달콤한 목쇠와 눈짓의 조합으로 인한 시각적 흥분은 강렬하며, 엄청난 기세로 정액이 충전되고 있음을 느낀다.
+		PRINTFORML 조교에서 가르친 기교가 어우러져 움직일 때마다 육음이 울리는 압권의 파이즈리 앞에, %마스터는% 맥없이 유내사정하고 말았다.
+		PRINTFORML 잠시 사정의 여운에 젖어 있던 중, 소악마 같은 미소를 띤 %타겟은% 다시 파이즈리를 시작한다.
+		PRINTFORML 정액으로 더욱 윤활해져 좋아진 쾌감과, 골짜기에서 들리는 찔꺽대는 추잡한 물소리로 사정했을 터인 페니스는 곧 단단함을 되찾는다.
+		PRINTFORML 이에 기분이 고양된 %타겟은%, 항상 괴롭히는 것에 대한 보복이라는 듯이 파이즈리 천옥(天獄)을 이어갔다…….
+		PRINTFORML 
+	ELSEIF !RAND:4
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 신곡의 CD가 많이 팔렸다는 소식에, %CALLNAME%에 대한 보상으로 %마스터는% 그녀를 자신의 방에 데려가 귀여워 해주기로 했다.
+		PRINTFORML 기승위를 허락해주자, 기다렸다는 듯이 욕정에 빠진 표정으로 가랑이에서 애액을 흘리며 허리를 위아래로 흔들기 시작한다.
+		PRINTFORML %CALLNAME:MASTER%의 종자를 탐내듯 자궁도 내려와 있어, 허리를 내리칠 때마다 음탕문란한 물소리가 울려 퍼진다.
+		PRINTFORML 
+		PRINTFORML 절정에 이를 쯤 음란한 춤을 반복하며 %CALLNAME%의 씨뿌리기 요구에 %CALLNAME:MASTER%도 마침내 한계가 와, 충전된 정액을 사정없이 사정했다.
+		PRINTFORML 아이돌을 독점해 질내사정한다는 배덕감에 흥분을 억제하지 못한 %마스터는%, %타겟을% 침대에 눕혀 정상위로 범하기 시작한다.
+		PRINTFORML 그 욕망을 읽어 낸 %타겟은% 환희를 가지고 받아들여, 양손양발로 %마스터를% 붙잡아 더 많은 정자를 졸랐다…….
+	ELSEIF !RAND:3
+		PRINTFORML 인기 있는 것을 좋아하고 노래와 춤도 좋아하지만, 사생활 역시 원한다고 생각하는 %조사처리(CALLNAME,"였")%지만, 인기가 많아질 수록 그것은 어렵다.
+		PRINTFORML 하지만 그런 그녀라도 안심하고 맨얼굴을 드러낼 수 있는 장소가 있으니, 정말 좋아하는 그가 자주 다니는 카페다.
+		PRINTFORML 그나 점장이 말하기를, 「정보 누설 금지」를 신청해 두면 문제 없다고 하지만 지금도 반신반의하다. 그래도 확실히 새어나간 적이 없으니 일단 신뢰한다.
+		PRINTFORML 
+		PRINTFORML 오늘도 그와 즐거운 다과회를 즐기고, 기분이 고양된 상태에서 평소의 「안방(奥の部屋)」에 가자고 그를 유혹한다.
+		PRINTFORML 어째서 카페에 「떡방(ヤリ部屋)」이 여럿 있는지는 의문이지만, 마음 놓고 러브호텔도 못 쓰는 신세로서는 고마운 일이다.
+		PRINTFORML 황혼이 비치는 방에 들어서자마자, 서로 옷을 벗고 그의 늠름한 페니스를 자신의 질 안으로 향하게 했다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 질내는 이미 그의 페니스 모양을 기억했는지, 가벼운 스트로크로도 전기가 동하는 것 같은 쾌감이 신체를 맴돈다.
+		PRINTFORML 여성의 신체를 전부 꿰뚫은 듯한 능숙한 피스톤에, 이쪽은 그저 쾌락을 감수할 수밖에 없다.
+		PRINTFORML 아이돌다운 연기같은건 할 여유도 없고, 강한 수컷에게 범해지는 암컷으로 전락한 것 처럼 몸도 마음도 알랑인다.
+		PRINTFORML 
+		PRINTFORML 정교의 끝에는, 이쪽이 몇 차례 절정에 이른 후에야 그도 가버린 것인지, 뜨거운 것이 자궁으로 흘러 들어오는 감각을 느낄 수 있다.
+		PRINTFORML 오늘이 배란일이었나, 하고 생각이 정해지지도 않았는데도… 오히려 원하는 미래의 모습을 그린다.
+		PRINTFORML 여자로써 최대의 행복으로 가득 차면서, 더욱 맛보려는 혼미한 욕망에 사로잡혀 움직이기 시작했다…….
+	ELSEIF !RAND:2
+		PRINTFORML 일찍 도착해버렸기에 준비를 끝내도 라이브까지 2시간은 남은 상황에서, 심심해 하던 %CALLNAME%에게 시찰하러 온 %마스터가% 찾아온다.
+		PRINTFORML 예상 못한 서프라이즈에 만면에 웃음을 띄우며 마주하자, 사람의 시선이 없는 것을 좋게 여기고, %타겟은% 달콤한 목소리로 그에게 응석을 부리기 시작했다.
+		PRINTFORML 처음에는 밀착할 뿐이였지만 차츰 표정에 열이 차기 시작했고, 마지막에는 간이침대에서 섹스 요구로까지 발전한다.
+		PRINTFORML 귀여운 아이돌의 부탁이라면 별 수 없다며, %마스터는% 딱딱하게 발기한 페니스를 꺼내어, 애액으로 흠뻑 젖은 비소에 삽입했다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML 그 후 시간이 아슬아슬하게 남을 때까지 사랑을 나누고, 마지막으로 몇 번째인지 모르는 사정을 자궁을 향해 쏟아 붓는다.
+		PRINTFORML 더는 들어가지 않는, 역류하는 정액을 귀두로 억지로 밀어넣어, 거듭되는 피스톤으로 자궁으로 보낸다.
+		PRINTFORML 울컥울컥하며 자궁에 쌓여가는 감각에 %타겟은% 황홀해져, 붉어진 얼굴이 가라앉을 때까지 그와 애프터 키스를 마음껏 즐겼다.
+		PRINTFORML 뜨거운 정교 후, 샤워를 하고 준비를 갖춘 %타겟은% 시간에 맞추어 라이브로 향한다.
+		PRINTFORML 
+		PRINTFORML 수많은 팬들 앞에서 노래와 춤으로 매료시키고, 함성에 미소로 응하는 %CALLNAME%.
+		PRINTFORML 많은 열의와 정욕을 모으지만, 이미 그녀의 자궁은 한 남자의 정액으로 채워진 상태였다…….
+	ELSE
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK12
+		PRINTFORML 
+		PRINTFORML 라이브를 마친 %타겟은% 상황을 보러 온 %CALLNAME:MASTER%에게 달려가, 졸라대서 차로 집에 바래다주기로 했다.
+		PRINTFORML 이동 도중, %타겟은% 자율주행으로 한가함에 빠진 %CALLNAME:MASTER%의 페니스를 바지에서 꺼내어, 달아오른 얼굴을 감추지 못한 채 펠라를 시작한다.
+		PRINTFORML 이따금 커다란 육봉에 볼을 비비거나 눈을 치뜨고 펠라하는 등, 아이돌 활동으로 갈고 닦은 매력의 센스를 사용해 %CALLNAME:MASTER%의 정욕을 불러 일으킨다.
+		PRINTFORML %CALLNAME:MASTER%도 이를 참지 못해 사정을 억제하지 못하고 입안에 진한 정액을 내보내,
+		PRINTFORML 사정이 일단 끝나자 %타겟이% 입을 열어 입안에 고인 백탁액을 보여준 뒤 깨끗하게 꿀꺽 들이켰다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML 집에 도착한 후에도 떨어지지 않으려는 %CALLNAME%에게 체념한 %마스터는%, 그녀에게 이끌리듯 침실로 향하여 옷을 벗는 거조차 잊고 정교에 빠져들었다.
+		PRINTFORML 허덕이는 목소리마저 아름다운 %CALLNAME%의 노랫소리는 심야가 되어도 멈출 기색은 없었다…….
+	ENDIF
+DRAWLINE
+
+CALL JN_SEX_EXP
+RESETCOLOR
+
+ENDIF
+
+
+
+
+
+
+
+PRINTFORMW
+
+EXP:업무경험 += 1
+L_F = 1+(EXP:업무경험/10)+(RAND:(EXP:업무경험))+RAND:50
+L_N = 5+RAND:20
+CFlag:팬수の数 += L_F
+CFlag:주민_인기 += L_N
+PRINTFORML 【업무경험　　:{EXP:업무경험-1, 9 ,LEFT}→{EXP:업무경험, 9 ,RIGHT}】
+PRINTFORML 【팬 인원 수　:{CFlag:팬수の数-L_F, 9 ,LEFT}→{CFlag:팬수の数, 9 ,RIGHT}】
+PRINTFORML 【인기　　　　:{CFlag:주민_인기-L_N, 9 ,LEFT}→{CFlag:주민_인기, 9 ,RIGHT}】
+DRAWLINE
+IF Flag:도시_공적獲得機会 != 0
+	CFLAG:주민_業務ポイント += 5
+	L_K = (((EXP:업무경험/100)+1)*1000)+(EXP:업무경험*3)
+	Flag:도시_공적 += L_K
+	Flag:도시_공적獲得機会 = 0
+	PRINTFORML 추가로 %CALLNAME%의 활약이 「시티」에게 인정받아, 대량의 공적을 획득했다！
+	PRINTFORML 【공적　　:{Flag:도시_공적-L_K, 10 ,LEFT}→{Flag:도시_공적, 10 ,RIGHT}】
+	DRAWLINE
+ENDIF
+PRINTFORMW 
+
+TARGET = L_T
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1486 @@
+﻿;-------------------------------------------------
+;戦闘関係
+;CHARに闘うキャラを、ENEMに敵のIDを、FIELDに戦場を受け取る
+;BOOSTに非0を受け取るとその分敵を強くしたり弱くしたり
+;-------------------------------------------------
+{
+@RPG_BATTLE(
+	L_I = -1,
+	ENEM = -1,
+	FIELD = -1,
+	BOOST = 0,
+	NOESCAPE = 0,
+	TURNLIMIT = 0,
+	DUNGEON = -1
+)
+}
+#DIM L_INPUT  ;INPUT退避
+#DIM L_I      ;탐색キャラ格納
+#DIM ENEM     ;敵ID
+#DIM FIELD    ;地形ID
+#DIM BOOST    ;敵の能力強化/弱体化変数
+#DIM NOESCAPE ;退却不能フラグ。1以外を受け取ると逃走不能になる
+#DIM TURNLIMIT;ターン制限、これに達すると戦闘を強制終了する。0なら無制限
+#DIM DUNGEON  ;ダンジョンIDを受け取る。-1なら非탐색の戦闘として扱う
+#DIM TURN     ;현재のターン数
+#DIM TACT     ;戦術的有利/不利。0を基準とし正ならプレイヤー有利、負なら敵有利
+#DIM TACTR    ;上記変数を@JUDGE_TACTICALにかけた結果。たぶんTACTICAL_RESULT
+#DIM ATTACKNUM;戦闘を回すターン数
+#DIM DOATK_P  ;これが1だとプレイヤー側の攻撃が処理される
+#DIM DOATK_E  ;これが1だと敵側の攻撃が処理される
+#DIMS TACTS,5 ;上記TACTの表示用変数
+#DIMS PE,2    ;PLAYER or ENEMY
+#DIM B_B      ;レア敵の演出用？
+
+;戦闘結果保存用広域変数初期化
+BATTLE_WIN_P = 0
+BATTLE_WIN_E = 0
+BATTLE_ESCAPE_P = 0
+BATTLE_ESCAPE_E = 0
+BATTLE_TIMEUP = 0
+DOATK_P = 0
+DOATK_E = 0
+
+SIF L_I < 0
+	THROW 引数の指定が不正です  L_I={L_I}  ENEM={ENEM}  FIELD={FIELD}  BOOST={BOOST}
+
+Flag:戦闘_攻勢 = 0
+B_B = 0
+TURN = 0
+ATTACKNUM = 0
+
+;敵ステータス読み込み
+CALL RPG_ENEMYSET(ENEM , BOOST , DUNGEON)
+;CALL RPG_BATTLE_E
+
+;戦術的優劣決定
+CALL RPG_CALC_TACTICAL(L_I , ENEM , FIELD)
+TACT = RESULT
+TACTR = JUDGE_TACTICAL(TACT)
+TACTS:0 = %RESULTS:0%
+TACTS:1 = %RESULTS:1%
+TACTS:2 = %RESULTS:2%
+TACTS:3 = %RESULTS:3%
+TACTS:4 = %RESULTS:4%
+;TACTICAL_P、TACTICAL_Eは広域変数
+SELECTCASE TACTR
+	CASE 1
+		;プレイヤー側戦術的有利
+		TACTICAL_P = ADVANTAGE
+		TACTICAL_E = ADVANTAGE * (-1)
+	CASE 2
+		;プレイヤー側奇襲
+		TACTICAL_P = AMBUSH
+		TACTICAL_E = AMBUSH * (-1)
+	CASE -1
+		;敵側戦術的有利
+		TACTICAL_P = ADVANTAGE * (-1)
+		TACTICAL_E = ADVANTAGE
+	CASE -2
+		;敵側奇襲
+		TACTICAL_P = AMBUSH * (-1)
+		TACTICAL_E = AMBUSH
+	CASEELSE
+		;優劣なし
+		TACTICAL_P = 0
+		TACTICAL_E = 0
+ENDSELECT
+
+SIF Flag:敵_レア != 0 || Flag:도시_방위 != 0
+	B_B = 1
+CLEARLINE LINECOUNT
+IF B_B == 1
+	SETBGCOLOR 90,10,10
+	PRINTFORML  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+ENDIF
+IF Flag:敵_レア == 100
+	PRINTFORML 　　　　　　　　　　　　　　　　　　　　　경고 레벨 XX　　　　　외신　습격　　　　　　　　
+ELSEIF Flag:敵_レア != 0 && Flag:調査区域 == 90 && (Flag:調査深度 >= Flag:日替わり区画深度限界)
+	PRINTFORML 　　　　　　　　　　　　　　　　　　　　　최심부 도착　 본작전최종공정개시　　　　　　　　
+ELSEIF Flag:敵_レア != 0
+	PRINTFORML 　　　　　　　　　　　　　　　　　　　　　경고 레벨 5　인지외적성존재 습격　　　　　　　　
+ELSEIF Flag:도시_방위 != 0
+	PRINTFORML 　　　　　　　　　　　　　　　　　　　　　도시방어전 　인재외적성존재 습격　　　　　　　　
+ENDIF
+IF B_B == 1
+	PRINTFORML  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORMW
+ENDIF
+
+
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML %조사처리(SAVESTR:敵_名前,"가")% 나타났다!
+CALL SHOW_ENEMY_STATUS
+DRAWLINE
+PRINTFORML
+PRINTFORML
+PRINTFORMW
+
+;奇襲処理
+IF TACTICAL_P == AMBUSH
+;IF POSSIB(CFlag:L_I:주민_SPD * 100 / (CFlag:L_I:주민_SPD + FLAG:敵_SPD))
+;IF CFlag:L_I:주민_SPD >= RAND:100
+;ファーストアタック
+	CALL PRINT_LABEL("――――FASTATTACK!――――",,COLOR("RPG_MESSAGE_GOOD"))
+	PRINTL
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 적이 움직이기 전에 공격했다!
+	CALL RPG_BATTLE_ATTACK_P(L_I)
+	SIF RESULT
+		RETURN 1
+ELSEIF TACTICAL_E == AMBUSH 
+	;奇襲は都市防衛、レア敵の時は起きない
+	IF FLAG:敵_レア == 0 && FLAG:도시_방위 == 0
+		CALL PRINT_LABEL("――――FASTATTACK!――――",,COLOR("RPG_MESSAGE_BAD"))
+		PRINTL
+		PRINTFORML %조사처리(CALLNAME:L_I,"는")% 허를 찔렸다!
+		CALL RPG_BATTLE_ATTACK_E(L_I)
+		SIF RESULT
+			RETURN 1
+	ELSE
+		;戦術的優劣は"奇襲"表示なのに実際には奇襲がないのがバグっぽく見えたのでメッセージだけ出す
+		PRINTFORML %조사처리(CALLNAME:L_I,"는")% 허를 찔렸다!
+		PRINTFORMW ……만, 적은 공격하지 않았다. 기습 따위 필요 없다는 듯이……
+	ENDIF
+ENDIF
+
+;時間経過を伴うラベル
+$INPUT_LOOP
+
+TURN++
+IF TURNLIMIT > 0 && TURN > TURNLIMIT
+	BATTLE_TIMEUP = 1
+	IF FLAG:도시_방위
+		RETURN 1
+	ELSE
+		PRINTL  
+		;#;PRINTFORML 현재 턴：{TURN}    지정된 제한 턴：{TURNLIMIT}
+		PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 전투를 마쳤다……
+		RETURN 1
+	ENDIF
+ENDIF
+
+;時間経過を伴わないラベル
+$INPUT_LOOP_NO_ELAPSE
+CLEARLINE LINECOUNT
+
+;プレイヤー/敵の攻撃実行フラグ。攻撃させたくない場合は0にする
+DOATK_P = 1
+DOATK_E = 1
+
+;INPUTネスト。攻撃が予約されてなければここに入る
+IF ATTACKNUM == 0
+	CALL SHOW_TURN(TURN , TURNLIMIT)
+
+	CALL PRINT_LABEL(CALLNAME:L_I)
+
+	IF CFlag:L_I:주민_현재기력 <= CFlag:L_I:주민_최대기력-((CFlag:L_I:주민_최대기력*7)/10)
+		CALL PRINT_LABEL("피로",,COLOR("RPG_MESSAGE_WARNING"))
+		PRINTL
+	ELSE
+		PRINTFORML 
+	ENDIF
+
+	CALL PRINT_RANGE_STATUS(L_I, "HP", "체력", , , , "％")
+	CALL PRINT_RANGE_STATUS(L_I, "SP", "기력", , , , "％")
+	PRINTL
+	CALL PRINT_STATUS(L_I, "GUTS" )
+	CALL PRINT_STATUS(L_I, "BRAVE")
+	PRINTL
+	CALL PRINT_STATUS(L_I, "SAN")
+	PRINTL
+	CALL PRINT_RANGE_STATUS(L_I, "BRE", , , , , "％")
+	PRINTL
+	IF Flag:戦闘_攻勢 > 0
+		CALL PRINT_LABEL(@"공세(앞으로 {Flag:戦闘_攻勢}턴)")
+		PRINTL
+	ENDIF
+	DRAWLINE
+	CALL PRINT_LABEL(SAVESTR:敵_名前)
+	CALL SHOW_ENEMY_STATUS
+	PRINTL
+	IF Flag:敵_현재체력 <= Flag:敵_최대체력-((Flag:敵_최대체력*9)/10)
+		CALL PRINT_LABEL("상태",,,"빈사",,COLOR("敵_瀕死"))
+	ELSEIF Flag:敵_현재체력 <= Flag:敵_최대체력-((Flag:敵_최대체력*6)/10)
+		CALL PRINT_LABEL("상태",,,"치명",,COLOR("敵_重症"))
+	ELSEIF Flag:敵_현재체력 <= Flag:敵_최대체력-((Flag:敵_최대체력*4)/10)
+		CALL PRINT_LABEL("상태",,,"중상",,COLOR("敵_重傷"))
+	ELSEIF Flag:敵_현재체력 <= Flag:敵_최대체력-((Flag:敵_최대체력*2)/10)
+		CALL PRINT_LABEL("상태",,,"경상",,COLOR("敵_軽傷"))
+	ELSE
+		CALL PRINT_LABEL("상태",,,"무상",,COLOR("敵_無傷"))
+	ENDIF
+	PRINTFORML 
+	DRAWLINE
+
+	;戦術的有利不利表示
+	PRINTSL TACTS:0
+	PRINTSL TACTS:1
+	PRINTSL TACTS:2
+	PRINTSL TACTS:3
+	IF TACTR > 0
+		SETCOLOR COLOR("RPG_MESSAGE_GOOD")
+	ELSEIF TACTR < 0
+		SETCOLOR COLOR("RPG_MESSAGE_BAD")
+	ENDIF
+	PRINTSL RESULTS:4
+	RESETCOLOR
+
+	DRAWLINE
+
+	PRINTFORM [1]  - 턴 경과 　(SP-1)　
+	PRINTFORM [2]  - 자동전투
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORM [10] - 공세지시(SP-10)(주는 대미지 2배:5턴)
+	PRINTFORML 
+	PRINTFORML 
+
+	IF NOESCAPE
+		SETCOLORBYNAME GRAY
+		PRINTFORML [X] - 도주
+		RESETCOLOR
+	ELSE
+		PRINTFORML [0] - 도주
+	ENDIF
+
+	;入力の結果が無効だったときのラベル
+	$INPUT_LOOP22
+	INPUT
+
+	L_INPUT = RESULT
+
+	;攻撃の実行に移りたいときはこのSELECTCASEを抜ける、そうでないならGOTOして戻すこと
+	SELECTCASE L_INPUT
+		CASE 10
+			;攻勢指示。時間経過はしない
+			IF CFlag:L_I:주민_현재기력 >= 10
+				Flag:戦闘_攻勢 = 5
+				CFlag:L_I:주민_현재기력 -= 10
+				CALL PRINT_LABEL("――――공세지시발령!!――――")
+				PRINTW
+			ELSE
+				CALL PRINT_LABEL("――――SP가 부족합니다――――")
+				PRINTW
+			ENDIF
+			GOTO INPUT_LOOP_NO_ELAPSE
+		CASE 1 , 2
+			IF L_INPUT == 2
+				;10ターン戦闘
+				ATTACKNUM = 10
+			ELSE
+				;1ターン戦闘
+				ATTACKNUM = 1
+			ENDIF
+		CASE 0
+			;逃げる
+			IF NOESCAPE
+				;退却不可なら選択不能
+				GOTO INPUT_LOOP22
+			ELSEIF RAND:(CFlag:L_I:주민_SPD) >= RAND:(Flag:敵_SPD) || FLAG:敵_逃走確定
+				;逃走成功
+				PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 전장에서 탈출했다…….
+				BATTLE_ESCAPE_P = 1
+				RETURN 1
+			ELSE
+				;逃走失敗。敵が一手動く
+				CALL PRINT_LABEL("――――도망치지 못했다!!!――――",,COLOR("RPG_MESSAGE_ALART"))
+				PRINTL 
+				ATTACKNUM = 1
+				DOATK_P = 0
+			ENDIF
+		CASEELSE
+			GOTO INPUT_LOOP22
+	ENDSELECT
+ENDIF
+
+;--------時間経過処理部分--------
+;ここ以下に進むとTURNが増える
+;攻撃実行ネスト。戦闘終了を除き必ずATTACKNUM減少部分を通過すること
+CALL SHOW_TURN(TURN , TURNLIMIT)
+IF CALC_SPD(CFlag:L_I:주민_SPD , TACTICAL_P) >= CALC_SPD(Flag:敵_SPD , TACTICAL_E)
+	;プレイヤー先攻
+	IF DOATK_P == 1
+		CALL RPG_BATTLE_ATTACK_P(L_I)
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	IF DOATK_E == 1
+		CALL RPG_BATTLE_ATTACK_E(L_I)
+		SIF RESULT
+			RETURN 1
+	ENDIF
+ELSE
+	;敵先攻
+	IF DOATK_E == 1
+		CALL RPG_BATTLE_ATTACK_E(L_I)
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	IF DOATK_P == 1
+		CALL RPG_BATTLE_ATTACK_P(L_I)
+		SIF RESULT
+			RETURN 1
+	ENDIF
+ENDIF
+
+DRAWLINE
+IF DOATK_P == 1 && CFlag:L_I:주민_BRAVE >= RAND:100
+;ブレイブアタック
+	CALL PRINT_LABEL("――――BRAVE ATTACK!――――",,COLOR("RPG_MESSAGE_GOOD"))
+	PRINTL
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 재차 공격을 이어갔다！
+	CALL RPG_BATTLE_ATTACK_P(L_I)
+	SIF RESULT
+		RETURN 1
+ENDIF
+
+
+CFlag:L_I:주민_현재기력 -= 1
+
+ATTACKNUM -= ATTACKNUM < 0 ? 0 # 1
+GOTO INPUT_LOOP
+
+
+;-------------------------------------------------
+;ターン表示
+;-------------------------------------------------
+@SHOW_TURN(TURN = -1 , TURNLIMIT = -1)
+#DIM TURN
+#DIM TURNLIMIT
+#DIMS VARS
+
+VARS = 　　턴：{TURN , 3 , RIGHT}／\@ TURNLIMIT ? {TURNLIMIT , 3 , RIGHT} # 　∞\@
+VARS = ┃%VARS%%" " * (STRLENS(VARS) % 2)%┃
+;半角44文字
+PRINTFORML ┏%"━" * ((STRLENS(VARS) - 4) / 2)%┓
+PRINTFORML %VARS%
+PRINTFORML ┗%"━" * ((STRLENS(VARS) - 4) / 2)%┛
+DRAWLINE
+RETURN 1
+
+
+;-------------------------------------------------
+;攻撃処理 味方側
+;-------------------------------------------------
+@RPG_BATTLE_ATTACK_P(ARG)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_D
+#DIM L_D2
+#DIM D_TEMP
+#DIM HITRATE
+#DIM HITRATE_V
+#DIM L_W
+#DIM L_DL
+#DIM HISSATSU
+#DIM E_A
+#DIM ART_GENOME
+#DIM L_SHOW , 3;데미지表示の一時保存用
+#DIM CNT
+#DIM EFFECT
+#DIM EFFWAIT
+L_INPUT = 0
+L_W = 0
+L_DL = 0
+L_D = 0
+E_A = 0
+L_I = ARG
+EFFWAIT = 0
+;外界調査であり、かつFLAG:敵_レアが非0の敵を倒したときにゲノム適性付きアーティファクトが生成される確率
+ART_GENOME = 20
+HISSATSU = 0
+
+$EXTRA_LOOP
+VARSET BPARAM_A
+VARSET BPARAM_D
+VARSET BRESULT
+VARSET BOOST_A
+VARSET BOOST_D
+VARSET EX_A
+VARSET EX_D
+VARSET BSTR_A
+VARSET BSTR_D
+
+IF 70 >= RAND:100
+;メイン무장
+	L_W = 0
+ELSE
+;サブ무장
+	L_W = 10
+ENDIF
+
+BPARAM_A:ISENEMY = 0
+BPARAM_D:ISENEMY = 1
+
+DRAWLINE
+CALL PRINT_LABEL(@"%CALLNAME:L_I%의 턴")
+CALL PRINT_LABEL(CSTR:L_I:(4000+L_W), , , @"{CFLAG:L_I:(6551 + L_W)}D{CFLAG:L_I:(6552 + L_W)}+{CFLAG:L_I:(6553 + L_W)}")
+PRINTL
+PRINTFORMW %조사처리(CALLNAME:L_I,"는")% %조사처리(CSTR:L_I:(4000 + L_W),"로")% 공격.
+
+;アーティファクト -攻撃前効果-
+;ゲノム適性プレイヤー側
+EFFECT = 0
+IF CHECK_GENOME_ART(L_I) > 0
+	SIF EFFECT++ == 0
+		PRINTL ──────게놈　적성──────
+	PRINT 
+	CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+	PRINTL 
+	PRINT 　　
+	PRINTFORML 【적성Lv{CHECK_GENOME_ART(L_I)}】아티팩트는 주인의 적성을 인지했다.
+	PRINTL 
+ENDIF
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+;ゲノム適性敵側
+;敵側ゲノム移植の仕様、および敵へのボーナスが未定なので未実装
+
+;プレイヤー側
+EFFECT = 0
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_PLAYER(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_ATKPRE_TRIGGER(ARTEFF_COUNT_PLAYER(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 공격자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINTL 
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_ATKPRE(ARTEFF_COUNT_PLAYER(CNT))
+			PRINTL 
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+EFFECT = 0
+[SKIPSTART]
+;敵側
+;敵側アーティファクトシステム未実装のため現状機能しない
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_ENEMY(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_DEFPRE_TRIGGER(ARTEFF_COUNT_ENEMY(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 방어자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINTL 
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_DEFPRE(ARTEFF_COUNT_ENEMY(CNT))
+			PRINTL 
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+[SKIPEND]
+SIF EFFWAIT > 0
+	WAIT
+EFFWAIT = 0
+;---戦闘パラメータ受け渡し配列準備---
+BPARAM_A:ダ이스数 = MAX(1 , CFLAG:L_I:(6551 + L_W) + BOOST_A:ダ이스数)
+BPARAM_A:ダ이스面 = MAX(2 , CFLAG:L_I:(6552 + L_W) + BOOST_A:ダ이스面)
+BPARAM_A:ダ이스加算 = CFLAG:L_I:(6553 + L_W) + BOOST_A:ダ이스加算
+BPARAM_A:최대HP = CFLAG:L_I:주민_최대체력
+BPARAM_A:현재HP = CFLAG:L_I:주민_현재체력
+BPARAM_D:최대HP = FLAG:敵_최대체력
+BPARAM_D:현재HP = FLAG:敵_현재체력
+BPARAM_A:攻撃 = MAX(3 , PERCENT(CFLAG:L_I:주민_ATK , MAX(1 , 100 + BOOST_A:攻撃)))
+BPARAM_A:防御 = MAX(3 , PERCENT(CFLAG:L_I:주민_DEF , MAX(1 , 100 + BOOST_A:防御)))
+BPARAM_A:命中 = MAX(3 , PERCENT(CFLAG:L_I:주민_HIT , MAX(1 , 100 + BOOST_A:命中)))
+BPARAM_A:速度 = MAX(3 , PERCENT(CFLAG:L_I:주민_SPD , MAX(1 , 100 + BOOST_A:速度)))
+BPARAM_A:幸運 = MAX(3 , PERCENT(CFLAG:L_I:주민_LUK , MAX(1 , 100 + BOOST_A:幸運)))
+BPARAM_D:攻撃 = MAX(3 , PERCENT(FLAG:敵_ATK , MAX(1 , 100 + BOOST_D:攻撃)))
+BPARAM_D:防御 = MAX(3 , PERCENT(FLAG:敵_DEF , MAX(1 , 100 + BOOST_D:防御)))
+BPARAM_D:命中 = MAX(3 , PERCENT(FLAG:敵_ATK , MAX(1 , 100 + BOOST_D:命中)))
+BPARAM_D:速度 = MAX(3 , PERCENT(FLAG:敵_SPD , MAX(1 , 100 + BOOST_D:速度)))
+BPARAM_D:幸運 = MAX(3 , PERCENT(FLAG:敵_LUK , MAX(1 , 100 + BOOST_D:幸運)))
+BPARAM_A:ART攻撃 = FLAG:遺物_ATK合計値
+BPARAM_A:ART防御 = FLAG:遺物_DEF合計値
+BPARAM_A:ART命中 = FLAG:遺物_HIT合計値
+BPARAM_A:ART速度 = FLAG:遺物_SPD合計値
+BPARAM_A:ART幸運 = FLAG:遺物_LUK合計値
+BPARAM_D:ART攻撃 = 0
+BPARAM_D:ART防御 = 0
+BPARAM_D:ART命中 = 0
+BPARAM_D:ART速度 = 0
+BPARAM_D:ART幸運 = 0
+BPARAM_A:熟練 = CFLAG:L_I:(6558 + L_W)
+BPARAM_D:熟練 = 0
+BPARAM_A:攻타입 = CFLAG:L_I:(6550 + L_W)
+BPARAM_D:攻타입 = -1
+BPARAM_A:弱点 = -1
+BPARAM_D:弱点 = FLAG:敵_弱点
+BPARAM_A:耐性 = -1
+BPARAM_D:耐性 = FLAG:敵_耐性
+BPARAM_A:戦術 = TACTICAL_P
+BPARAM_D:戦術 = TACTICAL_E
+BPARAM_A:攻勢 = FLAG:戦闘_攻勢 > 0
+BPARAM_D:攻勢 = 0
+BSTR_A:BNAME = %CALLNAME:L_I%
+BSTR_D:BNAME = %SAVESTR:敵_名前%
+BSTR_A:WEAPON = %CSTR:L_I:(4000 + L_W)%
+BSTR_D:WEAPON = 
+
+;---以下ダ이스ロール部---
+;いつでも戻せるように昔の構文は残す
+[SKIPSTART]
+;基本데미지&アーティファクト補正
+L_D += RAND:(CFlag:L_I:(6552+L_W)) + RAND:(FLAG:遺物_ATK合計値+1) + 1
+;데미지ボーナス&アーティファクト補正
+L_D += CFlag:L_I:(6553+L_W)+((1+RAND:(FLAG:遺物_ATK合計値+1))/5)
+L_DL -= 1
+[SKIPEND]
+
+;ヒット数
+PRINTFORML 공격횟수：{BPARAM_A:ダ이스数}
+CALL RPG_DICE_ROLL(BPARAM_A , BPARAM_D , BSTR_A , BSTR_D , BRESULT)
+L_D = BRESULT:DAMAGE
+
+SIF L_D <= 0
+	L_D = (RAND:3)+1
+Flag:敵_현재체력 -= L_D
+SIF FLAG:도시_방위 != 0
+	FLAG:도시_방위데미지 += L_D
+
+PRINTFORMW %SAVESTR:敵_名前%에게 {L_D} 대미지를 입혔다.
+
+;---以下アーティファクト効果---
+;プレイヤー側
+EFFECT = 0
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_PLAYER(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_ATKAFTER_TRIGGER(ARTEFF_COUNT_PLAYER(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 공격자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINTL 
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_ATKAFTER(ARTEFF_COUNT_PLAYER(CNT))
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+EFFECT = 0
+[SKIPSTART]
+;敵側
+;敵側アーティファクトシステム未実装のため現状機能しない
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_ENEMY(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_DEFAFTER_TRIGGER(ARTEFF_COUNT_ENEMY(CNT)
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 방어자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINTL 
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_DEFAFTER(ARTEFF_COUNT_ENEMY(CNT))
+		ENDIF
+	ENDIF
+NEXT
+[SKIPEND]
+SIF EFFWAIT > 0
+	WAIT
+
+;攻撃後効果実処理
+;追加데미지
+CFLAG:L_I:주민_현재체력 -= EX_A:DAMAGE_PLUS
+FLAG:敵_현재체력 -= EX_D:DAMAGE_PLUS
+
+;攻撃による回復
+CFLAG:L_I:주민_현재체력 += EX_A:RECOV
+SIF CFLAG:L_I:주민_현재체력 > CFLAG:L_I:주민_최대체력
+	CFLAG:L_I:주민_현재체력 = CFLAG:L_I:주민_최대체력
+FLAG:敵_현재체력 += EX_D:RECOV
+SIF FLAG:敵_현재체력 > FLAG:敵_최대체력
+	FLAG:敵_현재체력 = FLAG:敵_최대체력
+
+;攻撃による都市破壊
+SIF FLAG:도시_방위 != 0
+	FLAG:도시_방위데미지 += EX_A:DISASTER + EX_D:DISASTER
+
+;---以下수반攻撃---
+IF FLAG:支援_수반合計ATK != 0 && RAND:((FLAG:支援_수반合計SPD/3)+1) >= (RAND:100)+1
+	;수반攻撃
+	CALL PRINT_LABEL("――――SUPPORT ATTACK!!――――",,COLOR("RPG_MESSAGE_SUPPORT"))
+	PRINTL
+	PRINTFORML 수반대원들의 원호공격.
+	L_D = 0
+	L_D += FLAG:支援_수반合計ATK/5
+	L_D -= (Flag:敵_DEF/2)+RAND:(MAX(Flag:敵_DEF/2 , 1))
+	SIF L_D <= 0
+	 L_D = 1
+	PRINTFORML
+	PRINTFORMW %SAVESTR:敵_名前%에게 {L_D} 대미지를 입혔다.
+	Flag:敵_현재체력 -= L_D
+	SIF FLAG:도시_방위 != 0
+		FLAG:도시_방위데미지 += L_D
+ENDIF
+
+;勝敗判定。決着が付いたならRETURN 1
+CALL JUDGE_BATTLE(CFLAG:L_I:주민_현재체력 , FLAG:敵_현재체력)
+IF RESULT
+	CALL WIN_BATTLE(L_I)
+	RETURN 1
+ENDIF
+
+;以下のIF文は使用せず
+IF Flag:敵_현재체력 <= 0
+	IF Flag:의뢰_의뢰개시 == 1
+		JUMP MISSION_CLEAR_B
+	ELSEIF Flag:EP追撃方法 == 1
+		JUMP EP_COUNTER_CLEAR
+	ENDIF
+
+	IF RAND:((Flag:調査深度)+1) >=  20+RAND:100
+		;日替わり区画でない、かつレア敵撃破なら20%の確率でゲノム適性付きアーティファクト生成処理
+		;判定に失敗なら通常のアーティファクト生成
+		IF FLAG:調査区域 != 90 && FLAG:敵_レア != 0
+			CALL RPG_ARTIFACT_GENOME_GET(ARG , ART_GENOME)
+		ELSE
+			CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		ENDIF
+	ENDIF
+	SIF Flag:調査区域 >= 3 && Flag:調査深度 >= 50
+		CALL ARCHIVE_G
+	IF Flag:調査区域 == 90 && (Flag:調査深度 >= Flag:日替わり区画深度限界)
+		RESETBGCOLOR
+		PRINTFORML ≪구획 답파, 축하드립니다. 「외적」이 근거지로 하고 있던 플로어에서 아티팩트 반응을 검지≫
+		PRINTFORMW ≪모처럼이니 회수하죠. 좋은 물건을 발견하면 좋겠네요≫
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		Flag:調査深度 = 0
+		Flag:턴조사완료 = 1
+			CALL RPG_END
+		JUMP RPG_MAIN
+	ENDIF
+	JUMP RPG_START(ARG)
+ENDIF
+
+
+IF CFlag:L_I:(6558+L_W) >= 20 && (CFlag:L_I:(6558+L_W)-E_A) > RAND:100
+;連続攻撃
+	CALL PRINT_LABEL("――――EXTRA ATACK!!――――",,COLOR("RPG_MESSAGE_GOOD"))
+	PRINTL
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 연속해서 공격을 가했다!
+	E_A += 20
+	GOTO EXTRA_LOOP
+ENDIF
+
+
+;【時間】
+IF E_A == 0 && EX_A:EXTRA_ATTACK
+	E_A += 20
+	GOTO EXTRA_LOOP
+ENDIF
+RETURN 0
+
+
+;-------------------------------------------------
+;攻撃処理 敵側
+;-------------------------------------------------
+@RPG_BATTLE_ATTACK_E(ARG)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_D;ダ이스ロール数
+#DIM L_W
+#DIM L_DL
+#DIM D_TEMP
+#DIM HITRATE
+#DIM HITRATE_V
+#DIM M_N
+#DIM L_SHOW , 3
+#DIM SUC;攻撃の命中回数、SUCCESS
+#DIM CNT
+#DIM HIT ;実際にヒットした攻撃の数
+#DIM EFFECT
+#DIM EFFWAIT
+M_N = 0
+L_INPUT = 0
+L_W = 0
+L_DL = 0
+L_D = 0
+SUC = 0
+HIT = 0
+EFFWAIT = 0
+
+VARSET BPARAM_A
+VARSET BPARAM_D
+VARSET BRESULT
+VARSET BOOST_A
+VARSET BOOST_D
+VARSET EX_A
+VARSET EX_D
+VARSET BSTR_A
+VARSET BSTR_D
+
+L_I = ARG
+DRAWLINE
+IF POSSIB(70)
+;メイン무장
+	L_W = 0
+ELSE
+;サブ무장
+	L_W = 30
+ENDIF
+
+BPARAM_A:ISENEMY = 1
+BPARAM_D:ISENEMY = 0
+
+CALL PRINT_LABEL(@"%SAVESTR:敵_名前%のターン")
+CALLFORM DICE_NAME_{FLAG:(9030 + L_W)}
+CALL PRINT_LABEL(@"%RESULTS%({FLAG:(9031 + L_W)}D{FLAG:(9032 + L_W)}+{FLAG:(9033 + L_W)})")
+PRINTL
+PRINTFORMW %조사처리(SAVESTR:敵_名前,"는")% %CALLNAME:L_I%에게 공격.
+
+;アーティファクト -攻撃前効果-
+;ゲノム適性プレイヤー側
+EFFECT = 0
+IF CHECK_GENOME_ART(L_I) > 0
+	SIF EFFECT++ == 0
+		PRINTL ──────게놈　적성──────
+	PRINT 
+	CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+	PRINTL 
+	PRINT 　　
+	PRINTFORML 【적성Lv{CHECK_GENOME_ART(L_I)}】아티팩트는 주인의 적성을 판단했다.
+ENDIF
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+;ゲノム適性敵側
+;敵側ゲノム移植の仕様、および敵へのボーナスが未定なので未実装
+
+[SKIPSTART]
+;敵側
+;敵側アーティファクトシステム未実装のため現状機能しない
+EFFECT = 0
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_ENEMY(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_ATKPRE_TRIGGER(ARTEFF_COUNT_ENEMY(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 공격자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINTL 
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_ATKPRE(ARTEFF_COUNT_ENEMY(CNT))
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+[SKIPEND]
+;プレイヤー側
+EFFECT = 0
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_PLAYER(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_DEFPRE_TRIGGER(ARTEFF_COUNT_PLAYER(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 방어자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINTL 
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_DEFPRE(ARTEFF_COUNT_PLAYER(CNT))
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+EFFECT = 0
+SIF EFFWAIT > 0
+	WAIT
+EFFWAIT = 0
+
+;---戦闘パラメータ受け渡し配列準備---
+BPARAM_A:ダ이스数 = MAX(1 , FLAG:(9031 + L_W) + BOOST_A:ダ이스数)
+BPARAM_A:ダ이스面 = MAX(2 , FLAG:(9032 + L_W) + BOOST_A:ダ이스面)
+BPARAM_A:ダ이스加算 = FLAG:(9033 + L_W) + BOOST_A:ダ이스加算
+BPARAM_A:최대HP = FLAG:敵_최대체력
+BPARAM_A:현재HP = FLAG:敵_현재체력
+BPARAM_D:최대HP = CFLAG:L_I:주민_최대체력
+BPARAM_D:현재HP = CFLAG:L_I:주민_현재체력
+BPARAM_A:攻撃 = MAX(3 , PERCENT(FLAG:敵_ATK , MAX(1 , 100 + BOOST_A:攻撃)))
+BPARAM_A:防御 = MAX(3 , PERCENT(FLAG:敵_DEF , MAX(1 , 100 + BOOST_A:防御)))
+BPARAM_A:命中 = MAX(3 , PERCENT(FLAG:敵_HIT , MAX(1 , 100 + BOOST_A:命中)))
+BPARAM_A:速度 = MAX(3 , PERCENT(FLAG:敵_SPD , MAX(1 , 100 + BOOST_A:速度)))
+BPARAM_A:幸運 = MAX(3 , PERCENT(FLAG:敵_LUK , MAX(1 , 100 + BOOST_A:幸運)))
+BPARAM_D:攻撃 = MAX(3 , PERCENT(CFLAG:L_I:주민_ATK , MAX(1 , 100 + BOOST_D:攻撃)))
+BPARAM_D:防御 = MAX(3 , PERCENT(CFLAG:L_I:주민_DEF , MAX(1 , 100 + BOOST_D:防御)))
+BPARAM_D:命中 = MAX(3 , PERCENT(CFLAG:L_I:주민_HIT , MAX(1 , 100 + BOOST_D:命中)))
+BPARAM_D:速度 = MAX(3 , PERCENT(CFLAG:L_I:주민_SPD , MAX(1 , 100 + BOOST_D:速度)))
+BPARAM_D:幸運 = MAX(3 , PERCENT(CFLAG:L_I:주민_LUK , MAX(1 , 100 + BOOST_D:幸運)))
+BPARAM_A:ART攻撃 = 0
+BPARAM_A:ART防御 = 0
+BPARAM_A:ART命中 = 0
+BPARAM_A:ART速度 = 0
+BPARAM_A:ART幸運 = 0
+BPARAM_D:ART攻撃 = FLAG:遺物_ATK合計値
+BPARAM_D:ART防御 = FLAG:遺物_DEF合計値
+BPARAM_D:ART命中 = FLAG:遺物_HIT合計値
+BPARAM_D:ART速度 = FLAG:遺物_SPD合計値
+BPARAM_D:ART幸運 = FLAG:遺物_LUK合計値
+BPARAM_A:熟練 = 0
+BPARAM_D:熟練 = CFLAG:L_I:(6558 + L_W)
+BPARAM_A:攻타입 = -1
+BPARAM_D:攻타입 = -1
+BPARAM_A:弱点 = FLAG:敵_弱点
+BPARAM_D:弱点 = -1
+BPARAM_A:耐性 = FLAG:敵_耐性
+BPARAM_D:耐性 = -1
+BPARAM_A:戦術 = TACTICAL_E
+BPARAM_D:戦術 = TACTICAL_P
+BPARAM_A:攻勢 = 0
+BPARAM_D:攻勢 = FLAG:戦闘_攻勢 > 0
+BSTR_A:BNAME = %SAVESTR:敵_名前%
+BSTR_D:BNAME = %CALLNAME:L_I%
+CALLFORM DICE_NAME_{FLAG:(9030 + L_W)}
+BSTR_A:WEAPON = %RESULTS%
+BSTR_D:WEAPON = 
+
+
+;攻撃回数と実際の命中数は表示、命中率はマスク。マスクする具体的な理由はないので必要なら表示してください
+;PRINTFORML 攻撃{L_DL}回 / 命中{SUC}発
+;オリジナル条件文
+;IF 100+Flag:敵_HIT-CFlag:L_I:주민_SPD-FLAG:遺物_SPD合計値 >= RAND:100
+
+$DL_LOOP
+[SKIPSTART]
+L_D += RAND:(Flag:(9032+L_W))+1
+L_D += Flag:(9033+L_W)
+L_DL -= 1
+[SKIPEND]
+CALL RPG_DICE_ROLL(BPARAM_A , BPARAM_D , BSTR_A , BSTR_D , BRESULT)
+L_D = BRESULT:DAMAGE
+HIT = BRESULT:HITNUM
+
+[SKIPSTART]
+;敵側
+;敵側アーティファクトシステム未実装のため現状機能しない
+EFFECT = 0
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_ENEMY(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_ATKAFTER_TRIGGER(ARTEFF_COUNT_ENEMY(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 공격자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_ATKAFTER(ARTEFF_COUNT_ENEMY(CNT))
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+[SKIPEND]
+;プレイヤー側
+EFFECT = 0
+FOR CNT , 0 , DEFINE_ART_EFF
+	IF ARTEFF_COUNT_PLAYER(CNT) > 0
+		CALLFORM ART_EFFECT_{CNT}_DEFAFTER_TRIGGER(ARTEFF_COUNT_PLAYER(CNT))
+		IF RESULT == 1
+			SIF EFFECT++ == 0
+				PRINTL ──── 방어자　아티팩트 ────
+			PRINT 
+			CALL PRINT_LABEL("ARTIFACT EFFECT!!",,COLOR("RPG_CLEANHIT"))
+			PRINT 　　
+			CALLFORM ART_EFFECT_{CNT}_DEFAFTER(ARTEFF_COUNT_PLAYER(CNT))
+		ENDIF
+	ENDIF
+NEXT
+EFFWAIT += EFFECT
+SIF EFFECT > 0
+	PRINTL 
+EFFECT = 0
+SIF EFFWAIT > 0
+	WAIT
+EFFWAIT = 0
+
+;攻撃後効果実処理
+;追加데미지
+CFLAG:L_I:주민_현재체력 -= EX_D:DAMAGE_PLUS
+FLAG:敵_현재체력 -= EX_A:DAMAGE_PLUS
+
+;攻撃による回復
+FLAG:敵_현재체력 += EX_A:RECOV
+SIF FLAG:敵_현재체력 > FLAG:敵_최대체력
+	FLAG:敵_현재체력 = FLAG:敵_최대체력
+CFLAG:L_I:주민_현재체력 += EX_D:RECOV
+SIF CFLAG:L_I:주민_현재체력 > CFLAG:L_I:주민_최대체력
+	CFLAG:L_I:주민_현재체력 = CFLAG:L_I:주민_최대체력
+
+;攻撃による都市破壊
+SIF FLAG:도시_방위 != 0
+	FLAG:도시_방위데미지 += EX_A:DISASTER + EX_D:DISASTER
+
+IF FLAG:支援_수반合計DEF != 0 && FLAG:支援_수반合計HIT != 0 && RAND:((FLAG:支援_수반合計SPD/3)+1) >= (RAND:100)+1 && L_D > 0
+;援護防御
+	CALL PRINT_LABEL("――――SUPPORT GUARD!!――――",,COLOR("RPG_MESSAGE_SUPPORT"))
+	PRINTL
+	PRINTFORML 수반대원은 %조사처리(CALLNAME:L_I,"를")% 감싸듯 앞으로 나서, 위력을 경감시켰다.
+	L_D /= 2 + FLAG:支援_수반合計DEF / 300 + FLAG:支援_수반合計HIT / 300
+ENDIF
+
+;기력不足なら데미지増加
+SIF CFlag:L_I:주민_현재기력 <= CFlag:L_I:주민_최대기력-((CFlag:L_I:주민_최대기력*7)/10)
+	L_D += L_D/2
+;DEFによる데미지減算はダ이스ロール部に移動
+
+;最低保障데미지はダ이스ロール部に移動
+;SIF L_D <= 0
+;	L_D = (RAND:3)+1
+
+PRINTFORML
+IF HIT == 0
+	PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 공격을 모두 회피했다.
+ELSE
+	IF L_D > 0
+		SETCOLOR 250,50,50
+		PRINTFORMW %조사처리(CALLNAME:L_I,"는")% {L_D} 대미지를 받았다.
+		RESETCOLOR
+	ELSE
+		PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 전혀 피해를 받지 않았다.
+	ENDIF
+ENDIF
+PRINTFORML 
+
+CFlag:L_I:주민_현재체력 -= L_D
+
+CALL JUDGE_BATTLE(CFLAG:L_I:주민_현재체력 , FLAG:敵_현재체력)
+IF RESULT
+	CALL DEFEAT_BATTLE(L_I)
+	RETURN 1
+ENDIF
+
+
+IF CFlag:L_I:주민_현재체력 <= 0
+	IF FLAG:도시_방위 != 0
+		FLAG:도시_방위蓄積데미지 += FLAG:도시_방위데미지
+		FLAG:ターン終了フラグ = 1
+		JUMP SYSTEM_MENU
+	ENDIF
+	RESETBGCOLOR
+	IF Flag:의뢰_의뢰개시 == 1
+		;片方失敗した時点で이스・テロリスト依頼(と将来実装されるであろう依頼)の両方が消える処理。バグか意図した仕様か불명
+		;わざわざ50個消してるし仕様のような気もするがゲームやってる側からは不自然に思える…
+		REPEAT 50
+			Flag:(800+M_N) = 0
+			Flag:(850+M_N) = 0
+			M_N += 1
+		REND
+		;VARSET FLAG:0, 0, 800, 850
+		;VARSET FLAG:0, 0, 850, 900
+		;849と900はリセットされない？
+		JUMP MISSION_MISS
+	ELSEIF Flag:EP追撃方法 == 1
+		JUMP EP_COUNTER_MISS
+	ENDIF
+
+	JUMP SYSTEM_MENU
+ENDIF
+
+
+
+@SHOW_ENEMY_STATUS
+;[IF_DEBUG]
+CALL PRINT_LABEL(@"체력{Flag:敵_최대체력}")
+CALL PRINT_LABEL(@"ATK{Flag:敵_ATK}")
+CALL PRINT_LABEL(@"DEF{Flag:敵_DEF}")
+CALL PRINT_LABEL(@"HIT{Flag:敵_HIT}")
+CALL PRINT_LABEL(@"SPD{Flag:敵_SPD}")
+CALL PRINT_LABEL(@"BRE{Flag:敵_최대BRE}")
+PRINTL  
+CALL PRINT_LABEL(@"주무장：{FLAG:敵_M兵装ダ이스}D{FLAG:敵_M兵装데미지} + {FLAG:敵_M兵装ボーナス}    부무장：{FLAG:敵_S兵装ダ이스}D{FLAG:敵_S兵装데미지} + {FLAG:敵_S兵装ボーナス}")
+PRINTL  
+;[ENDIF]
+
+RETURN 0
+
+;POSSIBILITYの略
+@POSSIB(ARG)
+#FUNCTION
+IF RAND:100 > ARG
+	RETURNF 0
+ELSE
+	RETURNF 1
+ENDIF
+
+
+;-------------------------------------------------
+;戦闘用ダ이스ロール関数
+;攻撃側、防御側の諸変数を全て集め、攻撃力と防御力を計算して実데미지を出す
+;BRは初期化される
+;ARRAY_A、ARRAY_Dは直接いじらないこと
+;-------------------------------------------------
+@RPG_DICE_ROLL(ARRAY_A , ARRAY_D , ARRAYS_A , ARRAYS_D , BR)
+#DIM REF ARRAY_A      ;攻撃者の数値
+#DIM REF ARRAY_D      ;防御者の数値
+#DIM REF BR           ;戦闘結果の返却
+#DIMS REF ARRAYS_A
+#DIMS REF ARRAYS_D
+#DIM PRM_A , 100      ;PARAM　ARRAY_Aの写しを置く
+#DIM PRM_D , 100      ;上の防御者用
+#DIM DYNAMIC DRES     ;DICE RESULT
+#DIM DYNAMIC HISSATSU ;必殺の一撃フラグ
+#DIM KASUDAME         ;命中したのに데미지0だったときのカスダメ割合。현재체력に割合として掛け最低保証値にする
+#DIM NODAMAGE         ;攻撃して防御を貫通できなかったときに立つフラグ
+#DIM L_SHOW , 3       ;ダ이스/実데미지の一時保存
+#DIM HITRATE          ;命中状態一時保存
+#DIM HITRATE_V        ;上記HITRATEの実補正
+#DIM DMG              ;DAMAGE
+#DIM DYNAMIC ALLDMG   ;데미지総計
+#DIM CNT
+#DIM COL , 2          ;COLOR
+#DIM DYNAMIC HIT      ;攻撃命中数
+#DIM DYNAMIC PARRY    ;PARRY発生確率一時保存
+#DIMS PRMS_A , 100    ;PARAMのSTRING版
+#DIMS PRMS_D , 100    ;
+VARSET BR
+
+;メッセージ色セット
+IF ARRAY_A:ISENEMY == 0
+	;プレイヤー側攻撃
+	COL:0 = COLOR("RPG_MESSAGE_GOOD")
+	COL:1 = COLOR("RPG_MESSAGE_BAD")
+ELSE
+	;敵側攻撃
+	COL:0 = COLOR("RPG_MESSAGE_BAD")
+	COL:1 = COLOR("RPG_MESSAGE_GOOD")
+ENDIF
+
+;セットされた戦闘配列をコピー
+FOR CNT , 0 , VARSIZE("ARRAY_A")
+	PRM_A:CNT = ARRAY_A:CNT
+	PRM_D:CNT = ARRAY_D:CNT
+NEXT
+FOR CNT , 0 , VARSIZE("ARRAYS_A")
+	PRMS_A:CNT = %ARRAYS_A:CNT%
+	PRMS_D:CNT = %ARRAYS_D:CNT%
+NEXT
+
+;カスダメの割合セット。一応敵とプレイヤー側とで値を変える準備
+IF PRM_A:ISENEMY
+	KASUDAME = 5
+ELSE
+	KASUDAME = 5
+ENDIF
+
+$DR_LOOP
+NODAMAGE = 0
+;ダ이스出目
+L_SHOW:0 = ATK_BASE + MAX(0 , DICEROLL(PRM_A:ダ이스面 , PRM_A:ダ이스加算)) * 10
+;ATKに乱数を掛ける
+;L_SHOW:1 = CALC_ATK(PRM_A:攻撃)
+L_SHOW:1 = PERCENT(PRM_A:攻撃 , RAND(80 , 101))
+
+;アーティファクトがあれば攻撃力を加算
+SIF PRM_A:ART攻撃 > 0
+	L_SHOW:1 += RAND:(1 + (PRM_A:ART攻撃 / 2)) + RAND:(1 + (PRM_A:ART攻撃 / 2))
+
+;攻撃者のHIT、防御者のSPDから命中状況を計算
+CALL CALC_HIT(PERCENT(PRM_A:命中 , 100 + PRM_A:戦術) + (PRM_A:ART命中 / 2) , PERCENT(PRM_D:速度 , 100 + PRM_D:戦術) + (PRM_D:ART速度 / 2) , HISSATSU)
+HITRATE = RESULT
+
+;上記の各種値から実際の데미지を計算
+;DMG = ATK_MOD(L_SHOW:0 * L_SHOW:1 , , BPARAM_A:ISENEMY)
+DMG = ATK_MOD(PERCENT(L_SHOW:1 , L_SHOW:0) , , BPARAM_A:ISENEMY)
+
+;命中状況から攻撃力補正を取得し適用
+HITRATE_V = CALC_HIT_MULTIPLIER(HITRATE)
+DMG = PERCENT(DMG , HITRATE_V)
+
+;防御を計算
+L_SHOW:2 = CALC_DEF(PRM_D:防御)
+SIF PRM_D:ART防御 > 0
+	L_SHOW:2 += RAND:(1 + (PRM_A:ART防御 / 2)) + RAND:(1 + (PRM_A:ART防御 / 2))
+L_SHOW:2 = DEF_MOD(L_SHOW:2 , , PRM_D:ISENEMY)
+
+;最終処理
+IF HITRATE_V > 0
+	;데미지から防御を引く
+	DMG -= L_SHOW:2
+	;もし데미지0なら현재체력の5%をカスダメとして受ける(最低1)
+	IF DMG <= 0
+		NODAMAGE = 1
+		KASUDAME = MAX(1 , KASUDAME + RAND(-1 , 2))
+		DMG = MAX(PERCENT(PRM_D:현재HP , KASUDAME) , 1)
+	ENDIF
+	HIT += 1
+
+	;表示部
+	;#;PRINTFORML 　　{L_SHOW:1 , 3}x{L_SHOW:0 , 4}％(ATK)x{HITRATE_V , 3}％(HITR)＝{DMG}
+	;#;PRINTFORML 방어：{L_SHOW:2}%\@ NODAMAGE ? (有効打なし) # \@%
+ELSE
+	;命中しなかった
+	DMG = 0
+	;#;PRINTFORML \(공격을 피했다)
+ENDIF
+CALL CALC_HIT_SHOW(HITRATE , PRM_A:ISENEMY)
+PRINTL 
+ALLDMG += MAX(0 , DMG)
+
+;ダ이스数減算、まだ回数があるならもう一回
+SIF --PRM_A:ダ이스数 > 0
+	GOTO DR_LOOP
+
+IF HISSATSU == 0 && PRM_A:熟練 >= 10
+	CALL PRINT_LABEL("――――SPECIAL ATACK!!――――", , COL:0)
+	PRINTL 
+	PRINTFORML %조사처리(PRMS_A:BNAME,"는")% 혼신의 일격을 가했다!!
+	PRM_A:ダ이스数++
+	HISSATSU = 1
+	GOTO DR_LOOP
+ENDIF
+
+IF PRM_A:攻타입 >= 0 && ALLDMG > 0
+	IF PRM_D:弱点 >= 0 && PRM_A:攻타입 == PRM_D:弱点
+		SETCOLOR COL:0
+		PRINTFORML ＜%PRMS_D:BNAME%의 약점을 찔렀다!＞
+		RESETCOLOR
+		ALLDMG += PERCENT(ALLDMG , 50)
+	ELSEIF PRM_D:耐性 >= 0 && PRM_A:攻타입 == PRM_D:耐性
+		SETCOLOR COL:1
+		PRINTFORML ＜%조사처리(PRMS_A:BNAME,"는")% 내성을 갖추고 있다!＞
+		RESETCOLOR
+		ALLDMG -= PERCENT(ALLDMG , 50)
+	ENDIF
+ENDIF
+
+;パリィは今のところプレイヤー側の特権
+PARRY = (RAND:(PRM_D:命中 + PRM_D:ART命中) * 100) / (RAND:(PRM_D:命中 + PRM_D:ART命中 + PRM_A:命中 + PRM_A:ART命中) + 1)
+;#;PRINTFORML PARRY確率：{PARRY}
+IF PRM_D:ISENEMY == 0 && POSSIB(PARRY) && ALLDMG > 0
+;IF RAND:((CFlag:L_I:주민_HIT)*5+1+FLAG:遺物_HIT合計値)-RAND:((Flag:敵_HIT)*5+1) >= RAND:100
+;パリィ
+	CALL PRINT_LABEL("――――PARRY!!――――",,COLOR("RPG_MESSAGE_GOOD"))
+	PRINTL
+	PRINTFORML %조사처리(PRMS_A:BNAME,"는")% %PRMS_A:BNAME%의 공격을 흘려 위력을 떨어뜨렸다
+	ALLDMG -= PERCENT(ALLDMG , 50)
+ENDIF
+
+SIF PRM_A:攻勢 > 0 && ALLDMG > 0
+	ALLDMG += PERCENT(ALLDMG , 100)
+
+BR:HITNUM = HIT
+BR:DAMAGE = ALLDMG
+RETURN
+
+
+;乗算するATKに倍率を施す式中関数
+;ゲームの全体的な데미지調整に使う
+;ENEMに非0を受け取ると敵専用補正も処理する
+@ATK_MOD(L_ATK , L_RATIO = ATK_RATIO , L_ENEM = 0)
+#FUNCTION
+#DIM L_ATK
+#DIM L_RATIO
+#DIM L_ENEM
+SIF L_ENEM
+	L_ATK = PERCENT(L_ATK , ATK_RATIO_E)
+RETURNF PERCENT(L_ATK , L_RATIO)
+
+
+;乗算するDEFに倍率を施す式中関数
+;ゲームの全体的な데미지調整に使う
+;ENEMに非0を受け取ると敵専用補正も処理する
+@DEF_MOD(L_DEF , L_RATIO = DEF_RATIO , L_ENEM = 0)
+#FUNCTION
+#DIM L_DEF
+#DIM L_RATIO
+#DIM L_ENEM
+SIF L_ENEM
+	L_DEF = PERCENT(L_DEF , DEF_RATIO_E)
+RETURNF PERCENT(L_DEF , L_RATIO)
+
+
+;ATKと値から攻撃補正を計算する式中関数
+;ATKにプレイヤーor敵のATKを、RATIOに補正値を受け取る
+@CALC_ATK(ATK = -1 , RATIO = 0)
+#FUNCTION
+#DIM ATK
+#DIM RATIO
+#DIM ATKR
+ATKR = MAX(2 , PERCENT(ATK , 100 + RATIO) / 3)
+RETURNF ATKR + RAND(1 , ATKR) + RAND(1 , ATKR)
+
+
+@CALC_DEF(DEF = -1 , RATIO = 0)
+#FUNCTION
+#DIM DEF
+#DIM RATIO
+#DIM DEFR
+DEFR = MAX(1 , PERCENT(DEF , 100 + RATIO) / 3)
+RETURNF DEFR + RAND(0 , DEFR) + RAND(0 , DEFR)
+
+
+@CALC_SPD(SPD = -1 , RATIO = 0)
+#FUNCTION
+#DIM SPD
+#DIM RATIO
+#DIM SPDR
+SPDR = MAX(1 , PERCENT(SPD , 100 + RATIO) / 3)
+RETURNF SPDR + RAND(0 , SPDR) + RAND(0 , SPDR)
+
+;サイコロを振る式中関数
+;SIDEにサイコロの面数を、PLUSに固定加算値を受け取る
+@DICEROLL(SIDE = -1 , PLUS = 0)
+#FUNCTION
+#DIM SIDE
+#DIM PLUS
+SIF SIDE <= 0
+	THROW @DICEROLLはサイコロ面が0以下を受け付けません(SIDE={SIDE})
+SIF SIDE == 1
+	RETURNF SIDE + PLUS
+RETURNF RAND:SIDE + 1 + PLUS
+
+
+;引数NUMをPERC%にして返す式中関数
+@PERCENT(NUM , PERC)
+#FUNCTION
+#DIM NUM
+#DIM PERC
+RETURNF (NUM * PERC) / 100
+
+
+;CALC_HITの戻り値から攻撃の命中具合を表示する関数
+@CALC_HIT_SHOW(HIT = -1 , ISENEM = 0)
+#DIM HIT
+#DIM ISENEM
+#DIMS COLORS , 3
+SELECTCASE ISENEM
+	CASE 0
+		COLORS:0 = RPG_CLEANHIT
+		COLORS:1 = RPG_MESSAGE_BAD
+	CASEELSE
+		COLORS:0 = RPG_MESSAGE_BAD
+		COLORS:1 = RPG_CLEANHIT
+ENDSELECT
+COLORS:2 = RPG_HIT
+
+SELECTCASE HIT
+	CASE 0
+		;クリティカル
+		CALL PRINT_LABEL("──CLEAN HIT!!!──" , , COLOR(@"%COLORS:0%"))
+	CASE 1
+		;通常ヒット
+		CALL PRINT_LABEL("────HIT!────" , , COLOR(@"%COLORS:2%"))
+	CASE 2
+		;カス当たり
+		CALL PRINT_LABEL("────GRAZE!───" , , 0xFFFF00)
+	CASE 3
+		;ほぼ外す
+		CALL PRINT_LABEL("────MISS────" , , COLOR(@"%COLORS:1%"))
+ENDSELECT
+RETURN
+
+
+;CALC_HITの戻り値から攻撃力補正を返す関数
+@CALC_HIT_MULTIPLIER(HIT = -1)
+#FUNCTION
+#DIM HIT
+#DIM SPD
+#DIM CRIT
+SELECTCASE HIT
+	CASE 0
+		;クリティカル
+		RETURNF 120
+	CASE 1
+		;通常ヒット
+		RETURNF 100
+	CASE 2
+		;カス当たり
+		RETURNF 40
+	CASE 3
+		;回避
+		;ミス時のヒット補正は必ず0であること
+		RETURNF 0
+	CASEELSE
+		THROW 引数が不正です  HIT={HIT}
+ENDSELECT
+
+
+;HITとSPDの割合から攻撃の命中状態を決定する関数
+;0=CRITICAL、1=HIT、2=GRAZE、3=MISS
+@CALC_HIT(HT = -1 , SD = -1 , FORCE_CRT = 0)
+#DIM HT
+#DIM SD
+#DIM CONST MOD = 110 ;比率にかかる係数
+#DIM VAR , 4
+#DIM HISP
+#DIM DNT
+#DIM FORCE_CRT
+#DIM CNT
+;確定クリティカルフラグ処理
+SIF FORCE_CRT
+	RETURN 0
+
+SIF HT == -1 || SD == -1
+	THROW 予期しない引数  HT={HT}、SD={SD}
+
+HISP = HT * 100 / (HT + SD)
+;差が付きにくいので倍率をかけてみる
+HISP = PERCENT(HISP , MOD)
+VARSET VAR , 25
+
+;クリティカル
+VAR:0 += (HISP - 50) / 2
+;通常ヒット
+VAR:1 += (HISP - 50) / 2 + HISP % 2
+;カス当たり
+VAR:2 += (50 - HISP) / 2 + HISP % 2
+;ほぼ回避
+VAR:3 += (50 - HISP) / 2
+
+;#;PRINTFORML HIT/SPD={HISP}\%
+FOR CNT , 0 , VARSIZE("VAR")
+	VAR:CNT = MAX(VAR:CNT , 1)
+	;#;PRINTFORM {VAR:CNT , 3}\%
+NEXT
+;#;PRINTL 
+RETURN CHUSEN(VAR:0 , VAR:1 , VAR:2 , VAR:3)
+
+
+;-------------------------------------------------
+;攻撃の結果、どちらが勝ったか判定する関数
+;PLAYにプレイヤー側の체력、ENEMYに敵の체력を受け取る
+;-------------------------------------------------
+@JUDGE_BATTLE(PLAY , ENEMY)
+#DIM PLAY
+#DIM ENEMY
+BATTLE_WIN_P = ENEMY <= 0 ? 1 # 0
+BATTLE_WIN_E = PLAY <= 0 ? 1 # 0
+RETURN BATTLE_WIN_P || BATTLE_WIN_E
+
+
+;-------------------------------------------------
+;プレイヤーが勝ったときに呼ばれる汎用勝戦関数
+;-------------------------------------------------
+@WIN_BATTLE(CHR = -1)
+#DIM CHR
+FLAG:敵_撃破数累計 += 1
+PRINTFORML
+PRINTFORMW %조사처리(SAVESTR:敵_名前,"를")% 쓰러트렸다. 경험치 {Flag:敵_取得경험치}를 취득.
+CFlag:CHR:주민_경험치 += Flag:敵_取得경험치
+FLAG:ターン경험치 += Flag:敵_取得경험치
+CFlag:CHR:주민_승리횟수 += 1
+IF CFlag:CHR:주민_승리횟수 >= 50 && TALENT:CHR:「예거」 == 0
+	PRINTL  
+	PRINTFORML %조사처리(CALLNAME:CHR,"는")% 거듭되는 승리로 날카로운 살의와 투지를 몸에 두르게 되었다.
+	PRINTFORMW 영광스러운 「예거」의 일원이 되었다.
+	TALENT:CHR:「예거」 = 1
+
+	;持ってないなら怒りの楯入手
+	IF RPG_ARTIFACT_COUNTUNIQUE(5) == 0
+		PRINTL 
+		PRINTFORML ≪시티는 당신의 전적을 높이 평가하고 있습니다. 더 많은 활약을 바라며 이것을 보내드리겠습니다≫
+		PRINTL 
+		CALL RPG_GET_ART_UNIQUE(5 , CHR , 1)
+	ENDIF
+ENDIF
+Flag:ターン戦闘回数 += 1
+Flag:自動戦闘 = 0
+Flag:自動戦闘 = 0
+IF TALENT:CHR:《아웃이터》&& RAND:10 >= 8
+	IF !RAND:7
+		CFlag:CHR:주민_최대체력 += 2
+	ELSEIF !RAND:6
+		CFlag:CHR:주민_최대기력 += 2
+	ELSEIF !RAND:5
+		CFlag:CHR:주민_ATK += 1
+	ELSEIF !RAND:4
+		CFlag:CHR:주민_DEF += 1
+	ELSEIF !RAND:3
+		CFlag:CHR:주민_HIT += 1
+	ELSEIF !RAND:2
+		CFlag:CHR:주민_SPD += 1
+	ELSE
+		CFlag:CHR:주민_LUK += 1
+	ENDIF
+ENDIF
+RETURN 1
+
+
+;-------------------------------------------------
+;プレイヤーが負けたときに呼ばれる汎用敗戦関数
+;-------------------------------------------------
+@DEFEAT_BATTLE(CHR = -1)
+#DIM CHR
+CFlag:CHR:주민_현재체력 = 1
+PRINTFORML
+SETCOLOR 250,50,50
+PRINTFORMW %WORDS_RPG("DEFEATED_CITY", CHR)%
+RESETCOLOR
+Flag:敵_レア = 0
+Flag:自動戦闘 = 0
+RETURN 1
+
+
+;-------------------------------------------------
+;戦闘終了後のHP回復処理
+;주민_技能_의료による
+;-------------------------------------------------
+@RPG_HP_RECOVERY(CHR = -1)
+#DIM CHR
+IF CFLAG:CHR:주민_技能_의료 >= RAND:100
+	CALL PRINT_LABEL(@"――――%조사처리(CALLNAME:CHR,"는")% 부상을 치료했다――――",,COLOR("RPG_MESSAGE_GOOD"))
+	PRINTW
+	CFlag:CHR:주민_현재체력 += CFlag:CHR:주민_최대체력/7
+	SIF CFlag:CHR:주민_현재체력 >= CFlag:CHR:주민_최대체력 
+		CFlag:CHR:주민_현재체력 = CFlag:CHR:주민_최대체력
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;-------------------------------------------------
+;戦闘終了後の敵해체による素材入手
+;주민_技能_해체による
+;-------------------------------------------------
+@RPG_DISMANTLE(CHR = -1)
+#DIM CHR
+IF CFLAG:CHR:주민_技能_해체 >= RAND:100
+	CALL PRINT_LABEL(@"――――%조사처리(CALLNAME:CHR,"는")% 쓰러트린 적을 해체했다――――",,COLOR("RPG_MESSAGE_GOOD"))
+	PRINTL
+	IF Flag:敵_取得경험치 > 50
+		Flag:I骸 += 1
+		CALL PRINT_LABEL("――――I유해를 입수했다――――",33,COLOR("RPG_MESSAGE_GOOD"))
+		PRINTW
+	ELSEIF Flag:敵_取得경험치 > 25
+		Flag:I供物 += 1
+		CALL PRINT_LABEL("――――I공물을 입수했다――――",33,COLOR("RPG_MESSAGE_GOOD"))
+		PRINTW
+	ELSE
+		Flag:I血液 += 1
+		CALL PRINT_LABEL("――――I혈액을 입수했다――――",33,COLOR("RPG_MESSAGE_GOOD"))
+		PRINTW
+	ENDIF
+	RETURN 1
+ENDIF
+RETURN 0

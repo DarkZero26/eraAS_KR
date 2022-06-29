@@ -1,0 +1,654 @@
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; ダ이스の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG:0   ダ이스の数を表す整数
+;;   ARG:1   ダ이스の目を表す整数
+;;   ARG:2   ダ이스の修正値を表す整数
+;; 戻値
+;;   ダ이스の文字列 (nDm+p)
+;;   すべての引数が0以下の時は空白文字列を返す
+;;
+@INFO_STR_DICE(ARG:0,ARG:1,ARG:2)
+#FUNCTIONS
+#DIMS L_S
+
+IF ARG:0 <= 0 && ARG:1 <= 0 && ARG:2 <= 0
+	L_S '= " " * 8
+ELSE
+	L_S = {ARG:0, 2 ,RIGHT}D{ARG:1, 2 ,RIGHT}+{ARG:2, 2 ,LEFT}
+ENDIF
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; メイン兵装の데미지に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     キャラ番号を表す整数。
+;; 戻値
+;;   メイン兵装の데미지の文字列。
+;;
+@INFO_STR_MAIN_WEAPON_DAMAGE(ARG)
+#FUNCTIONS
+#DIM L_n
+#DIM L_m
+#DIM L_p
+
+L_n = CFlag:ARG:주민_M兵装ダ이스
+L_m = CFlag:ARG:주민_M兵装데미지
+L_p = CFlag:ARG:주민_M兵装ボーナス
+
+RETURNF INFO_STR_DICE(L_n, L_m, L_p)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; サブ兵装の데미지に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     キャラ番号を表す整数。
+;; 戻値
+;;   サブ兵装の데미지の文字列。
+;;
+@INFO_STR_SUB_WEAPON_DAMAGE(ARG)
+#FUNCTIONS
+#DIM L_n
+#DIM L_m
+#DIM L_p
+
+L_n = CFlag:ARG:주민_S兵装ダ이스
+L_m = CFlag:ARG:주민_S兵装데미지
+L_p = CFlag:ARG:주민_S兵装ボーナス
+
+RETURNF INFO_STR_DICE(L_n, L_m, L_p)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 兵装の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     兵装の値を表す整数
+;; 戻値
+;;   兵装の文字列
+;;
+@INFO_STR_HEISOU(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 체술
+CASE 1
+	L_S = 도검
+CASE 2
+	L_S = 둔기
+CASE 3
+	L_S = 총기
+CASE 4
+	L_S = 마술
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 値傾向の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     値傾向を表す整数
+;; 戻値
+;;   値傾向の文字列 (0:なし, 1:忠誠, 2:愛情, 3:淫乱,)
+;;
+@INFO_STR_KEIKOU(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 없음
+CASE 1
+	L_S = 충성
+CASE 2
+	L_S = 애정
+CASE 3
+	L_S = 음란
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 설득도に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     설득도を表す整数
+;; 戻値
+;;   설득도の文字列 (합의,비합의,)
+;;
+@INFO_STR_KUDOKI(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+IF ARG >= 100
+	L_S = 합의
+ELSE
+	L_S = 비합의({ARG})
+ENDIF
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 주민_종족の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     주민_종족の値を表す整数
+;; 戻値
+;;   주민_종족の文字列
+;;
+@INFO_STR_SYUZOKU(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 인간
+CASE 1
+	L_S = 엘프
+CASE 2
+	L_S = 야마
+CASE 3
+	L_S = 아인
+CASE 4
+	L_S = 오토마타
+CASE 5
+	L_S = 천사
+CASE 6
+	L_S = 용인
+CASE 7
+	L_S = 이스
+CASE 8
+	L_S = 해인
+CASE 9
+	L_S = 조인
+CASE 10
+	L_S = 오니
+CASE 11
+	L_S = 정령
+CASE 12
+	L_S = 흡혈귀
+CASE 13
+	L_S = 니어
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 주민_속성の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     주민_속성の値を表す整数
+;; 戻値
+;;   주민_속성の文字列
+;;
+@INFO_STR_ZOKUSEI(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 중립
+CASE 1
+	L_S = 선
+CASE 2
+	L_S = 악
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 주민_지위の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     주민_지위の値を表す整数
+;; 戻値
+;;   주민_지위の文字列
+;;
+@INFO_STR_CHII(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE -1
+	L_S = 빈민
+CASE 0
+	L_S = 일반
+CASE 1
+	L_S = 중급
+CASE 2
+	L_S = 상급
+CASE 3
+	L_S = 귀족
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; スリーサイズ表示用の文字列を返します。
+;;
+;; 引数
+;;   ARG:0   신장の値を表す整数。
+;;   ARG:1   체중の値を表す整数。
+;;   ARG:2   Ｂの値を表す整数。
+;;   ARG:3   カップの値を表す整数。
+;;   ARG:4   Ｗの値を表す整数。
+;;   ARG:5   Ｈの値を表す整数。
+;; 戻値
+;;   スリーサイズ表示用の文字列。
+;;
+@INFO_STR_THREESIZE(ARG:0,ARG:1,ARG:2,ARG:3,ARG:4,ARG:5)
+#FUNCTIONS
+#DIM L_T
+#DIMS L_S
+
+
+L_T = ARG
+
+
+
+
+
+
+
+L_S = 신장{CFlag:L_T:신장}cm:체중{CFlag:L_T:체중}kg:Ｂ{CFlag:L_T:가슴사이즈}cm(%INFO_STR_CUP(ARG)%)Ｗ{CFlag:L_T:ウエストサイズ}cm:Ｈ{CFlag:L_T:ヒップサイズ}cm
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; カップサイズの値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     カップサイズの値を表す整数
+;; 戻値
+;;   カップサイズの文字列 (測定不能,ＡＡ,Ａ,...,Ｚ,測定不能,)
+;;
+@INFO_STR_CUP(ARG)
+#FUNCTIONS
+#DIMS L_S
+#DIM L_T
+
+L_T = ARG
+
+IF CFlag:L_T:カップサイズ <= 0
+	L_S = 측정불능
+ELSEIF CFlag:L_T:カップサイズ == 1
+	L_S = ＡＡ
+ELSEIF CFlag:L_T:カップサイズ >= 2 && CFlag:L_T:カップサイズ <= 27
+	L_S = %UNICODE(0x0ff22 - 3 + CFlag:L_T:カップサイズ)%
+ELSE
+	L_S = 측정불능
+ENDIF
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 체형の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     체형の値を表す整数。
+;; 戻値
+;;   체형の文字列。
+;;
+@INFO_STR_STYLE(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 슬렌더
+CASE 1
+	L_S = 표준
+CASE 2
+	L_S = 글래머
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 머리색の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     머리색の値を表す整数。
+;; 戻値
+;;   머리색の文字列。
+;;
+@INFO_STR_HAIRCOLOR(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 10
+	L_S = 밝은청발
+CASE 9
+	L_S = 보라머리
+CASE 8
+	L_S = 분홍머리
+CASE 7
+	L_S = 연두머리
+CASE 6
+	L_S = 녹발
+CASE 5
+	L_S = 청발
+CASE 4
+	L_S = 금발
+CASE 3
+	L_S = 밤색
+CASE 2
+	L_S = 흑발
+CASE 1
+	L_S = 적발
+CASE 0
+	L_S = 은발
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 머리모양の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     머리모양の値を表す整数。
+;; 戻値
+;;   머리모양の文字列。
+;;
+@INFO_STR_HAIR(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE  0
+	L_S = 숏헤어
+CASE  1
+	L_S = 미디움헤어
+CASE  2
+	L_S = 롱헤어
+CASE  3
+	L_S = 트윈테일
+CASE  4
+	L_S = 포니테일
+CASE  5
+	L_S = 웨이브
+CASE  6
+	L_S = 사이드테일
+CASE  7
+	L_S = 언밸런스
+CASE  8
+	L_S = 内はね
+CASE  9
+	L_S = 外はね
+CASE 10
+	L_S = 세미웨이브
+CASE 11
+	L_S = 롱웨이브
+CASE 12
+	L_S = 한눈가림
+CASE 13
+	L_S = 눈가림
+CASE 14
+	L_S = 히메컷
+CASE 15
+	L_S = 롱사이드테일
+CASE 16
+	L_S = 투사이드업
+CASE 17
+	L_S = 댕기머리
+CASE 18
+	L_S = 드릴
+CASE 19
+	L_S = 베리숏헤어
+CASE 20
+	L_S = 보브
+CASE 21
+	L_S = 하프업
+CASE 22
+	L_S = 땋은머리
+CASE 23
+	L_S = 구레나룻숏
+CASE 24
+	L_S = 내츄럴롱
+CASE 25
+	L_S = 에어인테크
+CASE 26
+	L_S = 양갈래
+CASE 27
+	L_S = 슈퍼롱
+CASE 28
+	L_S = 스포티헤어
+CASE 29
+	L_S = 묶음머리
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 머리모양の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     머리모양の値を表す整数。
+;; 戻値
+;;   머리모양の文字列。
+;;
+@INFO_STR_U_HAIR(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE  0
+	L_S = 숏헤어(뒷머리)
+CASE  1
+	L_S = 미디움헤어(뒷머리)
+CASE  2
+	L_S = 롱헤어(뒷머리)
+CASE  3
+	L_S = 트윈테일(뒷머리)
+CASE  4
+	L_S = 포니테일(뒷머리)
+CASE  5
+	L_S = 웨이브(뒷머리)
+CASE  6
+	L_S = 사이드테일(뒷머리)
+CASE  7
+	L_S = 언밸런스(뒷머리)
+CASE  8
+	L_S = 内はね(뒷머리)
+CASE  9
+	L_S = 外はね(뒷머리)
+CASE 10
+	L_S = 세미웨이브(뒷머리)
+CASE 11
+	L_S = 롱웨이브(뒷머리)
+CASE 12
+	L_S = 한눈가림(뒷머리)
+CASE 13
+	L_S = 눈가림(뒷머리)
+CASE 14
+	L_S = 히메컷(뒷머리)
+CASE 15
+	L_S = 롱사이드테일(뒷머리)
+CASE 16
+	L_S = 투사이드업(뒷머리)
+CASE 17
+	L_S = 댕기머리(뒷머리)
+CASE 18
+	L_S = 드릴(뒷머리)
+CASE 19
+	L_S = 베리숏헤어(뒷머리)
+CASE 20
+	L_S = 보브(뒷머리)
+CASE 21
+	L_S = 하프업(뒷머리)
+CASE 22
+	L_S = 땋은머리(뒷머리)
+CASE 23
+	L_S = 구레나룻숏(뒷머리)
+CASE 24
+	L_S = 내츄럴롱(뒷머리)
+CASE 25
+	L_S = 에어인테크(뒷머리)
+CASE 26
+	L_S = 양갈래(뒷머리)
+CASE 27
+	L_S = 슈퍼롱(뒷머리)
+CASE 28
+	L_S = 스포티헤어(뒷머리)
+CASE 29
+	L_S = 묶은머리(뒷머리)
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 目の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     目の値を表す整数。
+;; 戻値
+;;   目の文字列。
+;;
+@INFO_STR_EYE(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 처진눈
+CASE 1
+	L_S = 삼백안
+CASE 2
+	L_S = 표준
+CASE 3
+	L_S = 탁한눈
+CASE 4
+	L_S = 날선눈
+CASE 5
+	L_S = 신비적
+CASE 6
+	L_S = 큰눈
+CASE 7
+	L_S = 切れ長
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 瞳色の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     瞳色の値を表す整数。
+;; 戻値
+;;   瞳色の文字列。
+;;
+@INFO_STR_EYECOLOR(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 검정색
+CASE 1
+	L_S = 진홍색
+CASE 2
+	L_S = 금색
+CASE 3
+	L_S = 보라색
+CASE 4
+	L_S = 갈색
+CASE 5
+	L_S = 하늘색
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 肌色の値に対応する文字列を返します。
+;;
+;; 引数
+;;   ARG     肌色の値を表す整数。
+;; 戻値
+;;   肌色の文字列。
+;;
+@INFO_STR_SKINCOLOR(ARG)
+#FUNCTIONS
+#DIMS L_S
+
+SELECTCASE ARG
+CASE 0
+	L_S = 표준
+CASE 1
+	L_S = 옅음
+CASE 2
+	L_S = 밝음
+CASE 3
+	L_S = 탁함
+CASE 4
+	L_S = 어두움
+CASE 5
+	L_S = 흼
+CASEELSE
+	L_S = {ARG}
+ENDSELECT
+
+RETURNF L_S
+

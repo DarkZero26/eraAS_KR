@@ -1,0 +1,110 @@
+﻿;-------------------------------------------------
+;傷ついた조인
+;-------------------------------------------------
+@RPG_EVENT_500(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 500
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:상처 입은 조인】
+PRINTFORML 
+
+PRINTFORML %조사처리(CALLNAME:L_I,"가")% 어떤 소리를 감지하고, 소리가 나는 방향으로 경계하며 다가간다.
+PRINTFORML 그러자, 그곳에는 날개에서 피를 흘리며 쓰러져 있는 조인이 있었다.
+PRINTFORML 아무래도「외적」에게 습격당해, 목숨만 건져서 여기까지 도망쳐 온 듯 하다.
+PRINTFORML ……구조 여부는 자유겠지만…….
+PRINTFORML 
+PRINTFORML [0] 구조한다　　　　(주민 등록　)
+PRINTFORML [1] 구조하지 않는다 (주민 미등록)
+PRINTFORML 
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	PRINTFORML 내버려두고 갈 이유도 없었기에, 다른 대원에게 명령해 구조를 실시하기로 했다.
+	PRINTFORML 대충 보아하니 상처는 깊지만, 지금이라면 충분히 시간 내로 구조할 수 있을 것이다…….
+	PRINTFORML 
+	PRINTFORMW 
+	CALL CHARACTER_SCOUT1
+CASE 1
+	PRINTFORML 구조하고 싶지만, 전력이 미지수인「외적」이 올 가능성도 있다.
+	PRINTFORML 운이 없었다 치고, 그 자리를 떠났다…….
+	PRINTFORML 
+	PRINTFORMW 
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+
+
+
+
+
+
+
+
+
+
+RESETCOLOR
+DRAWLINE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

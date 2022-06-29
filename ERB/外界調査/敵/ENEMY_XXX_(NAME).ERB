@@ -1,0 +1,26 @@
+﻿[SKIPSTART]
+;-------------------------------------------------
+;敵定義テンプレート
+;XXXは敵のIDで置き換える
+;HP、ATK、DEF、HIT、SPDの5値は敵のデータ読み込み時に乱数がかかる
+;-------------------------------------------------
+@ENEMY_XXX(L_STATUS , LS_STATUS)
+#DIM REF L_STATUS
+#DIMS REF LS_STATUS
+#DIM TEMP      ;計算用一時変数
+
+LS_STATUS:CON_敵_NAME = (NAMES)
+
+L_STATUS:CON_敵_EB = 
+L_STATUS:CON_敵_HP = 
+L_STATUS:CON_敵_ATK = 
+L_STATUS:CON_敵_DEF = 
+L_STATUS:CON_敵_HIT = 
+L_STATUS:CON_敵_SPD = 
+L_STATUS:CON_敵_LUK = 
+L_STATUS:CON_敵_弱点 = 
+L_STATUS:CON_敵_耐性 = 
+L_STATUS:CON_敵_逃走確定 = 0
+L_STATUS:CON_敵_逃走企図 = 0
+RETURN
+[SKIPEND]

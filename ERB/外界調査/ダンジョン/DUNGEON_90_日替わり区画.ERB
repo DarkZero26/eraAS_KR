@@ -1,0 +1,124 @@
+﻿;-------------------------------------------------
+;DUNGEON_90：ある区画
+;-------------------------------------------------
+@DUNGEON_90_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = （최심부:{Flag:日替わり区画深度限界}）
+RESULTS = Lv{Flag:日替わり区画難易度}:어느 구역%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+@DUNGEON_90_ABLE
+SIF FLAG:日替わり区画難易度 == 0
+	RETURN 0
+
+RETURN 1
+
+
+@DUNGEON_90_FE(STEP)
+#DIM STEP
+#DIM EV
+;このダンジョンではレア敵イベントは特定階層のみ(ASの仕様)
+SELECTCASE CHUSEN(0 , 20 , 10 , 10 , 60)
+	CASE 0
+		;レア敵
+		EV = 4
+	CASE 1
+		;通常敵。25%
+		EV = 3
+	CASE 2
+		;人材絡み。15%
+		EV = 1
+	CASE 3
+		;アイテム入手
+		EV = 2
+	CASE 4
+		;その他。何も起きない
+		EV = -1
+	CASEELSE
+		;予期しない数が返されても気づかない恐れがあるのでエラー落ち
+		THROW 予期しない分岐
+ENDSELECT
+RETURN EV
+
+
+@DUNGEON_90_PERSON
+#DIM PER
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 30) , 25 * (FLAG:調査深度 >= 70) , 25 * (FLAG:調査深度 >= 50) , 25)
+	CASE 0
+		;傷ついた조인
+		PER = 500
+	CASE 1
+		;冷凍カプセル
+		PER = 400
+	CASE 2
+		;오니との出会い
+		PER = 501
+	CASEELSE
+		;성노예救出
+		PER = 401
+ENDSELECT
+RETURN PER
+
+
+;日替わりはレア敵の登場条件が特殊
+@DUNGEON_90_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+;IF RARE == 1 || POSSIB(3)
+IF RARE == 1 || FLAG:調査深度 >= FLAG:日替わり区画深度限界
+	;レア敵
+	SELECTCASE CHUSEN(33 , 33 , 33)
+		CASE 0
+			;ロイガー
+			ENE = 7
+		CASE 1
+			;ハイドラ
+			ENE = 8
+		CASEELSE
+			;シアエガ
+			ENE = 9
+	ENDSELECT
+ELSE
+	;通常敵
+	SELECTCASE CHUSEN(33 , 33 , 33)
+		CASE 0
+			;異形化した인간
+			ENE = 10
+		CASE 1
+			;腐った「外敵」
+			ENE = 11
+		CASEELSE
+			;狂信者
+			ENE = 12
+	ENDSELECT
+ENDIF
+RETURN ENE
+
+
+@DUNGEON_90_ITEM
+#DIM IT
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 50) , 25 , 25 , 25)
+	CASE 0
+		;ゲノム入手。調査深度50以降
+		IT = 100
+	CASE 1
+		;書物閲覧
+		IT = 101
+	CASE 2
+		;古代遺跡発見
+		IT = 102
+	CASEELSE
+		;キャンプ跡地発見
+		IT = 103
+ENDSELECT
+RETURN IT
+
+
+;ダンジョンの各種パラメータ設定
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_90_PARAM
+FLAG:調査瘴気 = 0
+FLAG:索敵難易度 = 20 + FLAG:日替わり区画難易度 * 10
+RETURN

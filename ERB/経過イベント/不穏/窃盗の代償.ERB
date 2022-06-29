@@ -1,0 +1,161 @@
+﻿;-------------------------------------------------
+;窃盗の代償
+;-------------------------------------------------
+@TURN_EVENT_NSM
+
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【절도의 대가(카르마):%CALLNAME%】
+
+PRINTFORML 작은 개인 상점에서 쇼핑을 즐기고 있던 %타겟은% 점 내에 사람의 모습이 없는 것을 눈치챘다.
+PRINTFORML 다른 쇼핑객은 없고, 점원도 계산대 안쪽 공간에 간 채 돌아오지 않는다.
+PRINTFORMW 가게 안에 감시 카메라도 없는데 점원도 위기감 없음에 %타겟은% 기가 막혔다.
+;카르마 > 30 -> 절도 루트
+IF CFlag:주민_카르마 > 30
+	PRINTFORML 점원을 기다리는 사이에 %CALLNAME% 안에 사념이 솟아난다.
+	PRINTFORML 지금이라면 누구에게도 들키지 않고 상품을 가져갈 수 있는 것이 아닐까?
+	PRINTFORMW 악마의 속삭임에 몸을 맡긴 %타겟은% 상품을 가방에 숨기고는 빠른 걸음으로 가게 출입구로 향했다…….
+	;절도 성공판정(성공률 70%)
+	IF RAND:100 >= 30
+		PRINTFORMW ……
+		PRINTFORML %타겟은% 누구에게도 검문받지 않고 가게를 나오는 것에 성공했다.
+		PRINTFORML 들킬지도 모른다는 긴장감에 도둑질에 성공했다는 성취감.
+		PRINTFORMW 그리고 공짜로 얻은 상품에 만족감을 느끼면서 %타겟은% 귀로에 섰다…….
+		PRINTFORML 
+		IF CFLAG:주민_카르마 >= 98
+			PRINTFORML %CALLNAME%의 카르마가 상승했다.
+			PRINTFORMW 카르마　{CFLAG:주민_카르마} → 100
+			CFLAG:주민_카르마 = 100
+		ELSE
+			PRINTFORML %CALLNAME%의 카르마가 상승했다.
+			PRINTFORMW 카르마　{CFLAG:주민_카르마} → {CFLAG:주민_카르마+3}
+			CFLAG:주민_카르마 += 3
+		ENDIF
+	;절도 실패
+	ELSE
+		PRINTFORMW ……
+		PRINTFORML %타겟이% 가게를 나서려는데 타이밍 나쁘게 점원이 돌아와 버렸다.
+		PRINTFORML 부자연스럽게 불룩해진 가방과 선반에서 줄어든 상품을 깨달은 점원은 %타겟을% 붙잡는다.
+		PRINTFORML 단념한 %타겟은% 가방에서 훔치려고 했던 상품을 꺼내 점원에게 사과했다.
+		PRINTFORMW 상품을 받은 점원은 남의 눈을 피하기 위해 %타겟을% 스탭실로 데리고 들어갔다…….
+		;20% 확률로 넘어간다
+		IF RAND:100 >= 80
+			PRINTFORML 솔직하게 상품을 꺼낸 것, 도망가려 하지 않은 것, 반성하고 있는 것.
+			PRINTFORMW %CALLNAME%의 기특한 태도를 본 점원은 심한 설교를 했지만, 특별히 눈감아 주었다…….
+			PRINTFORML 
+			IF CFLAG:주민_카르마 < 100
+				PRINTFORML %CALLNAME%의 카르마가 상승했다.
+				PRINTFORMW 카르마　{CFLAG:주민_카르마} → {CFLAG:주민_카르마+1}
+				CFLAG:주민_카르마 += 1
+			ENDIF
+		;봐주지 않았다
+		ELSE
+			PRINTFORML 「반성은 하고 있는 것 같고, 신고는 안 해도 되겠지만…… 알지?」
+			PRINTFORML %CALLNAME%의 등뒤로 간 점원은 어깨에 돌린 손을 목덜미로 찔러 넣는다.
+			PRINTFORML 거부하려고 한 %조사처리(CALLNAME,"였")%지만 신고해버리겠다고 위협받아 완강히 거부할 수 없었다.
+			PRINTFORML 「하, 한 번 뿐이라면……」
+			PRINTFORMW 힘없이 고개를 숙여 점원의 제의를 받아들인 %타겟은% 휴식용 소파에 밀려 쓰러졌다…….
+			PRINTFORML 
+			CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK2000
+			PRINTFORML 
+			PRINTFORML %CALLNAME%의 자궁에는 이미 점원의 정액이 찰랑거리고 있었지만 점원은 섹스를 그만두려 하지 않으려 했다.
+			PRINTFORML 「있지, 우리 궁합 잘 맞는 것 같지 않아? 이번만이라고 하지 말고, 번호 좀 알려줘」
+			PRINTFORML 후배위로 %CALLNAME%에게 팡팡 허리를 부딪치면서 점원은 %CALLNAME%의 연락처를 알아내려고 한다.
+			IF TALENT:거유 || TALENT:폭유
+				PRINTFORML 점원의 움직임에 맞춰 앞뒤로 흔들리는 %CALLNAME%의 굴곡지고 잘 여문 가슴을 움켜쥐고, 찌그러질 정도로 힘껏 가슴을 주무른다.
+			ELSEIF TALENT:빈유 || TALENT:절벽
+				PRINTFORML 흥분으로 발기한 %CALLNAME%의 유두를 손끝으로 뭉개듯 만지작거리면서 허리의 움직임에 맞춰 손가락 힘에 완급을 준다.
+			ENDIF
+			PRINTFORML 그것만으로 짧은 시간 안에 점원에게 주입당한 %타겟은% 절정에 이르고, 정액을 최대한 많이 받아들이기 위해
+			PRINTFORML 질육을 경련시켜 자궁으로 정액을 탐욕스럽게 삼켜나간다.
+			PRINTFORML 「거봐, 역시 궁합이 잘 맞는다니까. 어떨까나? 다시 생각해줬으려나?」
+			PRINTFORML 점원의 질문에 %타겟은% 약하지만 확실히 고개를 젓는다.
+			PRINTFORML 그 모습을 차가운 눈으로 바라보던 직원은 갑자기 흥미를 잃은 아이처럼 %타겟을% 내친다.
+			PRINTFORMW 바닥에 처진 %타겟을% 그대로 두고, 점원은 샤워실로 향해 정사의 액을 씻어내기 시작했다…….
+			PRINTFORML 
+			;60%확률로 '절도의 대가 After' 플래그 성립
+			IF RAND:100 >= 40
+				PRINTFORML %타겟이% 샤워를 하는 물소리가 방으로 흘러나오자 점원은 %CALLNAME%의 가방을 뒤진다.
+				PRINTFORML 단 한 번뿐이라는 약속이었지만, 그렇게 안으면 기분 좋은 암컷과 만나는 것은 처음이었다.
+				PRINTFORML 놓치고 싶지 않다… 그렇게 생각한 점원은 무심코 행동에 옮기고 있었다.
+				PRINTFORML 얌전히 번호를 알려주면 될 것을 고집스럽게 계속 거부한 %타겟이% 나쁜 것이다.
+				PRINTFORML 제멋대로인 이유로 자신을 변호한 직원은 가방에서 %CALLNAME%의 신분증을 꺼내 개인정보를 알아낸다.
+				PRINTFORML %타겟을% 안는 것 만으로는 끝나지 않는다. 끝내주지 않는다.
+				PRINTFORML 반드시 저 육체를 자신만의 것으로 해서, 그 자궁을 자신 전용의 잉태 주머니로 만든다.
+				PRINTFORMW 그렇게 결의한 점원은 샤워실에서 나온 %타겟을% 아무 일도 없었다는 듯이 내보냈다.
+				PRINTFORMW 사람이 없는 스탭실로 혼자 돌아온 점원은 자신의 사뭉함에서 작동 중인 카매라를 꺼내고 득의의 미소를 지었다…….
+				PRINTFORML 
+				IF CFLAG:주민_카르마 < 100
+					PRINTFORML %CALLNAME%의 카르마가 상승했다.
+					PRINTFORMW 카르마　{CFLAG:주민_카르마} → {CFLAG:주민_카르마+1}
+					CFLAG:주민_카르마 += 1
+				ENDIF
+				;'절도의 대가 After' 플래그
+				CFLAG:窃盗の代償アフター = 1
+			ELSE
+				PRINTFORML 점원은 %CALLNAME%에게 두 번 다시 관여하지 않기로 약속하고 %타겟을% 해방했다…….
+				PRINTFORML 
+				IF CFLAG:주민_카르마 < 100
+					PRINTFORML %CALLNAME%의 카르마가 상승했다.
+					PRINTFORMW 카르마　{CFLAG:주민_카르마} → {CFLAG:주민_카르마+1}
+					CFLAG:주민_카르마 += 1
+				ENDIF
+				;'절도의 대가 After' 플래그 분쇄
+				CFLAG:窃盗の代償アフター = -1
+			ENDIF
+		
+		SIF CSTR:첫섹스상대명 == ""
+			CSTR:첫섹스상대명 = 개인상점 점원
+		SIF CSTR:첫키스상대명 == "" 
+			CSTR:첫키스상대명 = 개인상점 점원
+		SIF CSTR:첫펠라상대명 ==""
+			CSTR:첫펠라상대명 = 개인상점 점원
+		SIF CSTR:첫절정상대명 ==""
+			CSTR:첫절정상대명 = 개인상점 점원
+		SIF CSTR:첫질사상대명 ==""
+			CSTR:첫질사상대명 = 개인상점 점원
+		
+		TALENT:비처녀 = 1
+		TCVAR:履歴_EXP_処女喪失 = 1
+		EXP:키스경험 += (RAND:2)+1
+		EXP:Ｂ경험 += (RAND:2)+1
+		EXP:Ｃ경험 += (RAND:2)+1
+		EXP:Ｖ경험 += (RAND:4)+1
+		EXP:펠라경험 += (RAND:2)+1
+		EXP:성교경험 += (RAND:4)+1
+		EXP:절정경험 += (RAND:3)+1
+		EXP:정액경험 += (RAND:2)+1
+		EXP:질싸경험 += (RAND:4)+1
+		EXP:강간경험 += (RAND:4)+1
+		EXP:고통쾌락경험 += (RAND:3)+1
+
+		ENDIF
+	ENDIF
+;카르마 < 30 -> 다음 기회에
+ELSE
+	PRINTFORML 상품을 들고 튀면 어떨까 생각하면서도 %타겟은% 점원이 돌아올 때까지 느긋하게 기다리기로 했다.
+	PRINTFORMW 잠시 후에 돌아온 점원은 기다리게 한 것에 대해 사과하며 약간의 덤을 붙여 주었다…….
+ENDIF
+
+
+RESETCOLOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

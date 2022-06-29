@@ -1,0 +1,111 @@
+﻿;-------------------------------------------------
+;交配実験
+;-------------------------------------------------
+@RPG_EVENT_801(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 801
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 250,50,50
+PRINTFORML 【조사 이벤트:교배 실험】
+PRINTFORML 
+
+PRINTFORML 방치된 시설을 탐색 중 %조사처리(CALLNAME:L_I,"는")% 부자연스럽게 정돈된 방을 발견한다.
+PRINTFORML 주변 시설은 풍화되어 벽 일부가 무녀져내렸고, 동식물이나「외적」이 침입한 흔적이 남아 있다.
+PRINTFORML 하지만 이 방만큼은 지금도 사람이 살고 있는 것처럼 유지보수가 잘 되어, 미려하게 보존되어 있다.
+PRINTFORMW 도시 외에서 이렇게 상태가 좋은 방은 아직 한 번도 본 적이 없다.
+PRINTFORML 너무나도 부자연스러운 방에 %조사처리(CALLNAME:L_I,"는")% 불길한 예감이 들었다…….
+PRINTFORML 
+PRINTFORML 
+PRINTFORML [0] 즉각 이탈한다
+PRINTFORML 
+$INPUT_LOOP
+TINPUT 2000, 100, 1
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	RESETCOLOR
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 자신의 직감에 따라 방을 떠났다.
+	PRINTFORML 직후, 문이 잠기는 소리가 주위로 울리면서 문이 열리지 않게 되었다.
+	PRINTFORML …만약 그 방 안에 계속 있었다면 갇혔을지도 모른다.
+	PRINTFORML 한끗 차이로 위기를 넘긴 %조사처리(CALLNAME:L_I,"는")% 식은 땀을 닦아내면서 그 곳에서 멀어졌다…….
+	PRINTFORMW 
+CASE 100
+	PRINTFORML 문이 '철컥' 하고 잠기는 소리에 %조사처리(CALLNAME:L_I,"는")% 황급히 문으로 달려간다.
+	PRINTFORML 하지만 문은 닫힌 채 미동도 하지 않았고, %조사처리(CALLNAME:L_I,"는")% 방에 갇혀버렸다.
+	PRINTFORML 동료에게 구원을 요청하려 해도 통신기에서는 노이즈음만이 흐르고, 통신이 잡힐 기미는 보이지 않는다.
+	PRINTFORML 이내 실내에 주입된 가스에 의해 %조사처리(CALLNAME:L_I,"는")% 잠에 빠지듯이 정신을 잃었다…….
+	PRINTFORML 
+	PRINTFORMW 
+	PRINTFORML 탐색 중의 %조사처리(CALLNAME:L_I,"과")% 연락이 두절, 행방불명이 되었습니다.
+	PRINTFORMW 
+	RESETCOLOR
+	CFLAG:L_I:交配実験 = 1
+	FLAG:イベント誘拐中 = 2
+	FLAG:조사이벤트번호 = 0
+	CALL CHARA_LEAVE_CITY(L_I)
+	CALL RPG_EVENT_MAIN_END
+	JUMP SYSTEM_MENU
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+RESETCOLOR
+DRAWLINE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

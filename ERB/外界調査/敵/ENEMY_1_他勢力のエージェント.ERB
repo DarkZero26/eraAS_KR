@@ -1,0 +1,25 @@
+﻿;-------------------------------------------------
+;他勢力のエージェント
+;敵プレイヤーの襲撃専用
+;-------------------------------------------------
+@ENEMY_1(L_STATUS , LS_STATUS)
+#DIM REF L_STATUS
+#DIMS REF LS_STATUS
+#DIM TEMP
+
+LS_STATUS:CON_敵_NAME = 타 세력의 에이전트
+TEMP = (FLAG:EP敵戦力 / 2) + 3
+
+;M兵装だけ専用品
+L_STATUS:CON_敵_主兵装 = 5
+
+L_STATUS:CON_敵_EB = TEMP * 2
+L_STATUS:CON_敵_HP = TEMP * 10 + 50
+L_STATUS:CON_敵_ATK = TEMP * TEMP
+L_STATUS:CON_敵_DEF = TEMP * TEMP
+L_STATUS:CON_敵_HIT = TEMP * TEMP
+L_STATUS:CON_敵_SPD = TEMP * TEMP
+L_STATUS:CON_敵_LUK = 0
+L_STATUS:CON_敵_弱点 = RAND:5
+L_STATUS:CON_敵_耐性 = RAND:5
+RETURN

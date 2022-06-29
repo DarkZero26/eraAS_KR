@@ -1,0 +1,713 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SOURCE_CALC_ORGASM.ERB
+;	Facility	:SOURCE関連処理(절정計算)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+; *- XXXX
+;
+;	・ SRC_CALC_ORGASM_MAIN				SRC計算:절정(主処理)
+;	・ SRC_CALC_ORGASM_ADD				SRC計算:절정(パラメータ加算)
+;	・ SRC_CALC_EJCT_POINT				SRC計算:射精ポイント
+;	・ LOG_ORGASM_MAIN					LOG出力:절정(主処理)
+;	・ LOG_ORGASM_SIGHT_MAIN			LOG出力:절정(情景 - 主処理)
+;	・ LOG_ORGASM_SIGHT_SLAVE_MAIN		LOG出力:절정(奴隷情景-主処理)
+;	・ LOG_ORGASM_SIGHT_MASTER_MAIN		LOG出力:절정(主人情景-主処理)
+;	・ LOG_ORGASM_SIGHT_MASTER_DETAIL	LOG出力:절정(主人情景-詳細)
+;
+;===============================================================================
+
+;-------------------------------------------------------------------------------
+;   XXXX
+;-------------------------------------------------------------------------------
+
+;=================================================
+;   sub SRC_CALC_ORGASM_MAIN
+;=================================================
+;   SRC計算:절정(主処理)
+;-------------------------------------------------
+@SRC_CALC_ORGASM_MAIN
+#DIM L_I
+#DIM L_T
+#DIM L_TMP
+#DIM L_MODE
+
+;절정モード制御(0:イキそうで制御 1:無し) ※暫定で無しで調整
+L_MODE = 1
+
+FOR L_I, 0, DEFTR_PL_NUM
+	L_T = GTR_PL:L_I
+
+	;CHK
+	SIF L_T < 0
+		BREAK
+
+	L_TMP = TCVAR:L_T:절정加算値
+
+	IF L_MODE
+		TCVAR:L_T:イきそう = 1
+	ENDIF
+
+	IF L_TMP
+		;- 加算
+		BASE:L_T:절정 += L_TMP
+
+		;- CHK:MAX
+		IF BASE:L_T:절정 >= MAXBASE:L_T:절정
+			;- 既にイきそうな場合
+			IF TCVAR:L_T:イきそう > 0
+				;-----------------------------
+				;-- 절정
+				;-----------------------------
+				TCVAR:L_T:イきそう = 0
+
+				;- SRC計算:절정(パラメータ加算)
+				CALL SRC_CALC_ORGASM_ADD(L_T)
+
+				BASE:L_T:절정 %= MAXBASE:L_T:절정
+
+			ELSE
+				;- 1ターン継続
+				TCVAR:L_T:イきそう = 1
+			ENDIF
+		ENDIF
+	;절정加算無し
+	ELSE
+		SIF TCVAR:L_T:イきそう
+			TCVAR:L_T:イきそう --
+
+		;- イきそうで無い場合
+		IF !TCVAR:L_T:イきそう
+			BASE:L_T:절정 = MIN(BASE:L_T:절정, MAXBASE:L_T:절정 - 1)
+		ENDIF
+	ENDIF
+
+	IF L_MODE
+		TCVAR:L_T:イきそう = 0
+	ENDIF
+
+NEXT
+
+;=================================================
+;   sub SRC_CALC_ORGASM_ADD
+;=================================================
+;   SRC計算:절정(パラメータ加算)
+;-------------------------------------------------
+; Input:
+;  ARG:0				対象者
+;-------------------------------------------------
+@SRC_CALC_ORGASM_ADD(ARG:0)
+#DIM L_I
+#DIM L_TMP
+#DIM L_VAL
+#DIM L_LV
+#DIM L_T
+#DIM L_P
+
+L_T = ARG:0
+
+L_TMP = BASE:L_T:절정
+
+;- 計算:절정強度
+SELECTCASE L_TMP
+	;2.5倍以上
+	CASE IS >= (FLAG:최대値_절정 * 250 / 100)
+		L_LV = 3
+	;1.5倍以上
+	CASE IS >= (FLAG:최대値_절정 * 150 / 100)
+		L_LV = 2
+	CASEELSE
+		L_LV = 1
+ENDSELECT
+
+TCVAR:L_T:절정強度 = L_LV
+
+;-----------------------------
+;-- 各種ソース加算
+;-----------------------------
+
+;- 절정
+;SOURCE:L_T:절정 = (L_LV * 500)
+SOURCE:L_T:절정 = 400 + (L_LV * 100)
+
+;ペニス有り
+IF VAR_PENIS(L_T)
+;	L_VAL=(L_LV * 300)
+	L_VAL= 200 + (L_LV * 100)
+
+	L_TMP = TEQUIP:L_T:ペニス占有者１
+	IF !GROUPMATCH(L_TMP, [[ペニス占有者:無し]], L_T)
+		SOURCE:L_TMP:精液 += L_VAL
+		;- SRC計算:射精ポイント
+		CALL SRC_CALC_EJCT_POINT(L_TMP, TEQUIP:L_T:ペニス占有部位１, L_LV)
+	ENDIF
+
+	L_TMP = TEQUIP:L_T:ペニス占有者２
+	IF !GROUPMATCH(L_TMP, [[ペニス占有者:無し]], L_T)
+		SOURCE:L_TMP:精液 += L_VAL
+		;- SRC計算:射精ポイント
+		CALL SRC_CALC_EJCT_POINT(L_TMP, TEQUIP:L_T:ペニス占有部位２, L_LV)
+	ENDIF
+
+	;Ｖ射精時
+	IF TEQUIP:L_T:ペニス占有部位１ == [[占有部位:Ｖ]]
+		L_TMP = TEQUIP:L_T:ペニス占有者１
+		CFLAG:MASTER:精子경험치 += 1
+		IF CFLAG:MASTER:精子경험치 >= ((CFlag:MASTER:정자레벨)*5)+CFlag:MASTER:정자레벨
+			CFLAG:MASTER:精子경험치 = 0
+			CFlag:MASTER:정자레벨 += 1
+		ENDIF
+		;임신処理
+		;CALL NINSIN_CHK(L_TMP, L_T, L_LV)
+	ENDIF
+
+ENDIF
+
+;-----------------------------
+;- 절정타입判定
+;-----------------------------
+L_VAL=1000
+IF 0
+;ペニス有り
+ELSEIF VAR_PENIS(L_T)
+	TCVAR:L_T:절정타입 = [[口上:Ｐ射精]]
+;;ＶとＡが両方達成
+;ELSEIF (CUP:L_T:쾌V >= L_VAL) && (CUP:L_T:쾌A >= L_VAL)
+;	TCVAR:L_T:절정타입 = [[口上:ＶＡ절정]]
+;Ｖが達成
+ELSEIF (CUP:L_T:쾌V >= L_VAL)
+	TCVAR:L_T:절정타입 = [[口上:Ｖ절정]]
+;Ａが達成
+ELSEIF (CUP:L_T:쾌A >= L_VAL)
+	TCVAR:L_T:절정타입 = [[口上:Ａ절정]]
+;Ｃが達成
+ELSEIF (CUP:L_T:쾌C >= L_VAL)
+	TCVAR:L_T:절정타입 = [[口上:Ｃ절정]]
+;Ｂが達成
+ELSEIF (CUP:L_T:쾌B >= L_VAL)
+	TCVAR:L_T:절정타입 = [[口上:Ｂ절정]]
+;消去法
+ELSE
+	IF 0
+;	;ＶとＡに値有り
+;	ELSEIF (CUP:L_T:쾌V) && (CUP:L_T:쾌A)
+;		TCVAR:L_T:절정타입 = [[口上:ＶＡ절정]]
+	;Ｖに値有り
+	ELSEIF (CUP:L_T:쾌V)
+		TCVAR:L_T:절정타입 = [[口上:Ｖ절정]]
+	;Ａに値有り
+	ELSEIF (CUP:L_T:쾌A)
+		TCVAR:L_T:절정타입 = [[口上:Ａ절정]]
+	;Ｂに値有り
+	ELSEIF (CUP:L_T:쾌B)
+		TCVAR:L_T:절정타입 = [[口上:Ｂ절정]]
+	;それ以外
+	ELSE
+		TCVAR:L_T:절정타입 = [[口上:Ｃ절정]]
+	ENDIF
+ENDIF
+
+;;- DOWNBASE
+;DOWNBASE:L_T:체력 -= 10
+
+;- PLAYERに습득
+SOURCE:PLAYER:습득 += (L_LV * 100)
+
+;- EXP関連
+GTR_EXPUP:L_T:DB_EXPUP_POS("절정경험") += L_LV
+
+TCVAR:L_T:절정回数 += L_LV
+
+IF TALENT:L_T:《리비도그로우업》 && RAND:10 >= 6
+	IF !RAND:7
+		CFLAG:L_T:주민_최대체력 += 2
+	ELSEIF !RAND:6
+		CFLAG:L_T:주민_최대기력 += 2
+	ELSEIF !RAND:5
+		CFLAG:L_T:주민_ATK += 1
+	ELSEIF !RAND:4
+		CFLAG:L_T:주민_DEF += 1
+	ELSEIF !RAND:3
+		CFLAG:L_T:주민_HIT += 1
+	ELSEIF !RAND:2
+		CFLAG:L_T:주민_SPD += 1
+	ELSE
+		CFLAG:L_T:주민_LUK += 1
+	ENDIF
+ENDIF
+
+;=================================================
+;   sub SRC_CALC_EJCT_POINT
+;=================================================
+;   SRC計算:射精ポイント
+;-------------------------------------------------
+; Input:
+;  ARG:0				対象者
+;  ARG:1				ペニス占有部位
+;  ARG:2				절정強度
+;-------------------------------------------------
+@SRC_CALC_EJCT_POINT(ARG:0, ARG:1, ARG:2)
+#DIM L_T
+#DIM L_TYPE
+#DIM L_RES
+
+L_T = ARG:0
+L_TYPE = ARG:1
+L_RES = [[占有部位:無し]]
+
+;- CHK:占有部位
+SELECTCASE L_TYPE
+	;膣奥へ射精
+	CASE [[占有部位:Ｖ]]
+		L_RES = [[口上:主人Ｖ射精]]
+		GTR_EXPUP:L_T:DB_EXPUP_POS("질싸경험") += ARG:2
+		TCVAR:L_T:子宮射精回数 += ARG:2
+		Flag:画像_범용변수 = 10
+
+	;アナルへ射精
+	CASE [[占有部位:Ａ]]
+		L_RES = [[口上:主人Ａ射精]]
+	;口へ射精
+	CASE [[占有部位:口]], [[占有部位:６９]], [[占有部位:Ｐ６９]]
+		L_RES = [[口上:主人口射精]]
+		GTR_EXPUP:L_T:DB_EXPUP_POS("정음경험") += ARG:2
+
+	;胸へ射精
+	CASE [[占有部位:Ｂ]]
+		L_RES = [[口上:主人胸射精]]
+	;手へ射精
+	CASE [[占有部位:指]]
+		L_RES = [[口上:主人手射精]]
+
+	;-----------------------------
+	;- 以下は拡張系
+	;-----------------------------
+	;秘裂へ射精
+	CASE [[占有部位:Ｃ]]
+		L_RES = [[口上:主人秘裂射精]]
+	;足へ射精
+	CASE [[占有部位:足]]
+		L_RES = [[口上:主人足射精]]
+	;-----------------------------
+	;- 以下は逆性交系
+	;-----------------------------
+	CASEELSE
+		;無し
+ENDSELECT
+
+TCVAR:L_T:被射精部位=L_RES
+
+GTR_EXPUP:L_T:DB_EXPUP_POS("정액경험") += ARG:2
+
+
+;=================================================
+;   sub LOG_ORGASM_MAIN
+;=================================================
+;   LOG出力:절정(主処理)
+;-------------------------------------------------
+@LOG_ORGASM_MAIN
+#DIM L_I
+#DIM L_T
+#DIM L_HIT
+
+L_HIT=0
+
+FOR L_I, 0, DEFTR_PL_NUM
+	L_T = GTR_PL:L_I
+
+	;CHK
+	SIF L_T < 0
+		BREAK
+
+	;-----------------------------
+	;- LOG出力
+	;-----------------------------
+	IF TCVAR:L_T:절정強度
+		PRINTFORM %CALLNAME:L_T%
+
+		SETCOLOR COLOR("ピンク")
+		IF VAR_PENIS(L_T)
+			SELECTCASE TCVAR:L_T:절정強度
+				CASE IS >= 3
+					PRINTFORM 초대량사정
+				CASE 2
+					PRINTFORM 대량사정
+				CASEELSE
+					PRINTFORM 사정
+			ENDSELECT
+		ELSE
+			SELECTCASE TCVAR:L_T:절정強度
+				CASE IS >= 3
+					PRINTFORM 초강절정
+				CASE 2
+					PRINTFORM 강절정
+				CASEELSE
+					PRINTFORM 절정
+			ENDSELECT
+		ENDIF
+		RESETCOLOR
+		PRINTL
+		L_HIT = 1
+
+	ENDIF
+NEXT
+
+IF L_HIT
+	WAIT
+	PRINTL
+ENDIF
+
+
+;=================================================
+;   sub LOG_ORGASM_SIGHT_MAIN
+;=================================================
+;   LOG出力:절정(情景 - 主処理)
+;-------------------------------------------------
+;   MASTER→メインTARGET→サブTARGETの順で
+;   情景を出力
+;-------------------------------------------------
+@LOG_ORGASM_SIGHT_MAIN
+#DIM L_I
+#DIM L_T
+#DIM L_TGT_BAK
+
+
+;- ペニス有りなら主人専用情景
+IF VAR_PENIS(PLAYER)
+	;- LOG出力:절정(主人情景-主処理)
+	CALL LOG_ORGASM_SIGHT_MASTER_MAIN
+ELSE
+	;- LOG出力:절정(奴隷情景-主処理)
+	CALL LOG_ORGASM_SIGHT_SLAVE_MAIN(PLAYER)
+ENDIF
+
+
+;- LOG出力:절정(奴隷情景-主処理)
+CALL LOG_ORGASM_SIGHT_SLAVE_MAIN(TARGET)
+
+L_TGT_BAK = TARGET
+
+FOR L_I, 0, DEFTR_PL_NUM
+	L_T = GTR_PL:L_I
+
+	;CHK
+	SIF L_T < 0
+		BREAK
+	SIF TCVAR:L_T:ログ出力_절정
+		CONTINUE
+
+	TARGET = L_T
+
+	;- LOG出力:절정(奴隷情景-主処理)
+	CALL LOG_ORGASM_SIGHT_SLAVE_MAIN(TARGET)
+
+NEXT
+
+
+
+TARGET = L_TGT_BAK
+
+;=================================================
+;   sub LOG_ORGASM_SIGHT_SLAVE_MAIN
+;=================================================
+;   LOG出力:절정(奴隷情景-主処理)
+;-------------------------------------------------
+; Input:
+;  ARG					対象キャラ
+;-------------------------------------------------
+@LOG_ORGASM_SIGHT_SLAVE_MAIN(ARG,ARG:1)
+#DIM L_T
+#DIM 部位１
+#DIMS  L_BI
+
+L_T = ARG
+L_BI = 
+
+IF VAR_PENIS(L_T)
+	VARSET LOCALS
+	VARSET LOCAL
+	部位１ = TEQUIP:L_T:ペニス占有部位１
+	SIF (部位１ == [[占有部位:Ｖ]])
+		L_BI = Ｖ性交
+
+ENDIF
+IF TCVAR:L_T:ログ出力_절정
+	SELECTCASE L_BI
+		CASE "Ｖ性交"
+			PRINTFORML %조사처리(CALLNAME:L_T,"는")% %CALLNAME:PLAYER%의 자궁에 계속해서 유전자를 쏟아붓고 있다….
+				ARG = PLAYER
+				ARG:1 = L_T
+				CALL NAKATDASI_MAIN(ARG,ARG:1)
+	ENDSELECT
+ENDIF
+
+
+;- ログ出力済み
+SIF TCVAR:L_T:ログ出力_절정
+	RETURN
+
+;- CHK
+SIF !TCVAR:L_T:절정強度
+	RETURN
+
+TCVAR:L_T:ログ出力_절정	= 1
+
+
+SELECTCASE L_BI
+	CASE "Ｖ性交"
+		PRINTFORML %조사처리(CALLNAME:L_T,"는")% %CALLNAME:L_T%의 질 깊숙이 페니스를 고정시켜 자궁 안에 충분한 정액을 쏟아부었다….
+			ARG = PLAYER
+			ARG:1 = L_T
+			CALL NAKATDASI_MAIN(ARG,ARG:1)
+	CASEELSE
+		PRINTFORM %조사처리(CALLNAME:L_T,"는")% 
+		IF VAR_PENIS(L_T)
+			PRINT 페니스에서 정액을 뿜으
+		ELSE
+			PRINT 음순에서 맑은 조수를 뿜으
+		ENDIF
+		PRINTL 면서, 온몸을 떨며 절정했다…….
+
+		PRINTFORM %CALLNAME:L_T%
+		IF TCVAR:L_T:절정強度 >= 2
+			IF VAR_PENIS(L_T)
+				PRINTFORML %조사만처리(CALLNAME:L_T,"는")% 사정의 쾌락에 거친 숨을 쉬면서 절정의 여운에 잠겨 있다…….
+			ELSE
+				PRINTFORML %조사만처리(CALLNAME:L_T,"는")% 단속적으로 절정을 반복하면서 절정의 여운에 잠겨 있다…….
+			ENDIF
+		ELSE
+			PRINTFORML %조사만처리(CALLNAME:L_T,"는")% 가쁜 숨을 몰아쉬며 절정의 여운에 잠겨 있다…….
+		ENDIF
+ENDSELECT
+WAIT
+
+;- 口上:절정した時
+CALL KOJO_ORGASM
+PRINTL
+
+
+;=================================================
+;   sub LOG_ORGASM_SIGHT_MASTER_MAIN
+;=================================================
+;   LOG出力:절정(主人情景-主処理)
+;-------------------------------------------------
+@LOG_ORGASM_SIGHT_MASTER_MAIN
+#DIM 部位１
+#DIM 部位２
+#DIM L_TMP
+
+;- ログ出力済み
+SIF TCVAR:PLAYER:ログ出力_절정
+	RETURN
+
+;- CHK
+SIF !TCVAR:PLAYER:절정強度
+	RETURN
+
+TCVAR:PLAYER:ログ出力_절정	= 1
+
+
+VARSET LOCALS
+VARSET LOCAL
+
+部位１ = TEQUIP:PLAYER:ペニス占有部位１
+部位２ = TEQUIP:PLAYER:ペニス占有部位２
+
+
+IF 0
+
+;-----------------------------
+;- ダブル系
+;-----------------------------
+ELSEIF (部位１ == [[占有部位:Ｖ]]) && (部位２ == [[占有部位:Ｖ]])
+	LOCALS = 交互挿入
+ELSEIF (部位１ == [[占有部位:口]]) && (部位２ == [[占有部位:口]])
+	LOCALS = ダブルフェラ
+ELSEIF (部位１ == [[占有部位:Ｂ]]) && (部位２ == [[占有部位:Ｂ]])
+	LOCALS = ダブルパイズリ
+ELSEIF (部位１ == [[占有部位:指]]) && (部位２ == [[占有部位:指]])
+	LOCALS = ダブル手コキ
+ELSEIF (部位１ == [[占有部位:足]]) && (部位２ == [[占有部位:足]])
+	LOCALS = ダブル足コキ
+
+;-----------------------------
+;- シングル系
+;-----------------------------
+ELSEIF (部位１ == [[占有部位:Ｐ６９]])
+	LOCALS = Ｐシックスナイン
+ELSEIF (部位１ == [[占有部位:６９]])
+	LOCALS = シックスナイン
+ELSEIF (部位１ == [[占有部位:Ｖ]])
+	LOCALS = Ｖ性交
+ELSEIF (部位１ == [[占有部位:Ａ]])
+	LOCALS = Ａ性交
+ELSEIF (部位１ == [[占有部位:口]])
+	LOCALS = フェラチオ
+ELSEIF (部位１ == [[占有部位:Ｃ]])
+	LOCALS = 素股
+ELSEIF (部位１ == [[占有部位:Ｂ]])
+	LOCALS = パイズリ
+ELSEIF (部位１ == [[占有部位:足]])
+	LOCALS = 足コキ
+ELSEIF (部位１ == [[占有部位:指]])
+	LOCALS = 手コキ
+ELSE
+	RETURN
+ENDIF
+
+;- LOG出力:절정(主人情景-詳細)
+CALL LOG_ORGASM_SIGHT_MASTER_DETAIL(LOCALS)
+
+;- 口上出力:절정させた時
+CALL KOJO_ORGASM_M
+PRINTL
+
+
+;=================================================
+;   sub LOG_ORGASM_SIGHT_MASTER_DETAIL
+;=================================================
+;   LOG出力:절정(主人情景-詳細)
+;-------------------------------------------------
+; Input:
+;  ARGS					対象文字列
+;-------------------------------------------------
+@LOG_ORGASM_SIGHT_MASTER_DETAIL(ARGS,ARG,ARG:1)
+#DIM 大量射精
+#DIM 対象１
+#DIM 対象２
+大量射精 = TCVAR:PLAYER:절정強度 >= 2
+IF TEQUIP:PLAYER:ペニス占有者２ == TARGET
+	対象１ = TEQUIP:PLAYER:ペニス占有者２
+	対象２ = TEQUIP:PLAYER:ペニス占有者１
+ELSE
+	対象１ = TEQUIP:PLAYER:ペニス占有者１
+	対象２ = TEQUIP:PLAYER:ペニス占有者２
+ENDIF
+SELECTCASE ARGS
+	CASE "交互挿入"
+		PRINTFORML %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象２%의 질내에 정액을 해방하고 일단 페니스를 뺸 후
+		PRINTFORML 사정이 멈추기 전에 %CALLNAME:対象１%에게 삽입하고 마지막 한 방을까지 쏟아부었다….
+	CASE "ダブルフェラ"
+		IF 大量射精
+			PRINTFORML 대량의 정액이 %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 얼굴에 쏟아져 내렸다….
+		ELSE
+			PRINTFORML %조사처리(CALLNAME:対象１,"과")% %조사처리(CALLNAME:対象２,"는")% 정액을 입으로 받아들이고 있다….
+		ENDIF
+		PRINTFORML 그 후 %조사처리(CALLNAME:対象１,"과")% %조사처리(CALLNAME:対象２,"는")% 남은 정액을 빨아들이면서 더러워진 페니스를 깔끔하게 핥아냈다….
+		PRINTFORML 두 사람은 그것만으로는 부족하다는 듯 서로의 입에 고인 정액을 핥고 있다….
+	CASE "ダブルパイズリ"
+		IF 大量射精 && RAND:3
+			PRINTFORML %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 가슴에서 얼굴, 머리카락에 이르기까지를 정액이 하양게 물들였다….
+			PRINTFORML 그 후 %조사처리(CALLNAME:対象１,"과")% %조사처리(CALLNAME:対象２,"는")% 남은 정액을 빨아들이면서 더러워진 페니스를 깔끔하게 핥아냈다….
+			PRINTFORML 두 사람은 그것만으로는 부족하다는 듯 서로의 입에 고인 정액을 핥고 있다….
+		ELSE
+			IF VAR_가슴사이즈(対象１) > 0 && VAR_가슴사이즈(対象２) > 0
+				PRINTFORML %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 가슴골에 정액이 고여 있다…….
+			ELSEIF VAR_가슴사이즈(対象１) > 0 && VAR_가슴사이즈(対象２) <= 0
+				PRINTFORML %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 가슴에서 얼굴에까지 정액이 튀었다….
+				PRINTFORML %CALLNAME:対象１%의 가슴골에 정액이 고여 있다…….
+			ELSE
+				PRINTFORML %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 가슴에서 얼굴에까지 정액이 튀었다…….
+			ENDIF
+		ENDIF
+	CASE "ダブル手コキ"
+		IF 大量射精
+			PRINTFORML %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 얼굴과 손이 대량의 정액에 범벅이 되어 갔다….
+		ELSE
+			PRINTFORML %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%에게 정액이 내려앉고 있다….
+		ENDIF
+	CASE "ダブル足コキ"
+		IF TALENT:対象１:사디
+			PRINTFORM %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 차가운 시선을 받으면서 그 
+		ELSE
+			PRINTFORM %조사처리(CALLNAME:対象１,"과")% %CALLNAME:対象２%의 
+		ENDIF
+		PRINTFORML 발에 \@ 大量射精 ? 대량의 # 뜨거운 \@ 정액을 뿜어냈다….
+		IF 大量射精
+		ELSE
+		ENDIF
+	CASE "６９パイズリ"
+		PRINTFORML %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象１%의 비소에 혀를 기면서 %CALLNAME:対象１%의 입안에 사정했다….
+		PRINTFORML %조사처리(CALLNAME:対象１,"는")% 하반신에 오는 자극에 흠칫흠칫 반응하면서 치솟는 정액을 홀짝이고 있다….
+	CASE "シックスナイン"
+		PRINTFORML %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象１%의 비소에 혀를 기면서 %CALLNAME:対象１%의 입안에 사정했다….
+		PRINTFORML %조사처리(CALLNAME:対象１,"는")% 하반신에 오는 자극에 흠칫흠칫 반응하면서 치솟는 정액을 홀짝이고 있다….
+	CASE "Ｐシックスナイン"
+		IF TCVAR:対象１:射精
+			PRINTFORML %조사처리(CALLNAME:対象１,"과")% %조사처리(CALLNAME:PLAYER,"는")% 동시에 서로의 입안에 사정했다….
+			PRINTFORML 두 사람은 서로의 페니스를 뿌리까지 물고 쾌락을 분명히 했다….
+		ELSE
+			PRINTFORM %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象１%의 남성기를 빨면서
+			PRINTFORML %CALLNAME:対象１%의 입안에 사정했다….
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 하반신에 오는 자극에 흠칫흠칫 반응하면서 치솟는 정액을 홀짝이고 있다….
+		ENDIF
+	CASE "Ｖ性交"
+
+		PRINTFORM %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象１%의 질 안쪽에 페니스를 고정하고
+		IF 大量射精
+			PRINTFORML 자궁 안에 정액을 듬뿍 쏟아 넣었다….
+		ELSE
+			PRINTFORML 자궁 안에 정액을 쏟아 넣었다….
+		ENDIF
+		SIF MARK:対象１:함락각인
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 고분고분하게 자궁을 바치고 있다….
+			ARG = 対象１
+			ARG:1 = PLAYER
+			CALL NAKATDASI_MAIN(ARG,ARG:1)
+	CASE "Ａ性交"
+		PRINTFORML %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象１%의 장 안에 사정했다….
+		PRINTFORML 정액으로 넘쳐흐르는 장내는 미세하게 떨며 페니스를 꽉 조이고 있다….
+	CASE "フェラチオ"
+		PRINTFORML %조사처리(CALLNAME:PLAYER,"는")% %CALLNAME:対象１%의 입안에 사정했다….
+		IF EXP:対象１:정음경험 == 0
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 놀라서 페니스에서 입을 떼고 말았다.
+			PRINTFORML 얼굴을 정액으로 더럽히면서 처음 보는 맛에 약간 당황하는 것 같다….
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 첫 정음을 경험했다….
+		ELSEIF EXP:対象１:정음경험 < EXPLV:3
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 정액을 입안에 받아들이고 %CALLNAME:PLAYER%의 명령을 듣고 삼켰다….
+			PRINTFORML 아직 정액 맛에 익숙하지 않은 것 같다….
+		ELSE
+			IF 大量射精
+				PRINTFORML %조사처리(CALLNAME:対象１,"는")% 귀두를 문 채 입안으로 나오는 대량의 정액을 삼켰다….
+			ELSE
+				PRINTFORML %조사처리(CALLNAME:対象１,"는")% 입술로 귀두를 훑고 모든 정액을 입안에 머금고는
+				PRINTFORML 귀두를 문 채 입안의 정액을 목을 울리면서 삼켰다….
+			ENDIF
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 입안에서 귀두를 핥으면서 새로운 사정을 재촉하고 있다….
+		ENDIF
+	CASE "素股"
+		PRINTFORML %조사처리(CALLNAME:PLAYER,"는")% 밀착된 성기 사이에서 사정했다….
+	CASE "パイズリ"
+		PRINTFORML %CALLNAME:対象１%의 가슴에 끼운 페니스 끝에서 정액이 뿜어져 나왔다….
+		PRINTFORML %조사처리(CALLNAME:対象１,"는")% 가슴과 얼굴로 정액을 받아들이면서, 정액을 핥으며 굴복의 표정을 짓고 있다….
+	CASE "足コキ"
+		IF TALENT:対象１:사디
+			PRINTFORM %CALLNAME:対象１%의 차가운 시선을 받으면서 그 
+		ELSE
+			PRINTFORM %CALLNAME:対象１%의 
+		ENDIF
+		PRINTFORML 발에 \@ 大量射精 ? 대량의 # 뜨거운 \@ 정액을 뿜어냈다….
+	CASE "手コキ"
+		IF ABL:対象１:정액중독 > 2 && ABL:対象１:성노예 > 2
+			PRINTFORML %조사처리(CALLNAME:対象１,"는")% 황홀한 표정으로 혀를 내밀면서 %CALLNAME:PLAYER%의 정액을 뒤집어 쓰고 있다….
+		ELSEIF 大量射精
+			PRINTFORML %CALLNAME:対象１%의 얼굴과 손이 수많은 정액에 범벅이 되어 갔다….
+		ELSE
+			PRINTFORML %CALLNAME:対象１%에게 정액이 내려앉고 있다….
+		ENDIF
+ENDSELECT
+
+WAIT

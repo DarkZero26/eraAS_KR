@@ -1,0 +1,105 @@
+﻿;-------------------------------------------------
+;DUNGEON_2：Lv2:堕ちた都市
+;-------------------------------------------------
+@DUNGEON_2_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = （엄중경계）
+RESULTS = 레벨 2:타락한 도시%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+@DUNGEON_2_ABLE
+RETURN 1
+
+
+@DUNGEON_2_PERSON
+#DIM PER
+SELECTCASE CHUSEN(33 * (FLAG:調査深度 >= 30) , 33 * (FLAG:調査深度 >= 70) , 33)
+	CASE 0
+		;傷ついた조인
+		PER = 500
+	CASE 1
+		;冷凍カプセル
+		PER = 400
+	CASEELSE
+		;성노예救出
+		PER = 401
+ENDSELECT
+RETURN PER
+
+
+@DUNGEON_2_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+SIF RARE == -1
+	RARE = POSSIB(3)
+
+IF RARE == 1
+	;レア敵
+	SELECTCASE CHUSEN(33 , 33 , 33)
+		CASE 0
+			;ヴルトゥーム
+			ENE = 13
+		CASE 1
+			;ロードビヤーキー
+			ENE = 14
+		CASEELSE
+			;ニョグダ
+			ENE = 15
+	ENDSELECT
+ELSE
+	;通常敵
+	IF FLAG:調査深度 > 30
+		SELECTCASE CHUSEN(33 , 33 , 33)
+			CASE 0
+				;ムーンビースト
+				ENE = 31
+			CASE 1
+				;星の精
+				ENE = 32
+			CASEELSE
+				;古きもの
+				ENE = 33
+		ENDSELECT
+	ELSE
+		SELECTCASE CHUSEN(33 , 33 , 33)
+			CASE 0
+				;ショゴス
+				ENE = 34
+			CASE 1
+				;ミ＝ゴ
+				ENE = 35
+			CASEELSE
+				;インスマス
+				ENE = 36
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN ENE
+
+
+@DUNGEON_2_ITEM
+#DIM IT
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 50) , 25 , 25 , 25)
+	CASE 0
+		;ゲノム入手。調査深度50以降
+		IT = 100
+	CASE 1
+		;書物閲覧
+		IT = 101
+	CASE 2
+		;古代遺跡発見
+		IT = 102
+	CASEELSE
+		;キャンプ跡地発見
+		IT = 103
+ENDSELECT
+RETURN IT
+
+;ダンジョンの各種パラメータ設定
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_2_PARAM
+FLAG:調査瘴気 = 0
+FLAG:索敵難易度 = 70
+RETURN

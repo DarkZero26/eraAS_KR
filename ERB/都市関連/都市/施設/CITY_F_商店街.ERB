@@ -1,0 +1,43 @@
+﻿
+;-------------------------------------------------
+;시설　상점가
+;-------------------------------------------------
+@CITY_F_6(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_M
+#DIM L_I
+#DIM L_NM
+L_NM = 0
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 【상점가】
+DRAWLINE
+PRINTFORML 많은 주민이 생활을 위해 사용하는 장소.
+PRINTFORML 
+DRAWLINE
+PRINTFORML [0] 구입
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML [999] 돌아간다
+INPUT
+L_INPUT = RESULT
+L_M = RESULT
+SELECTCASE L_INPUT
+	CASE 999
+		RETURN
+	CASE 0
+		CALL ITEM_MAIN
+	CASEELSE
+ENDSELECT
+RESTART
+
+
+
+
+
+
+
+
+

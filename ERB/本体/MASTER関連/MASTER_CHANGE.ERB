@@ -1,0 +1,348 @@
+﻿
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+;平行存在
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+@MASTER_CHANGE
+#DIM L_INPUT
+
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 이 세계의 당신(♂)과 평행세계의 당신(♀)을 교체하겠습니다.
+PRINTFORML 같은 사람이면서 다른 사람이기도 한 관계로 일부 소질과 경험을 공유합니다.
+PRINTFORML ≪그러니 자유 시간 이외에는 이 세계의 개체로 돌아가 주실 수 있으시죠?≫
+PRINTFORML ≪계속 여성이라면 「이치」에 맞지 않게 되니…≫
+PRINTFORM 【현재 설정:
+IF FLAG:あなた_女フラグ == 1
+	PRINTFORM ♀
+ELSE
+	PRINTFORM ♂
+ENDIF
+PRINTFORML 】
+DRAWLINE
+PRINTFORML [1] 평행세계의 존재와 교체
+PRINTFORML [2] 평행세계의 존재(♀) 외견 설정
+PRINTFORML 
+PRINTFORML [999] 그만둔다
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 1
+
+	IF TALENT:MASTER:수정 || TALENT:MASTER:임신
+		PRINTFORMW 임신 중에는 변경할 수 없습니다.
+		GOTO INPUT_LOOP
+	ELSEIF	FLAG:あなた_女外見設定フラグ == 0
+		PRINTFORMW 우선 외견 설정을 해주세요.
+		GOTO INPUT_LOOP
+	ELSE
+		IF FLAG:あなた_女フラグ == 0
+			FLAG:あなた_女フラグ = 1
+			CALL MASTER_CHANGE_SHIFT
+			PRINTFORMW ≪체크 완료…프로세스 올 그린…… 평행세계의 존재인 여성 개체로 존재를 치환했습니다≫
+		ELSE
+			FLAG:あなた_女フラグ = 0
+			CALL MASTER_CHANGE_SHIFT
+			PRINTFORMW ≪체크 완료…프로세스 올 그린…… 본래의 존재인 남성 개체로 존재를 치환했습니다≫
+		ENDIF
+	ENDIF
+CASE 2
+	CALL MASTER_CHANGE_STATUS
+CASE 999
+	RETURN
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+RESTART
+
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+;平行存在と入れ替わる
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+@MASTER_CHANGE_SHIFT
+
+CLEARLINE LINECOUNT
+
+IF FLAG:あなた_女フラグ == 1
+	TALENT:MASTER:오토코 = 0
+	IF FLAG:あなた_胸 == 1
+		TALENT:MASTER:절벽 = 1
+	ELSEIF  FLAG:あなた_胸 == 2
+		TALENT:MASTER:빈유 = 1
+	ELSEIF  FLAG:あなた_胸 == 3
+		TALENT:MASTER:거유 = 1
+	ELSEIF  FLAG:あなた_胸 == 4
+		TALENT:MASTER:폭유 = 1
+	ENDIF
+	IF CFlag:MASTER:주민_체격 == 1
+		TALENT:MASTER:작은체형 = 1
+	ELSE
+		TALENT:MASTER:작은체형 = 0
+	ENDIF
+	CALLNAME:MASTER = %CSTR:MASTER:あなた用_女名前%
+	CALL MASTER_CHANGE_UPDATE
+ELSE
+	TALENT:MASTER:오토코 = 1
+	TALENT:MASTER:절벽 = 0
+	TALENT:MASTER:빈유 = 0
+	TALENT:MASTER:거유 = 0
+	TALENT:MASTER:폭유 = 0
+	TALENT:MASTER:작은체형 = 0
+	CALLNAME:MASTER = あなた
+ENDIF
+
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+;平行存在(女)の設定
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+@MASTER_CHANGE_STATUS
+#DIM L_INPUT
+#DIM L_INPUT2
+#DIM M_H_SYUZOKU
+#DIM M_H_COLOR 
+#DIM M_H_STYLE 
+#DIM M_UH_STYLE 
+#DIM M_E_STYLE 
+#DIM M_E_COLOR 
+#DIM M_B_COLOR
+#DIM M_B_BODY 
+#DIM M_B_BUST
+#DIM M_B_STYLE
+
+FLAG:あなた_設定中 = 1
+
+TALENT:MASTER:오토코 = 0
+
+IF FLAG:あなた_女外見設定フラグ == 0
+	CALL CHARACTER_SCOUT_BODYSIZE(MASTER)
+	CFLAG:MASTER:가슴사이즈 = CHARACTER_BUST_RETURN(MASTER)
+	CFLAG:MASTER:ヒップサイズ = CHARACTER_HIP_RETURN(MASTER)
+	CSTR:MASTER:あなた用_女名前 = あなた
+ENDIF
+
+
+
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 평행세계의 존재인 당신(♀)의 외견을 설정합니다.
+DRAWLINE
+TALENT:MASTER:절벽 = 0
+TALENT:MASTER:빈유 = 0
+TALENT:MASTER:거유 = 0
+TALENT:MASTER:폭유 = 0
+IF FLAG:あなた_胸 == 1
+	TALENT:MASTER:절벽 = 1
+ELSEIF  FLAG:あなた_胸 == 2
+	TALENT:MASTER:빈유 = 1
+ELSEIF  FLAG:あなた_胸 == 3
+	TALENT:MASTER:거유 = 1
+ELSEIF  FLAG:あなた_胸 == 4
+	TALENT:MASTER:폭유 = 1
+ENDIF
+
+IF CFlag:MASTER:주민_체격 == 1
+	TALENT:MASTER:작은체형 = 1
+ELSE
+	TALENT:MASTER:작은체형 = 0
+ENDIF
+
+
+M_H_SYUZOKU = CFLAG:MASTER:주민_종족
+M_H_COLOR = CFLAG:MASTER:머리색
+M_H_STYLE = CFLAG:MASTER:머리모양
+M_UH_STYLE = CFLAG:MASTER:後머리모양
+M_E_STYLE = CFLAG:MASTER:目
+M_E_COLOR = CFLAG:MASTER:瞳色
+M_B_COLOR = CFLAG:MASTER:肌色
+M_B_BODY  = CFLAG:MASTER:체형
+M_B_BUST = FLAG:あなた_胸 
+M_B_STYLE = CFlag:MASTER:주민_체격
+
+PRINTFORML 　　　　　　　　　[0] 이　름 :【%CSTR:MASTER:あなた用_女名前%】
+PRINTFORML 　　　　　　　　　[1] 종　족 :【%INFO_STR_SYUZOKU(M_H_SYUZOKU)%】
+PRINTFORML 　　　　　　　　　[2] 머리색 :【%INFO_STR_HAIRCOLOR(M_H_COLOR)%】
+PRINTFORML 　　　　　　　　　[3] 앞머리 :【%INFO_STR_HAIR(M_H_STYLE)%】
+PRINTFORML 　　　　　　　　　[4] 뒷머리 :【%INFO_STR_U_HAIR(M_UH_STYLE)%】
+PRINTFORML 　　　　　　　　　[5] 　눈　 :【%INFO_STR_EYE(M_E_STYLE)%】
+PRINTFORML 　　　　　　　　　[6] 눈동자 :【%INFO_STR_EYECOLOR(M_E_COLOR)%】
+PRINTFORML 　　　　　　　　　[7] 피부색 :【%INFO_STR_SKINCOLOR(M_B_COLOR)%】
+PRINTFORML 　　　　　　　　　[8] 체　형 :【%INFO_STR_STYLE(M_B_BODY)%】
+PRINTFORM 　　　　　　　　　[9] 가　슴 :【
+IF FLAG:あなた_胸 == 1
+	PRINTFORM 절벽
+ELSEIF  FLAG:あなた_胸 == 2
+	PRINTFORM 빈유
+ELSEIF  FLAG:あなた_胸 == 3
+	PRINTFORM 거유
+ELSEIF  FLAG:あなた_胸 == 4
+	PRINTFORM 폭유
+ELSE
+	PRINTFORM 평유
+ENDIF
+PRINTFORML 】
+PRINTFORM 　　　　　　　　　[10]체　격:【
+IF CFlag:MASTER:주민_체격 == 1
+	PRINTFORM 아이
+ELSE
+	PRINTFORM 성인
+ENDIF
+PRINTFORML 】
+PRINTFORML 　　　　　　　　　[20]쓰리사이즈 재설정:【%INFO_STR_THREESIZE(MASTER)%】
+PRINTFORML 　　　　　　　　　[50]복장 변경
+PRINTFORML [999] 설정완료
+CALL C_PICTURE_MASTER(MASTER)
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	CALL MNG_RENAME(MASTER)
+	CSTR:MASTER:あなた用_女名前 = %CALLNAME:MASTER%
+CASE 1
+	L_INPUT2 = CFLAG:MASTER:주민_종족 + 1
+	IF L_INPUT2 > 13
+		CFLAG:MASTER:주민_종족 = 0
+		
+	ELSE
+		CFLAG:MASTER:주민_종족 = L_INPUT2
+	ENDIF
+CASE 2
+	L_INPUT2 = CFLAG:MASTER:머리색 + 1
+	IF L_INPUT2 > 10
+		CFLAG:MASTER:머리색 = 0
+	ELSE
+		CFLAG:MASTER:머리색 = L_INPUT2
+	ENDIF
+CASE 3
+	L_INPUT2 = CFLAG:MASTER:머리모양 + 1
+	IF L_INPUT2 > 29
+		CFLAG:MASTER:머리모양 = 0
+	ELSE
+		CFLAG:MASTER:머리모양 = L_INPUT2
+	ENDIF
+CASE 4
+	L_INPUT2 = CFLAG:MASTER:後머리모양 + 1
+	IF L_INPUT2 > 29
+		CFLAG:MASTER:後머리모양 = 0
+	ELSE
+		CFLAG:MASTER:後머리모양 = L_INPUT2
+	ENDIF
+CASE 5
+	L_INPUT2 = CFLAG:MASTER:目 + 1
+	IF L_INPUT2 > 7
+		CFLAG:MASTER:目 = 0
+	ELSE
+		CFLAG:MASTER:目 = L_INPUT2
+	ENDIF
+CASE 6
+	L_INPUT2 = CFLAG:MASTER:瞳色 + 1
+	IF L_INPUT2 > 5
+		CFLAG:MASTER:瞳色 = 0
+	ELSE
+		CFLAG:MASTER:瞳色 = L_INPUT2
+	ENDIF
+CASE 7
+	L_INPUT2 = CFLAG:MASTER:肌色 + 1
+	IF L_INPUT2 > 5
+		CFLAG:MASTER:肌色 = 0
+	ELSE
+		CFLAG:MASTER:肌色 = L_INPUT2
+	ENDIF
+CASE 8
+	L_INPUT2 = CFLAG:MASTER:체형 + 1
+	IF L_INPUT2 > 2
+		CFLAG:MASTER:체형 = 0
+	ELSE
+		CFLAG:MASTER:체형 = L_INPUT2
+	ENDIF
+CASE 9
+	L_INPUT2 = FLAG:あなた_胸 + 1
+	IF L_INPUT2 > 4
+		 FLAG:あなた_胸 = 0
+	ELSE
+		 FLAG:あなた_胸 = L_INPUT2
+	ENDIF
+CASE 10
+	L_INPUT2 = CFLAG:MASTER:주민_체격 + 1
+	IF L_INPUT2 > 1
+		CFLAG:MASTER:주민_체격 = 0
+	ELSE
+		CFLAG:MASTER:주민_체격 = L_INPUT2
+	ENDIF
+	CFLAG:MASTER:복장 = 0
+	CFLAG:MASTER:靴下 = 0
+	CFLAG:MASTER:靴 = 0
+	CFLAG:MASTER:下着上 = 0
+	CFLAG:MASTER:下着下 = 0
+	CALL CHARACTER_SCOUT_BODYSIZE(MASTER)
+	CFLAG:MASTER:가슴사이즈 = CHARACTER_BUST_RETURN(MASTER)
+	CFLAG:MASTER:ヒップサイズ = CHARACTER_HIP_RETURN(MASTER)
+CASE 20
+	CALL CHARACTER_SCOUT_BODYSIZE(MASTER)
+	CFLAG:MASTER:가슴사이즈 = CHARACTER_BUST_RETURN(MASTER)
+	CFLAG:MASTER:ヒップサイズ = CHARACTER_HIP_RETURN(MASTER)
+CASE 50
+	CALL MNG_CHANGE_CLOTHES(MASTER)
+CASE 999
+	IF FLAG:あなた_女フラグ == 0
+		TALENT:MASTER:절벽 = 0
+		TALENT:MASTER:빈유 = 0
+		TALENT:MASTER:거유 = 0
+		TALENT:MASTER:폭유 = 0
+		TALENT:MASTER:작은체형 = 0
+		CALLNAME:MASTER = あなた
+		TALENT:MASTER:오토코 = 1
+	ENDIF
+	FLAG:あなた_女外見設定フラグ = 1
+	SIF FLAG:あなた_女フラグ == 1
+		CALL MASTER_CHANGE_SHIFT
+	FLAG:あなた_設定中 = 0
+	RETURN
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+RESTART
+
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+;平行存在(女)の調整
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+@MASTER_CHANGE_UPDATE
+
+
+CFlag:MASTER:모체레벨 = Flag:都市_Lv/5
+CFlag:MASTER:난자레벨 = Flag:都市_Lv/5
+CFlag:MASTER:무자각한암컷 = Flag:都市_Lv/5
+CFlag:MASTER:페로몬 = Flag:都市_Lv/5
+CFlag:MASTER:암컷의본능   = Flag:都市_Lv/5
+CFlag:MASTER:성적인흥미 = Flag:都市_Lv/5
+CFlag:MASTER:수컷에관심 = Flag:都市_Lv/5
+CFlag:MASTER:성교원망   = Flag:都市_Lv/5
+CFlag:MASTER:임신원망   = Flag:都市_Lv/5
+
+IF CFLAG:MASTER:수정확률 == 0
+	CFLAG:MASTER:수정확률 = 30
+	CFLAG:MASTER:수정최대내구치 = 2000
+	CFLAG:MASTER:수정현재내구치 = CFLAG:MASTER:수정최대내구치
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+

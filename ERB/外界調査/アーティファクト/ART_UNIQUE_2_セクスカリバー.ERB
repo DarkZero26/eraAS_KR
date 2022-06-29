@@ -1,0 +1,76 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;2は유니크アーティファクトのIDで置き換える。1以上にすること
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_2_NAME
+RESULTS = 『정검』섹스칼리버
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_2_ABLE
+;複数入手不可
+SIF RPG_ARTIFACT_COUNTUNIQUE(2)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_2_RANK
+RETURN 20
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_2_ATK
+RETURN 30
+
+
+@ART_UNIQUE_2_DEF
+RETURN 30
+
+
+@ART_UNIQUE_2_HIT
+RETURN 30
+
+
+@ART_UNIQUE_2_SPD
+RETURN 30
+
+
+@ART_UNIQUE_2_LUK
+RETURN 30
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_2_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_2_ABILITY
+RETURN 1
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_2_MADEIN
+RETURN 2
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(3個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_2_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 전장 2m에 달하는 거대한 둔기. 동력이 내장되어 있어 회전 및 전후 이동이 가능.
+EXPL:1 = 표면에는 육안으로 보기 힘든 미세한 구멍이 다수 있어, 여기에서 독약 등을 살포할 수 있을 것으로 추측된다.
+EXPL:2 = 그러나 컴퓨터의 해석에 의하면, 이 형상은 성감을 끌어내기 위한 것이며
+EXPL:3 = 둔기로 쓰기에는 비효율적이라는 결론이 나왔다…….
+EXPL:4 = 
+RETURN 1

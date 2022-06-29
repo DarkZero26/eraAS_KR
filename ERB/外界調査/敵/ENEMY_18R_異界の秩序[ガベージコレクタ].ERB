@@ -1,0 +1,24 @@
+﻿;-------------------------------------------------
+;
+;-------------------------------------------------
+@ENEMY_18(L_STATUS , LS_STATUS)
+#DIMS REF LS_STATUS
+#DIM REF L_STATUS
+#DIM TEMP
+
+TEMP = FLAG:調査深度 / 20
+LS_STATUS:CON_敵_NAME = 이계의 질서[Garbage Collector(\@TEMP == 0 ? "零" # {TEMP}\@형)]
+
+L_STATUS:CON_敵_EB = 1500
+L_STATUS:CON_敵_HP = 210 + TEMP * 10
+L_STATUS:CON_敵_ATK = 230 + TEMP
+L_STATUS:CON_敵_DEF = 230 + TEMP
+L_STATUS:CON_敵_HIT = 250 + TEMP
+L_STATUS:CON_敵_SPD = 10
+L_STATUS:CON_敵_主兵装 = 12
+L_STATUS:CON_敵_副兵装 = 13
+L_STATUS:CON_敵_弱点 = 4
+L_STATUS:CON_敵_耐性 = 1
+L_STATUS:CON_敵_レア = 1
+L_STATUS:CON_敵_逃走確定 = 1
+RETURN

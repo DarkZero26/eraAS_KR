@@ -1,0 +1,289 @@
+﻿;-------------------------------------------------
+;地形定義
+;-------------------------------------------------
+[SKIPSTART]
+;-------------------------------------------------
+;(地形の名前、特徴などを書く)
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TERXXX_NAME
+RESULTS = 
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TERXXX_PRINT1CHAR
+PRINT 
+RETURN
+
+;その地形の色を返す
+;重複しないのが望ましいが、紛らわしい色とか背景に溶け込んじゃう色とか実質使えないし難しいと思う
+@RPG_TERXXX_COLOR
+RETURN 
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TERXXX_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TERXXX_RATIO_ENEMY(ARG)
+#DIM DYNAMIC RAT = 100
+RETURN RAT
+[SKIPEND]
+
+
+;-------------------------------------------------
+;1:平野
+;特に何の特徴も無い
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER1_NAME
+RESULTS = 平地
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER1_PRINT1CHAR
+PRINT 平
+RETURN
+
+;その地形の色を返す
+@RPG_TER1_COLOR
+;グレー
+RETURN 0xBEBEBE
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER1_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER1_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RETURN RAT
+
+
+;-------------------------------------------------
+;2:市街地
+;遮蔽物が多いのでお互い動きにくい
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER2_NAME
+RESULTS = 市街地
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER2_PRINT1CHAR
+PRINT 街
+RETURN
+
+;その地形の色を返す
+@RPG_TER2_COLOR
+;白
+RETURN 0xFFFFFF
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER2_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+RAT = 75
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER2_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RAT = 75
+RETURN RAT
+
+
+;-------------------------------------------------
+;森林
+;多くのキャラが不利、엘프だけ補正有り
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER3_NAME
+RESULTS = 森林
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER3_PRINT1CHAR
+PRINT 森
+RETURN
+
+;その地形の色を返す
+@RPG_TER3_COLOR
+;暗めの緑
+RETURN 0x006400
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER3_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+RAT = 75
+;엘프にボーナス
+SIF CFLAG:ARG:주민_종족 == 1
+	RAT += 50
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER3_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RAT = 75
+RETURN RAT
+
+
+;-------------------------------------------------
+;湖
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER4_NAME
+RESULTS = 湖
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER4_PRINT1CHAR
+PRINT 湖
+RETURN
+
+;その地形の色を返す
+@RPG_TER4_COLOR
+;Royalblue(とか言うらしい)
+RETURN 0x4169E1
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER4_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+RAT = 75
+;해인にボーナス
+SIF CFLAG:ARG:주민_종족 == 8
+	RAT += 50
+SIF TALENT:ARG:《로스트머메이드》
+	RAT += 100
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER4_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RAT = 75
+RETURN RAT
+
+
+
+;-------------------------------------------------
+;林
+;엘프だけ有利
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER5_NAME
+RESULTS = 林
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER5_PRINT1CHAR
+PRINT 林
+RETURN
+
+;その地形の色を返す
+@RPG_TER5_COLOR
+;明るい緑
+RETURN 0x32CD32
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER5_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+;엘프にボーナス
+SIF CFLAG:ARG:주민_종족 == 1
+	RAT += 25
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER5_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RETURN RAT
+
+
+;-------------------------------------------------
+;川
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER6_NAME
+RESULTS = 川
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER6_PRINT1CHAR
+PRINT 川
+RETURN
+
+;その地形の色を返す
+@RPG_TER6_COLOR
+;シアン
+RETURN 0x00FFFF
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER6_RATIO_PLAYER(ARG)
+#DIM DYNAMIC RAT = 100
+SIF CFLAG:ARG:주민_종족 == 8
+	RAT += 25
+SIF TALENT:ARG:《로스트머메이드》
+	RAT += 50
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER6_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RETURN RAT
+
+
+;-------------------------------------------------
+;砂漠
+;お互いに索敵しやすい
+;-------------------------------------------------
+;地形の名前。同時に地形の定義済み判定もする
+;RESULTSに入れて返す
+@RPG_TER7_NAME
+RESULTS = 砂漠
+RETURN
+
+;これが呼び出された時、その地形を全角一文字で表示する
+@RPG_TER7_PRINT1CHAR
+PRINT 砂
+RETURN
+
+;その地形の色を返す
+@RPG_TER7_COLOR
+;黄
+RETURN 0xFFD900
+
+;プレイヤー側キャラへの地形補正
+;100%を基準とし、上げたり下げたりする
+;ARGにキャラの登録番号を受ける
+@RPG_TER7_RATIO_PLAYER(ARG)
+#DIM RAT = 100
+RAT = 120
+RETURN RAT
+
+;敵側への地形補正
+@RPG_TER7_RATIO_ENEMY(ARG)
+#DIM RAT = 100
+RAT = 120
+RETURN RAT

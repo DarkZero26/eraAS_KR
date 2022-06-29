@@ -1,0 +1,1112 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:CHARACTER_SCOUT.ERB
+;	Facility	:データベース(EXPUP)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ CHARACTER_SCOUT_POS						DB:EXPUP位置
+;
+;===============================================================================
+
+;=================================================
+;   sub CHARACTER_SCOUT_POS
+;=================================================
+;   DB:EXPUP位置
+;-------------------------------------------------
+; Input:
+;  ARGS					対象値
+; Output:
+;  RETURNF				位置
+;-------------------------------------------------
+@CHARACTER_SCOUT_MIND(L_C_ID)
+#DIM L_C_ID                  ;対象キャラ登録番号
+#DIM S_MIND                  ;性格ID
+#DIM CONST L_TAL_START = 1400;口調素質開始値
+S_MIND = RAND:14
+;最初に性格を選びます
+IF TALENT:L_C_ID:NPC == 0
+	IF TALENT:L_C_ID:오토코 == 0
+		;幼い口調は選ばれにくい（3/4で再抽選）
+		SIF RAND:4
+			S_MIND = RAND:12
+	;以下、男性用口調のコンバート処理
+	ELSEIF S_MIND >= 8
+	;보이쉬함
+		S_MIND = 8
+	ELSEIF S_MIND >= 6
+	;겁쟁이
+		S_MIND = 6
+	ELSEIF S_MIND >= 5
+	;거칠다
+		S_MIND = 5
+	ELSEIF S_MIND >= 3
+	;마이페이스
+		S_MIND = 3
+	ELSEIF S_MIND >= 1
+	;쿨
+		S_MIND = 1
+	ELSE
+	;예의바름
+		S_MIND = 0
+	ENDIF
+	;ここで素質オン
+	TALENT:L_C_ID:(L_TAL_START + S_MIND) = 1
+ENDIF
+CALL CHARACTER_SCOUT_MIND_C(L_C_ID, S_MIND)
+
+;=============================
+;=============================
+;性格別の口調設定
+;=============================
+;=============================
+@CHARACTER_SCOUT_MIND_C(L_C_ID, S_MIND)
+#DIM L_C_ID       ;対象キャラ登録番号
+#DIM S_MIND       ;性格ID
+#DIM L_STR_START  ;STRの範囲開始値
+#DIM L_CSTR_START ;CSTRの範囲開始値
+#DIM L_RANGE      ;対象範囲、実際には0～51まで（eraAS0.3현재）
+L_STR_START  = (S_MIND * 100) + 5000
+L_CSTR_START = 100
+FOR L_RANGE, 0, 95
+	CSTR:L_C_ID:(L_CSTR_START + L_RANGE) = %STR:(L_STR_START + L_RANGE)%
+NEXT
+SIF TALENT:L_C_ID:EPC == 0
+	CALL CHARACTER_SCOUT_MIND_PRONOUN(L_C_ID, S_MIND)
+
+
+;=============================
+;一人称、二人称の設定
+;=============================
+@CHARACTER_SCOUT_MIND_PRONOUN(L_C_ID, S_MIND)
+#DIM L_C_ID                  ;対象キャラ登録番号
+#DIM S_MIND                  ;性格ID
+#DIM CONST L_TAL_START = 1400;口調素質開始値
+SELECTCASE TALENTNAME:(L_TAL_START + S_MIND)
+CASE "예의바름"
+	CSTR:L_C_ID:一人称 = 저
+	CSTR:L_C_ID:二人称 = 당신
+	CSTR:L_C_ID:二人称2 = 당신
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오라버니
+CASE "쿨"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 당신
+	CSTR:L_C_ID:二人称2 = 당신
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오빠
+CASE "츤츤"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 너
+	CSTR:L_C_ID:二人称2 = 너
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오빠
+CASE "마이페이스"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 너
+	CSTR:L_C_ID:二人称2 = 너
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오빠
+CASE "고압적"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 당신
+	CSTR:L_C_ID:二人称2 = 당신
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오라버님
+CASE "거칠다"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 너
+	CSTR:L_C_ID:二人称2 = 너
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 형
+CASE "약함"
+	CSTR:L_C_ID:一人称 = 저
+	CSTR:L_C_ID:二人称 = 당신
+	CSTR:L_C_ID:二人称2 = 당신
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오빠
+CASE "기품높음"
+	CSTR:L_C_ID:一人称 = 저
+	CSTR:L_C_ID:二人称 = 당신
+	CSTR:L_C_ID:二人称2 = 당신
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오라버님
+CASE "보이쉬함"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 너
+	CSTR:L_C_ID:二人称2 = 너
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 형
+CASE "요염함"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 당신
+	CSTR:L_C_ID:二人称2 = 당신
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오빠
+CASE "친근함"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 너
+	CSTR:L_C_ID:二人称2 = 너
+CASE "어린애같음"
+	CSTR:L_C_ID:一人称 = %CALLNAME:L_C_ID%
+	CSTR:L_C_ID:二人称 = 오빠
+	CSTR:L_C_ID:二人称2 = 너어
+CASE "깜찍함"
+	CSTR:L_C_ID:一人称 = %CALLNAME:L_C_ID%
+	CSTR:L_C_ID:二人称 = 오빠
+	CSTR:L_C_ID:二人称2 = 당신
+CASE "고풍스러움"
+	CSTR:L_C_ID:一人称 = 첩
+	CSTR:L_C_ID:二人称 = 주인
+	CSTR:L_C_ID:二人称2 = 주인
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오라버니
+CASE "쾌활"
+	CSTR:L_C_ID:一人称 = 나
+	CSTR:L_C_ID:二人称 = 너
+	CSTR:L_C_ID:二人称2 = 너
+	SIF TALENT:L_C_ID:「시스터」 != 0
+		CSTR:L_C_ID:二人称 = 오빠
+ENDSELECT
+
+
+
+;=============================
+;付与されたTALENTから性格IDを取得
+;ただし、
+;・NPCの番号を渡されることは想定してない
+;・バグって素質が2つついてるようなのは想定してない
+;・性格素質がついてないキャラを渡すと-1が返る
+;=============================
+@CHARACTER_SCOUT_TALENT_TO_MIND(L_C_ID)
+#FUNCTION
+#DIM L_C_ID       ;対象キャラ登録番号
+#DIM CONST L_TAL_START = 1400;口調素質開始値
+#DIM CONST L_TAL_END   = 1500;口調素質終値（この数字は含まれない）
+RETURNF MAX(FINDELEMENT(TALENT:L_C_ID:0, 1, L_TAL_START, L_TAL_END) - L_TAL_START, -1)
+
+
+;-------------------------------------------------
+;어미口調再設定　修正用
+;-------------------------------------------------
+@CHARACTER_SCOUT_MIND_REPEAT0
+#DIM L_C_ID       ;対象キャラ登録番号
+SIF CHARANUM == 1
+	RETURN
+	
+FOR L_C_ID, 0, CHARANUM
+	SIF L_C_ID == MASTER || TALENT:L_C_ID:NPC
+		CONTINUE
+	CALL CHARACTER_SCOUT_MIND_REPEAT(L_C_ID)
+NEXT
+
+
+
+PRINTFORMW 수정 완료했습니다.
+
+
+
+;-------------------------------------------------
+;어미口調再設定
+;-------------------------------------------------
+@CHARACTER_SCOUT_MIND_REPEAT(L_C_ID, S_MIND = -1)
+#DIM L_C_ID       ;対象キャラ登録番号
+#DIM S_MIND       ;性格ID
+;性格IDが渡されていない場合、素質からの取得を試みるがそれも設定されていないならば再設定する
+SIF S_MIND < 0
+	S_MIND = CHARACTER_SCOUT_TALENT_TO_MIND(L_C_ID)
+IF S_MIND < 0
+	CALL CHARACTER_SCOUT_MIND(L_C_ID)
+ELSE
+	CALL CHARACTER_SCOUT_MIND_C(L_C_ID, S_MIND)
+ENDIF
+
+
+
+
+;-------------------------------------------------
+;身体特徴系のフレーバーデータ設定
+;-------------------------------------------------
+@CHARACTER_SCOUT_PERSONAL(L_C_ID)
+#DIM L_C_ID
+IF TALENT:L_C_ID:NPC == 0
+	IF TALENT:L_C_ID:EPC == 0
+		CFLAG:L_C_ID:肌色 = RAND:6
+		CFLAG:L_C_ID:머리색 = RAND:11
+		CFLAG:L_C_ID:머리모양 = RAND:30
+		CFLAG:L_C_ID:後머리모양 = RAND:30
+		CFLAG:L_C_ID:目 = RAND:8
+		CFLAG:L_C_ID:瞳色 = RAND:6
+		CFLAG:L_C_ID:체형 = RAND:3
+		IF TALENT:L_C_ID:오토코 == 1 || TALENT:L_C_ID:후타나리
+			CFLAG:L_C_ID:ペニスサイズ = RAND:4
+		ENDIF
+	ENDIF
+ENDIF
+
+
+
+CALL CHARACTER_SCOUT_CHARM_POINT(L_C_ID)
+CALL CHARACTER_SCOUT_KUSE(L_C_ID)
+IF RAND:100 >= 50 &&  TALENT:L_C_ID:NPC == 0
+	CFlag:L_C_ID:주민_체격 = 1
+	TALENT:L_C_ID:장신 = 0
+	IF RAND:100 >= 70
+		TALENT:L_C_ID:소인체형 = 1
+	ELSE
+		TALENT:L_C_ID:작은체형 = 1
+	ENDIF
+ELSE
+	TALENT:L_C_ID:소인체형 = 0
+	TALENT:L_C_ID:작은체형 = 0
+ENDIF
+CALL CHARACTER_SCOUT_BODYSIZE(L_C_ID)
+
+
+;-------------------------------------------------
+;チャームポイント決定
+;-------------------------------------------------
+@CHARACTER_SCOUT_CHARM_POINT(L_C_ID)
+#DIM L_C_ID
+STRDATA CSTR:L_C_ID:チャームポイント
+	DATA 피부
+	DATA 눈매
+	DATA 콧대
+	DATA 입가
+	DATA 눈물점
+	DATA 쇄골
+	DATA 팔뚝
+	DATA 손목
+	DATA 손
+	DATA 손가락
+	DATA 배꼽
+	DATA 가슴
+	DATA 목
+	DATA 힙라인
+	DATA 각선미
+	DATA 무릎
+	DATA 발목
+	DATA 발뒤꿈치
+	DATA 등
+	DATA 귀
+	DATA 성기
+	DATA 머리 광택
+	DATA 엉덩이
+	DATA 긴 속눈썹
+	DATA 덧니
+	DATA 눈썹
+	DATA 손톱
+	DATA 잠버릇
+	DATA 머릿결
+ENDDATA
+SIF CSTR:L_C_ID:チャームポイント == "엉덩이" && (TALENT:L_C_ID:큰엉덩이  || TALENT:L_C_ID:거대엉덩이)
+	CSTR:L_C_ID:チャームポイント = 큰 엉덩이
+
+
+;-------------------------------------------------
+;くせ決定
+;-------------------------------------------------
+@CHARACTER_SCOUT_KUSE(L_C_ID)
+#DIM L_C_ID
+STRDATA CSTR:L_C_ID:癖
+	DATA 입술을 핥는다
+	DATA 먼 산을 본다
+	DATA 머리카락을 만진다
+	DATA 허벅지에 손을 끼운다
+	DATA 팔짱을 낀다
+	DATA 깍지낀다
+	DATA 앉아서 다리를 떤다
+	DATA 리듬을 탄다
+	DATA 눈을 치뜬다
+	DATA 고개를 갸웃거린다
+	DATA 탄식한다
+	DATA 오버액션
+	DATA 눈을 자주 깜박인다
+	DATA 뾰로통해진다
+	DATA 이를 악문다
+	DATA 입을 가린다
+	DATA 귀를 만진다
+	DATA 풀어진다
+	DATA 혀를 찬다
+	DATA 손톱을 물어뜯는다
+	DATA 코를 긁적인다
+	DATA 이마를 짚는다
+	DATA 주먹쥔다
+	DATA 손가락질
+	DATA 말버릇이 있다
+	DATA 허리를 튼다
+	DATA 한쪽 눈을 감는다
+	DATA 눈을 가늘게 뜬다
+	DATA 입을 내민다
+	DATA 신음한다
+	DATA 구석에 가고 싶어한다
+	DATA 키를 대본다
+	DATA 말할 때의 거리가 가깝다
+	DATA 손등을 핥는다
+	DATA 포즈를 잡는다
+	DATA 가슴을 댄다
+ENDDATA
+SIF CSTR:L_C_ID:癖 == "가슴을 댄다" && TALENT:L_C_ID:오토코
+	CSTR:L_C_ID:癖 = 포즈를 잡는다
+
+
+;-------------------------------------------------
+;ボディサイズ決定
+;작은체형などを使用する場合は事前に付与しておくこと
+;-------------------------------------------------
+@CHARACTER_SCOUT_BODYSIZE(L_C_ID)
+#DIM L_C_ID
+#DIM L_HOSEI_WAIST
+;신장
+IF TALENT:L_C_ID:오토코 == 1
+	IF TALENT:L_C_ID:거구 == 1
+		CFLAG:L_C_ID:신장 = 220 + RAND:30
+	ELSEIF TALENT:L_C_ID:덩치 == 1
+		CFLAG:L_C_ID:신장 = 190 + RAND:30
+	ELSEIF TALENT:L_C_ID:장신 == 1
+		CFLAG:L_C_ID:신장 = 175 + RAND:20
+	ELSEIF TALENT:L_C_ID:소인체형 == 1
+		CFLAG:L_C_ID:신장 = 100 - RAND:5
+	ELSEIF TALENT:L_C_ID:작은체형 == 1
+		CFLAG:L_C_ID:신장 = 130 - RAND:5
+	ELSE
+		CFLAG:L_C_ID:신장 = 165 + RAND:7
+	ENDIF
+ELSE
+	IF TALENT:L_C_ID:거구 == 1
+		CFLAG:L_C_ID:신장 = 180 + RAND:9
+	ELSEIF TALENT:L_C_ID:덩치 == 1
+		CFLAG:L_C_ID:신장 = 170 + RAND:9
+	ELSEIF TALENT:L_C_ID:장신 == 1
+		CFLAG:L_C_ID:신장 = 160 + RAND:9
+	ELSEIF TALENT:L_C_ID:소인체형 == 1
+		CFLAG:L_C_ID:신장 = 130 - RAND:30
+	ELSEIF TALENT:L_C_ID:작은체형 == 1
+		CFLAG:L_C_ID:신장 = 145 - RAND:20
+	ELSE
+		CFLAG:L_C_ID:신장 = 145 + RAND:15
+	ENDIF
+ENDIF
+
+;체중
+IF CFLAG:L_C_ID:신장 > 120
+	CFLAG:L_C_ID:체중 = ((CFLAG:L_C_ID:신장 - 100) * 9) / 10 + RAND:10
+ELSE
+	CFLAG:L_C_ID:체중 = ((CFLAG:L_C_ID:신장 - 48) * 3) / 10 + RAND:5
+ENDIF
+
+;ウエストサイズ
+;補正値
+L_HOSEI_WAIST = RAND:100 + CFLAG:L_C_ID:체형 * 100
+CFLAG:L_C_ID:ウエストサイズ = (CFLAG:L_C_ID:신장 * 320) + (RAND:500 * 2 + RAND:500 * 2)
+CFLAG:L_C_ID:ウエストサイズ = CFLAG:L_C_ID:ウエストサイズ * (L_HOSEI_WAIST + 1000) / 1000000
+SIF CFLAG:L_C_ID:신장 < 130
+	CFLAG:L_C_ID:ウエストサイズ += (130 - CFLAG:L_C_ID:신장 + RAND:10 + RAND:(TALENT:L_C_ID:소인체형 + 1)) / 5
+
+CFLAG:L_C_ID:가슴사이즈 = CHARACTER_BUST_RETURN(L_C_ID)
+CFLAG:L_C_ID:ヒップサイズ = CHARACTER_HIP_RETURN(L_C_ID)
+
+
+;-------------------------------------------------
+;バスト演算
+;-------------------------------------------------
+@CHARACTER_BUST_RETURN(ARG:0)
+#FUNCTION
+#DIM L_I
+#DIM L_BH
+#DIM L_HS
+
+L_I = ARG
+L_BH = CFLAG:L_I:신장*520/1000
+
+IF TALENT:L_I:오토코 == 1
+	IF TALENT:L_I:거구 == 1
+		L_BH+= RAND:10
+	ELSEIF TALENT:L_I:덩치 == 1
+		L_BH+= RAND:5
+	ELSEIF TALENT:L_I:장신 == 1
+		L_BH+= RAND:3
+	ELSEIF TALENT:L_I:소인체형 == 1
+		L_BH-= RAND:5
+	ELSEIF TALENT:L_I:작은체형 == 1
+		L_BH-= RAND:3
+	ELSE
+		L_BH+= RAND:5
+	ENDIF
+ELSE
+	;補正
+	L_BH += (CFLAG:L_I:체형*100 + RAND:100) / 10
+	L_HS += (CFLAG:L_I:체형*100 + RAND:100) / 50
+
+	IF TALENT:L_I:거구 == 1
+		L_BH += 15+RAND:10
+	ELSEIF TALENT:L_I:덩치 == 1
+		L_BH += 10+RAND:10
+	ELSEIF TALENT:L_I:장신 == 1
+		L_BH += 5+RAND:10
+	ELSEIF TALENT:L_I:소인체형 == 1
+		L_BH -= 10+RAND:10
+	ELSEIF TALENT:L_I:작은체형 == 1
+		L_BH -= 5+RAND:10
+	ENDIF
+
+	
+	;カップサイズはバスト-アンダーバストがAAで7.5cm以上10.0cm未満
+	;以降+2.5cm毎にサイズアップし、AA未満で測定不能(=0)
+	L_HS = (CFLAG:L_I:ウエストサイズ+CFLAG:L_I:신장/20)*10
+	SIF TALENT:L_I:소인체형
+		L_HS -= 10+RAND:10
+	IF TALENT:L_I:거유 == 1
+		;Eカップ～Fカップまで
+		L_BH = L_HS+200
+	ELSEIF TALENT:L_I:폭유 == 1
+		;Gカップ～
+		L_BH = MAX(L_BH, L_HS+250)
+	ELSEIF TALENT:L_I:절벽
+		;測定不能～AAカップまで
+		L_BH = L_HS
+		L_BH += RAND:51
+	ELSEIF TALENT:L_I:빈유
+		;Aカップ～Bカップまで
+		L_BH = L_HS+100
+	ELSE
+		;Cカップ～Dカップまで
+		L_BH = L_HS+150
+	ENDIF
+	L_BH += RAND:50
+	CFLAG:L_I:カップサイズ = MAX(0, (L_BH-L_HS-50)/25)
+	CFLAG:L_I:체중 += RAND:(CFLAG:L_I:カップサイズ + 1) / 10
+ENDIF
+RETURNF L_BH/10
+
+
+;-------------------------------------------------
+;ヒップ演算
+;-------------------------------------------------
+@CHARACTER_HIP_RETURN(ARG:0)
+#FUNCTION
+#DIM L_I
+#DIM L_BH
+#DIM L_HS
+
+L_I = ARG
+;補正
+L_HS = CFLAG:L_I:체형*100 - RAND:50
+L_BH = (CFLAG:L_I:신장*(48+RAND:4)+RAND:100) * (L_HS+1000) / 10000
+
+IF TALENT:L_I:거대엉덩이
+	L_BH = MAX(CFLAG:L_I:신장*59/10, L_BH)
+	L_BH += CFLAG:L_I:체형*RAND:15
+ELSEIF TALENT:L_I:큰엉덩이
+	L_BH = MAX(CFLAG:L_I:신장*56/10, L_BH)
+	L_BH = MIN(CFLAG:L_I:신장*59/10 - 1, L_BH)
+ELSE
+	L_BH = MIN(CFLAG:L_I:신장*56/10 - 1, L_BH)
+	L_BH = MAX(CFLAG:L_I:신장*48/10, L_BH)
+ENDIF
+
+RETURNF L_BH/10
+
+
+;-------------------------------------------------
+;주민情報
+;-------------------------------------------------
+@CHARACTER_SCOUT_PERSONAL2(ARG:0)
+#DIM L_I
+#DIM P_1
+
+P_1 = 0
+L_I= ARG:0
+
+IF TALENT:L_I:푸른혈족 == 1
+	P_1 = 3
+ELSEIF     FLAG:都市_Lv >= 30 &&  FLAG:고급카지노 >= 15 && FLAG:에스테틱 >= 15 && FLAG:학원 >= 15 && FLAG:러브호텔 >= 15
+	P_1 = RAND:4
+ELSEIF FLAG:都市_Lv >= 20 &&  FLAG:고급카지노 >= 10 && FLAG:에스테틱 >= 10 && FLAG:학원 >= 10 && FLAG:러브호텔 >= 10
+	P_1 = RAND:3
+ELSEIF FLAG:都市_Lv >= 10 &&  FLAG:고급카지노 >=  5 && FLAG:에스테틱 >=  5 && FLAG:학원 >=  5 && FLAG:러브호텔 >=  5
+	P_1 = RAND:2
+ELSE
+	P_1 = 0
+ENDIF
+
+
+
+IF Flag:掘り出しもの品質 > 0
+	TALENT:L_I:인권손괴 = 1
+	TALENT:L_I:의존 = 1
+	TALENT:L_I:비합의 = 0
+	TALENT:L_I:합의 = 1
+ENDIF
+
+IF Flag:掘り出しもの品質 == 3
+	CFLAG:L_I:주민_지위 = 3
+	TALENT:L_I:푸른혈족 = 1
+	P_1 = 3
+ELSEIF Flag:掘り出しもの品質 == 2
+	CFLAG:L_I:주민_지위 = 2
+	P_1 = 2
+ELSE
+	CFLAG:L_I:주민_지위 = P_1
+ENDIF
+
+SIF CFLAG:L_I:주민_지위 >= 3 && RAND:100 <= 5
+	TALENT:L_I:푸른혈족 = 1
+
+
+P_1 += 1
+
+CFlag:L_I:주민_소지금 = ((1000 * (RAND:10 + 1)) + (100 * (RAND:10 + 1)) + (10 * (RAND:10 + 1))) * (CFlag:L_I:주민_지위 + 1 * 10)
+CFlag:L_I:주민_기여도 = (RAND:3 + 1) * P_1
+CFlag:L_I:주민_지출 = (CFlag:L_I:주민_소지금) / (RAND:4 + 4)
+CFlag:L_I:주민_수입 = ((CFlag:L_I:주민_소지금) / 5) * 2
+CFlag:L_I:주민_인기 = (RAND:50 + 1) * (CFlag:L_I:주민_지위 + 1)
+CFlag:L_I:주민_품성 = (RAND:50 + 1) * (CFlag:L_I:주민_지위 + 1)
+IF Flag:時間帯 == 0
+	IF !RAND:2
+		CFlag:L_I:주민_속성 = 1
+	ELSE
+		CFlag:L_I:주민_속성 = 0
+	ENDIF
+ELSE
+	IF !RAND:2
+		CFlag:L_I:주민_속성 = 2
+	ELSE
+		CFlag:L_I:주민_속성 = 0
+	ENDIF
+ENDIF
+
+SIF TALENT:L_I:인기 == 1
+	CFlag:L_I:주민_인기 += RAND:100+50
+SIF TALENT:L_I:매혹 == 1
+	CFlag:L_I:주민_인기 += RAND:70+50
+SIF TALENT:L_I:매력 == 1
+	CFlag:L_I:주민_인기 += RAND:70+50
+SIF TALENT:L_I:미모 == 1
+	CFlag:L_I:주민_인기 += RAND:100+100
+SIF TALENT:L_I:카리스마 == 1
+	CFlag:L_I:주민_인기 += RAND:200+100
+
+
+
+IF CFlag:L_I:주민_속성 == 1
+	CFlag:L_I:주민_모럴 = (RAND:20)+(RAND:40)+40
+	CFlag:L_I:주민_카르마 = (RAND:5)
+ELSEIF CFlag:L_I:주민_속성 == 2
+	CFlag:L_I:주민_모럴 = (RAND:20)-(RAND:40)-20
+	CFlag:L_I:주민_카르마 = (RAND:40)+20
+ELSE
+	CFlag:L_I:주민_모럴 = (RAND:10)+(RAND:10)+30
+	CFlag:L_I:주민_카르마 = (RAND:20)
+ENDIF
+
+CALL CHARACTER_SCOUT_PERSONAL3(ARG:0)
+
+
+
+;-------------------------------------------------
+;肉体情報
+;-------------------------------------------------
+@CHARACTER_SCOUT_PERSONAL3(L_C_ID)
+#DIM L_C_ID
+#DIM L_OVUM_DEFFENSE
+
+L_OVUM_DEFFENSE = 0
+SELECTCASE INFO_STR_SYUZOKU(CFLAG:L_C_ID:주민_종족)
+CASE "엘프"
+	L_OVUM_DEFFENSE = 500
+	CFLAG:L_C_ID:수정확률 = 5
+CASE "야마"
+	L_OVUM_DEFFENSE = 100
+	CFLAG:L_C_ID:수정확률 = 15
+CASE "아인"
+	L_OVUM_DEFFENSE = 50
+	CFLAG:L_C_ID:수정확률 = 30
+CASE "오토마타"
+	L_OVUM_DEFFENSE = 500
+	CFLAG:L_C_ID:수정확률 = 5
+CASE "천사"
+	L_OVUM_DEFFENSE = 200
+	CFLAG:L_C_ID:수정확률 = 10
+CASE "해인"
+	L_OVUM_DEFFENSE = 600
+	CFLAG:L_C_ID:수정확률 = 5
+CASE "조인"
+	L_OVUM_DEFFENSE = 50
+	CFLAG:L_C_ID:수정확률 = 30
+CASE "오니"
+	L_OVUM_DEFFENSE = 500
+	CFLAG:L_C_ID:수정확률 = 20
+CASE "吸血오니"
+	L_OVUM_DEFFENSE = 500
+	CFLAG:L_C_ID:수정확률 = 5
+CASE "ニア"
+	L_OVUM_DEFFENSE = 9999
+	CFLAG:L_C_ID:수정확률 = 1
+CASEELSE
+;CASE "인간", "용인", "이스", "정령" デス
+	L_OVUM_DEFFENSE = 0
+	CFLAG:L_C_ID:수정확률 = 20
+ENDSELECT
+
+CFLAG:L_C_ID:수정최대내구치 = 100 + L_OVUM_DEFFENSE
+CFLAG:L_C_ID:수정현재내구치 = CFLAG:L_C_ID:수정최대내구치
+
+CALL CHARACTER_SECRET(L_C_ID)
+
+
+;-------------------------------------------------
+;その他　情報
+;-------------------------------------------------
+@CHARACTER_SCOUT_EXTRA(L_C_ID)
+#DIM L_C_ID
+#DIM L_NAYAMI_SLOT
+
+;本人の난이도の設定
+CFLAG:L_C_ID:주민_난이도 = RAND(1, 4)
+;大きな悩み
+;1～2回作成
+FOR L_NAYAMI_SLOT, 1, RAND(2, 4)
+	CALL MAKE_BIG_NAYAMI(L_C_ID, L_NAYAMI_SLOT)
+NEXT
+;小さな悩み
+;2～3回作成
+FOR L_NAYAMI_SLOT, 1, RAND(3, 5)
+	CALL MAKE_SMALL_NAYAMI(L_C_ID, L_NAYAMI_SLOT)
+NEXT
+
+
+;-------------------------------------------------
+;학생の特殊素質処理
+;-------------------------------------------------
+@CHARACTER_SCOUT_STUDENT(L_C_ID)
+#DIM L_C_ID
+#DIM DYNAMIC L_SEIKAKU
+SIF Talent:L_C_ID:학생 == 0
+	RETURN
+
+Talent:L_C_ID:학생 += RAND:5
+SELECTCASE TALENT:L_C_ID:학생
+	CASE 5
+		;小학생は幼い口調になりやすく、幼児체형になりやすい
+		LOCAL = RAND:3
+		SIF LOCAL
+			L_SEIKAKU = 11 + LOCAL
+		IF RAND:2
+			TALENT:L_C_ID:작은체형 = 1
+			TALENT:L_C_ID:소인체형 = 1
+			TALENT:L_C_ID:장신 = 0
+			CFlag:L_C_ID:주민_체격 = 1
+		ELSEIF RAND:3
+			TALENT:L_C_ID:작은체형 = 1
+			TALENT:L_C_ID:장신 = 0
+			CFlag:L_C_ID:주민_체격 = 1
+		ENDIF
+		;高確率で乳サイズ二段減、低確率で一段減
+		IF RAND:2
+			IF TALENT:L_C_ID:폭유
+				TALENT:L_C_ID:폭유 = 0
+			ELSEIF TALENT:L_C_ID:거유
+				TALENT:L_C_ID:거유 = 0
+				TALENT:L_C_ID:빈유 = 1
+			ELSE
+				TALENT:L_C_ID:빈유 = 0
+				TALENT:L_C_ID:절벽 = 1
+			ENDIF
+		ELSEIF RAND:3
+			IF TALENT:L_C_ID:폭유
+				TALENT:L_C_ID:폭유 = 0
+				TALENT:L_C_ID:거유 = 1
+			ELSEIF TALENT:L_C_ID:거유
+				TALENT:L_C_ID:거유 = 0
+			ELSEIF TALENT:L_C_ID:빈유
+				TALENT:L_C_ID:빈유 = 0
+				TALENT:L_C_ID:절벽 = 1
+			ELSE
+				TALENT:L_C_ID:빈유 = 1
+			ENDIF
+		ENDIF
+	CASE 4
+		;中학생は幼い口調にややなりやすく작은체형になりやすい
+		LOCAL = RAND:6
+		IF LOCAL == 0
+			L_SEIKAKU = 13
+		ELSEIF LOCAL < 3
+			L_SEIKAKU = 12
+		ENDIF
+		IF RAND:2
+			TALENT:L_C_ID:작은체형 = 1
+			TALENT:L_C_ID:장신 = 0
+			CFlag:L_C_ID:주민_체격 = 1
+		ELSEIF RAND:3
+			TALENT:L_C_ID:작은체형 = 1
+			TALENT:L_C_ID:소인체형 = 1
+			TALENT:L_C_ID:장신 = 0
+			CFlag:L_C_ID:주민_체격 = 1
+		ENDIF
+		;高確率で乳サイズ一段減
+		IF RAND:3
+			IF TALENT:L_C_ID:폭유
+				TALENT:L_C_ID:폭유 = 0
+				TALENT:L_C_ID:거유 = 1
+			ELSEIF TALENT:L_C_ID:거유
+				TALENT:L_C_ID:거유 = 0
+			ELSEIF TALENT:L_C_ID:빈유
+				TALENT:L_C_ID:빈유 = 0
+				TALENT:L_C_ID:절벽 = 1
+			ELSE
+				TALENT:L_C_ID:빈유 = 1
+			ENDIF
+		ENDIF
+	CASE 3
+		;高校生は成人よりは幼い口調になりやすい
+		LOCAL = RAND:12
+		IF LOCAL == 0
+			L_SEIKAKU = 13
+		ELSEIF LOCAL < 3
+			L_SEIKAKU = 12
+		ENDIF
+		;低確率で乳サイズ一段減
+		IF RAND:2
+			IF TALENT:L_C_ID:폭유
+				TALENT:L_C_ID:폭유 = 0
+				TALENT:L_C_ID:거유 = 1
+			ELSEIF TALENT:L_C_ID:거유
+				TALENT:L_C_ID:거유 = 0
+			ELSEIF !TALENT:L_C_ID:절벽
+				TALENT:L_C_ID:빈유 = 1
+			ENDIF
+		ENDIF
+ENDSELECT
+;체형を再設定
+CALL CHARACTER_SCOUT_BODYSIZE(L_C_ID)
+;口調を再設定
+IF L_SEIKAKU > 0
+	VARSET TALENT:L_C_ID:0, 0, 1400, 1450
+	TALENT:L_C_ID:(1400+L_SEIKAKU) = 1
+	CALL CHARACTER_SCOUT_MIND_REPEAT(L_C_ID, L_SEIKAKU)
+ENDIF
+;학생아이돌とか援助待ち女학생とかいいよね
+IF !RAND:5
+	Talent:L_C_ID:아이돌 = 1
+ELSEIF Flag:時間帯 == 0
+	SIF !RAND:8
+		Talent:L_C_ID:창녀 = 1
+ELSEIF Flag:時間帯 == 1
+	SIF !RAND:2
+		Talent:L_C_ID:창녀 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;初期복장&종족특징
+;-------------------------------------------------
+@CHARACTER_SCOUT_COSTUME(L_C_ID)
+#DIM L_C_ID
+#DIM L_RANDOM
+SELECTCASE INFO_STR_SYUZOKU(CFLAG:L_C_ID:주민_종족)
+CASE "인간"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = 0
+CASE "엘프"
+	CFLAG:L_C_ID:주민_종족특징1 = CFLAG:L_C_ID:肌色
+	CFLAG:L_C_ID:주민_종족특징2 = 0
+CASE "야마"
+	IF RAND:999 < 950
+		CFLAG:L_C_ID:주민_종족특징2 = 0
+	ELSE
+		CFLAG:L_C_ID:주민_종족특징2 = 1
+	ENDIF
+	CFLAG:L_C_ID:주민_종족특징3 = 0
+CASE "아인"
+	IF RAND:999 < 950
+		CFLAG:L_C_ID:주민_종족특징1 = RAND:4
+		CFLAG:L_C_ID:주민_종족특징2 = CFLAG:L_C_ID:주민_종족특징1
+	ELSE
+		CFLAG:L_C_ID:주민_종족특징1 = 2
+		CFLAG:L_C_ID:주민_종족특징2 = 4
+	ENDIF
+CASE "오토마타"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징3 = 0
+CASE "천사"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = RAND:2
+CASE "용인"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = RAND:8
+CASE "이스"
+	CFLAG:L_C_ID:주민_종족특징1 = RAND:4
+	CFLAG:L_C_ID:주민_종족특징2 = 0
+CASE "해인"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = 0
+CASE "조인"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = RAND:5
+CASE "오니"
+	CFLAG:L_C_ID:주민_종족특징1 = RAND:4
+	CFLAG:L_C_ID:주민_종족특징2 = 0
+	SIF RAND:10 > 6
+		CFLAG:L_C_ID:肌色 = 4
+CASE "정령"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = RAND:6
+CASE "吸血오니"
+	CFLAG:L_C_ID:주민_종족특징1 = 0
+	CFLAG:L_C_ID:주민_종족특징2 = RAND:4
+CASE "ニア"
+	L_RANDOM = RAND:5
+	CFLAG:L_C_ID:주민_종족특징1 = L_RANDOM
+	CFLAG:L_C_ID:주민_종족특징2 = L_RANDOM
+CASEELSE
+ENDSELECT
+
+IF TALENT:L_C_ID:오토코 == 0
+	IF TALENT:L_C_ID:학생
+		CFLAG:L_C_ID:복장 = RAND:3
+		CFLAG:L_C_ID:靴 = (RAND:3)+2
+	ELSEIF TALENT:L_C_ID:아이돌 == 1
+		CFLAG:L_C_ID:복장 = (RAND:4)+5
+		CFLAG:L_C_ID:靴 = RAND:5
+	ELSEIF TALENT:L_C_ID:사회인 == 1
+		CFLAG:L_C_ID:복장 = (RAND:6)+3
+		CFLAG:L_C_ID:靴 = RAND:2
+	ELSEIF TALENT:L_C_ID:창녀 == 1
+		CFLAG:L_C_ID:복장 = (RAND:2)+9
+		CFLAG:L_C_ID:靴 = RAND:2
+	ELSEIF TALENT:L_C_ID:치안유지국원 
+		CFLAG:L_C_ID:복장 = (RAND:3)+20
+		CFLAG:L_C_ID:靴 = RAND:2
+		SIF CFLAG:L_C_ID:복장 == 22
+			CFLAG:L_C_ID:帽子 = 2
+	ELSE
+		CFLAG:L_C_ID:복장 = RAND:12
+		CFLAG:L_C_ID:靴 = RAND:5
+	ENDIF
+ENDIF
+
+IF FLAG:유연_연구중 != 0
+	CFLAG:L_C_ID:복장 = 23
+ENDIF
+
+L_RANDOM = RAND:2
+CFLAG:L_C_ID:下着上 = L_RANDOM
+CFLAG:L_C_ID:下着下 = (RAND:3)+L_RANDOM 
+CFLAG:L_C_ID:靴下 = RAND:4
+
+
+
+
+IF CFlag:L_C_ID:주민_체격 == 1
+	CFlag:L_C_ID:복장 = (RAND:5)
+	CFlag:L_C_ID:靴 = RAND:3
+	IF FLAG:유연_연구중 != 0
+		CFLAG:L_C_ID:복장 = 14
+	ENDIF
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;隠しステータス
+;-------------------------------------------------
+@CHARACTER_SECRET(L_I)
+#DIM  L_I
+#DIM  L_DICE
+#DIMS L_RACE
+
+L_RACE = INFO_STR_SYUZOKU(CFLAG:L_I:주민_종족)
+{
+	L_DICE = 10
+	 + TALENT:L_I:매혹 * 2
+	 + TALENT:L_I:인기
+	 + TALENT:L_I:카리스마
+	 + TALENT:L_I:색마 * 3
+	 + TALENT:L_I:소악마 * 2
+	 + TALENT:L_I:정조관념없음
+	 + TALENT:L_I:쾌감솔직
+	 + TALENT:L_I:해방
+	 + TALENT:L_I:남미새
+	 + TALENT:L_I:금사빠 * 2
+	 + TALENT:L_I:즉각타락 * 3
+	 + TALENT:L_I:의존
+	 + TALENT:L_I:극상의암컷 * 25
+}
+CFlag:L_I:무자각한암컷 = RAND:(L_DICE) + RAND:(L_DICE)
+{
+	L_DICE = 7 + CFlag:L_I:무자각한암컷 / 3
+	 + TALENT:L_I:매혹
+	 + TALENT:L_I:매력
+	 + TALENT:L_I:미모 * 2
+	 + TALENT:L_I:인기 * 2
+	 + TALENT:L_I:소악마 * 2
+	 + TALENT:L_I:카리스마 * 3
+	 + TALENT:L_I:아이돌 * 3
+	 + TALENT:L_I:창녀 * 2
+	 + TALENT:L_I:극상의암컷 * 25
+}
+CFlag:L_I:페로몬 = RAND:(L_DICE) + RAND:(L_DICE)
+
+{
+	L_DICE = 7 + CFlag:L_I:무자각한암컷 / 3
+	 + TALENT:L_I:색마 * 3
+	 + TALENT:L_I:중독되기쉬움 * 2
+	 + TALENT:L_I:정조관념없음 * 2
+	 + TALENT:L_I:쾌감솔직 * 2
+	 + TALENT:L_I:해방 * 2
+	 + TALENT:L_I:의존
+	 + TALENT:L_I:창녀 * 3
+	 + TALENT:L_I:극상의암컷 * 25
+	 + TALENT:L_I:마돈나 * 10
+}
+CFlag:L_I:암컷의본능 = RAND:(L_DICE) + RAND:(L_DICE)
+SIF GROUPMATCH(L_RACE, "아인", "오니", "조인", "야마")
+	CFlag:L_I:암컷의본능 +=  RAND:(L_DICE)
+{
+	L_DICE = 7 + CFlag:L_I:무자각한암컷 / 3
+	 + TALENT:L_I:중독되기쉬움
+	 + TALENT:L_I:호기심 * 3
+	 + TALENT:L_I:정조관념없음
+	 + TALENT:L_I:자위하기쉬움 * 3
+	 + TALENT:L_I:교제중 
+	 + TALENT:L_I:섹프있음 * 3
+	 + TALENT:L_I:결혼함 * 2
+	 + (1 - !(TALENT:L_I:학생)) * 2
+	 + TALENT:L_I:창녀 * 2
+	 + TALENT:L_I:극상의암컷 * 25
+}
+CFlag:L_I:성적인흥미 = RAND:(L_DICE) + RAND:(L_DICE)
+
+{
+	L_DICE = 7 + CFlag:L_I:무자각한암컷 / 3
+	 + TALENT:L_I:매혹
+	 + TALENT:L_I:중독되기쉬움
+	 + TALENT:L_I:정조관념없음
+	 + TALENT:L_I:쾌감솔직
+	 + TALENT:L_I:해방
+	 + TALENT:L_I:남미새
+	 + TALENT:L_I:금사빠 * 2
+	 + TALENT:L_I:즉각타락 * 3
+	 + TALENT:L_I:학생
+	 + TALENT:L_I:극상의암컷 * 25
+}
+CFlag:L_I:수컷에관심 = RAND:(L_DICE) + RAND:(L_DICE)
+
+{
+	L_DICE = 7 + CFlag:L_I:무자각한암컷 / 3
+	 + TALENT:L_I:색마 * 5
+	 + TALENT:L_I:중독되기쉬움 * 2
+	 + TALENT:L_I:정조관념없음
+	 + TALENT:L_I:쾌감솔직
+	 + TALENT:L_I:해방 * 2
+	 + TALENT:L_I:결혼함 * 3
+	 + TALENT:L_I:극상의암컷 * 25
+}
+CFlag:L_I:성교원망 = RAND:(L_DICE) + RAND:(L_DICE)
+
+{
+	L_DICE = 7 + CFlag:L_I:무자각한암컷 / 3
+	 + TALENT:L_I:색마 * 2
+	 + TALENT:L_I:중독되기쉬움
+	 + TALENT:L_I:정조관념없음
+	 + TALENT:L_I:얀데레 * 5
+	 + TALENT:L_I:해방
+	 + TALENT:L_I:결혼함 * 5
+	 + TALENT:L_I:극상의암컷 * 25
+}
+CFlag:L_I:임신원망 = RAND:(L_DICE) + RAND:(L_DICE)
+;繁殖力弱い連中は切実
+SIF GROUPMATCH(L_RACE, "천사", "엘프", "정령", "오토마타", "해인")
+	CFlag:L_I:임신원망 +=  RAND:(L_DICE)
+
+CFlag:L_I:무자각한암컷 = LIMIT(CFlag:L_I:무자각한암컷, 0, 35)
+CFlag:L_I:페로몬 = LIMIT(CFlag:L_I:페로몬, 0, 35)
+CFlag:L_I:암컷의본능   = LIMIT(CFlag:L_I:암컷의본능,   0, 35)
+CFlag:L_I:성적인흥미 = LIMIT(CFlag:L_I:성적인흥미, 0, 35)
+CFlag:L_I:수컷에관심 = LIMIT(CFlag:L_I:수컷에관심, 0, 35)
+CFlag:L_I:성교원망   = LIMIT(CFlag:L_I:성교원망,   0, 35)
+CFlag:L_I:임신원망   = LIMIT(CFlag:L_I:임신원망,   0, 35)
+
+SELECTCASE CFLAG:L_I:수정확률
+CASE 30
+;"아인", "조인"
+;こいつら母体としても優秀である
+;期待値4.0×2＝8、0～16
+	CFlag:L_I:난자레벨 = RAND:9 + RAND:9
+CASE 20
+;"인간", "용인", "이스", "정령",  "오니"
+;期待値3.5×2＝7、0～14
+	CFlag:L_I:난자레벨 = RAND:8 + RAND:8
+CASE 15, 10
+;"야마", "천사"
+;期待値3.0×2＝6、0～12
+	CFlag:L_I:난자레벨 = RAND:7 + RAND:7
+CASE 5
+;"엘프", "오토마타", "해인", "吸血오니"
+;期待値2.5×2＝5、0～10
+	CFlag:L_I:난자레벨 = RAND:6 + RAND:6
+ENDSELECT
+CFlag:L_I:난자레벨 = LIMIT(CFlag:L_I:난자레벨, 1, 20)
+
+;妄想：肉体と繁殖行為との親和性と解釈
+SELECTCASE L_RACE
+CASE "아인", "오니", "조인", "용인"
+;期待値4.0×2＝8、0～16
+;精強な肉体を持つ連中
+	CFlag:L_I:모체레벨 = RAND:9 + RAND:9
+CASE "해인", "엘프"
+;期待値3.0×2＝6、0～12
+;設定的に繁殖力が弱い
+	CFlag:L_I:모체레벨 = RAND:7 + RAND:7
+CASE "오토마타", "천사", "吸血오니", "정령"
+;そもそも繁殖行為やってんのか疑問な連中
+;期待値2.5×2＝5、0～10
+	CFlag:L_I:모체레벨 = RAND:6 + RAND:6
+CASEELSE
+;"인간"と"야마"
+;종족の標準
+;期待値3.5×2＝7、0～14
+	CFlag:L_I:모체레벨 = RAND:8 + RAND:8
+ENDSELECT
+CFlag:L_I:모체레벨 = LIMIT(CFlag:L_I:모체레벨, 1, 20)
+
+
+
+
+CFLAG:L_I:수정최대내구치 += ((CFLAG:L_I:수정최대내구치)*(CFlag:L_I:모체레벨+CFlag:L_I:난자레벨))/50
+CFLAG:L_I:수정현재내구치 = CFLAG:L_I:수정최대내구치
+
+
+
+IF TALENT:L_I:성녀의자궁 == 1
+	CFLAG:L_I:수정최대내구치 = CFLAG:L_I:수정최대내구치/8
+	CFLAG:L_I:수정현재내구치 = CFLAG:L_I:수정최대내구치
+	CFLAG:L_I:수정확률 = 100
+	CFlag:L_I:모체레벨 += 2
+ENDIF
+
+
+
+
+

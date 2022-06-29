@@ -1,0 +1,32 @@
+﻿;-------------------------------------------------
+;戦術教本発見
+;-------------------------------------------------
+@RPG_EVENT_302(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+L_G = 10 + RAND:((FLAG:調査深度 / 2) + 1)
+L_G = MIN(L_G , 200)
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 302
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:전술교본 발견】
+PRINTFORML 
+PRINTFORML %조사처리(CALLNAME:L_I,"는")% 방치된 훈련장 같은 설비를 발견했다.
+PRINTFORML 본 적 없는 장비가 놓여 있다는 점에서, 다른 진영의 물건이라 생각하며 조사를 시작한다.
+PRINTFORML 그러던 중 한 권의 교본이 방치되어 있는 것을 확인, 흥미를 느낀 %조사처리(CALLNAME:L_I,"는")% 바로 열람해 본다.
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTFORML 처음 보는 메뉴얼은 제법 흥미로운 내용을 담고 있었다. 응용할 수 있을 것이다…….
+PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 경험치 {L_G}만큼 상승했다.
+CFlag:L_I:주민_경험치 += L_G
+
+RESETCOLOR
+DRAWLINE

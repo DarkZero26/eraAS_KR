@@ -1,0 +1,202 @@
+﻿
+;-------------------------------------------------
+;주민업무　업무　사회인
+;-------------------------------------------------
+@WORK_T_Ad(ARG:0,ARG:1,ARGS:0)
+#DIM L_INPUT
+#DIM L_T
+#DIM L_F
+#DIM L_K
+#DIM L_N
+
+L_T = TARGET
+TARGET = ARG:0
+
+CLEARLINE LINECOUNT
+DRAWLINE
+
+CALL C_PICTURE(ARG:0,ARG:1)
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORM 　　　　　
+		IF !RAND:3
+			PRINTFORML 「%CSTR:어미YES%、할 수 있는 만큼 해봐%CSTR:어미ます%」
+		ELSEIF !RAND:2
+			PRINTFORML 「……잘 된것 같아%CSTR:어미肯定2%」
+		ELSE
+			PRINTFORML 「아직 방법이 있을 것 같아%CSTR:어미肯定2%」
+		ENDIF
+PRINTFORML 
+PRINTFORM 　　　　　
+PRINTFORML %타겟은% %CALLNAME:MASTER%에게 추진되어, 업무에 힘썼다…….
+PRINTFORMW 
+
+IF (Talent:비처녀 == 1 && Talent:합의 == 1) && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1) && RAND:10 >= 5
+SETCOLOR 250,50,200
+DRAWLINE
+	IF !RAND:5
+		PRINTFORML 매일 반복되는 격무에 온몸이 비명을 지르기 시작하는 것을 감지한 %타겟은% 마사지 업소의 광고를 바라보고 있다.
+		PRINTFORML 하지만 마사지 업소라 하는 것은 가게에 따라 천국과 지옥이 갈린다고 동료들에게 들었기 때문에 어디로 갈지를 결정하지 못하고 있었다.
+		PRINTFORML 누구 잘 아는 사람은 없나 생각할 때 쯤, 발 넓은 %CALLNAME:MASTER%에게 생각이 닿자 %타겟은% 연락을 취하기로 했다.
+		PRINTFORML 
+		PRINTFORML 「아아～ 응, 응, 거기……시원해～」
+		PRINTFORML %타겟은% 마사지 전문가라고 하는 %CALLNAME:MASTER%에게 눌리면서, 그의 방에서 마사지를 받고 있었다.
+		PRINTFORML 엎드린 %CALLNAME%의 등을 적절한 힘조절로 마사지하는 모습은, 확실히 잘한다고 호언할 만하다.
+		PRINTFORML 시술이 편하도록 속옷차림이 되긴 했지만, %마스터는% 매우 진지하게 마사지를 계속하고 있다.
+		PRINTFORML 상반신 마사지를 마친 %CALLNAME:MASTER%의 손이 하반신으로 내려가는 걸 느끼면서 %타겟은% 어느덧 잠에 빠져버렸다…….
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK10
+		PRINTFORML 
+		PRINTFORML 잠에서 깬 %타겟은% 온몸을 휘감는 듯한 달콤한 저림에 몸부림치고 있었다.
+		PRINTFORML 만질까 말까 하는 부드러운 손놀림으로 변한 %CALLNAME:MASTER%의 마사지로 전신의 성감대를 자극받은
+		PRINTFORML %타겟은% 잠에서 깰 때까지 미약한 쾌감을 온몸에 쌓여가, 금방이라도 폭발할 것 같은 큰 너울이 되고 있었다.
+		PRINTFORML 하지만 %마스터는% 유두나 클리토리스, 질이나 애널같은 민감한 부분은 절대 건드리려 하지 않는다.
+		PRINTFORML 「있지……%UNICODE(0x2661)%　원해%UNICODE(0x2661)%」
+		PRINTFORML 참을 수 없게 된 %타겟은% 성적인 마사지로 변화하고 있음을 지적하는 것도 잊고 수컷을 요구해 버린다.
+		PRINTFORML 요망을 받은 %마스터는% %타겟을% 반듯이 뉘여 애액으로 질척해진 비소에 육봉을 찔러 넣는다.
+		PRINTFORML 고대하던 강한 자극과 육봉의 뜨거움에 환희의 소리를 지르며 %타겟은% %CALLNAME:MASTER%에게 달라붙는다.
+		PRINTFORML 한 번 찌를 때마다 고간에서 조수를 뿜어내면서, 절정에 절정을 거듭하여 한계까지 내몰린 %타겟은% 질내사정으로 의식을 잃었다.
+		PRINTFORML 그 후에도 %마스터는% 적절히 녹아내린 암컷 구멍이 된 %CALLNAME%의 고기 오나홀을 써 몇 번이고 질내사정을 했다.
+		PRINTFORML 
+		PRINTFORML PRINTFORML 이상하게도, 다음날부터 %CALLNAME%의 컨디션이 매우 좋아졌다.
+		PRINTFORML 그 마사지가 효과가 있었다고 생각하니 조금 부끄러웠지만, 또 피로가 쌓이면 부탁하려고 남몰래 가랑이를 적시는 것이였다…….
+	ELSEIF !RAND:4
+		PRINTFORML 도시 발전에 기여할 대형 프로젝트를 성공으로 이끈 %타겟은% 보수로서 %CALLNAME:MASTER%에게 온천 시설로 초대받았다.
+		PRINTFORML 온천 시설은 돈만 내면 누구나 이용할 수 있지만, 귀한 물을 아낌없이 사용하는 시설이기 때문에 요금은 고액이다.
+		PRINTFORML 때문에 반부유층 전용의 고급시설로 되어 있고, 초대받은 %타겟은% 주변인들로부터 많은 부러움을 샀을 정도이다.
+		PRINTFORML 일생에 한 번 있을까 말까 하는 호화로운 시간을 보내게 된 %타겟은% 온천욕을 마음껏 즐겼다.
+		PRINTFORML 
+		PRINTFORML 여탕에 존재한 모든 온천을 제패한 %타겟은% 시설 2층 휴게실에서 %마스터와% 합류했다.
+		PRINTFORML 휴게실에서는 식사도 주문할 수 있으며, 평소 부유층이 이용하는 시설이라 그런지, 둘이 먹다 하나 죽어도 모를 정도로 맛있었다.
+		PRINTFORML 이제 돌아갈 일만 남았나 하며 %타겟이% 아쉽게 생각하고 있을 때, %마스터는% 가족목욕을 예약했으니 들어가자고 %타겟을% 권유한다.
+		PRINTFORML 아직 들어가지 않은 온천이 있었다는 사실에 놀란 %타겟은% 두말없이 승낙하자 %CALLNAME:MASTER%에게 이끌려 온천으로 향했다.
+		PRINTFORML 
+		PRINTFORML 참방참방 온천의 물이 출렁이는 것에 맞춰 허리를 팡팡 부딪치는 소리가 실내에 울린다.
+		PRINTFORML 온천의 끄트머리를 붙잡은 %타겟은% 뒤에서 몇 번이고 찔려 교성을 지르고 있었다.
+		PRINTFORML 처음에는 온천물을 더럽히는 것이 신경 쓰여 내키지 않아 했던 %CALLNAME%도, 약점을 꿰고 있는 %CALLNAME:MASTER%의
+		PRINTFORML 기교에 의해 사고가 녹아내려 교미에 집중하고 있었다.
+		PRINTFORML 흥분상태의 육체가 달아오르는 것은 언제나 있는 일이지만, 이번은 온천에 몸을 맡기며 행한 행위로서 머리가 찌는 듯한 열에 노출되고 있다.
+		PRINTFORML %타겟은% 혼탁해지기 시작한 의식 중에서도, %CALLNAME:MASTER%의 육봉이 박히면 부드럽게 받아들이고,
+		PRINTFORML 빠지면 꽉 죄여 수컷을 즐겁게 하는 질 운동을 잊지 않는다.
+		PRINTFORML 한계가 다가온 %CALLNAME:MASTER%에게 어느 곳에 사정해 주었으면 하는 질문에, %타겟은% 위험일을 생각해 내려고 했지만 머리가 잘 돌지 않는다.
+		PRINTFORML 아마, 아마도, 어쩌면 안전일일 터―― 열과 쾌락에 완전히 넋을 놓고 있는 %타겟은% 안이하게 질내사정을 희망해 버렸다.
+		PRINTFORML 수정을 목적으로 쇄도하는 정액의 감촉을 체내에 느끼며 행복감에 휩싸인 %타겟은% 달아올라 의식을 잃었다…….
+	ELSEIF !RAND:3
+		PRINTFORML 퇴근길에 단골 바에서 술을 즐기고 있던 %타겟은% 속셈이 뻔히 보이는 남자에게 농락당하고 있었다.
+		PRINTFORML 마음에 둔 상대가 있는 %타겟은% 남자의 집요한 설득에 질리면서도, 우월감을 느꼈기 때문에 완강히 거절하지는 않았다.
+		PRINTFORML 우월감은 자신이 다른 여자보다도 매력적으로 보이는 것에 대해서이기도 하지만, 그것은 동시에 그런 여자를 좋아해주는 %마스터가%
+		PRINTFORML 목전의 남자로 인해 간접적으로나마 안목이 있다고 칭찬받는 것과 같은 의미를 가지기 때문이다.
+		PRINTFORML 따라서 %타겟이% 남자의 말을 끊어먹는 일은 하지 않을 것이고, 그렇다고 남자의 감언이설에 넘어가 가랑이를 벌려 줄 생각도 없다.
+		PRINTFORML 이윽고 체념한 남자가 자리를 비우자 교대라는 듯 %마스터가% 말을 걸어왔다.
+		PRINTFORML 조금 전과는 확 달라져 만개하는 미소로 %마스터를% 마중나간 %CALLNAME%의 모습에 남자는 재미없다는 듯한 표정을 짓고 있었지만
+		PRINTFORML 이미 %CALLNAME%의 의식에서 그 남자는 깔끔하게 빠져나가고 있다.
+		PRINTFORML 일부러 틈을 보여서 %CALLNAME:MASTER%의 시선을 가슴이나 허벅지로 유도하면서, %타겟은% %마스터와%의 술을 크게 즐겼다…….
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK10
+		PRINTFORML 
+		PRINTFORML 자택에서 의식이 돌아온 %타겟은% 누군가에게 뒤로 범해지고 있는 것을 깨달았다.
+		PRINTFORML 조금 전까지만 해도 %마스터와% 술을 즐겼을 텐데 하며 기억을 더듬는 %CALLNAME%의 태내에 뜨거운 격류가 덮친다.
+		PRINTFORML 그것이 사정이라는 것을 머리가 인식하는 것보다 빠르게, 질벽이 경련해 정액을 짜내듯 수축을 시작했다.
+		PRINTFORML 어깨를 가볍게 무는 듯한 질내사정은 %마스터가% 짐승남(送り狼)이 되었을 때 장난스레 하게 된 행위지만, %CALLNAME%에게는
+		PRINTFORML %CALLNAME:MASTER%의 소유물이라는 표시가 되어 있는 것 같아 마음에 드는 행위이다.
+		IF TALENT:ＮＴＬ
+			PRINTFORML 남편에게 들키면 문제가 되겠지만, 이렇게 %CALLNAME%의 성욕은 %마스터가% 해소해 주는 것이다.
+			PRINTFORML 기분이 아니라고 거절하고 적당히 AV를 주거나 용돈을 주고 창부라도 부르게 두면, 머지않아 어깨의 상처도 아물 것이다.
+		ENDIF
+		PRINTFORML 압박하는 상대가 %조사처리(CALLNAME:MASTER,"였")%다는 것을 이해한 %타겟은% 엉덩이를 살짝 들어 삽입하기 쉬운 자세를 잡는다.
+		PRINTFORML %마스터는% 완전히 씨받이 자세가 된 %타겟을% 배후에서 범해, 밤새도록 그 육체를 즐겼다…….
+	ELSEIF !RAND:2
+		PRINTFORML %CALLNAME:MASTER%의 비서로서 하루의 활동을 서포트하게 된 %타겟은% 업무 전 펠라치오에 힘쓰고 있었다.
+		PRINTFORML 오늘은 아직 한 번도 사정하지 않은 젤리 형태의 특농정액을 입으로 쥐어짜 받아낸 %타겟은% 맛있다는 듯 삼켜 간다.
+		PRINTFORML 청소펠라도 확실히 하여 %CALLNAME:MASTER%의 성욕을 발산시킨 %타겟은% 오늘의 업무를 말한다.
+		PRINTFORML 
+		PRINTFORML 차량으로 도시 내를 이동 중, %타겟은% %CALLNAME:MASTER%에게 체면좌위(体面座位)로 안겨 있었다.
+		PRINTFORML 이동 중 한가해진 %CALLNAME:MASTER%에게 성봉사를 명령받아, 아침에 마신 정액의 농도에 자궁이 쑤셔 견딜 수 없었던
+		PRINTFORML %타겟은% 마침 잘 됐다며 질을 이용한 성봉사를 희망했다.
+		PRINTFORML 하지만 %CALLNAME%의 목적을 감지하고 있던 %마스터는% %CALLNAME%의 약한 부분만을 괴롭혀 가버리게 하는 것에 집중해
+		PRINTFORML 좀처럼 사정하려고는 하지 않았다.
+		PRINTFORML 목적지를 목전에 두고 초조해진 %타겟이% 사정을 조르자 %마스터는% 질내가 아닌 입안에 사정했다.
+		PRINTFORML 입에서 흘러내린 정액을 손가락 끝으로 훑어낸 %타겟은% 못다한 질내사정을 생각하며 손가락 끝에 묻은 정액을 질벽에 발라 넣었다.
+		PRINTFORML 
+		PRINTFORML 시찰을 마치고 귀가한 %CALLNAME:MASTER%의 옆에는 알몸이 된 %타겟이% 질에 바이브를 처박혀 네 발로 엎드린 채로 방치되고 있다.
+		PRINTFORML 그것은 차량 내에서 정액을 모두 마시지 못한 것과 멋대로 정액을 질내에 넣은 것에 대한 처벌이였다.
+		PRINTFORML 사람의 말마저 금지된 %타겟은% 개나 고양이 우는 시늉을 하면서 %마스터를% 교미를 권하지만 %마스터는% 히죽거리며
+		PRINTFORML 웃으면서 그것들을 전부 무시했다.
+		PRINTFORML 이윽고 바이브에 반복해서 가버린 %타겟이% 바닥에 무너져내리자, %마스터는% 엉덩이살을 좌우로 벌려 애널에 삽입했다.
+		PRINTFORML 간신히 도구가 아닌 %CALLNAME:MASTER%에게 안겨진 %조사처리(CALLNAME,"였")%지만, 체력이 다해버린 탓에 움직일 수가 없다.
+		PRINTFORML 애널을 유린당해 의식이 날아가 버릴 듯 한 %CALLNAME%에게 개의치 않고 %마스터는% 몇 번이고 사정했지만, 전부 애널에 사정했기에
+		PRINTFORML %CALLNAME%의 질내에 한 방울이라도 사정받는 일은 없었다…….
+	ELSE
+		PRINTFORML 외근 영업으로 기업 몇 군데를 방문했던 %타겟은%, 어느 기업의 본사 건물에서 우연히 %마스터와% 만났다.
+		PRINTFORML 왜 여기에 있느냐고 묻는 %CALLNAME%에게 %마스터는% 아는 사람이 경영자라서 놀러왔다고 대답했다.
+		PRINTFORML %타겟은% 천재일우의 기회로 보고 %CALLNAME:MASTER%에게 소개해 줄 수 있겠냐며 머리를 조아린다.
+		PRINTFORML %마스터는% 지인과의 사이에 비즈니스 이야기를 별로 꺼내고 싶지 않았지만, %CALLNAME%의 부탁에
+		PRINTFORML 어떤 것을 조건으로 소개해 주겠다고 양보해 보였다.
+		PRINTFORML %CALLNAME:MASTER%로부터 조건을 들은 %타겟은% 얼굴을 매우 붉히면서도 동의하여, 경영자와의 연줄을 손에 넣었다.
+		PRINTFORML 
+		PRINTFORML %타겟은% 사람 없는 사무실에서 %마스터와% 입을 맞추고 있었다.
+		PRINTFORML 이미 퇴근 시간이 지났기 때문에 건물에 남아 있는 사람은 없으므로, 지금은 둘만의 공간이 됐다.
+		PRINTFORML 책상에 걸터앉은 %CALLNAME%의 타이트한 스커트에 머리를 들이민 %마스터는%, 외근으로 인해 땀으로 후끈해진
+		PRINTFORML 팬티스타킹의 향을 마음껏 즐기면서 코끝을 비소에 밀어붙였다.
+		PRINTFORML 부끄러움에 %타겟은% %CALLNAME:MASTER%의 머리를 눌러 떼어내려 하지만, 조건을 방패삼아 달려들어 싫다고 할 수도 없다.
+		PRINTFORML 땀에 젖은 그 곳의 암컷 냄새를 맡아지는 치욕과 코끝이 클리토리스 주위를 스처가는 쾌감에 %CALLNAME%의 가랑이에서 꿀물이 넘친다.
+		PRINTFORML 그것이 암컷의 냄새를 증폭시키는 결과가 되어, 참을 수 없게 된 %마스터는% %타겟을% 돌려세워 책상에
+		PRINTFORML 양손을 짚게 하고, 팬티스타킹을 찢어 속옷을 드러냈다.
+		PRINTFORML 속옷이 비껴지고 비부가 바깥공기에 노출되는 감각에 %타겟은% 입술을 꾹 다문다.
+		PRINTFORML 대가로 자신의 육체가 요구되는 것에 여성으로서 분노를 느끼지 않는 것은 아니었지만, 상대는 %조사처리(CALLNAME:MASTER,"다")%.
+		PRINTFORML 질구에 귀두가 닿는 감각에, %타겟은% 바들거리며 온몸을 떤다.
+		PRINTFORML 잊으려 해도 잊을 수 없는, 뼛속까지, 암컷의 본능이라고 할 수 있는 부분에 아로새겨져 버린 쾌락의 기억.
+		PRINTFORML 「으응…… 빨리이%UNICODE(0x2661)%　빨리 넣어줘%UNICODE(0x2661)%」
+		PRINTFORML 애무도 없이 질척질척 추잡한 소리를 내면서 %CALLNAME%의 암컷 구멍은 스스로 정복자를 맞아들였다.
+		PRINTFORML 「아항%UNICODE(0x2661)%　들어왔다아……%UNICODE(0x2661)%」
+		PRINTFORML 이제는 조금 전까지 느꼈던 굴욕조차 잊고 %타겟은% 몸을 앞뒤로 흔들며 쾌락을 추구한다.
+		PRINTFORML %마스터는% 자동 정액착정기(自動チンポコキ機)로 변한 %타겟의% 모습에 만족하면서도 %타겟이% 제멋대로 절정에 이르면
+		PRINTFORML 엉덩이를 때리고 훈육하는 것도 잊지 않았다.
+		PRINTFORML %마스터는% 이를 악 물고 입 끄트머리에서 침을 흘리며 절정을 참고 봉사하는 %CALLNAME%의 모습을 마음껏 즐기고, 좋을대로
+		PRINTFORML 질내에 정액을 흩뿌려 %CALLNAME%의 자궁과 의식을 하얗게 물들여 갔다…….
+	ENDIF
+DRAWLINE
+
+CALL JN_SEX_EXP
+RESETCOLOR
+
+ENDIF
+
+
+
+
+
+PRINTFORMW
+
+
+
+
+
+CFLAG:주민_業務ポイント += 1
+EXP:업무경험 += 1
+PRINTFORML 【업무경험　　:{EXP:업무경험-1, 5 ,LEFT}→{EXP:업무경험, 5 ,RIGHT}】
+DRAWLINE
+IF Flag:도시_공적獲得機会 != 0
+	CFLAG:주민_業務ポイント += 8
+	L_K = (((EXP:업무경험/100)+1)*1000)+(EXP:업무경험*3)
+	Flag:도시_공적 += L_K
+	Flag:도시_공적獲得機会 = 0
+	PRINTFORML 추가로 %CALLNAME%의 활약이 「시티」에게 인정받아, 대량의 공적을 획득했다！
+	PRINTFORML 【공적　　:{Flag:도시_공적 - L_K, 10 ,LEFT}→{Flag:도시_공적, 10 ,RIGHT}】
+	DRAWLINE
+ENDIF
+PRINTFORMW 
+TARGET = L_T
+
+
+
+
+
+
+
+
+
+
+

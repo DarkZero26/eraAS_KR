@@ -1,0 +1,89 @@
+﻿;-------------------------------------------------
+;DUNGEON_51：LvXX:腐敗聖堂
+;-------------------------------------------------
+@DUNGEON_51_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = （장기 레벨 7, 시제）
+RESULTS = 레벨 51:부패성당%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+@DUNGEON_51_ABLE
+RETURN 1
+
+
+@DUNGEON_51_PERSON
+#DIM PER
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 30) , 25 * (FLAG:調査深度 >= 70) , 25 * (FLAG:調査深度 >= 50) , 25)
+	CASE 0
+		;傷ついた조인
+		PER = 500
+	CASE 1
+		;冷凍カプセル
+		PER = 400
+	CASE 2
+		;오니との出会い
+		PER = 501
+	CASEELSE
+		;성노예救出
+		PER = 401
+ENDSELECT
+RETURN PER
+
+
+@DUNGEON_51_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+SIF RARE == -1
+	RARE = POSSIB(3)
+
+IF RARE == 1
+	;レア敵
+	;ガベージコレクタ
+	ENE = 18
+ELSE
+	;通常敵
+	SELECTCASE CHUSEN(25 , 25 , 25 , 25)
+		CASE 0
+			;古き信心
+			ENE = 19
+		CASE 1
+			;ヘ音記号状黒体
+			ENE = 20
+		CASE 2
+			;神のつめあか
+			ENE = 21
+		CASEELSE
+			;攻撃型論理妖精
+			ENE = 22
+	ENDSELECT
+ENDIF
+RETURN ENE
+
+
+@DUNGEON_51_ITEM
+#DIM IT
+SELECTCASE CHUSEN(25 * (FLAG:調査深度 >= 50) , 25 , 25 , 25)
+	CASE 0
+		;ゲノム入手。調査深度50以降
+		IT = 100
+	CASE 1
+		;書物閲覧
+		IT = 101
+	CASE 2
+		;古代遺跡発見
+		IT = 102
+	CASEELSE
+		;キャンプ跡地発見
+		IT = 103
+ENDSELECT
+RETURN IT
+
+
+;ダンジョンの各種パラメータ設定
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_51_PARAM
+FLAG:調査瘴気 = 15
+FLAG:索敵難易度 = 1200
+RETURN

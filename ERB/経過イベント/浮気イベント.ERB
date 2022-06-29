@@ -1,0 +1,191 @@
+﻿;-------------------------------------------------
+;바람イベント　発生判定
+;-------------------------------------------------
+@TURN_EVENT_UWK
+
+
+	
+;바람してない住民は戻す
+SIF TALENT:바람 == 0 
+	RETURN
+
+SIF RAND:100 >= 30
+CALL TURN_EVENT_UWK_1
+
+
+
+;-------------------------------------------------
+;바람イベント　イベント内容
+;-------------------------------------------------
+@TURN_EVENT_UWK_1
+
+SETCOLOR 200,50,250
+DRAWLINE
+PRINTFORML 【바람기 이벤트:%CALLNAME%】
+DRAWLINE
+IF !RAND:10
+PRINTFORML 「안에서……문질려…%UNICODE(0x2661)%……아앗…앗 앗 앗 하앙%UNICODE(0x2661)%」
+ELSEIF !RAND:9
+PRINTFORML 「…웃……아…햐앗……앙……그아…%UNICODE(0x2661)%」
+ELSEIF !RAND:8
+PRINTFORML 「아학%UNICODE(0x2661)%……학…응……그아…%UNICODE(0x2661)%」
+ELSEIF !RAND:7
+PRINTFORML 「핫…♪……읏…앗……기분…좋……%UNICODE(0x2661)%」
+ELSEIF !RAND:6
+PRINTFORML 「앗 앗 앗 아앗……흐아앗!…%UNICODE(0x2661)%」
+ELSEIF !RAND:5
+PRINTFORML 「…으앗…앗…안에서…읏……%UNICODE(0x2661)%」
+ELSEIF !RAND:4
+PRINTFORML 「닿고…있…읏%UNICODE(0x2661)%…아아앗!…앙…하아아앗!%UNICODE(0x2661)%」
+ELSEIF !RAND:3
+PRINTFORML 「んぁあっ……はっ……ぃ…いっ…ぱい……出して%CSTR:어미問う5%っ…%UNICODE(0x2661)%」
+ELSEIF !RAND:2
+PRINTFORML 「ふぁっ！……んっ…んっあっ……ぁ…%CSTR:어미微笑%っ%UNICODE(0x2661)%」
+ELSE
+PRINTFORML 「…ッ気持ち……ぁっ…よすぎ…%CSTR:어미ます%っ…%UNICODE(0x2661)%……イっちゃっ…ひゃあぁあっ%UNICODE(0x2661)%」
+ENDIF
+IF TALENT:바람 == 3
+;남편 상사
+	IF !RAND:3
+		PRINTFORML 【남편 상사의 집】
+		PRINTFORML 간만에 남편의 상사에게 범해지던 %타겟은% 답례라는 듯 기승위로 허리를 음란하게 움직이기 시작했다.
+		PRINTFORML %타겟은% 목소리를 높이면서도 남자의 육봉을 기억하듯이 뿌리까지 삼킬 때마다 질내 형태를 남편이 아닌 그의 것으로 맞춰나간다.
+		PRINTFORML 마음속으로는 남편에게 사과하면서도 암컷의 몸은 궁합이 잘 맞는 남자를 선택해 버렸고, 더 큰 쾌락을 추구하며 엉덩이를 흔들었다….
+		PRINTFORML 
+		PRINTFORML 자궁이 두드려질 때마다 안에서 찰랑거리는 정액을 느끼면서 %타겟은% 한층 더 교배 섹스를 위해 허리를 흔든다.
+		PRINTFORML 움직일 때마다 질벽으로 귀두를 계속 공격하다가 다시금 서로 절정에 이른다.
+		PRINTFORML 이번 씨뿌리기로 마침내 가득 찬 자궁을 %타겟은% 행복한 듯이 배 위를 부드럽게 어루만졌다.
+		PRINTFORML 자신은 누군가의 아내인 것을, 지금 %CALLNAME%의 사고에는 존재하지 않았다…….
+		PRINTFORMW 
+	ELSEIF !RAND:2
+		PRINTFORML 【부부의 침실】
+		PRINTFORML 상사의 지시로 남편은 당분간 돌아오지 못하게 하고, 두 사람은 부부의 침실에서 서로 사랑을 나눈다.
+		PRINTFORML %타겟을% 네 발로 엎드리게 하고, 남자는 그대로 질내를 꿰뚫듯이 허리를 처박기 시작했다.
+		PRINTFORML 짐슴의 교미 같은 자세에 암컷의 본능이 깨어났는지 %CALLNAME%의 목소리는 이성을 잃고 요염해진다.
+		PRINTFORML 침실을 울리는 살이 부딪히는 소리에 흥분을 고조시키면서 두 사람의 행위는 서서히 속도를 올려 갔다….
+		PRINTFORML 
+		PRINTFORML 그리고 거칠어진 남편의 상사의 움직임으로 사정 직전임을 알아낸 %타겟은% 질내사정을 허락해도 좋을지 망설인다.
+		PRINTFORML 하지만 정신을 차려보니 몸은 남자를 껴안고 질내사정을 전력으로 받아들일 태세다.
+		PRINTFORML 최후의 한방이 내려온 자궁에 직격해 %타겟은% 깊은 절정 속에서 끝내기 사정을 감지했다.
+		PRINTFORML 남편을 멀리 보낸 두 사람의 아이 만들기는 며칠에 걸쳐서도 이어졌다…….
+		PRINTFORMW 
+	ELSE
+		PRINTFORML 【러브호텔】
+		PRINTFORML 남편의 상사가 덮친 채 허리를 격렬하게 피스톤해, 두꺼운 귀두에 찌걱찌걱 긁히는 질벽의 쾌감에 %CALLNAME%도 견디지 못하고 교성을 지른다.
+		PRINTFORML %타겟은% 삐걱거리는 침대에 몸을 맡긴 채 남자의 목에 팔을 감고 연인처럼 모든 것을 맡긴다.
+		PRINTFORML 박히는 기쁨에 심하게 흐트러져 올릴 여력도 없어진 팔로 시트를 잡고, 남자의 허리에 다리를 감고 질내사정을 재촉한다.
+		PRINTFORML 
+		PRINTFORML 그리고 마지막 찔러넣기가 자궁을 비집어 열고 그대로 여자의 태에 수컷의 유전자를 쏟아 넣었다.
+		PRINTFORML 드물게 모여 있는 남편의 정액에 남자의 백탁액이 다가와 열세 유전자는 꺼지라는 듯 밖으로 밀어냈다.
+		PRINTFORML 자신의 질내에서 일어나는 수컷들의 싸움을 상상하며 %타겟은% 연전연승하는 남편 상사의 몸에 살며시 팔을 감았다…….
+		PRINTFORML 자신이 그의 부하의 아내인 것도 잊고 자궁에 눌러앉은 새로운 지배자가 형태를 갖추리라는 실낱같은 기대를 품고 있었다.
+		PRINTFORMW 
+	ENDIF
+ELSEIF TALENT:바람 == 2
+;소꿉친구
+	IF !RAND:3
+		PRINTFORML 【소꿉친구의 집】
+		PRINTFORML 소꿉친구가 %타겟을% 밀어 넘어뜨리는 모습으로 행위를 시작해, 시작부터 준비완료였던 육로를 귀두로 억지로 열어간다.
+		PRINTFORML 쾌락에 목소리가 흘러나오는 것을 필사적으로 참으면서 %타겟은% 소꿉친구의 목에 팔을 감고 상냥하게 미소짓는다.
+		PRINTFORML 그런 사랑스러운 그녀에게 딥키스를 나누고 두 사람의 기분에 맞추듯 허리 움직임도 빨라진다.
+		PRINTFORML 남편을 향한 마음이 희미해져 가는 대가로 맛볼 수 있는 쾌락을 %타겟은% 남김없이 계속 맛보았다…….
+		PRINTFORMW 
+	ELSEIF !RAND:2
+		PRINTFORML 【소꿉친구의 집】
+		PRINTFORML 소꿉친구의 가족에게는 이 관계를 알려지지 않기 위해 두 사람은 숨을 죽이고 섹스에 몰두한다.
+		PRINTFORML 서로의 목소리를 억제한다는 표면적 이유로 끈적한 딥키스를 나누면서 허리는 어느 때보다 격렬하게 흔든다.
+		PRINTFORML 소리에 신경 쓰는 것도 한계에 달해, 소꿉친구는 %CALLNAME%의 허리를 잡고 조금 전보다 빠른 속도로 허리를 부딪친다.
+		PRINTFORML %CALLNAME%도 질벽이 귀두로 긁히는 강렬한 쾌감에 저도 모르게 소리를 냈고, 거친 숨을 내쉬며 기뻐하기 시작했다.
+		PRINTFORML 그 소리를 듣고 더욱 흥분한 소꿉친구는 짐승처럼 허리를 흔들기 시작하더니 그대로 자궁에 정액을 힘차게 토해냈다….
+		PRINTFORML 
+		PRINTFORML 들키지 않게 하는 은간(隱姦)에 배덕감을 채우면서, 꽁냥러브섹스는 이후에도 이어졌다…….
+		PRINTFORMW 
+	ELSE
+		PRINTFORML 【러브호텔】
+		PRINTFORML 일찍이 적당한 말로 허락해버린 소꿉친구와의 육체관계, 그것은 결혼 후 뜻밖의 일로 이어져 버렸다.
+		PRINTFORML 이쪽의 성감대를 파악하고 있는 듯한 피스톤으로 %타겟은% 몇 번이나 조수를 뿜으며 절정을 반복한다.
+		PRINTFORML 남편과는 맛볼 수 없는 지복의 쾌락에 몸을 맡기면서 두 사람의 관계는 더욱 깊어진다.
+		PRINTFORML 남편으로부터 빼앗아 들려는 소꿉친구의 욕망을 눈치채지 못한 채 %타겟은% 그의 암컷으로 영락해 갔다…….
+		PRINTFORMW 
+	ENDIF
+ELSE
+;전 남친
+IF !RAND:3 && Talent:거유 == 1 || Talent:폭유 == 1
+	PRINTFORML 【전 남자친구의 집】
+	PRINTFORML 자궁에 정액을 잔뜩 채워진 후, 전 남자친구가 마지막으로 「늘 하던 거」를 %CALLNAME%에게 명령해 왔다.
+	PRINTFORML 그것을 아직도 기억하고 있었는지 미소를 지으며 우뚝 솟은 육봉을 풍만한 젖가슴으로 끼우고 익숙한 동작으로 파이즈리를 하기 시작했다.
+	PRINTFORML 남편이라면 금방 싸버리는 교묘한 움직임에 전 남자친구도 서서히 여유가 사라져 간다.
+	PRINTFORML 그리고 대량의 정액을 가슴으로 삼키면서 그가 가버리는 모습을 %타겟은% 기쁜 듯이 바라보고 있었다…….
+	PRINTFORMW 
+ELSEIF !RAND:2
+	PRINTFORML 【전 남자친구의 집】
+	PRINTFORML 예전부터 실컷 즐겼던 침대 위에서 전 남자친구와 바람 섹스를 즐기는 %CALLNAME%.
+	PRINTFORML 늠름한 신체를 사지로 휘감고, 노콘 육봉 생 삽입의 쾌락을 맛보며 자궁을 하얗게 물들여 간다.
+	PRINTFORML 남편의 착신을 눈치채지 못한 채 두 사람은 교제하던 시절처럼 계속 사랑을 나눴다…….
+	PRINTFORMW 
+ELSE
+	PRINTFORML 【러브호텔】
+	PRINTFORML 지금 이 몸을 범하고 있는 남자는 이미 관계를 끊었을 터인 전 남자친구 씨. 하지만 어떻게 해도 육체관계를 끊지 못하고 있다.
+	PRINTFORML 암컷의 본능이 이 굵은 페니스를 잊지 못하고, 굴복한 자궁은 남편과 할 때보다 활발하게 태동해 버린다.
+	PRINTFORML 정기적으로 쏟아지는 정액에 자신이 누구의 암컷인지 뼈저리게 깨달아 버리면서, 치욕과 배덕으로 절정한다.
+	PRINTFORML 끈적한 키스를 나누면 사고가 멍해지고, %조사처리(CSTR:一人称,"는")% 쾌락의 늪으로 더 빠져든다.
+	PRINTFORML ……이 관계는 그만둘 수 있을 것 같지, 않다…….
+	PRINTFORMW 
+ENDIF
+ENDIF
+
+DRAWLINE
+PRINTFORMW 
+
+
+
+
+;イベントによる経験加算
+CALL TURN_EVENT_UWK_EXP
+
+RESETCOLOR
+;-------------------------------------------------
+;바람イベント　経験
+;-------------------------------------------------
+@TURN_EVENT_UWK_EXP
+
+SIF CSTR:첫섹스상대명 == ""
+	CSTR:첫섹스상대명 = 바람 상대
+SIF CSTR:첫키스상대명 == "" 
+	CSTR:첫키스상대명 = 바람 상대
+SIF CSTR:첫정음상대명 =="" 
+	CSTR:첫정음상대명 = 바람 상대
+SIF CSTR:첫펠라상대명 ==""
+	CSTR:첫펠라상대명 = 바람 상대
+SIF CSTR:첫A섹스상대명 ==""
+	CSTR:첫A섹스상대명 = 바람 상대
+SIF CSTR:첫절정상대명 ==""
+	CSTR:첫절정상대명 = 바람 상대
+SIF CSTR:첫질사상대명 ==""
+	CSTR:첫질사상대명 = 바람 상대
+TALENT:비처녀 = 1
+TALENT:Ａ비처녀 = 1
+TCVAR:履歴_EXP_処女喪失 = 1
+TCVAR:履歴_EXP_Ａ処女喪失 = 1
+
+CALL JN_SEX_EXP
+
+EXP:외도경험 += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

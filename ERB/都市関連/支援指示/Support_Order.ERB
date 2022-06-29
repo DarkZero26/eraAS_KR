@@ -1,0 +1,111 @@
+﻿
+;-------------------------------------------------
+; 支援指示
+;-------------------------------------------------
+@Support_Order(ARG:0,ARG:2)
+#DIM L_INPUT
+
+$INPUT_LOOP2
+CLEARLINE LINECOUNT
+DRAWLINE
+ARG:2 = 101
+CALL C_PICTURE_NPC(ARG:2)
+PRINTFORML 조수 쨩「헤헷, 부르셨슴까 보스！」
+PRINTFORML 후배 쨩「뭐든지 말씀해주세요, 선배.」
+DRAWLINE
+PRINTFORML 
+PRINTFORM [1]   - 【고민해결 서포트:
+IF FLAG:지원_고민해결지원 == 1
+	PRINTFORML ○】(소비SP4)
+ELSE
+	PRINTFORML ×】(소비SP4)
+ENDIF
+PRINTFORM [2]   - 【체력회복 서포트:
+IF FLAG:지원_체력회복지원 == 1
+	PRINTFORML ○】(소비SP7)
+ELSE
+	PRINTFORML ×】(소비SP7)
+ENDIF
+PRINTFORM [3]   - 【자동배란제 서포트:
+IF FLAG:지원_자동배란제지원 == 1
+	PRINTFORML ○】(소비SP1)
+ELSE
+	PRINTFORML ×】(소비SP1)
+ENDIF
+PRINTFORML 
+PRINTFORML [999] - 돌아간다
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 1
+	PRINTFORML 고민 해결의 성공판정에 ＋판정을 자동으로 부여합니다.
+	PRINTFORML 한 명씩 개별 적용되며, SP가 부족하면 불발됩니다.
+	PRINTFORML ON/OFF를 결정해주세요.
+	PRINTFORML [1] ON
+	PRINTFORML [2] OFF
+	$INPUT_LOOP3
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 1
+		FLAG:지원_고민해결지원 = 1
+	CASE 2
+		FLAG:지원_고민해결지원 = 0
+	CASEELSE
+		GOTO INPUT_LOOP3
+	ENDSELECT
+	GOTO INPUT_LOOP2
+CASE 2
+	PRINTFORML AP 회복 시에 ＋판정을 자동으로 부여합니다.
+	PRINTFORML SP가 부족하면 불발됩니다.
+	PRINTFORML 
+	PRINTFORML [1] ON
+	PRINTFORML [2] OFF
+	$INPUT_LOOP4
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 1
+		FLAG:지원_체력회복지원 = 1
+	CASE 2
+		FLAG:지원_체력회복지원 = 0
+	CASEELSE
+		GOTO INPUT_LOOP4
+	ENDSELECT
+	GOTO INPUT_LOOP2
+CASE 3
+	PRINTFORML 밀회 시 상대방에게 자동으로 배란제를 사용합니다.
+	PRINTFORML 이 경우 배란제 값이 필요합니다.
+	PRINTFORML 
+	PRINTFORML [1] ON
+	PRINTFORML [2] OFF
+	$INPUT_LOOP5
+	INPUT
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 1
+		FLAG:지원_자동배란제지원 = 1
+	CASE 2
+		FLAG:지원_자동배란제지원 = 0
+	CASEELSE
+		GOTO INPUT_LOOP5
+	ENDSELECT
+	GOTO INPUT_LOOP2
+CASE 4
+CASE 5
+CASE 999
+PRINTFORML 조수 쨩「알ー겠슴다ー！」
+PRINTFORMW 후배 쨩「잘 됐다면, 포상 부탁드려요…%UNICODE(0x2661)%」
+	RETURN
+CASEELSE
+	GOTO INPUT_LOOP2
+ENDSELECT
+
+
+
+
+
+
+
+

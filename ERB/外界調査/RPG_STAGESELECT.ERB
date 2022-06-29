@@ -1,0 +1,167 @@
+﻿;-------------------------------------------------
+;調査区域選択
+;-------------------------------------------------
+@RPG_STAGESELECT
+#DIM L_INPUT
+#DIM CNT
+#DIM DNUM
+#DIM DABLE , 200
+#DIM CONST SNUM = 2;SELECT NUM
+#DIM CONST NL = 40 ;NAME LENGTH
+#DIMS DNAME
+
+DNUM = 0
+VARSET DABLE
+
+$INPUT_LOOP
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 조사할 구역을 선택해 주세요.
+DRAWLINE
+
+FOR CNT , 0 , 200
+	IF CNT == 0
+		PRINTFORML ――――――――――기본조사구역――――――――――
+	ELSEIF CNT == 50
+		SIF DNUM % SNUM != 0
+			PRINTL 
+		;行が詰まりすぎて見にくかったので改行
+		PRINTL 
+		PRINTFORML ――――――――――외신활동구역――――――――――
+	ELSEIF CNT == 90
+		SIF DNUM % SNUM != 0
+			PRINTL 
+		PRINTL 
+		PRINTFORML ――――――――――일일조사구역――――――――――
+	ENDIF
+
+	VARSET RESULTS
+	TRYCCALLFORM DUNGEON_{CNT}_NAME(1)
+		CALLFORM DUNGEON_{CNT}_ABLE
+		DABLE:CNT = RESULT
+		IF DABLE:CNT
+			DNAME = [{CNT , 3}]%RESULTS%
+			PRINTFORM %DNAME , NL , LEFT%
+		ELSE
+			DNAME = [XXX]%RESULTS%
+			SETCOLOR 0x778899
+			PRINTFORM %DNAME , NL , LEFT%
+			RESETCOLOR
+		ENDIF
+		DNUM += 1
+
+		SIF DNUM % SNUM == 0
+			PRINTL 
+	CATCH
+		
+	ENDCATCH
+NEXT
+SIF DNUM % 3 != 2
+	PRINTL  
+
+[SKIPSTART]
+PRINTFORML ――――――――――基本調査区域――――――――――
+PRINTLC [0] 【Lv0:都市境界線】(襲撃なし)　[1] 【Lv1:無法区域】
+PRINTFORML
+PRINTLC [2] 【Lv2:堕ちた都市】(厳重警戒)　[3] 【Lv3:危険区域】
+PRINTFORML
+PRINTFORML [4] 【Lv4:광기の廃都】(不可侵警告)
+PRINTFORML [5] 【Lv5:完全侵食区域[現代迷宮]】(瘴気Lv1)
+PRINTFORML ――――――――――日替調査区域――――――――――
+SIF Flag:日替わり区画難易度 != 0
+	PRINTFORML [90]【Lv{Flag:日替わり区画難易度}:ある区画】(深度:{Flag:日替わり区画深度限界})
+PRINTFORML ――――――――――外神活動区域――――――――――
+PRINTFORML [50]【LvXX:砂塵の都】(瘴気Lv7)
+PRINTFORML [51]【LvXX:腐敗聖堂】(瘴気Lv7、試作)
+[SKIPEND]
+
+DRAWLINE
+PRINTFORML [999] 그만둔다
+
+INPUT
+
+L_INPUT = RESULT
+RESULT = 0
+SIF L_INPUT == 999
+	JUMP RPG_MAIN
+
+TRYCCALLFORM DUNGEON_{L_INPUT}_ABLE
+	SIF RESULT == 0
+		GOTO INPUT_LOOP
+
+	;調査区域確定
+	FLAG:調査区域 = L_INPUT
+	FLAG:調査深度 = 0
+	FLAG:調査瘴気 = 0
+	CALL DELETE_ROUTE
+
+	;ダンジョンの瘴気など設定
+	CALLFORM DUNGEON_{L_INPUT}_PARAM
+	JUMP RPG_MAIN
+CATCH
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDCATCH
+
+;以下は使用しない
+SELECTCASE L_INPUT
+	CASE 0
+		Flag:調査区域 = 0
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 0
+	CASE 1
+		Flag:調査区域 = 1
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 0
+	CASE 2
+		Flag:調査区域 = 2
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 0
+	CASE 3
+		Flag:調査区域 = 3
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 0
+	CASE 4
+		Flag:調査区域 = 4
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 0
+	CASE 5
+		Flag:調査区域 = 5
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 3
+	CASE 50
+		Flag:調査区域 = 50
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 15
+	CASE 51
+		Flag:調査区域 = 51
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 15
+	CASE 90
+		Flag:調査区域 = 90
+		Flag:調査深度 = 0
+		Flag:調査瘴気 = 0
+	CASE 999
+		CALL RPG_MAIN
+	CASEELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+ENDSELECT
+
+
+CALL RPG_MAIN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

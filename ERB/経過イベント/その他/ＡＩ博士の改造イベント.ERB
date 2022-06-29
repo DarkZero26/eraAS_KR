@@ -1,0 +1,1278 @@
+﻿;-------------------------------------------------
+;ＡＩ博士の改造イベント
+;
+;超低確率(0.02%)で発生、さらに確率で各種強化、失敗すると弱化
+;-------------------------------------------------
+@TURN_EVENT_AIHKS
+#DIM L_INPUT
+#DIM L_INPUT2
+#DIM L_INPUT3
+#DIM P_S
+#DIMS LSTR
+P_S = 0
+
+
+DRAWLINE
+PRINTFORML 【ＡＩ박사의 개조 이벤트：%CALLNAME%】
+PRINTFORML 
+PRINTFORML 　　　　　|%타겟은% 낮선 방에서 눈을 떴다.
+PRINTFORML 　　　　　|주위에 무슨 용도로 쓰이는지 알 수 없는 기계들이 늘어서서, 연구실처럼 보인다….
+PRINTFORML 　　　　　|「안ー녕, 눈을 뜬 거 같네 인거야?」
+PRINTFORML 　　　　　|낯선 방에 끌려와 경계하는 %CALLNAME% 앞에 나타난 것은 한 소녀였다.
+PRINTFORML 　　　　　|등에 자신의 몸집보다 더 큰 기계를 짊어지고, 키가 작아 백의를 질질 끌며 나타난 소녀가 꾸벅 인사한다.
+PRINTFORML 　　　　　|「나는 ＡＩ박사인거야. 고민 많은 주민들을 위해서 매일 힘내고 있는거야」
+PRINTFORML 　　　　　|그렇게 말하면서 천진난만한 미소를 지은 ＡＩ박사는 등에 진 기계를 작동시켰다.
+PRINTFORML 　　　　　|「그러니까 당신의 고민, 들려줬으면 하는거야?」
+PRINTFORML 　　　　　|좌우에서 다가오는 로봇 팔이나 드릴, 나이프 같은 흉기에 신변의 위험을 느낀다…….
+
+P_S -= 800
+LSTR = <img src='NPC_5' height = '850'  ypos = '{P_S}'>
+HTML_PRINT LSTR
+PRINTFORMW
+
+$INPUT_LOOP1
+PRINTFORML [1] - 【무자각 소질을 강화하고 싶다】
+PRINTFORML [2] - 【전투능력을 강화하고 싶다】
+PRINTFORML [3] - 【임신하기 쉬워지고 싶다】
+PRINTFORML [4] - 【감도를 좋게 하고 싶다】
+PRINTFORML [5] - 【가슴 사이즈를 바꾸고 싶다】
+PRINTFORML [999] - 【고민은 없다】
+PRINTFORML 
+
+INPUT
+L_INPUT = RESULT
+
+SELECTCASE L_INPUT
+CASE 1	;무자각 소질
+	PRINTFORML 「오오ー 조금 더 야하게, 수컷을 유혹하는 암컷이 되고 싶은거야?」
+	PRINTFORML 「그런거라면 자신 있으니 맡겨줘 인거야. 성공률은 일부만 올린다면 80％, 전부 올린다면 40％인거야」
+	PRINTFORML 「그리고 부분적으로 올린다면 장소는 무작위인거야. 그리고 실패하면 되려 떨어지니, 용서해줬으면 하는거야」
+	PRINTFORML 
+	
+	$INPUT_LOOP2
+	PRINTFORML 
+	PRINTFORML [1] - 【무자각 소질을 하나 올린다】 (성공률 80％)
+	PRINTFORML [2] - 【무자각 소질을 전부 올린다】 (성공률 40％)
+	PRINTFORML [10] - 【좀더 생각해보고 싶다】（이전 선택지로)
+	PRINTFORML 
+	
+	INPUT
+	L_INPUT2 = RESULT
+	
+	SELECTCASE L_INPUT2
+	CASE 1	;하나 강화
+		CALL TURN_EVENT_AIHKS_A1
+	CASE 2	;전부 강화
+		CALL TURN_EVENT_AIHKS_A2
+	CASE 10	;뒤로
+		GOTO INPUT_LOOP1
+	CASEELSE
+		GOTO INPUT_LOOP2
+	ENDSELECT
+CASE 2	;전투능력
+	PRINTFORML 「오호, 천하무쌍을 원하는거야?」
+	PRINTFORML 「그런거라면 식은죽 먹기인거야. 성공률은 무무무무려 80％인거야!」
+	PRINTFORML 「실패하면 되려 약해지니, 용서해줬으면 하는거야」
+	PRINTFORML 
+	
+	$INPUT_LOOP3
+	PRINTFORML 
+	PRINTFORML [1] - 【전투능력을 강화한다】 (성공률 80％)
+	PRINTFORML [10] - 【좀더 생각해보고 싶다】（이전 선택지로)
+	PRINTFORML 
+	
+	INPUT
+	L_INPUT2 = RESULT
+	
+	SELECTCASE L_INPUT2
+	CASE 1	;강화
+		CALL TURN_EVENT_AIHKS_B1
+	CASE 10	;뒤로
+		GOTO INPUT_LOOP1
+	CASEELSE
+		GOTO INPUT_LOOP3
+	ENDSELECT
+CASE 3	;임신 확률
+	;수정 or 임신 중
+	IF TALENT:수정 || TALENT:임신
+		PRINTFORML 「어… 그러니까… 지금은 위험하니까 수술은 안된다고 시티 마마가 말한거야」
+		PRINTFORML 「다른 선택지를 골라줘, 인거야」
+		GOTO INPUT_LOOP1
+	;수정 or 임신 아님
+	ELSE
+		PRINTFORML 「히야ー, 그거 혹시 수컷이 계속 자궁을 쓰게 하는 개허접 난자가 되고 싶다는 말인거야?」
+		PRINTFORML 「아, 안되는 건 아닌데… 어른의 생각은 어려운거야… 성공률은 60％인거야」
+		PRINTFORML 「실패하면 임신하기 어려워지니, 용서해줬으면 하는거야」
+		PRINTFORML 
+		
+		$INPUT_LOOP4
+		PRINTFORML 
+		PRINTFORML [1] - 【임신이 쉬워지게 한다】 (성공률 60％)
+		PRINTFORML [10] - 【좀더 생각해보고 싶다】 (이전 선택지로)
+		PRINTFORML 
+		
+		INPUT
+		L_INPUT2 = RESULT
+		
+		SELECTCASE L_INPUT2
+		CASE 1	;쉽게
+			CALL TURN_EVENT_AIHKS_C1
+		CASE 10	;뒤로
+			GOTO INPUT_LOOP1
+		CASEELSE
+			GOTO INPUT_LOOP4
+		ENDSELECT
+	ENDIF
+CASE 4	;감도
+	PRINTFORML 「후에ー, 자기 약점을 늘려가는 스타일인거야?」
+	PRINTFORML 「그런거 싫지는 않은거야. 성공률은 부위 하나에는 70％, 전부는 30％인거야」
+	PRINTFORML 「성공한다면 감도가 한 단계 올라가는거야. 실패해도 떨어지거나 하지는 않으니 안심해줬으면 하는거야」
+	
+	$INPUT_LOOP5
+	PRINTFORML %CALLNAME%의 감도
+	PRINTFORM Ｖ감도：
+	IF TALENT:Ｖ민감
+		PRINTFORM 민감
+	ELSEIF TALENT:Ｖ둔감
+		PRINTFORM 둔감
+	ELSE
+		PRINTFORM 통상
+	ENDIF
+	
+	PRINTFORM 　／　Ａ감도：
+	IF TALENT:Ａ민감
+		PRINTFORM 민감
+	ELSEIF TALENT:Ａ둔감
+		PRINTFORM 둔감
+	ELSE
+		PRINTFORM 통상
+	ENDIF
+	
+	PRINTFORM 　／　Ｂ감도：
+	IF TALENT:Ｂ민감
+		PRINTFORM 민감
+	ELSEIF TALENT:Ｂ둔감
+		PRINTFORM 둔감
+	ELSE
+		PRINTFORM 통상
+	ENDIF
+	
+	PRINTFORM 　／　Ｃ감도：
+	IF TALENT:Ｃ민감
+		PRINTFORML 민감
+	ELSEIF TALENT:Ｃ둔감
+		PRINTFORML 둔감
+	ELSE
+		PRINTFORML 통상
+	ENDIF
+	PRINTFORML 
+	PRINTFORML [1] - 【Ｖ감도를 올린다】 (성공률 70％)
+	PRINTFORML [2] - 【Ａ감도를 올린다】 (성공률 70％)
+	PRINTFORML [3] - 【Ｂ감도를 올린다】 (성공률 70％)
+	PRINTFORML [4] - 【Ｃ감도를 올린다】 (성공률 70％)
+	PRINTFORML [5] - 【감도를 전부 올린다】 (성공률 30％)
+	PRINTFORML [10] - 【좀더 생각해보고 싶다】 (이전 선택지로)
+	PRINTFORML 
+	
+	INPUT
+	L_INPUT2 = RESULT
+	
+	SELECTCASE L_INPUT2
+	CASE 1	;Ｖ감도
+		IF TALENT:Ｖ민감
+			PRINTFORMW 이미 %CALLNAME%의 Ｖ감도는 민감해 더 이상은 올릴 수 없을 것 같다.
+			GOTO INPUT_LOOP5
+		ELSE
+			CALL TURN_EVENT_AIHKS_D1
+		ENDIF
+	CASE 2	;Ａ감도
+		IF TALENT:Ａ민감
+			PRINTFORMW 이미 %CALLNAME%의 Ａ감도는 민감해 더 이상은 올릴 수 없을 것 같다.
+			GOTO INPUT_LOOP5
+		ELSE
+			CALL TURN_EVENT_AIHKS_D2
+		ENDIF
+	CASE 3	;Ｂ감도
+		IF TALENT:Ｂ민감
+			PRINTFORMW 이미 %CALLNAME%의 Ｂ감도는 민감해 더 이상은 올릴 수 없을 것 같다.
+			GOTO INPUT_LOOP5
+		ELSE
+			CALL TURN_EVENT_AIHKS_D3
+		ENDIF
+	CASE 4	;Ｃ감도
+		IF TALENT:Ｃ민감
+			PRINTFORMW 이미 %CALLNAME%의 Ｃ감도는 민감해 더 이상은 올릴 수 없을 것 같다.
+			GOTO INPUT_LOOP5
+		ELSE
+			CALL TURN_EVENT_AIHKS_D4
+		ENDIF
+	CASE 5	;모든 감도
+		CALL TURN_EVENT_AIHKS_D5
+	CASE 10	;뒤로
+		GOTO INPUT_LOOP1
+	CASEELSE
+		GOTO INPUT_LOOP5
+	ENDSELECT
+CASE 5	;가슴 사이즈
+	PRINTFORML 「가슴 사이즈를 바꾸고 싶은거야? ……나도 조금 정…앗, 아냐, 아무것도 아닌거야!」
+	PRINTFORML 「먼저 크게 할건지, 작게 할건지 결정해줬으면 하는거야」
+	PRINTFORML 「성공률은 100％니까 안심하고 결정해줬으면 하는거야」
+	
+	$INPUT_LOOP6
+	PRINTFORML 
+	PRINTFORML [1] - 【크게 하고 싶다】
+	PRINTFORML [2] - 【작게 하고 싶다】
+	PRINTFORML [10] - 【좀더 생각해보고 싶다】 (이전 선택지로)
+	PRINTFORML 
+	
+	INPUT
+	L_INPUT2 = RESULT
+	
+	SELECTCASE L_INPUT2
+	CASE 1	;왕찌찌
+		;컵 사이즈 MAX
+		IF CFLAG:カップサイズ == 27
+			PRINTFORML 「여, 역시 그 이상은 나라도 무리인거야……파열해 버릴거야」
+			GOTO INPUT_LOOP6
+		ELSE
+			IF TALENT:폭유
+				PRINTFORML 「어어……출렁출렁거리는데…더 크게 해달라니……정신 나가버린거야」（소곤소곤）
+				PRINTFORML 「음, 으으응! …안 되는거는 아닌데, 그렇게 추잡한 젖가슴이 좋은거야?」
+			ELSEIF TALENT:거유
+				PRINTFORML 「지금만 해도 커다란데 더 크게 인거야? 이런 욕심쟁이 씨, 인거야!」
+				PRINTFORML 「뭐…안 되는거는 아닌데, 정말로 더 크게 하고 싶은거야?」
+			ELSEIF TALENT:빈유
+				PRINTFORML 「빈유는 스테이터스인거야. 옛날에 있던 말인거야」
+				PRINTFORML 「……정말로 그 정말정말 적절한 가슴이랑 이별하고 싶은거야?」
+			ELSEIF TALENT:절벽
+				PRINTFORML 「이해돼……이해되는거야……없는 것보다는 미세하게 있는 편이 좋은 거야……」
+				PRINTFORML 「가지지 못한 자의 고통은 잘 알고 있는거야……지금 당장 크게 할 거야?」
+			ELSE
+				PRINTFORML 「크고 작음을 떠나서 아름다운 조율이 유지되고 있다고 생각하는 거야」
+				PRINTFORML 「그래도 가슴을 크게 하고 싶은거야?」
+			ENDIF
+			PRINTFORML 「참고로 보형물 같은 게 아니고 가슴을 키우는 거야. 의젖이 아니라 천연인거야」
+			
+			$INPUT_LOOP7
+			PRINTFORML 
+			PRINTFORML [1] - 【크게 한다】 (주의：가슴 사이즈와 연관된 체질 소질도 변할 우려 있음)
+			PRINTFORML [10] - 【좀더 생각해보고 싶다】 (이전 선택지로)
+			PRINTFORML 
+			
+			INPUT
+			L_INPUT3 = RESULT
+			
+			SELECTCASE L_INPUT3
+			CASE 1	;키운다
+				CALL TURN_EVENT_AIHKS_E1
+			CASE 10	;뒤로
+				GOTO INPUT_LOOP6
+			CASEELSE
+				GOTO INPUT_LOOP7
+			ENDSELECT
+		ENDIF
+	CASE 2	;껌딱지
+		;컵 사이즈 Min(측정불능)
+		IF CFLAG:カップサイズ == 0
+			PRINTFORML 「여, 역시 그 이상은 나라도 무리인거야……움푹 패일거야」
+			GOTO INPUT_LOOP6
+		ELSE
+			IF TALENT:폭유
+				PRINTFORML 「아아∼…커서 오히려 불편하다는 거야?」
+				PRINTFORML 「사치스러운 고민인거야……으응, 괜찮은거야. 확실하게 줄여줄게 인거야」
+			ELSEIF TALENT:거유
+				PRINTFORML 「응응, 내가 보기에도 좀 큰 것 같은 거야」
+				PRINTFORML 「무엇이든 밸런스가 중요하다고 생각합니다, 인거야!」
+			ELSEIF TALENT:빈유
+				PRINTFORML 「어…그러니까……그렇게 크다고는 생각 안 하는거야……」
+				PRINTFORML 「그래도 당신은 거의 없는 가슴(ちっぱい)을 더 작게 하고 싶은거야?」
+			ELSEIF TALENT:절벽
+				PRINTFORML 「에엥?! 그, 그보다 작게 인거야?!」
+				PRINTFORML 「그건 이미 날이 선 절벽인거야……뭐, 당신이 원한다면 처리해 주겠지만…인거야」
+			ELSE
+				PRINTFORML 「확실히 손에 딱 들어맞는 사이즈도 귀여워서 싫지는 않은 거야」
+				PRINTFORML 「…지금보다 더 적절한 가슴을 원하는 거야?」
+			ENDIF
+			PRINTFORML 「참고로 지방을 흡입하는 게 아니라 약으로 가슴 전체를 감퇴시키는거라 늘어지거나 하지는 않는 거야!」
+			
+			$INPUT_LOOP8
+			PRINTFORML 
+			PRINTFORML [1] - 【작게 한다】 (주의：가슴 사이즈와 연관된 체질 소질도 변할 우려 있음)
+			PRINTFORML [10] - 【좀더 생각해보고 싶다】 (이전 선택지로)
+			PRINTFORML 
+			
+			INPUT
+			L_INPUT3 = RESULT
+			
+			SELECTCASE L_INPUT3
+			CASE 1	;줄인다
+				CALL TURN_EVENT_AIHKS_E2
+			CASE 10	;뒤로
+				GOTO INPUT_LOOP6
+			CASEELSE
+				GOTO INPUT_LOOP8
+			ENDSELECT
+		ENDIF
+	CASE 10	;좀 더 생각을
+		GOTO INPUT_LOOP1
+	CASEELSE
+		GOTO INPUT_LOOP5
+	ENDSELECT
+CASE 999	;고민 없다
+	PRINTFORML 고민은 없다, 그렇게 말하자 ＡＩ박사는 짊어진 기계를 멈췄다.
+	PRINTFORML 「그렇구나 인거야……그래도 당신같은 행복한 주민이 더 많아지면 기쁜거야」
+	PRINTFORML 얌전히 물러난 ＡＩ박사에 안도의 한숨을 내쉬고 있는데 얼굴에 가스가 분출된다.
+	PRINTFORML 허를 찔린 %타겟은% 가스를 마셔 버려 의식이 몽롱해지기 시작한다.
+	PRINTFORMW 의식이 사라지기 직전, 마지막으로 본 것은 미소를 지으며 손을 흔들고 있는 ＡＩ박사의 모습이었다…….
+CASEELSE
+	GOTO INPUT_LOOP1
+ENDSELECT
+
+PRINTFORML 
+PRINTFORML …
+PRINTFORML ……
+PRINTFORMW 자택 침대에서 깨어난 %타겟은% 무슨 일이 있었던 것 같은 느낌이 들었으나 곧 잊어버리고 잠에 들었다…….
+
+
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　無自覚の素質を強化したい
+;無自覚の素質をランダムで１つだけ強化します
+;５％の確率で大成功、８０％の確率で成功、１５％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_A1
+#DIM L_SIKU
+
+L_SIKU = RAND:100
+
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「움직이지 말고 가만히 있어줘 인거야ー」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+;대성공 5%
+IF L_SIKU >= 95
+	IF !RAND:6	;페로몬
+		PRINTFORML 「나한테 걸리면 껌인거야. 페로몬이 초강화된 거야」
+		;70 이상일 시 상한 99까지
+		IF CFLAG:페로몬 >= 70
+			PRINTFORMW 【페로몬：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 페로몬이 상한에 이르었습니다)
+			CFLAG:페로몬 = 99
+		;그 외에는 +30(♥ 3개) 증가
+		ELSE
+			PRINTFORMW 【페로몬　{CFLAG:페로몬} → {CFLAG:페로몬+30}】
+			CFLAG:페로몬 += 30
+		ENDIF
+	ELSEIF !RAND:5	;암컷의 본능
+		PRINTFORML 「나한테 걸리면 껌인거야. 암컷의 본능이 초강화된 거야」
+		;70 이상일 시 상한 99까지
+		IF CFLAG:암컷의본능 >= 70
+			PRINTFORMW 【암컷의 본능：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 암컷의 본능이 상한에 이르었습니다)
+			CFLAG:암컷의본능 = 99
+		;그 외에는 +30(♥ 3개) 증가
+		ELSE
+			PRINTFORMW 【암컷의 본능　{CFLAG:암컷의본능} → {CFLAG:암컷의본능+30}】
+			CFLAG:암컷의본능 += 30
+		ENDIF
+	ELSEIF !RAND:4	;성에 대한 흥미
+		PRINTFORML 「나한테 걸리면 껌인거야. 성에 대한 흥미가 초강화된 거야」
+		;70 이상일 시 상한 99까지
+		IF CFLAG:성적인흥미 >= 70
+			PRINTFORMW 【성에 대한 흥미：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성에 대한 흥미가 상한에 이르었습니다)
+			CFLAG:성적인흥미 = 99
+		;그 외에는 +30(♥ 3개) 증가
+		ELSE
+			PRINTFORMW 【성에 대한 흥미　{CFLAG:성적인흥미} → {CFLAG:성적인흥미+30}】
+			CFLAG:성적인흥미 += 30
+		ENDIF
+	ELSEIF !RAND:3	;수컷에 대한 관심
+		PRINTFORML 「나한테 걸리면 껌인거야. 수컷에 대한 관심이 초강화된 거야」
+		;70 이상일 시 상한 99까지
+		IF CFLAG:수컷에관심 >= 70
+			PRINTFORMW 【수컷에 대한 관심：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 수컷에 대한 관심이 상한에 이르었습니다)
+			CFLAG:수컷에관심 = 99
+		;그 외에는 +30(♥ 3개) 증가
+		ELSE
+			PRINTFORMW 【수컷에 대한 관심　{CFLAG:수컷에관심} → {CFLAG:수컷에관심+30}】
+			CFLAG:수컷에관심 += 30
+		ENDIF
+	ELSEIF !RAND:2	;성교 욕망
+		PRINTFORML 「나한테 걸리면 껌인거야. 성교 욕망이 초강화된 거야」
+		;70 이상일 시 상한 99까지
+		IF CFLAG:성교원망 >= 70
+			PRINTFORMW 【성교 욕망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성교 욕망이 상한에 이르었습니다)
+			CFLAG:성교원망 = 99
+		;그 외에는 +30(♥ 3개) 증가
+		ELSE
+			PRINTFORMW 【성교 욕망　{CFLAG:성교원망} → {CFLAG:성교원망+30}】
+			CFLAG:성교원망 += 30
+		ENDIF
+	ELSE			;임신 소망
+		PRINTFORML 「나한테 걸리면 껌인거야. 임신 소망이 초강화된 거야」
+		;70 이상일 시 상한 99까지
+		IF CFLAG:임신원망 >= 70
+			PRINTFORMW 【임신 소망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 임신 소망이 상한에 이르었습니다)
+			CFLAG:임신원망 = 99
+		;그 외에는 +30(♥ 3개) 증가
+		ELSE
+			PRINTFORMW 【임신 소망　{CFLAG:임신원망} → {CFLAG:임신원망+30}】
+			CFLAG:임신원망 += 30
+		ENDIF
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 기뻐해 주면 좋겠는 거야♪」
+;성공 75%
+ELSEIF L_SIKU >= 15
+	IF !RAND:6	;페로몬
+		PRINTFORML 「그런대로의 결과인거야. 페로몬이 강화된 거야」
+		;80 이상일 시 상한 99까지
+		IF CFLAG:페로몬 >= 80
+			PRINTFORMW 【페로몬：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 페로몬이 상한에 이르었습니다)
+			CFLAG:페로몬 = 99
+		;그 외에는 +20(♥ 2개) 증가
+		ELSE
+			PRINTFORMW 【페로몬　{CFLAG:페로몬} → {CFLAG:페로몬+20}】
+			CFLAG:페로몬 += 20
+		ENDIF
+	ELSEIF !RAND:5	;암컷의 본능
+		PRINTFORML 「그런대로의 결과인거야. 암컷의 본능이 강화된 거야」
+		;80 이상일 시 상한 99까지
+		IF CFLAG:암컷의본능 >= 80
+			PRINTFORMW 【암컷의 본능：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 암컷의 본능이 상한에 이르었습니다)
+			CFLAG:암컷의본능 = 99
+		;그 외에는 +20(♥ 2개) 증가
+		ELSE
+			PRINTFORMW 【암컷의 본능　{CFLAG:암컷의본능} → {CFLAG:암컷의본능+20}】
+			CFLAG:암컷의본능 += 20
+		ENDIF
+	ELSEIF !RAND:4	;성에 대한 흥미
+		PRINTFORML 「그런대로의 결과인거야. 성에 대한 흥미가 강화된 거야」
+		;80 이상일 시 상한 99까지
+		IF CFLAG:성적인흥미 >= 80
+			PRINTFORMW 【성에 대한 흥미：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성에 대한 흥미가 상한에 이르었습니다)
+			CFLAG:성적인흥미 = 99
+		;그 외에는 +20(♥ 2개) 증가
+		ELSE
+			PRINTFORMW 【성에 대한 흥미　{CFLAG:성적인흥미} → {CFLAG:성적인흥미+20}】
+			CFLAG:성적인흥미 += 20
+		ENDIF
+	ELSEIF !RAND:3	;수컷에 대한 관심
+		PRINTFORML 「그런대로의 결과인거야. 수컷에 대한 관심이 강화된 거야」
+		;80 이상일 시 상한 99까지
+		IF CFLAG:수컷에관심 >= 80
+			PRINTFORMW 【수컷에 대한 관심：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 수컷에 대한 관심이 상한에 이르었습니다)
+			CFLAG:수컷에관심 = 99
+		;그 외에는 +20(♥ 2개) 증가
+		ELSE
+			PRINTFORMW 【수컷에 대한 관심　{CFLAG:수컷에관심} → {CFLAG:수컷에관심+20}】
+			CFLAG:수컷에관심 += 20
+		ENDIF
+	ELSEIF !RAND:2	;성교 욕망
+		PRINTFORML 「그런대로의 결과인거야. 성교 욕망이 강화된 거야」
+		;80 이상일 시 상한 99까지
+		IF CFLAG:성교원망 >= 80
+			PRINTFORMW 【성교 욕망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성교 욕망이 상한에 이르었습니다)
+			CFLAG:성교원망 = 99
+		;그 외에는 +20(♥ 2개) 증가
+		ELSE
+			PRINTFORMW 【성교 욕망　{CFLAG:성교원망} → {CFLAG:성교원망+20}】
+			CFLAG:성교원망 += 20
+		ENDIF
+	ELSE			;임신 소망
+		PRINTFORML 「그런대로의 결과인거야. 임신 소망이 강화된 거야」
+		;80 이상일 시 상한 99까지
+		IF CFLAG:임신원망 >= 80
+			PRINTFORMW 【임신 소망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 임신 소망이 상한에 이르었습니다)
+			CFLAG:임신원망 = 99
+		;그 외에는 +20(♥ 2개) 증가
+		ELSE
+			PRINTFORMW 【임신 소망　{CFLAG:임신원망} → {CFLAG:임신원망+20}】
+			CFLAG:임신원망 += 20
+		ENDIF
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+;실패 20%
+ELSE
+	IF !RAND:6	;페로몬
+		PRINTFORML 「……과학의 진보에 희생된 사람인거야ー. 페로몬이 저하해 버린 거야」
+		;10 이하일 시 하한 1로
+		IF CFLAG:페로몬 <= 10
+			PRINTFORMW 【페로몬　{CFLAG:페로몬} → 1】
+			CFLAG:페로몬 = 1
+		;그 외에는 -10(♥ 1개) 저하
+		ELSE
+			PRINTFORMW 【페로몬　{CFLAG:페로몬} → {CFLAG:페로몬-10}】
+			CFLAG:페로몬 -= 10
+		ENDIF
+	ELSEIF !RAND:5	;암컷의본능
+		PRINTFORML 「……과학의 진보에 희생된 사람인거야ー. 암컷의 본능이 저하해 버린 거야 」
+		;10 이하일 시 하한 1로
+		IF CFLAG:암컷의본능 <= 10
+			PRINTFORMW 【암컷의 본능　{CFLAG:암컷의본능} → 1】
+			CFLAG:암컷의본능 = 1
+		;그 외에는 -10(♥ 1개) 저하
+		ELSE
+			PRINTFORMW 【암컷의 본능　{CFLAG:암컷의본능} → {CFLAG:암컷의본능-10}】
+			CFLAG:암컷의본능 -= 10
+		ENDIF
+	ELSEIF !RAND:4	;성적인흥미
+		PRINTFORML 「……과학의 진보에 희생된 사람인거야ー. 성에 대한 흥미가 저하해 버린 거야 」
+		;10 이하일 시 하한 1로
+		IF CFLAG:성적인흥미 <= 10
+			PRINTFORMW 【성에 대한 흥미　{CFLAG:성적인흥미} → 1】
+			CFLAG:성적인흥미 = 1
+		;그 외에는 -10(♥ 1개) 저하
+		ELSE
+			PRINTFORMW 【성에 대한 흥미　{CFLAG:성적인흥미} → {CFLAG:성적인흥미-10}】
+			CFLAG:성적인흥미 -= 10
+		ENDIF
+	ELSEIF !RAND:3	;수컷에관심
+		PRINTFORML 「……과학의 진보에 희생된 사람인거야ー. 수컷에 대한 관심이 저하해 버린 거야 」
+		;10 이하일 시 하한 1로
+		IF CFLAG:수컷에관심 <= 10
+			PRINTFORMW 【수컷에 대한 관심　{CFLAG:수컷에관심} → 1】
+			CFLAG:수컷에관심 = 1
+		;그 외에는 -10(♥ 1개) 저하
+		ELSE
+			PRINTFORMW 【수컷에 대한 관심　{CFLAG:수컷에관심} → {CFLAG:수컷에관심-10}】
+			CFLAG:수컷에관심 -= 10
+		ENDIF
+	ELSEIF !RAND:2	;성교원망
+		PRINTFORML 「……과학의 진보에 희생된 사람인거야ー. 성교 욕망이 저하해 버린 거야 」
+		;10 이하일 시 하한 1로
+		IF CFLAG:성교원망 <= 10
+			PRINTFORMW 【성교 욕망　{CFLAG:성교원망} → 1】
+			CFLAG:성교원망 = 1
+		;그 외에는 -10(♥ 1개) 저하
+		ELSE
+			PRINTFORMW 【성교 욕망　{CFLAG:성교원망} → {CFLAG:성교원망-10}】
+			CFLAG:성교원망 -= 10
+		ENDIF
+	ELSE			;임신원망
+		PRINTFORML 「……과학의 진보에 희생된 사람인거야ー. 임신 소망이 저하해 버린 거야 」
+		;10 이하일 시 하한 1로
+		IF CFLAG:임신원망 <= 10
+			PRINTFORMW 【임신 소망　{CFLAG:임신원망} → 1】
+			CFLAG:임신원망 = 1
+		;그 외에는 -10(♥ 1개) 저하
+		ELSE
+			PRINTFORMW 【임신 소망　{CFLAG:임신원망} → {CFLAG:임신원망-10}】
+			CFLAG:임신원망 -= 10
+		ENDIF
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 화내지 않았으면 좋겠는 거야… 」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　無自覚の素質を強化したい
+;無自覚の素質をすべて強化します
+;１０％の確率で大成功、４０％の確率で成功、５０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_A2
+#DIM L_SIKU
+
+L_SIKU = RAND:100
+
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「힘든 수술이 될 거야, 마음 단단히 먹었으면 좋겠는 거야」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+;대성공 10%
+IF L_SIKU >= 90
+	PRINTFORML 「……역시 나는 천재인 거야. 내 솜씨에 홀딱 반해버리는 거야」
+	;페로몬強化
+	;85以上の場合は上限が99なので99に
+	IF CFLAG:페로몬 >= 85
+		PRINTFORML 【페로몬：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 페로몬이 상한에 이르었습니다)
+		CFLAG:페로몬 = 99
+	;それ以外は+15増加する
+	ELSE
+		PRINTFORML 【페로몬　{CFLAG:페로몬} → {CFLAG:페로몬+15}】
+		CFLAG:페로몬 += 15
+	ENDIF
+	;암컷의본능強化
+	;85以上の場合は上限が99なので99に
+	IF CFLAG:암컷의본능 >= 85
+		PRINTFORML 【암컷의 본능：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 암컷의 본능이 상한에 이르었습니다)
+		CFLAG:암컷의본능 = 99
+	;それ以外は+15増加する
+	ELSE
+		PRINTFORML 【암컷의 본능　{CFLAG:암컷의본능} → {CFLAG:암컷의본능+15}】
+		CFLAG:암컷의본능 += 15
+	ENDIF
+	;성적인흥미強化
+	;85以上の場合は上限が99なので99に
+	IF CFLAG:성적인흥미 >= 85
+		PRINTFORML 【성에 대한 흥미：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성에 대한 흥미가 상한에 이르었습니다)
+		CFLAG:성적인흥미 = 99
+	;それ以外は+15増加する
+	ELSE
+		PRINTFORML 【성에 대한 흥미　{CFLAG:성적인흥미} → {CFLAG:성적인흥미+15}】
+		CFLAG:성적인흥미 += 15
+	ENDIF
+	;수컷에관심強化
+	;85以上の場合は上限が99なので99に
+	IF CFLAG:수컷에관심 >= 85
+		PRINTFORML 【수컷에 대한 관심：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 수컷에 대한 관심이 상한에 이르었습니다)
+		CFLAG:수컷에관심 = 99
+	;それ以外は+15増加する
+	ELSE
+		PRINTFORML 【수컷에 대한 관심　{CFLAG:수컷에관심} → {CFLAG:수컷에관심+15}】
+		CFLAG:수컷에관심 += 15
+	ENDIF
+	;성교원망強化
+	;85以上の場合は上限が99なので99に
+	IF CFLAG:성교원망 >= 85
+		PRINTFORML 【성교 욕망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성교 욕망이 상한에 이르었습니다)
+		CFLAG:성교원망 = 99
+	;それ以外は+15増加する
+	ELSE
+		PRINTFORML 【성교 욕망　{CFLAG:성교원망} → {CFLAG:성교원망+15}】
+		CFLAG:성교원망 += 15
+	ENDIF
+	;임신원망強化
+	;85以上の場合は上限が99なので99に
+	IF CFLAG:임신원망 >= 85
+		PRINTFORMW 【임신 소망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 임신 소망이 상한에 이르었습니다)
+		CFLAG:임신원망 = 99
+	;それ以外は+15増加する
+	ELSE
+		PRINTFORMW 【임신 소망　{CFLAG:임신원망} → {CFLAG:임신원망+15}】
+		CFLAG:임신원망 += 15
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 기뻐해 주면 좋겠는 거야♪」
+;성공 40%
+ELSEIF L_SIKU >= 50
+	PRINTFORML 「그럭저럭 마무리된 거야」
+	;페로몬強化
+	;90以上の場合は上限が99なので99に
+	IF CFLAG:페로몬 >= 90
+		PRINTFORML 【페로몬：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 페로몬이 상한에 이르었습니다)
+		CFLAG:페로몬 = 99
+	;それ以外は+10増加する
+	ELSE
+		PRINTFORML 【페로몬　{CFLAG:페로몬} → {CFLAG:페로몬+10}】
+		CFLAG:페로몬 += 10
+	ENDIF
+	;암컷의본능強化
+	;90以上の場合は上限が99なので99に
+	IF CFLAG:암컷의본능 >= 90
+		PRINTFORML 【암컷의 본능：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 암컷의 본능이 상한에 이르었습니다)
+		CFLAG:암컷의본능 = 99
+	;それ以外は+10増加する
+	ELSE
+		PRINTFORML 【암컷의 본능　{CFLAG:암컷의본능} → {CFLAG:암컷의본능+10}】
+		CFLAG:암컷의본능 += 10
+	ENDIF
+	;성적인흥미強化
+	;90以上の場合は上限が99なので99に
+	IF CFLAG:성적인흥미 >= 90
+		PRINTFORML 【성에 대한 흥미：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성에 대한 흥미가 상한에 이르었습니다)
+		CFLAG:성적인흥미 = 99
+	;それ以外は+10増加する
+	ELSE
+		PRINTFORML 【성에 대한 흥미　{CFLAG:성적인흥미} → {CFLAG:성적인흥미+10}】
+		CFLAG:성적인흥미 += 10
+	ENDIF
+	;수컷에관심強化
+	;90以上の場合は上限が99なので99に
+	IF CFLAG:수컷에관심 >= 90
+		PRINTFORML 【수컷에 대한 관심：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 수컷에 대한 관심이 상한에 이르었습니다)
+		CFLAG:수컷에관심 = 99
+	;それ以外は+10増加する
+	ELSE
+		PRINTFORML 【수컷에 대한 관심　{CFLAG:수컷에관심} → {CFLAG:수컷에관심+10}】
+		CFLAG:수컷에관심 += 10
+	ENDIF
+	;성교원망強化
+	;90以上の場合は上限が99なので99に
+	IF CFLAG:성교원망 >= 90
+		PRINTFORML 【성교 욕망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 성교 욕망이 상한에 이르었습니다)
+		CFLAG:성교원망 = 99
+	;それ以外は+10増加する
+	ELSE
+		PRINTFORML 【성교 욕망　{CFLAG:성교원망} → {CFLAG:성교원망+10}】
+		CFLAG:성교원망 += 10
+	ENDIF
+	;임신원망強化
+	;90以上の場合は上限が99なので99に
+	IF CFLAG:임신원망 >= 90
+		PRINTFORMW 【임신 소망：%UNICODE(0x2661)%×10(MAX)】 (%CALLNAME%의 임신 소망이 상한에 이르었습니다)
+		CFLAG:임신원망 = 99
+	;それ以外は+10増加する
+	ELSE
+		PRINTFORMW 【임신 소망　{CFLAG:임신원망} → {CFLAG:임신원망+10}】
+		CFLAG:임신원망 += 10
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+;失敗
+ELSE
+	PRINTFORML 「……과학의 진보에 희생된 사람인거야ー」
+	;페로몬
+	;10 이하일 시 하한 1로
+	IF CFLAG:페로몬 <= 10
+		PRINTFORML 【페로몬　{CFLAG:페로몬} → 1】
+		CFLAG:페로몬 = 1
+	;그 외에는 -10(♥ 1개) 저하
+	ELSE
+		PRINTFORML 【페로몬　{CFLAG:페로몬} → {CFLAG:페로몬-10}】
+		CFLAG:페로몬 -= 10
+	ENDIF
+	;암컷의본능
+	;10 이하일 시 하한 1로
+	IF CFLAG:암컷의본능 <= 10
+		PRINTFORML 【암컷의 본능　{CFLAG:암컷의본능} → 1】
+		CFLAG:암컷의본능 = 1
+	;그 외에는 -10(♥ 1개) 저하
+	ELSE
+		PRINTFORML 【암컷의 본능　{CFLAG:암컷의본능} → {CFLAG:암컷의본능-10}】
+		CFLAG:암컷의본능 -= 10
+	ENDIF
+	;성적인흥미
+	;10 이하일 시 하한 1로
+	IF CFLAG:성적인흥미 <= 10
+		PRINTFORML 【성에 대한 흥미　{CFLAG:성적인흥미} → 1】
+		CFLAG:성적인흥미 = 1
+	;그 외에는 -10(♥ 1개) 저하
+	ELSE
+		PRINTFORML 【성에 대한 흥미　{CFLAG:성적인흥미} → {CFLAG:성적인흥미-10}】
+		CFLAG:성적인흥미 -= 10
+	ENDIF
+	;수컷에관심
+	;10 이하일 시 하한 1로
+	IF CFLAG:수컷에관심 <= 10
+		PRINTFORML 【수컷에 대한 관심　{CFLAG:수컷에관심} → 1】
+		CFLAG:수컷에관심 = 1
+	;그 외에는 -10(♥ 1개) 저하
+	ELSE
+		PRINTFORML 【수컷에 대한 관심　{CFLAG:수컷에관심} → {CFLAG:수컷에관심-10}】
+		CFLAG:수컷에관심 -= 10
+	ENDIF
+	;성교원망
+	;10 이하일 시 하한 1로
+	IF CFLAG:성교원망 <= 10
+		PRINTFORML 【성교 욕망　{CFLAG:성교원망} → 1】
+		CFLAG:성교원망 = 1
+	;그 외에는 -10(♥ 1개) 저하
+	ELSE
+		PRINTFORML 【성교 욕망　{CFLAG:성교원망} → {CFLAG:성교원망-10}】
+		CFLAG:성교원망 -= 10
+	ENDIF
+	;임신원망
+	;10 이하일 시 하한 1로
+	IF CFLAG:임신원망 <= 10
+		PRINTFORMW 【임신 소망　{CFLAG:임신원망} → 1】
+		CFLAG:임신원망 = 1
+	;그 외에는 -10(♥ 1개) 저하
+	ELSE
+		PRINTFORMW 【임신 소망　{CFLAG:임신원망} → {CFLAG:임신원망-10}】
+		CFLAG:임신원망 -= 10
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 화내지 않았으면 좋겠는 거야…」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　戦闘能力を強化したい
+;ＲＰＧステータスの強化
+;８０％の確率で成功（＋１０～２０）、２０％の確率で失敗（－１０～０）
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_B1
+#DIM L_HP
+#DIM L_SP
+#DIM L_ATK
+#DIM L_DEF
+#DIM L_SPD
+#DIM L_HIT
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 기묘한 색의 액체가 담긴 비커를 꺼냈다.
+PRINTFORMW 「자자, 이 약을 마시는 거야. 수상한 거 아니니까 안심하고 마시는 거야」
+PRINTFORMW …
+PRINTFORMW ……
+;成功
+IF RAND:100 >= 20
+	PRINTFORML %CALLNAME%의 전신에서 힘이 솟아난다….
+	PRINTFORML 「아무래도 성공한 것 같은 거야」
+	PRINTFORML 
+	
+	L_HP    = (RAND:11)+10
+	L_SP    = (RAND:11)+10
+	L_ATK   = (RAND:11)+10
+	L_DEF   = (RAND:11)+10
+	L_SPD   = (RAND:11)+10
+	L_HIT   = (RAND:11)+10
+	
+	PRINTFORML  HP　{CFLAG:주민_최대체력}　→　{CFLAG:주민_최대체력+L_HP}
+	PRINTFORML  SP　{CFLAG:주민_최대기력}　→　{CFLAG:주민_최대기력+L_SP}
+	PRINTFORML ATK　{CFLAG:주민_ATK}　→　{CFLAG:주민_ATK+L_ATK}
+	PRINTFORML DEF　{CFLAG:주민_DEF}　→　{CFLAG:주민_DEF+L_DEF}
+	PRINTFORML SPD　{CFLAG:주민_SPD}　→　{CFLAG:주민_SPD+L_SPD}
+	PRINTFORML HIT　{CFLAG:주민_HIT}　→　{CFLAG:주민_HIT+L_HIT}
+	PRINTFORMW 
+	
+	CFLAG:주민_최대체력 += L_HP
+	CFLAG:주민_현재체력 += L_HP
+	CFLAG:주민_최대기력 += L_SP
+	CFLAG:주민_현재기력 += L_SP
+	CFLAG:주민_ATK      += L_ATK
+	CFLAG:주민_DEF      += L_DEF
+	CFLAG:주민_SPD      += L_SPD
+	CFLAG:주민_HIT      += L_HIT
+	
+	PRINTFORML 
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+;失敗
+ELSE
+	PRINTFORML %CALLNAME%의 전신에서 힘이 빠져 나간다….
+	PRINTFORML 「……조합을 조금 틀리게 한 것 같은 거야」
+	PRINTFORML 
+	
+	L_HP    = (RAND:11)
+	L_SP    = (RAND:11)
+	L_ATK   = (RAND:11)
+	L_DEF   = (RAND:11)
+	L_SPD   = (RAND:11)
+	L_HIT   = (RAND:11)
+	
+	PRINTFORML  HP　{CFLAG:주민_최대체력}　→　{CFLAG:주민_최대체력-L_HP}
+	PRINTFORML  SP　{CFLAG:주민_최대기력}　→　{CFLAG:주민_최대기력-L_SP}
+	PRINTFORML ATK　{CFLAG:주민_ATK}　→　{CFLAG:주민_ATK-L_ATK}
+	PRINTFORML DEF　{CFLAG:주민_DEF}　→　{CFLAG:주민_DEF-L_DEF}
+	PRINTFORML SPD　{CFLAG:주민_SPD}　→　{CFLAG:주민_SPD-L_SPD}
+	PRINTFORML HIT　{CFLAG:주민_HIT}　→　{CFLAG:주민_HIT-L_HIT}
+	PRINTFORMW 
+	
+	CFLAG:주민_최대체력 -= L_HP
+	CFLAG:주민_현재체력 -= L_HP
+	CFLAG:주민_최대기력 -= L_SP
+	CFLAG:주민_현재기력 -= L_SP
+	CFLAG:주민_ATK      -= L_ATK
+	CFLAG:주민_DEF      -= L_DEF
+	CFLAG:주민_SPD      -= L_SPD
+	CFLAG:주민_HIT      -= L_HIT
+	
+	PRINTFORML 
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 화내지 않았으면 좋겠는 거야…」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　임신しやすくする
+;수정최대내구치を下げる
+;１０％の確率で大成功（성녀의자궁を付与）、６０％の確率で成功、３０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_C1
+#DIM L_SIKU
+
+L_SIKU = RAND:100
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「움직이지 말고 가만히 있어줘 인거야ー」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+;대성공 10%
+IF L_SIKU >= 90
+	PRINTFORML 「……조금 과했는 거야, 뭐 본인이 원한대로 같으니 됐어 인거야」
+	PRINTFORML 
+	;성녀의 자궁 소지
+	IF TALENT:성녀의자궁
+		;최대 내구치가 100 이하일 경우 하한 1로
+		IF CFLAG:수정최대내구치 <= 100
+			PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　1
+			CFLAG:수정최대내구치 = 1
+			CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+		;그 외에는 -100
+		ELSE
+			PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　{CFLAG:수정최대내구치-100}
+			CFLAG:수정최대내구치 -= 100
+			CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+		ENDIF
+		;모체 레벨이 80 이하일 경우 +5
+		IF CFlag:모체레벨 <= 80
+			PRINTFORML 모체 레벨　{CFLAG:모체레벨}　→　{CFLAG:모체레벨+5}
+			CFlag:모체레벨 += 5
+		ENDIF
+		;난자 레벨이 80 이하일 경우 +5
+		IF CFlag:난자레벨 <= 80
+			PRINTFORML 난자 레벨　{CFLAG:난자레벨}　→　{CFLAG:난자레벨+5}
+			CFlag:난자레벨 += 5
+		ENDIF
+		;성녀의 자궁 소지시 스카우트 시점부터 100%지만 만약을 위해서
+		CFLAG:수정확률 = 100
+	;성녀의 자궁 없음
+	ELSE
+		;최대 내구치가 100 이하일 경우 하한 1로
+		IF CFLAG:수정최대내구치 <= 100
+			PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　1
+			CFLAG:수정최대내구치 = 1
+			CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+		;그 외에는 -100
+		ELSE
+			PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　{CFLAG:수정최대내구치-100}
+			CFLAG:수정최대내구치 -= 100
+			CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+		ENDIF
+		;모체 레벨이 80 이하일 경우 +5
+		IF CFlag:모체레벨 <= 80
+			PRINTFORML 모체 레벨　{CFLAG:모체레벨}　→　{CFLAG:모체레벨+5}
+			CFlag:모체레벨 += 5
+		ENDIF
+		;난자 레벨이 80 이하일 경우 +5
+		IF CFlag:난자레벨 <= 80
+			PRINTFORML 난자 레벨　{CFLAG:난자레벨}　→　{CFLAG:난자레벨+5}
+			CFlag:난자레벨 += 5
+		ENDIF
+		;성녀의 자궁 부여
+		TALENT:성녀의자궁 = 1
+		CFLAG:수정확률 = 100
+	ENDIF
+	PRINTFORML 
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 기뻐해 주면 좋겠는 거야♪」
+;성공 60%
+ELSEIF L_SIKU >= 30
+	PRINTFORML 「조치 성공인거야, 임신하기 쉬워진거야」
+	PRINTFORML 
+	;최대 내구치가 50 이하일 시 하한 1로
+	IF CFLAG:수정최대내구치 <= 50
+		PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　1
+		CFLAG:수정최대내구치 = 1
+		CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+	;그 외에는 -50
+	ELSE
+		PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　{CFLAG:수정최대내구치-50}
+		CFLAG:수정최대내구치 -= 50
+		CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+	ENDIF
+	;모체 레벨이 50 이하일 경우 +2
+	IF CFlag:모체레벨 <= 50
+		PRINTFORML 모체 레벨　{CFLAG:모체레벨}　→　{CFLAG:모체레벨+2}
+		CFlag:모체레벨 += 2
+	ENDIF
+	;난자 레벨이 50 이하일 경우 +2
+	IF CFlag:난자레벨 <= 50
+		PRINTFORML 난자 레벨　{CFLAG:난자레벨}　→　{CFLAG:난자레벨+2}
+		CFlag:난자레벨 += 2
+	ENDIF
+	;수정 확률이 70% 이하일 시 +10%
+	IF CFLAG:수정확률 <= 70
+		PRINTFORML 수정 확률　{CFLAG:수정확률}　→　{CFLAG:수정확률+10}
+		CFLAG:수정확률 += 10
+	ENDIF
+	PRINTFORML 
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+;失敗
+ELSE
+	PRINTFORML 「……과학의 진보에 희생된 사람인거야ー, 임신하기 어려워졌지만 힘내줬으면 하는거야」
+	PRINTFORML 
+	;수정 최대내구치가 1000이상일 시 방치
+	IF CFLAG:수정최대내구치 >= 9999
+		;실패시 수정 최대 내구치가 999로 감소하기 때문에 변동시키지 않는다
+	;수정 최대내구치가 950 이상인 경우 9999로
+	ELSEIF CFLAG:수정최대내구치 >= 9950
+		PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　9999
+		CFLAG:수정최대내구치 = 9999
+		CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+	;그 외에는 +50
+	ELSE
+		PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　{CFLAG:수정최대내구치+50}
+		CFLAG:수정최대내구치 += 50
+		CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+	ENDIF
+	;성녀의 자궁 없음
+	IF TALENT:성녀의자궁 == 0
+		;수정 확률 30% 이상일 시 -5%
+		IF CFLAG:수정확률 >= 30
+			PRINTFORML 수정 확률　{CFLAG:수정확률}　→　{CFLAG:수정확률-5}
+			CFLAG:수정확률 -= 5
+		ENDIF
+	ENDIF
+	PRINTFORML 
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 화내지 않았으면 좋겠는 거야…」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　Ｖ感度を上げる
+;Ｖ感度を上げる
+;７０％の確率で成功、３０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_D1
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「움직이지 말고 가만히 있어줘 인거야ー」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+IF RAND:100 >= 30
+	PRINTFORML 「무난한 결과인거야」
+	;Ｖ둔감の場合はＶ둔감を削除
+	IF TALENT:Ｖ둔감
+		PRINTFORML %CALLNAME%의 Ｖ감도가 보통이 되었습니다.
+		TALENT:Ｖ둔감 = 0
+	;そうでない場合はＶ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ｖ감도가 민감하게 되었습니다.
+		TALENT:Ｖ민감 = 1
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+ELSE
+	PRINTFORML 「어!? 뭔가 잘못된 거야…과학의 진보에 희생된 사람인거야ー」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　Ａ感度を上げる
+;Ａ感度を上げる
+;７０％の確率で成功、３０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_D2
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「움직이지 말고 가만히 있어줘 인거야ー」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+IF RAND:100 >= 30
+	PRINTFORML 「무난한 결과인거야」
+	;Ａ둔감の場合はＡ둔감を削除
+	IF TALENT:Ａ둔감
+		PRINTFORML %CALLNAME%의 Ａ감도가 보통이 되었습니다.
+		TALENT:Ａ둔감 = 0
+	;そうでない場合はＡ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ａ감도가 민감하게 되었습니다.
+		TALENT:Ａ민감 = 1
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+ELSE
+	PRINTFORML 「어!? 뭔가 잘못된 거야…과학의 진보에 희생된 사람인거야ー」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　Ｂ感度を上げる
+;Ｂ感度を上げる
+;７０％の確率で成功、３０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_D3
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「움직이지 말고 가만히 있어줘 인거야ー」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+IF RAND:100 >= 30
+	PRINTFORML 「무난한 결과인거야」
+	;Ｂ둔감の場合はＢ둔감を削除
+	IF TALENT:Ｂ둔감
+		PRINTFORML %CALLNAME%의 Ｂ감도가 보통이 되었습니다.
+		TALENT:Ｂ둔감 = 0
+	;そうでない場合はＢ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ｂ감도가 민감하게 되었습니다.
+		TALENT:Ｂ민감 = 1
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+ELSE
+	PRINTFORML 「어!? 뭔가 잘못된 거야…과학의 진보에 희생된 사람인거야ー」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　Ｃ感度を上げる
+;Ｃ感度を上げる
+;７０％の確率で成功、３０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_D4
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「움직이지 말고 가만히 있어줘 인거야ー」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+IF RAND:100 >= 30
+	PRINTFORML 「무난한 결과인거야」
+	;Ｃ둔감の場合はＣ둔감を削除
+	IF TALENT:Ｃ둔감
+		PRINTFORML %CALLNAME%의 Ｃ감도가 보통이 되었습니다.
+		TALENT:Ｃ둔감 = 0
+	;そうでない場合はＣ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ｃ감도가 민감하게 되었습니다.
+		TALENT:Ｃ민감 = 1
+	ENDIF
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+ELSE
+	PRINTFORML 「어!? 뭔가 잘못된 거야…과학의 진보에 희생된 사람인거야ー」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　感度をすべてよくする
+;感度をすべて上げる
+;４０％の確率で成功、６０％の確率で失敗
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_D5
+
+PRINTFORML ＡＩ박사 등 뒤에서 뻗어 나온 암이 %타겟을% 수술대에 밀어붙였다.
+PRINTFORMW 「힘든 수술이 될 거야, 마음 단단히 먹었으면 좋겠는 거야」
+PRINTFORMW 푸슉, 위이이이이잉, 덜덜덜덜…
+PRINTFORMW …
+PRINTFORMW ……
+;成功
+IF RAND:100 >= 60
+	PRINTFORML 「……역시 나는 천재인 거야. 내 솜씨에 홀딱 반해버리는 거야」
+
+	;Ｖ둔감の場合はＶ둔감を削除
+	IF TALENT:Ｖ둔감
+		PRINTFORML %CALLNAME%의 Ｖ감도가 보통이 되었습니다.
+		TALENT:Ｖ둔감 = 0
+	;Ｖ민감の場合は変化なし
+	ELSEIF TALENT:Ｖ민감
+	;そうでない場合はＶ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ｖ감도가 민감하게 되었습니다.
+		TALENT:Ｖ민감 = 1
+	ENDIF
+	;Ａ둔감の場合はＡ둔감を削除
+	IF TALENT:Ａ둔감
+		PRINTFORML %CALLNAME%의 Ａ감도가 보통이 되었습니다.
+		TALENT:Ａ둔감 = 0
+	;Ａ민감の場合は変化なし
+	ELSEIF TALENT:Ａ민감
+	;そうでない場合はＡ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ａ감도가 민감하게 되었습니다.
+		TALENT:Ａ민감 = 1
+	ENDIF
+	;Ｂ둔감の場合はＢ둔감を削除
+	IF TALENT:Ｂ둔감
+		PRINTFORML %CALLNAME%의 Ｂ감도가 보통이 되었습니다.
+		TALENT:Ｂ둔감 = 0
+	;Ｂ민감の場合は変化なし
+	ELSEIF TALENT:Ｂ민감
+	;そうでない場合はＢ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ｂ감도가 민감하게 되었습니다.
+		TALENT:Ｂ민감 = 1
+	ENDIF
+	;Ｃ둔감の場合はＣ둔감を削除
+	IF TALENT:Ｃ둔감
+		PRINTFORML %CALLNAME%의 Ｃ감도가 보통이 되었습니다.
+		TALENT:Ｃ둔감 = 0
+	;Ｃ민감の場合は変化なし
+	ELSEIF TALENT:Ｃ민감
+	;そうでない場合はＣ민감を追加
+	ELSE
+		PRINTFORML %CALLNAME%의 Ｃ감도가 민감하게 되었습니다.
+		TALENT:Ｃ민감 = 1
+	ENDIF
+	
+	PRINTFORML 「나중에 자택에 데려다 주고…시티 마마, 칭찬해 줬으면 좋겠는 거야♪」
+ELSE
+	PRINTFORML 「어!? 뭔가 잘못된 거야…과학의 진보에 희생된 사람인거야ー」
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　胸を大きくする
+;カップサイズを一段階上げて、가슴사이즈を+2～3cmします
+;カップサイズ　0:測定不能,1:AA,2:A,3:B,4:C,5:D,6:E,7:F,8:G,…,27:Z
+;体質素質が変化する基準
+;절벽：測定不能,AA　빈유：A,B　普乳：C,D　거유：E,F　폭유：G,H～,Z
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_E1
+
+PRINTFORML ＡＩ박사는 %타겟을% 알몸으로 만들고 수술대에 눕혔다.
+PRINTFORML 「성장촉진제를 주사하는 거야, 급격한 성장 영향으로 가슴이 땡기겠지만 신경 쓰지 말아줘 인거야」
+PRINTFORML 주사기를 든 암 하나가 적색 액체를 %CALLNAME%의 가슴에 주입한다.
+PRINTFORML 모세혈관까지 성장촉진제가 퍼졌는지 %CALLNAME%의 가슴에는 붉은 혈관이 또렷하게 드러나 있었다.
+PRINTFORMW 왜인지 가슴 전체에서 열이 나기 시작한 것 같다….
+
+CFLAG:가슴사이즈 += 2+(CFLAG:カップサイズ%2)
+CFLAG:カップサイズ += 1
+
+;절벽を持つ住民のカップサイズがAまたはBになった場合、절벽を消して빈유にする
+IF TALENT:절벽 && (CFLAG:カップサイズ == 2 || CFLAG:カップサイズ == 3)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 미세한 굴곡을 주장하는 정도로는 성장한 것 같다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［절벽］→［빈유］
+	TALENT:절벽 = 0
+	TALENT:빈유 = 1
+;빈유を持つ住民のカップサイズがCまたはDになった場合、빈유を消す
+ELSEIF TALENT:빈유 && (CFLAG:カップサイズ == 4 || CFLAG:カップサイズ == 5)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 여성 특유의 부풀어 오른 부분을 확실하게 주장하게 되었다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［빈유］→［평유］
+	TALENT:빈유 = 0
+;住民のカップサイズがEまたはFになった場合、거유にする
+ELSEIF (CFLAG:カップサイズ == 6 || CFLAG:カップサイズ == 7)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 풍만하게 부풀어 야하게 주장할 정도로 성장을 이루었다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［평유］→［거유］
+	TALENT:거유 = 1
+;거유を持つ住民のカップサイズがGまたはHになった場合、거유を消して폭유にする
+ELSEIF TALENT:거유 && (CFLAG:カップサイズ == 8 || CFLAG:カップサイズ == 9)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 산처럼 부풀어 올라 천박하게 주장할 정도의 성장을 이루었다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［거유］→［폭유］
+	TALENT:거유 = 0
+	TALENT:폭유 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;ＡＩ博士の改造イベント　胸を小さくする
+;カップサイズを一段階下げて、가슴사이즈を-2～3cmします
+;カップサイズ　0:測定不能,1:AA,2:A,3:B,4:C,5:D,6:E,7:F,8:G,…,27:Z
+;体質素質が変化する基準
+;절벽：測定不能,AA　빈유：A,B　普乳：C,D　거유：E,F　폭유：G,H～,Z
+;-------------------------------------------------
+@TURN_EVENT_AIHKS_E2
+
+PRINTFORML ＡＩ박사는 %타겟을% 알몸으로 만들고 수술대에 눕혔다.
+PRINTFORML 「성장후퇴제를 주사하는 거야, 가슴 지방이랑 같이 피부도 감퇴하니까 늘어질 걱정은 없는거야」
+PRINTFORML 주사기를 든 암 하나가 청색 액체를 %CALLNAME%의 가슴에 주입한다.
+PRINTFORML 모세혈관까지 성장촉진제가 퍼졌는지 %CALLNAME%의 가슴에는 푸른 혈관이 또렷하게 드러나 있었다.
+PRINTFORMW 왜인지 가슴 전체에서 열이 나기 시작한 것 같다….
+
+CFLAG:가슴사이즈 -= 2+(CFLAG:カップサイズ%2)
+CFLAG:カップサイズ -= 1
+
+;폭유を持つ住民のカップサイズがFまたはEになった場合、폭유を消して거유にする
+IF TALENT:폭유 && (CFLAG:カップサイズ == 7 || CFLAG:カップサイズ == 6)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 천박한 가슴은 조신함을 생객해낸 것인지, 야하게 주장하는 정도로 작아진 것 같다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［폭유］→［거유］
+	TALENT:폭유 = 0
+	TALENT:거유 = 1
+;거유を持つ住民のカップサイズがDまたはCになった場合、거유を消す
+ELSEIF TALENT:거유 && (CFLAG:カップサイズ == 5 || CFLAG:カップサイズ == 4)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 여성 특유의 부풀어 오른 부분을 확실히 주장하는 정도로 작아진 것 같다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［거유］→［평유］
+	TALENT:거유 = 0
+;住民のカップサイズがBまたはAになった場合、빈유にする
+ELSEIF (CFLAG:カップサイズ == 3 || CFLAG:カップサイズ == 2)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 조신하고 미미한 부풂을 주장하는 정도로 작아진 것 같다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［普乳］→［빈유］
+	TALENT:빈유 = 1
+;빈유を持つ住民のカップサイズがAAまたは測定不能になった場合、빈유を消して절벽にする
+ELSEIF TALENT:빈유 && (CFLAG:カップサイズ == 1 || CFLAG:カップサイズ == 0)
+	PRINTFORML 
+	PRINTFORML %CALLNAME%의 가슴은 굴곡 따위 존재하지 않는 깎아 내린 듯한 절벽이 되었다…….
+	PRINTFORMW 체질 소질이 변화했습니다　［빈유］→［절벽］
+	TALENT:빈유 = 0
+	TALENT:절벽 = 1
+ENDIF
+
+
+
+
+

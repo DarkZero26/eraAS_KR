@@ -1,0 +1,117 @@
+﻿;-------------------------------------------------
+;住民拉致
+;-------------------------------------------------
+@RPG_EVENT_800(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 800
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 250,50,50
+PRINTFORML 【조사 이벤트:주민 납치】
+PRINTFORML 
+
+PRINTFORML 산개 행동을 하고 있던 %조사처리(CALLNAME:L_I,"는")% 어두운 골목길을 걷고 있었다.
+PRINTFORML 그런데 갑자기 뒤쪽에서 수상한 남자가 입을 막아버리고 한 쪽 팔을 제압했다！
+PRINTFORML 추가로 입을 어떤 약품을 묻힌 수건으로 꽉 누르고 있다.
+PRINTFORML 이대로 가면 의식을 잃고 만다……！
+PRINTFORML 
+PRINTFORML 
+PRINTFORML [0] 저항한다
+PRINTFORML 
+$INPUT_LOOP
+TINPUT 2000, 100, 1
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	RESETCOLOR
+	PRINTFORML 남은 한 팔로 남자의 배를 팔꿈치로 강하게 후려치자, 남자는 급소에 맞은 듯 크게 휘청거렸다.
+	PRINTFORML 약해진 구속에서 벗어나 계속해서 발길질을 한다.
+	PRINTFORML 하지만 약의 효과가 남아서인지 위력이 떨어지고 있었고, 이내 다시 자세를 잡은 남자는 쏜살같이 달아났다…….
+	PRINTFORMW 
+CASE 100
+	PRINTFORML 너무나도 큰 사태라 대응하지 못한 %조사처리(CALLNAME:L_I,"는")% 무의식 중에 약품을 흡입해버린다.
+	PRINTFORML 곧 약의 효과가 발해, 의식은 순식간에 어둠 속으로 빠져 들어갔다…….
+	PRINTFORML 
+	PRINTFORMW 
+	PRINTFORML %조사처리(CALLNAME:L_I,"가")% 납치당했습니다…….
+	PRINTFORMW 
+	CFlag:L_I:납치감금 = 1
+	Flag:イベント誘拐中 = 1
+	Flag:조사이벤트번호 = 0
+	CALL CHARA_LEAVE_CITY(L_I)
+	CALL RPG_EVENT_MAIN_END
+	JUMP SYSTEM_MENU
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+RESETCOLOR
+DRAWLINE
+
+
+
+;キャラの부재化処理
+;DELではなく一時離脱するだけ
+@CHARA_LEAVE_CITY(L_C_ID)
+#DIM L_C_ID
+TALENT:L_C_ID:부재 = 1
+IF CFLAG:L_C_ID:調教対象フラグ != 0
+	CFLAG:L_C_ID:調教対象フラグ = 0
+	FLAG:調教対象人数 = 0
+ENDIF
+CALL FACILITY_CHARA_REMOVE(L_C_ID)
+CALL SUPPORT_CHARA_REMOVE(L_C_ID)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

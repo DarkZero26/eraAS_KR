@@ -1,0 +1,78 @@
+﻿;-------------------------------------------------
+;유니크アーティファクトテンプレート
+;5は유니크アーティファクトのIDで置き換える。1以上にすること
+
+;ART_EFFECT6「激昂」のテスト目的
+;-------------------------------------------------
+;名前をRESULTSに入れて返す
+@ART_UNIQUE_5_NAME
+RESULTS = 『저주』분노의 방패
+RETURN
+
+
+;このアーティファクトが入手可能か返す
+;1なら可能、0なら不可
+@ART_UNIQUE_5_ABLE
+;複数入手は不可
+SIF RPG_ARTIFACT_COUNTUNIQUE(5)
+	RETURN 0
+RETURN 1
+
+
+;アーティファクトのランクをRETURN。必ず1以上にする
+@ART_UNIQUE_5_RANK
+RETURN 50
+
+
+;以下能力5項目をRETURNする。負の値にしないこと
+@ART_UNIQUE_5_ATK
+RETURN 75
+
+
+@ART_UNIQUE_5_DEF
+RETURN 130
+
+
+@ART_UNIQUE_5_HIT
+RETURN 50
+
+
+@ART_UNIQUE_5_SPD
+RETURN 120
+
+
+@ART_UNIQUE_5_LUK
+RETURN 25
+
+
+;ゲノム適性フラグ。値はCFLAG.CSVの移植されたゲノムの添え字
+;0ならゲノム適性を持たない
+@ART_UNIQUE_5_GENOME
+RETURN 0
+
+
+;特殊能力。核熱とか時間とかのアレ
+;0は特殊能力なし
+@ART_UNIQUE_5_ABILITY
+RETURN 6
+
+
+;以下アーティファクトの説明などの定義
+;アーティファクトの製造元。数値の意味などは@RPG_ARTIFACT_MADEINを参考のこと
+@ART_UNIQUE_5_MADEIN
+RETURN 1
+
+
+;유니크アーティファクトの説明
+;文字列配列EXPL(5個まで渡される)に説明文を代入してRETURN
+;RETURN 1で表示、RETURN 0だと説明表示処理をスキップする
+;RETURN 1の時点でDRAWLINEが入るので、説明が不要ならRETURN 0をしてください
+;空文字列を渡した変数は無視される
+@ART_UNIQUE_5_EXPLANATION(EXPL)
+#DIMS REF EXPL
+EXPL:0 = 고대 전사들이 사용했을 것으로 생각되는 방패.
+EXPL:1 = 재질은 고전적이지만 그 강도는 심상치 않으며, 과학의 범주에 없는 무언가로 보강되고 있다고 생각된다.
+EXPL:2 = 게다가 소유자가 비정상적인 공격성을 보이게 하는 특성도 갖추고 있어 본인의 한계를 뛰어넘는 능력을 발휘하게 하는 것 같다.
+EXPL:3 = 하지만 그 폐해로서 스스로의 생명 보호에 소홀해지는 점도 지적되고 있다.
+EXPL:4 = 
+RETURN 1

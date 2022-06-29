@@ -1,0 +1,193 @@
+﻿;-------------------------------------------------
+;他プレイヤー干渉
+;-------------------------------------------------
+@EP_ACTION
+#DIM L_INPUT
+
+$INPUT_LOOP2
+
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪당신의 진영이 타「플레이어」로부터 간섭을 받고 있는 것 같습니다.≫
+PRINTFORML ≪이대로라면 당신의 관할 구역에 악영향이 미치겠죠.≫
+PRINTFORML ≪보유하고 있는 주민으로 추격할 수 있습니다만…… 어떻게 하시겠습니까？≫
+DRAWLINE
+PRINTFORML [1] 무력방어 (스파이 상대로 전투)
+PRINTFORML [2] 경비강화 (전 시설 레벨 합계치 ×10으로 대항, 변동폭 있음)
+PRINTFORML [3] 배제신청 (자금{Flag:EP敵戦力*1000} 필요, 무보수)
+PRINTFORML
+PRINTFORML 
+PRINTFORML [999] - 돌아간다
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+Flag:EP追撃方法 = RESULT
+SELECTCASE L_INPUT
+	CASE 1
+		DRAWLINE
+		PRINTFORMW ≪추격시킬 부하를 선택해주세요.≫
+		CALL RPG_LIST_CHARA
+		L_INPUT = RESULT
+		SIF L_INPUT == 1000
+			GOTO INPUT_LOOP2
+		IF TALENT:L_INPUT:비전투원 == 1 
+			PRINTFORMW 비전투원은 선택할 수 없습니다.
+			GOTO INPUT_LOOP2
+		ELSEIF L_INPUT == 0
+			PRINTFORMW 당신은 선택할 수 없습니다.
+			GOTO INPUT_LOOP2
+		ELSEIF TALENT:L_INPUT:부재 == 1
+			PRINTFORMW 부재이므로 선택할 수 없습니다.
+			GOTO INPUT_LOOP2
+		ELSE
+			;@RPG_BATTLEの仕様変更によりFLAG:調査キャラの変更は不要
+			;Flag:調査キャラ = L_INPUT
+			DRAWLINE
+			PRINTFORMW ≪수락하였습니다. 좋은 성과를 기대하겠습니다≫
+			CALL RPG_BATTLE(L_INPUT , 1 , 2 , , 1)
+			;戦闘結果で分岐。この戦闘は退却不可
+			IF BATTLE_WIN_P
+				CALL EP_COUNTER_CLEAR
+			ELSE
+				CALL EP_COUNTER_MISS
+			ENDIF
+		ENDIF
+	CASE 2
+		JUMP EP_COUNTER_CLEAR_KK
+	CASE 3
+		IF MONEY >= Flag:EP敵戦力*1000
+			JUMP EP_COUNTER_CLEAR_HS
+		ELSE
+			PRINTFORMW 자금이 부족합니다.
+			GOTO INPUT_LOOP
+		ENDIF
+	CASE 999
+		JUMP SYSTEM_MENU
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+
+
+;-------------------------------------------------
+;他プレイヤー干渉　警備強化
+;-------------------------------------------------
+@EP_COUNTER_CLEAR_KK
+#DIM S_P
+#DIM L_LOOP
+
+S_P = 0
+L_LOOP = 0
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪알겠습니다. 당신이 보유하고 있는 시설의 경비를 강화하고 상대를 포박하겠습니다≫
+PRINTFORMW ≪자 그럼, 이번에는 잘 풀리겠죠≫
+DRAWLINE
+
+REPEAT 99
+		S_P += Flag:(4000+L_LOOP) 
+	L_LOOP += 1
+REND
+
+IF (S_P/2)+(RAND:(S_P+1)) >= Flag:EP敵戦力
+	JUMP EP_COUNTER_CLEAR
+ELSE
+	JUMP EP_COUNTER_MISS
+ENDIF
+
+;-------------------------------------------------
+;他プレイヤー干渉　排除申請
+;-------------------------------------------------
+@EP_COUNTER_CLEAR_HS
+#DIM S_P
+#DIM L_LOOP
+
+S_P = 0
+L_LOOP = 0
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML ≪알겠습니다. 상대방이 보낸 자객은 이쪽에서 대처하도록 하겠습니다≫
+PRINTFORMW ≪이 선택에 의한 추격 보너스는 발생하지 않으므로 미리 양해를 구하겠습니다≫
+DRAWLINE
+
+
+
+CALL EP_RESET
+
+
+
+;-------------------------------------------------
+;他プレイヤー干渉　追撃成功
+;-------------------------------------------------
+@EP_COUNTER_CLEAR
+#DIM L_INPUT
+#DIM GET_POINT
+Flag:EP成否 = 1
+
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 50,250,250
+PRINTFORML ―――――――――――――――【추격 성공】―――――――――――――――
+RESETCOLOR
+DRAWLINE
+PRINTFORML ≪무사히 간섭을 막을 수 있었습니다. 스파이는 무사히 붙잡았습니다≫
+PRINTFORML ≪규칙에 의거해, 방어측은 노획한 침입자에 대한 처우를 결정할 수 있습니다≫
+PRINTFORML ≪해방시켜 당신의 진영으로 데려오는 것도 가능합니다. 어떻게 하실건가요?≫
+DRAWLINE
+PRINTFORML [0] - 소유한다 (주민 입수)
+PRINTFORML [1] - 해방한다 (공헌치 입수)
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	PRINTFORML ≪알겠습니다. 스파이의 모든 권리를 당신에게 이양하겠습니다≫
+	PRINTFORML ≪만약을 위해 재범 방지용 뇌처리를 하겠습니다. 양해 바랍니다≫
+	PRINTFORMW ≪다만, 타「플레이어」에 대한 충성 등은 그대로입니다. 권속화에 고생하겠죠≫
+	CALL CHARACTER_SCOUT1
+CASE 1
+	DRAWLINE
+	PRINTFORML ≪어라, 해방시키시는거네요. 변함없이 상냥하신 분이군요≫
+	PRINTFORMW ≪대신해서 제가 공헌치를 드리겠습니다. 다음 결산 때 활용해주세요≫
+	GET_POINT = Flag:EP敵戦力*20
+	Flag:都市_今期の기여도 += GET_POINT
+	PRINTFORMW 공헌치 {GET_POINT} 를 입수했다.
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+CALL EP_RESET
+
+;-------------------------------------------------
+;他プレイヤー干渉　追撃失敗
+;-------------------------------------------------
+@EP_COUNTER_MISS
+#DIM L_INPUT
+
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 250,50,50
+PRINTFORML ―――――――――――――――【추격 실패】―――――――――――――――
+RESETCOLOR
+DRAWLINE
+PRINTFORML ≪실패해버리셨네요. 상대방이 한 수 위였다고 봐야겠죠≫
+PRINTFORML ≪다음에는 격퇴할 수 있도록 부하의 육성에 힘써 주세요≫
+DRAWLINE
+PRINTFORMW
+
+
+CALL EP_RESET
+
+;-------------------------------------------------
+;他プレイヤー干渉　リセット
+;-------------------------------------------------
+@EP_RESET
+
+Flag:EP他プレイヤー干渉 = 0
+Flag:EP敵戦力 = 0
+Flag:EP追撃方法 = 0
+Flag:EP成否 = 0
+
+FLAG:ターン終了フラグ = 1
+
+JUMP SYSTEM_MENU
+

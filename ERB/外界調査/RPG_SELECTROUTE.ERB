@@ -1,0 +1,381 @@
+﻿;-------------------------------------------------
+;ルート選択
+;-1 =イベント無し
+;0  =イベント未決定、ルート選択へ
+;1  =人材関連イベント
+;2  =アイテム入手
+;3  =通常敵との交戦
+;4  =レア敵との交戦
+;5  =ダンジョン定義の敵と交戦
+;-------------------------------------------------
+@RPG_SELECTROUTE(ARG = 0)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_G
+#DIM ROUTYPE , 5
+#DIM ROUTENUM
+#DIM ROUTE   , 5 , 30
+#DIM TERRAIN , 5 , 30
+#DIM VISIBLE , 5 , 30
+#DIM FLOOREV , 6
+#DIMS RNAME  , 5
+#DIM CNT
+#DIM CNT2
+#DIM INP
+#DIM SUPPORT
+#DIM SUP_MIST , 5
+#DIM CONST MINIMUM = 3
+
+L_I = FLAG:調査キャラ
+
+;支援부대の能力取得
+CALL CALC_KOUHOU("SPD")
+SUPPORT = RESULT / 5
+CALL CALC_KOUHOU("HIT")
+SUPPORT += RESULT / 10
+
+;ルート数は最低3、上限5でやってみる
+ROUTENUM = RAND(3 , 5)
+VARSET ROUTE , 0
+VARSET RNAME
+VARSET TERRAIN
+VARSET VISIBLE
+
+FOR CNT , 0 , ROUTENUM
+	;ルート타입決定
+	CALL CHOOSE_ROUTE(FLAG:調査区域)
+	ROUTYPE:CNT = RESULT
+
+	;仮にルートの名前決定
+	CALLFORM RTYPE_{ROUTYPE:CNT}_NAME
+	RNAME:CNT = %RESULTS%
+
+	SIF RNAME:CNT == ""
+		RNAME:CNT = (ルートネームが渡されなかった)
+
+	;起きるイベント設定。ものっそい原始的ですまない
+	FOR CNT2 , 0 , RAND(15 , FLOORLENGTH)
+		CALL DUNG_FE_CHUSEN(FLAG:調査区域 , FLAG:調査深度 + CNT2)
+		ROUTE:CNT:CNT2 = RESULT
+
+		;地形を設定
+		CALLFORM RTYPE_{ROUTYPE:CNT}_TERRAIN
+		TERRAIN:CNT:CNT2 = RESULT
+
+		;その地形のイベントを索敵できたか判定。非0ならそのマスのイベントが見える
+		SIF SUPPORT > 0
+			SUP_MIST:CNT = CALC_RECON(SUPPORT , RAND_RANGE(FLAG:索敵難易度 , 60 , 140))
+		SIF SUP_MIST:CNT < MINIMUM
+			SUP_MIST:CNT = MINIMUM
+		VISIBLE:CNT:CNT2 = POSSIB(SUP_MIST:CNT)
+	NEXT
+NEXT
+
+PRINTFORM 탐색중의 %조사처리(CALLNAME:L_I,"는")% 분기로를 찾았다. 어느 루트로 갈까
+IF SUPPORT > 0
+	PRINTL . 
+	PRINTFORML 후방부대에서 정찰 정보를 보내왔다…
+ELSE
+	PRINTL ….
+ENDIF
+
+;選択肢表示
+DRAWLINE
+PRINTFORML 현재 계층：{FLAG:調査深度}
+DRAWLINE
+FOR CNT , 0 , ROUTENUM
+	PRINTFORM [{CNT , 3}]%RNAME:CNT , 12 , LEFT%
+	PRINTFORM (색적상황：
+	SELECTCASE SUP_MIST:CNT
+		CASE IS >= 75
+			;水色
+			SETCOLOR 0x00FFFF
+			PRINT 매우 정확
+		CASE IS >= 50
+			;明るい緑
+			SETCOLOR 0x32CD32
+			PRINT 양호
+		CASE IS >= 25
+			;黄
+			SETCOLOR 0xFFD9A0
+			PRINT 부정확
+		CASEELSE
+			;赤
+			SETCOLOR 0xF00000
+			PRINT 정찰 곤란
+	ENDSELECT
+	[IF_DEBUG]
+	PRINTFORM ({SUP_MIST:CNT , 3 , RIGHT}\%)
+	[ENDIF]
+	RESETCOLOR
+	PRINTFORML )
+
+	;PRINT 　　　　　
+	;CALL PRINT_STEP(FLAG:調査深度)
+
+	VARSET FLOOREV
+	PRINT 이벤트　：
+
+	;フロアイベントを羅列
+	FOR CNT2 , 0 , FLOORLENGTH
+		;ルート選択マスが出てきたら終了
+		SIF ROUTE:CNT:CNT2 == 0
+			BREAK
+
+		;索敵失敗なら？に置き換える
+		IF VISIBLE:CNT:CNT2 == 0
+			PRINT ？
+		ELSE
+			CALL SHOW_EVENT_1CHAR(ROUTE:CNT:CNT2)
+		ENDIF
+
+		;イベントの種類を数える
+		IF ROUTE:CNT:CNT2 < 0
+			CONTINUE
+		ELSE
+			FLOOREV:(ROUTE:CNT:CNT2)++
+		ENDIF
+	NEXT
+	PRINTL 終
+
+	;地形を表示
+	PRINT 지형　　：
+	FOR CNT2 , 0 , FLOORLENGTH
+		;ルート選択マスが出てきたら終了
+		SIF ROUTE:CNT:CNT2 == 0
+			BREAK
+
+		CALLFORM RPG_TER{TERRAIN:CNT:CNT2}_COLOR
+		SETCOLOR RESULT
+		CALLFORM RPG_TER{TERRAIN:CNT:CNT2}_PRINT1CHAR
+		RESETCOLOR
+	NEXT
+	PRINTL 端
+
+	[IF_DEBUG]
+	PRINT 　　　　　　　　
+	;フロアイベントの小計を表示
+	FOR CNT2 , 1 , 5
+		CALL SHOW_EVENT_1CHAR(CNT2)
+		PRINTFORM ：{FLOOREV:CNT2 , 8 , LEFT}
+	NEXT
+	PRINTL  
+	[ENDIF]
+	PRINT 　　　　　
+	CALL PRINT_STEP(FLAG:調査深度)
+	PRINTL 
+NEXT
+
+;ルート選択
+DRAWLINE
+DO
+	INPUT
+
+	INP = RESULT
+
+	IF INP < 0 || INP >= ROUTENUM
+		CLEARLINE 1
+		CONTINUE
+	ENDIF
+
+	;既にあるルート情報削除
+	CALL DELETE_ROUTE
+
+	;ローカル変数をグローバル変数に書き写し
+	FOR CNT , 0 , FLOORLENGTH
+		FLOOREVENT:CNT = ROUTE:INP:CNT
+		FE_VISIBLE:CNT = VISIBLE:INP:CNT
+		FLOORTER:CNT = TERRAIN:INP:CNT
+	NEXT
+	ROUTETYPE = ROUTYPE:INP
+	ROUTENAME = %RNAME:INP%
+	;현재いるフロアを初期化
+	NOWFLOOR = 0
+
+	PRINTFORMW %조사처리(CALLNAME:L_I,"는")% %조사처리(ROUTENAME,"로")% 나아가기 시작했다…….
+	BREAK
+LOOP 1
+
+
+;未使用関数
+@ROUTE_NAME
+#FUNCTIONS
+#DIMS RN
+STRDATA RN
+	DATA 먼지의 상점가
+	DATA 붕괴된 고속도로
+	DATA 뒤틀린 선로
+	DATA 황야의 크레이터
+	DATA 연구소 터
+	DATA 무언가가 있던 장소
+	DATA 기지 내 묘지
+	DATA 풍화된 학교
+	DATA 폐허 빌딩 블록
+	DATA 무너진 경찰서
+	DATA 무너질 듯한 몰
+	DATA 지하철역
+	DATA 공업 관련 어딘가
+	DATA 불타버린 피난처
+	DATA 임시 공항
+	DATA 녹슨 유원지
+	DATA 전소된 도서관
+	DATA 사람 없는 주택가
+	DATA 인기척 있는 슬럼
+	DATA 오염 정수장
+	DATA 하수도
+	DATA 동상 광장
+	DATA 푹 패인 축구장
+	DATA 원형을 알 수 없는 건물
+	DATA 비상식료창고
+	DATA 큰 거리
+	DATA 지도에는 없는 장소
+	DATA 비합법 창고 거리
+	DATA 홍등가
+	DATA 발전소 터
+	DATA 병원 또는 제철소 잔해
+	DATA 파괴된 방위 설비
+	DATA 항복한 군사 시설
+	DATA 대규모 영화 촬영소
+ENDDATA
+RETURNF RN
+
+
+@SHOW_EVENT_1CHAR , ARG
+SELECTCASE ARG
+	CASE 0
+		;ルート選択は何も表示しない
+		;PRINT 
+	CASE 1
+		;人関連
+		PRINT 人
+	CASE 2
+		;アイテム
+		PRINT 品
+	CASE 3
+		;通常敵
+		PRINT ！
+	CASE 4
+		;レア敵
+		SETCOLOR 0xFF0000
+		PRINT ！
+		RESETCOLOR
+	CASE 5
+		;ダンジョン定義戦闘
+		SETCOLOR 0xFF0000
+		PRINT !!
+		RESETCOLOR
+	CASE -1
+		;何もなし
+		PRINT 　
+	CASEELSE
+		THROW ARGの指定が不正です  ARG={ARG}
+ENDSELECT
+RETURN 1
+
+
+;ルートのイベント・地形を表示
+;NOWに非0を受け取ると今いる位置を表示する
+;VISIBに非0を受け取ると索敵の判定を行わない
+@PRINT_ROUTE(NOW = 0 , VISIB = 0)
+#DIM VISIB
+#DIM NOW
+#DIM CNT
+#DIM CONST SPACE = 12
+PRINTFORML %ROUTENAME%
+PRINTFORM 　　이벤트　：
+;フロアイベントの表示
+FOR CNT , 0 , FLOORLENGTH
+	IF FLOOREVENT:CNT == 0
+		;ルート選択マスが出たら終了
+		BREAK
+	ELSE
+		IF FE_VISIBLE:CNT == 0 && VISIB == 0
+			;索敵失敗なら？に置き換える
+			PRINT ？
+		ELSE
+			CALL SHOW_EVENT_1CHAR(FLOOREVENT:CNT)
+		ENDIF
+	ENDIF
+NEXT
+PRINTL 終
+
+PRINT 　　지형　　：
+;地形の表示
+FOR CNT , 0 , FLOORLENGTH
+	;ルート選択マスが出てきたら終了
+	IF FLOOREVENT:CNT == 0
+		BREAK
+	ELSE
+		CALLFORM RPG_TER{FLOORTER:CNT}_COLOR
+		SETCOLOR RESULT
+		CALLFORM RPG_TER{FLOORTER:CNT}_PRINT1CHAR
+		RESETCOLOR
+	ENDIF
+NEXT
+PRINTL 端
+
+;必要なら현재位置を表示
+IF NOW
+	PRINT 　　　　　　　
+	PRINTFORML %"　" * NOWFLOOR%△
+ENDIF
+RETURN
+
+
+;設定されたルートを削除する関数
+@DELETE_ROUTE
+VARSET FLOOREVENT
+VARSET FE_VISIBLE
+VARSET FLOORTER
+VARSET ROUTETYPE
+VARSET ROUTENAME
+VARSET NOWFLOOR
+
+RETURN
+
+
+;支援부대のHIT+SPDからダンジョンの탐색可能度を判定する式中関数
+;0を渡さないこと
+@CALC_RECON(HISP = 0 , MIST = 0)
+#FUNCTION
+#DIM HISP
+#DIM MIST
+RETURNF HISP * 100 / (HISP + MIST)
+
+
+;引数NUMをLOWER%～UPPER%の間の数値にして返す式中関数
+@RAND_RANGE(NUM = 0 , LOWER = 0 , UPPER = 0)
+#FUNCTION
+#DIM NUM
+#DIM LOWER
+#DIM UPPER
+SIF LOWER < 0 || UPPER < 0 || LOWER > UPPER
+	THROW 引数の値が不正です  NUM={NUM}  LOWER={LOWER}  UPPER={UPPER}
+RETURNF PERCENT(NUM , RAND(LOWER , UPPER + 1))
+
+
+@PRINT_STEP(NOWSTEP = -1 , MAXSTEP = 30 , BARALL = 0 , KEISEN = "─" , KUGIRI = "─")
+#DIM NOWSTEP
+#DIM MAXSTEP
+#DIM BARALL
+#DIM CNT
+#DIMS KUGIRI
+#DIMS KEISEN
+FOR CNT , 0 , MAXSTEP
+	IF NOWSTEP + CNT == 0
+		PRINT １
+	ELSEIF (NOWSTEP + CNT) % 5 == 0
+		IF (NOWSTEP + CNT) % 100 == 0
+			PRINTFORM 00
+		ELSEIF (NOWSTEP + CNT) % 10 == 0 && BARALL == 0
+			PRINTFORM {(NOWSTEP + CNT) % 100 , 2}
+		ELSE
+			;5階層ごとの区切り文字
+			PRINTFORM %KUGIRI%
+		ENDIF
+	ELSE
+		PRINTFORM %KEISEN%
+	ENDIF
+NEXT
+PRINTL 
+RETURN

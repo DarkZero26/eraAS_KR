@@ -1,0 +1,500 @@
+﻿;-------------------------------------------------
+;交配実験イベント
+;
+;■使用しているCFLAG
+;交配実験フラグ					CFLAG:8111,交配実験
+;交配実験回数					CFLAG:8112,交配実験_回数
+;実験生物の子を임신したか？		CFLAG:8113,交配実験_임신
+;実験生物の子を出産した回数		CFLAG:8114,交配実験_出産回数
+;子宮内汚染度					CFLAG:8115,交配実験_子宮内汚染度
+;
+;CFLAG:交配実験_임신 == 0～2
+;0 = 空胎 , 1 = 임신 , 2 = 経過順調
+;出産時または주민救出時に0へリセットされます
+;
+;CFLAG:交配実験_子宮内汚染度 == 0～100
+;자궁 내 오염도는 씨를 뿌릴 때 증가합니다.
+;경과 관찰 시 or 주민 구출 시 0으로 리셋됩니다.
+;
+;임신할 수 없는 주민에 대해서는 몰?루 (ㅎㅎ 잘 모르것고 하고 임신시킨다…거나)
+;-------------------------------------------------
+@TURN_EVENT_RPG_KJ
+
+;수정 or 임신한 경우 낙태시킨다
+IF TALENT:수정 != 0 || TALENT:임신 != 0
+	DRAWLINE
+	SETCOLOR 250,50,200
+	PRINTFORML 【교배실험 이벤트(낙태):%CALLNAME%】
+	SIF	TALENT:수정 != 0
+		PRINTFORML %타겟을% 잡아온 매드 사이언티스트는 그 태내에 수정란이 존재한다는 사실을 깨달았다.
+	SIF TALENT:임신 != 0
+		PRINTFORML %타겟을% 잡아온 매드 사이언티스트는 그 태내에 태아가 존재한다는 사실을 깨달았다.
+	PRINTFORML 「교배실험에 방해가 된다」
+	PRINTFORML 그렇게 작게 중얼거리던 매드 사이언티스트는 %CALLNAME%의 태내에 깃든 작은 생명에 손을 댔다.
+	PRINTFORML 
+	SIF	TALENT:수정 != 0
+		PRINTFORML 유감스럽게도 %타겟은% 수정 상태가 아니게 되었습니다…….
+	SIF TALENT:임신 != 0
+		PRINTFORML 유감스럽게도 %타겟은% 임신 상태가 아니게 되었습니다…….
+	CFLAG:임신フラグ = 0
+	TALENT:수정 = 0
+	TALENT:임신 = 0
+	TALENT:탁란 = 0 
+	TALENT:피탁란 = 0 
+	CFLAG:임신相手番号 = 0
+	CFLAG:임신開始日 = 0
+ELSEIF CFLAG:交配実験_임신 == 0
+	;씨뿌리기
+	CALL TURN_EVENT_RPG_KJ_TNTK
+ELSEIF CFLAG:交配実験_임신 == 1
+	;경과관찰
+	CALL TURN_EVENT_RPG_KJ_KNST
+ELSEIF CFLAG:交配実験_임신 == 2
+	;출산
+	CALL TURN_EVENT_RPG_KJ_SYSN
+ENDIF
+
+FLAG:イベント誘拐中 = 2
+
+RESETCOLOR
+
+
+;-------------------------------------------------
+;交配実験イベント＠種付け
+;
+;一度で3～8回の種付けを行い、卵子の耐久値が0になった場合は수정判定を行う
+;수정判定の仕組みはヒトに対してのものとほぼ同様
+;子宮内汚染は種付け1回につき卵子の耐久が残っていると1%、残っていないと4%増加
+;-------------------------------------------------
+@TURN_EVENT_RPG_KJ_TNTK
+#DIM L_SIEK
+#DIM L_RNS_MAX
+#DIM L_RNS_NOW
+#DIM L_JYSI
+#DIM L_JYSI_KKRT
+#DIM L_SEX
+
+DRAWLINE
+SETCOLOR 250,50,200
+PRINTFORML 【교배실험 이벤트(파종):%CALLNAME%】
+PRINTFORML 밀실에 갇힌 %CALLNAME%의 육체는 실험 생물과의 교배 실험에 이용되고 있다…….
+
+;실험생물체에 대한 난자 최대내구치
+IF CFLAG:수정최대내구치 >= 1000	
+	L_RNS_MAX = 900
+	;1000을 초과하는 경우 실험생물과의 친화성이 높은 취급
+ELSE
+	L_RNS_MAX = 2000-CFLAG:수정최대내구치
+	;최소값이 1001이기 때문에 친화력이 좋은 것보다 낮아질 수 없다
+ENDIF
+;실험생물체에 대한 난자 현재내구치
+L_RNS_NOW = L_RNS_MAX
+;실험생물체에 대한 수정확률
+L_JYSI = 100-CFLAG:수정확률
+;실험생물체가 질내사정한 횟수
+L_SEX = (RAND:6)+3
+
+IF TALENT:AI전속피험자 == 1
+	PRINTFORML %CALLNAME%의 육체에 인연 있는 상대의 간섭 흔적을 발견한 매드 사이언티스트는 실험 생물에게 약물을 투여했다.【파종 횟수 증가】
+	L_SEX += 2
+ENDIF
+IF CFLAG:交配実験_子宮内汚染度 > 0
+	PRINTFORML %CALLNAME%의 자궁은 실험 생물의 정액에 의해 오염되었다.【내구치 저하】
+	L_RNS_NOW -= 1+RAND:(CFLAG:交配実験_子宮内汚染度*2)
+	;자궁내 오염도에 의해 난자의 내구도에 약간의 마이너스 보정
+ENDIF
+
+;경험치 관계
+EXP:키스경험 += 2+RAND:L_SEX
+EXP:Ｖ경험 += 5+RAND:L_SEX
+EXP:Ａ경험 += 2+RAND:(L_SEX/2)
+EXP:Ｃ경험 += 2+RAND:L_SEX
+EXP:Ｂ경험  += 2+RAND:L_SEX
+EXP:성교경험 += L_SEX
+EXP:Ａ성교경험 += L_SEX/2
+EXP:수음경험 += L_SEX/2
+EXP:펠라경험 += L_SEX/2
+EXP:절정경험 += 5+RAND:L_SEX
+EXP:정액경험 += 5+RAND:L_SEX
+EXP:정음경험 += 2+RAND:L_SEX
+EXP:질싸경험 += 5+RAND:L_SEX
+EXP:고통쾌락경험 += L_SEX
+SIF TALENT:거유 == 1 || TALENT:폭유 == 1
+	EXP:파이즈리경험 += L_SEX/2
+SIF CFLAG:交配実験_回数 <= 50 && CFLAG:交配実験_出産回数 <= 15
+	EXP:강간경험 += L_SEX
+SIF CFLAG:交配実験_回数 >= 100 && CFLAG:交配実験_出産回数 >= 30
+	EXP:봉사쾌락경험 += L_SEX
+SIF CFLAG:交配実験_回数 >= 50
+	MARK:음란각인 = 3
+
+
+DO
+	;실험 생물의 정액의 위력
+	L_SIEK = (100+RAND:101)+CFLAG:交配実験_回数+(CFLAG:交配実験_子宮内汚染度*5)+(CFLAG:交配実験_出産回数*7)
+	RESETCOLOR
+	IF CFLAG:交配実験_回数 >= 100 && CFLAG:交配実験_出産回数 >= 30
+		IF !RAND:8
+			PRINTFORML 「죠아…%UNICODE(0x2661)% 씨받이 교미……죠아…%UNICODE(0x2661)%」
+		ELSEIF !RAND:7
+			PRINTFORML 「응훗%UNICODE(0x2661)% 이 몸으로……잔뜩 기분좋아…져야해%UNICODE(0x2661)%」
+		ELSEIF !RAND:6
+			PRINTFORML 「………앗………아앗……%UNICODE(0x2661)%」
+		ELSEIF !RAND:5
+			PRINTFORML 「…조…오오옴…더어엇! …잔…뜨…윽! …싸줘…%UNICODE(0x2661)%」
+		ELSEIF !RAND:4
+			PRINTFORML 「안쪽…까지이잇! 뜨겨훈게…닿아서엇…! 나와!%UNICODE(0x2661)%」
+		ELSEIF !RAND:3
+			PRINTFORML 「응그읏……얼마든지…써줘도 좋으니까……아기 잔뜩…만들자%UNICODE(0x2661)%」
+		ELSEIF !RAND:2
+			PRINTFORML 「……아앙…아안대에……더는 안 들어ㄱ……하아앙!%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORML 「…으힉……조옴더어…좀더 줘……잔뜩 낳아…줄테니까아……앗%UNICODE(0x2661)%」
+		ENDIF
+	ELSEIF CFLAG:交配実験_回数 >= 50 && CFLAG:交配実験_出産回数 >= 15
+		IF !RAND:8
+			PRINTFORML 「흐긋……웃…이젠 싫어……괴물이랑 씨받이 교미같은건…」
+		ELSEIF !RAND:7
+			PRINTFORML 「죄송해욕……! …더는…주제넘은 소리…안 할테니까……용서해줘어!!」
+		ELSEIF !RAND:6
+			PRINTFORML 「………읏……………」
+		ELSEIF !RAND:5
+			PRINTFORML 「아아아아아……더…느으으은…! 안…돼에에…엣!」
+		ELSEIF !RAND:4
+			PRINTFORML 「…저…적어도……밖에다!! …오옥……!」
+		ELSEIF !RAND:3
+			PRINTFORML 「싫어……아직도 괴물한테…써지고 있엇……」
+		ELSEIF !RAND:2
+			PRINTFORML 「앗……실…더는…싸지 말아줘……으으응…!」
+		ELSE
+			PRINTFORML 「…어째서……앗……이런 괴물한테……느…느껴버리는거야……」
+		ENDIF
+	ELSE
+		IF !RAND:8
+			PRINTFORML 「싫어…괴물이랑 씨받이 교미……싫어어…」
+		ELSEIF !RAND:7
+			PRINTFORML 「죽이…겠어……! …언젠가는 반드시……시, 싫어! 저리가ーー!」
+		ELSEIF !RAND:6
+			PRINTFORML 「……………………」
+		ELSEIF !RAND:5
+			PRINTFORML 「…으윽…아…아팟…적어도 천천히……으긱!」
+		ELSEIF !RAND:4
+			PRINTFORML 「살려…줘……! …아무나…도와줘!」
+		ELSEIF !RAND:3
+			PRINTFORML 「싸지마……거기는 괴물이 쓸 곳이……훌쩍……」
+		ELSEIF !RAND:2
+			PRINTFORML 「……싫어…그만둬……더는 싸지 말아줘…」
+		ELSE
+			PRINTFORML 「…으긋……싫어…이런 괴물이랑은……」
+		ENDIF
+	ENDIF
+	SETCOLOR 250,50,200
+	IF CFLAG:交配実験_임신 == 1
+		IF !RAND:3
+			PRINTFORML 이미 %CALLNAME%의 난자는 실험 생물의 정자에 굴복했지만, 이를 알 리 없는 실험 생물은 더욱 아기씨를 쏟아붓는다…….
+		ELSEIF !RAND:2
+			PRINTFORML %CALLNAME%의 수정란에 실험 생물의 정자가 쇄도하지만, 새로운 유전자를 받아들이는 일은 없었다…….
+		ELSE
+			PRINTFORML 임신을 보다 확실하게 하기 위해 실험 생물은 %CALLNAME%의 태내에 계속 정액을 보내고 있다…….
+		ENDIF
+	ELSE
+		;수정내구치 잔존
+		IF L_RNS_NOW != 0
+			IF !RAND:3
+				PRINTFORML 강한 수컷의 정액으로 착가한 자궁은 그 유전자를 받아들이기 위해 준비를 갖추고 있었다…….
+			ELSEIF !RAND:2
+				PRINTFORML 임신해서는 안 되는 상대라는 것을 깨닫지 못하는 자궁은 수정을 위한 준비를 시작하고 있었다…….
+			ELSE
+				PRINTFORML 정액을 받은 자궁은 이에 반응하기 위해 수정 준비를 갖추고 있다…….
+			ENDIF
+			PRINTFORML 수정내구치:{L_RNS_NOW} → {L_RNS_NOW-L_SIEK} 
+			L_RNS_NOW -= L_SIEK
+			;수정내구치 0
+			IF L_RNS_NOW <= 0
+				IF !RAND:3
+					PRINTFORML 【수정태세】실험 생물의 유전자를 받아들일 수 있도록 %CALLNAME%의 자궁은 저항을 멈추고 받아들일 자세를 갖추어 버렸다.
+				ELSEIF !RAND:2
+					PRINTFORML 【수정태세】실험 생물의 정액으로 빵빵해진 %CALLNAME%의 자궁에 있는 난자가 빠져나갈 곳은 없어져 버렸다.
+				ELSE
+					PRINTFORML 【수정태세】실험 생물의 정액을 받은 %CALLNAME%의 자궁은 수정할 준비가 되어 버렸다.
+				ENDIF
+				L_RNS_NOW = 0
+			ENDIF
+			;자궁내 오염도 진행
+			IF CFLAG:交配実験_子宮内汚染度 <= 99
+				CFLAG:交配実験_子宮内汚染度 += 1
+				PRINTFORML 실험 생물의 정액에 %CALLNAME%의 자궁이 더럽혀져 간다…….
+				PRINTFORML 현재 자궁오염도：{CFLAG:交配実験_子宮内汚染度}％
+			ENDIF
+		;수정내구치 0
+		ELSEIF L_RNS_NOW == 0
+			;오염도에 따라 임신 확률 증가
+			IF CFLAG:交配実験_子宮内汚染度 > 0
+				L_JYSI += CFLAG:交配実験_子宮内汚染度/2
+				PRINTFORML 거듭되는 실험 생물의 사정에 %CALLNAME%의 자궁 안은 오염이 진행돼, 수정하기 쉬워지고 있다…….
+				PRINTFORML 현재 수정확률：{L_JYSI}％（자궁오염도 영향：{CFLAG:交配実験_子宮内汚染度/2}％）
+			ENDIF
+			;D.Roll
+			L_JYSI_KKRT = RAND:100
+			;성녀의 자궁 소질 소지 시 실험체 대상으로 수정이 어려워짐
+			IF TALENT:성녀의자궁 == 1
+				L_JYSI_KKRT += 20
+				PRINTFORML %CALLNAME%의 자궁은 성녀의 자궁으로 악의적인 정자의 움직임을 저해한다…【D.Roll 증가】
+			ENDIF
+			;임신하기쉬움, 임신하기어려움 소질 소지 시 통상의 절반 효과
+			IF TALENT:임신하기쉬움 == 1
+				L_JYSI_KKRT -= 10
+				PRINTFORML %CALLNAME%의 자궁은 실험 생물 대상으로도 임신하기 쉬운 것 같다…【D.Roll 감소】
+			ELSEIF TALENT:임신하기어려움 == 1
+				L_JYSI_KKRT += 10
+				PRINTFORML %CALLNAME%의 자궁은 실험 생물 대상으로도 임신하기 어려운 것 같다…【D.Roll 증가】
+			ENDIF
+			PRINTFORML 【수정 확률:{L_JYSI}】【D.Roll:{L_JYSI_KKRT}】
+			;도출값이 확률 수치보다 낮음(수정)
+			IF L_JYSI > L_JYSI_KKRT
+				PRINTFORML 【―――수 정―――】
+				IF L_RNS_MAX == 900
+				;난자(친화성 높음)
+					IF CFLAG:交配実験_出産回数 >= 15
+						PRINTFORML 제멋대로 생각하는건지, 실험 생물의 정자는 자기 것인 양 %CALLNAME%의 난자에 침입한다.
+						PRINTFORML 난자 쪽도 다른 유전자를 당연하게 받아들여 새로운 생명체를 모체에 정착시켰다…….
+					ELSE
+						PRINTFORML 실험 생물과 유전자의 친화성이 높은지 난자의 막은 큰 장해를 주지 않고 정자에 뚫려 침입을 허용했다.
+						PRINTFORMW 실험 생물과 %CALLNAME%의 유전자가 혼합되어 새로운 생명체를 만들어내 모체에 정착했다…….
+					ENDIF
+				;난자(강)
+				ELSEIF L_RNS_MAX > 1800
+					;15회 출산으로 내구치가 300으로 변화하므로 이 분기 내에서 구상 변화는 나오지 않는다.
+					PRINTFORML 이종의 정자에 대해 완강한 저항을 보이던 난자였으나 끝내 난자를 덮는 막이 허물어져 침입을 허락해 버렸다.
+					PRINTFORMW 이종의 유전자에 무참히 유린당한 난자는 본래 잉태해선 안되는 생명으로 변화해 모체에 정착했다…….
+				;난자(중)
+				ELSEIF L_RNS_MAX > 1400
+					IF CFLAG:交配実験_出産回数 >= 15
+						PRINTFORML 여러 차례 이종의 정자에게 유린당한 난자는 그것이 동종의 정자인 것으로 착각해 별다른 저항 없이 침입을 허용했다.
+						PRINTFORML 유전자가 혼합되는 단계에서 이종의 것이라고 깨닫지만 이미 때는 늦어, 새로운 생명이 모체에 정착했다…….
+					ELSE
+						PRINTFORML 인간의 정자와는 비교도 안 될 만큼 강인한 실험 생물의 정자에 내몰려 난자는 싱겁게 막을 관통당해 침입을 허용한다.
+						PRINTFORMW 실험생물의 유전자에 지배된 수정란은 본래 낳아서는 안되는 생명으로 변화해 모체에 정착했다…….
+					ENDIF
+				;난자(약)
+				ELSEIF L_RNS_MAX > 1000
+					IF CFLAG:交配実験_出産回数 >= 15
+						PRINTFORML 실험생물의 정자에 모체가 적응돼 가는지 난자의 막은 예전같은 저항도 없이 시원하게 뚫려 침입을 허용한다.
+						PRINTFORMW 이제 실험생물 전용 잉태주머니가 되었음을 증명하듯 모체는 기쁨 속에서 수정란을 정착시켰다…….
+					ELSE
+						PRINTFORML 인간의 정자에 대해 저항력이 높은 난자도 강인한 실험 생물의 정자 앞에서는 형편 없었다.
+						PRINTFORML 막이 꿰뚫리고 그 중심으로 유전자가 전달된 난자는 모체의 의사에 반해 수정란을 모체에 정착시켰다…….
+					ENDIF
+				ENDIF
+				CFLAG:交配実験_임신 = 1
+			;D.Roll이 수정 확률보다 높음(수정회피)
+			ELSE
+				PRINTFORML 【――수정 회피――】
+				PRINTFORML 태내에 쏟아진 실험 생물의 정자는 난자의 막을 관통하지 못한 것 같다.
+				;子宮内汚染度の進行
+				IF CFLAG:交配実験_子宮内汚染度 == 100
+					PRINTFORMW 하지만 실험 생물의 정액으로 완전히 오염된 자궁으로는 난자의 저항이 오래 가지 않을 것이다…….
+				ELSE
+					PRINTFORML 그러나 실험 생물의 정액에 의해 오염된 자궁이 난자의 저항력을 약화시키고 있다…….
+					IF CFLAG:交配実験_子宮内汚染度 >= 97
+						CFLAG:交配実験_子宮内汚染度 = 100
+						PRINTFORMW 현재 자궁오염도：{CFLAG:交配実験_子宮内汚染度}％
+					ELSE
+						CFLAG:交配実験_子宮内汚染度 += 4
+						PRINTFORMW 현재 자궁오염도：{CFLAG:交配実験_子宮内汚染度}％
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	;씨뿌리기 횟수 감소
+	L_SEX -= 1
+	RESETCOLOR
+;씨뿌리기 횟수가 0이 될 때까지 반복
+LOOP L_SEX != 0
+
+;수정되지 못함
+IF CFLAG:交配実験_임신 == 0
+	IF CFLAG:交配実験_回数 >= 100 && CFLAG:交配実験_出産回数 >= 30
+		PRINTFORML %타겟은% 질에서 흘러내린 정액을 구해내고 망설임 없이 질내로 되돌려 보냈다.
+		PRINTFORML 실험 생물과 수차례 걸친 교배실험과 출산, 그것이 %CALLNAME%의 정신을 좀먹어 그녀를 실험 생물의 성신부(肉嫁)로 전락시켰다.
+		PRINTFORML 질 안으로 밀려 들어온 정액이 자궁까지 흘러들어가 자궁을 오염시키고 난자의 저항력을 빼앗아 갔다…….
+		;여기까지 간다면 자발적으로 수정하려고 해서 자궁 내 오염도를 높일 수 있다
+		CFLAG:交配実験_子宮内汚染度 += (RAND:6)+1
+		PRINTFORMW 현재 자궁오염도：{CFLAG:交配実験_子宮内汚染度}％
+	ELSEIF CFLAG:交配実験_回数 >= 50
+		PRINTFORML %타겟은% 방을 떠나는 실험 생물을 황홀한 표정으로 배웅하고 있었다.
+		PRINTFORML 그토록 싫어했던 괴물과의 교배 실험을 %타겟은% 어느새 즐기고 있다.
+		PRINTFORMW 그 끝에서 기다리는 결과로부터 눈을 돌리면서도 %CALLNAME%의 본능은 그것을 수컷으로 받아들이고 있었다…….
+	ELSE
+		PRINTFORML 백탁으로 절여진 채 바닥에 내던져진 %타겟은% 방을 떠나는 실험 생물을 공허한 눈동자로 배웅하고 있었다.
+		PRINTFORML 오늘은 운 좋게도 수정하지 않은 것 같은데, 이대로 간다면 확실하게 저 괴물의 아이를 낳게 된다.
+		PRINTFORMW 하지만 %타겟이% 할 수 있는 것은 떨면서 다음날 교배 실험을 기다리는 것 뿐이었다…….
+	ENDIF
+ENDIF
+
+CFLAG:交配実験_回数 += 1
+
+SIF CSTR:첫섹스상대명 == ""
+	CSTR:첫섹스상대명 = 실험 생물
+SIF CSTR:첫키스상대명 == "" 
+	CSTR:첫키스상대명 = 실험 생물
+SIF CSTR:첫정음상대명 =="" 
+	CSTR:첫정음상대명 = 실험 생물
+SIF CSTR:첫펠라상대명 ==""
+	CSTR:첫펠라상대명 = 실험 생물
+SIF CSTR:첫A섹스상대명 ==""
+	CSTR:첫A섹스상대명 = 실험 생물
+SIF CSTR:첫절정상대명 ==""
+	CSTR:첫절정상대명 = 실험 생물
+SIF CSTR:첫질사상대명 ==""
+	CSTR:첫질사상대명 = 실험 생물
+TALENT:비처녀 = 1
+TALENT:Ａ비처녀 = 1
+TCVAR:履歴_EXP_処女喪失 = 1
+TCVAR:履歴_EXP_Ａ処女喪失 = 1
+
+
+;-------------------------------------------------
+;交配実験イベント＠経過観察
+;
+;交配実験_임신のカウンターを進めて子宮内汚染度を0にするためのインターバル
+;-------------------------------------------------
+@TURN_EVENT_RPG_KJ_KNST
+
+DRAWLINE
+SETCOLOR 250,50,200
+PRINTFORML 【교배 실험 이벤트(경과 관찰):%CALLNAME%】
+PRINTFORML 
+IF CFLAG:交配実験_出産回数 >= 45 && CFLAG:交配実験_回数 >= 100
+	PRINTFORML %타겟은% 실험 생물의 모체로서 완성되어 있다.
+	PRINTFORML 처음엔 절망으로 물든 표정이었지만, 이제는 자애가 넘치는 표정으로 부푼 배를 쓰다듬는다.
+	PRINTFORML 교배 실험에도 협조적으로 되어 어떤 실험 생물을 상대해도 싫은 내색 없이 기뻐하며 유전자를 받아들였다.
+	PRINTFORML %CALLNAME%의 행복은 이 갇힌 좁은 공간에서의 번식 행위에 있었으며, 외계에 대한 관심은 완전히 잃어버린 듯 했다.
+	PRINTFORMW 그런 실험체의 모습을 매드 사이언티스트는 냉철한 눈으로 관찰하고 계속 기록하고 있었다…….
+ELSEIF CFLAG:交配実験_出産回数 >= 30
+	IF !RAND:3
+		PRINTFORML %타겟은% 실험 생물의 아이를 잉태했다고 확신하고, 그 확신이 확실함을 아침 건강 조사에서 확인되었다.
+		PRINTFORML 임신을 본능적으로 깨닫는 모체의 변화에 매드 사이언티스트는 흥미를 가진 것 같았지만 그의 목적은 그것이 아니다.
+		PRINTFORML 모자의 데이터를 모으기 시작한 매드 사이언티스트에게 관심 없는 %타겟은% 부풀어오르고 있는 복부를 부드럽게 어루만진다.
+		PRINTFORMW 거기에는 실험 생물의 아이를 혐오하던 여자의 모습은 없고, 아직 보지 못하는 우리 자식을 사랑하는 어머니의 모습밖에 없었다…….
+	ELSEIF !RAND:2
+		PRINTFORML 가슴에서 모유가 항상 방울지는 %타겟을% 착유기가 놔주지 않고 있었다.
+		PRINTFORML 착유기에 이어진 튜브는 허리에 찬 병에 연결되어, 병에 모유가 찰 때마다 자동으로 교환된다.
+		PRINTFORML 그리고 모유가 모인 병을 기계로 가져가서 납품하면 아이들에게 전달된다.
+		PRINTFORMW 아이를 잉태하고 낳을 뿐만 아니라 그 아이의 식재도 부지런히 만들어 내는 %타겟은% 실험 생물의 아내가 되어가고 있었다…….
+	ELSE
+		PRINTFORML 분만대에 누운 %타겟은% 쿠스코 질경처럼 생긴 기계를 질에 삽입받고 치료를 받고 있었다.
+		PRINTFORML 수차례에 걸친 출산과 실험 생물의 무자비한 교미로 %CALLNAME%의 질은 이미 인간의 사이즈로는
+		PRINTFORML 구멍이 너무 커서 빠져 버릴 정도로 헐렁해졌다.
+		PRINTFORML 게다가 자궁구도 놀라울 정도로 헐렁해져 유산 위험성이 높아질 정도였다.
+		PRINTFORML 그런 마모된 모체를 조금이라도 오래 사용할 수 있도록 이렇게 치료를 받을 필요가 있었다.
+		PRINTFORMW 태내의 아이를 낳으면 또 다음에도… 그렇게 생각하는 %타겟은% 자진해서 이 치료를 계속 받았다…….
+	ENDIF
+ELSEIF CFLAG:交配実験_出産回数 >= 15
+	IF !RAND:3
+		PRINTFORML 아침 건강 검사에서 실험 생물의 아이를 품었다고 들은 %타겟은% 역시나 라면서 고개를 숙였다.
+		PRINTFORML 실험 생물과의 교미가 끝난 뒤 얼마 지나지 않아 태내에서 희미하게 느껴지는 행복감에 그런 생각이 들긴 했던 것이다.
+		PRINTFORMW 내일이면 다음 출산을 맞이하지만, 어느새 처음과 같은 혐오감을 %타겟은% 느끼지 않게 되었다…….
+	ELSEIF !RAND:2
+		PRINTFORML 단기간의 임신, 출산의 영향으로 %CALLNAME%의 유방에서는 항상 모유가 나오게 되었다.
+		PRINTFORML 이제는 아침 건강 검사뿐 아니라 일정 시간마다 착유기에게 신세지지 않으면 가슴이 뻐근하고 아파온다.
+		PRINTFORMW 착착 실험 생물의 모체로 변화하고 있는 육체에 %타겟은% 어슴푸레한 기쁨을 느끼고 있었다…….
+	ELSE
+		PRINTFORML 실험 생물의 아이를 품고 출산할 때마다 몸 안부터 새로 만들어져 가는 것을 %타겟은% 희미하게 느끼고 있었다.
+		PRINTFORML 그것은 데이터 상으로도 나타난다. %CALLNAME%의 자궁은 실험 생물의 아이를 잉태하기 쉬워지고 있었다.
+		PRINTFORMW 불룩한 배를 무의식적으로 어루만지면서 %타겟은% 어느새 구조를 기다리는 일이 적어지고 있었다…….
+	ENDIF
+ELSE
+	IF !RAND:3
+		PRINTFORML 매일 아침 진행되는 모체의 건강 조사에서 %타겟은% 실험 생물의 아이를 품고 있는 것으로 판명되었다.
+		PRINTFORML 희희낙락하며 데이터를 모으기 시작한 매드 사이언티스트를 흘끗 보며, 창백해진 %타겟은% 자신의 태내에서 자라고 있는
+		PRINTFORMW 실험 생물의 아이에 떨 뿐이다…….
+	ELSEIF !RAND:2
+		PRINTFORML 실험 생물의 아이를 임신한 %CALLNAME%의 육체는 건강하게 모유를 만들어 내고 있었다.
+		PRINTFORML 착유기에 가축처럼 짜이는 모유의 행방을 %타겟은% 텅 빈 눈으로 바라볼 수밖에 없다.
+		PRINTFORMW %CALLNAME%의 모유는 태어난 아이에게 먹일 뿐만 아니라 연구에도 이용되었다…….
+	ELSE
+		PRINTFORML 실험 생물을 품은 암컷의 육체가 어떻게 변화해 나가는지, %타겟은% 조사받고 있었다.
+		PRINTFORML 탯줄을 통해 실험 생물의 유전자가 암컷의 자궁을 오염시키고, 실험 생물의 아이를 낳기 쉽도록 변화시킨다.
+		PRINTFORMW 그 변화를 읽어낸 매드 사이언티스트는 몹시 기뻐했지만 %CALLNAME%에게는 절망으로 다가올 뿐이다…….
+	ENDIF
+ENDIF
+
+EXP:Ｖ경험 += 1
+EXP:Ｂ경험  += 1
+CFLAG:交配実験_임신 += 1
+;자궁내 오염도 리셋
+CFLAG:交配実験_子宮内汚染度 = 0
+
+
+;-------------------------------------------------
+;交配実験イベント＠出産
+;
+;수정최대내구치、수정현재내구치の増加(ヒトに対して수정しにくく、実験生物に対して수정しやすくなる)
+;임신確率の低下(確率で최대で10%まで下がる。성녀의자궁でも下がる)
+;母体、난자레벨の低下(低確率でどちらも5まで下がる)
+;-------------------------------------------------
+@TURN_EVENT_RPG_KJ_SYSN
+
+DRAWLINE
+SETCOLOR 250,50,200
+PRINTFORML 【교배 실험 이벤트(출산):%CALLNAME%】
+PRINTFORML 
+IF CFLAG:交配実験_出産回数 >= 30
+	PRINTFORML 분만대에 구속된 %타겟은% 황홀한 표정으로 실험 생물의 아이를 차례차례 낳고 있다…….
+ELSEIF CFLAG:交配実験_出産回数 >= 15
+	PRINTFORML 분만대에 구속된 %타겟은% 실험 생물의 아이를 차례차례 낳고 있다…….
+ELSE
+	PRINTFORML 분만대에 구속된 %타겟은% 고통과 절망으로 일그러진 표정으로 실험 생물의 아이를 차례차례 낳고 있다…….
+ENDIF
+PRINTFORML 
+PRINTFORML %CALLNAME%의 자궁은 인간이 아닌 실험 생물의 교미 상대로 최적화되어 간다.
+
+SETCOLOR 250,50,50
+;수정내구치 증가(출산 1회당 20 증가)
+IF CFLAG:수정최대내구치 >= 9999
+	;수정내구치가 9999 이상이면 변화 없게끔.
+ELSEIF CFLAG:수정최대내구치 >= 9980
+	PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　9999
+	CFLAG:수정최대내구치 = 9999
+	CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+ELSE
+	PRINTFORML 수정 최대내구치　{CFLAG:수정최대내구치}　→　{CFLAG:수정최대내구치+20}
+	CFLAG:수정최대내구치 += 20
+	CFLAG:수정현재내구치 = CFLAG:수정최대내구치
+ENDIF
+;수정 확률 저하(확률 30%, 10까지)
+IF RAND:100 >= 70 && CFLAG:수정확률 > 10
+	PRINTFORML 수정 확률　{CFLAG:수정확률}　→　{CFLAG:수정확률-1}
+	CFLAG:수정확률 -= 1
+ENDIF
+;모체, 난자 레벨 저하(확률 3%, 5까지)
+IF RAND:100 >= 97
+	IF CFlag:모체레벨 > 5
+		PRINTFORML %CALLNAME%의 육체는 실험 생물을 출산한 대미지로 모체 레벨이 저하했다.
+		PRINTFORML 모체 레벨　{CFLAG:모체레벨}　→　{CFLAG:모체레벨-1}
+		CFlag:모체레벨 -= 1
+	ENDIF
+	IF CFlag:난자레벨 > 5
+		PRINTFORML %CALLNAME%의 난소는 실험 생물의 정액으로 오염돼 난자 레벨이 저하했다.
+		PRINTFORML 난자 레벨　{CFLAG:난자레벨}　→　{CFLAG:난자레벨-1}
+		CFlag:난자레벨 -= 1
+	ENDIF
+ENDIF
+RESETCOLOR
+PRINTFORMW 
+
+EXP:Ｖ경험 += 1
+SIF CFLAG:交配実験_出産回数 >= 30
+	EXP:고통쾌락경험 += 1
+CFLAG:交配実験_임신 = 0
+CFLAG:交配実験_出産回数 += 1
+
+
+
+
+
+
+
+

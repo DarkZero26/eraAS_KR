@@ -1,0 +1,338 @@
+﻿
+;-------------------------------------------------
+;주민業務　業務　치안유지국원
+;-------------------------------------------------
+@WORK_T_Ti(ARG:0,ARG:1,ARGS:0)
+#DIM L_INPUT
+#DIM L_T
+#DIM L_F
+#DIM L_K
+#DIM L_N
+#DIM B_P
+L_T = TARGET
+TARGET = ARG:0
+
+CLEARLINE LINECOUNT
+DRAWLINE
+
+CALL C_PICTURE(ARG:0,ARG:1)
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+PRINTFORM 　　　　　
+		IF !RAND:3
+			PRINTFORML 「%CSTR:어미YES%、할 수 있는 만큼 해봐%CSTR:어미ます%」
+		ELSEIF !RAND:2
+			PRINTFORML 「……잘 된것 같아%CSTR:어미肯定2%」
+		ELSE
+			PRINTFORML 「아직 방법이 있을 것 같아%CSTR:어미肯定2%」
+		ENDIF
+PRINTFORML 
+PRINTFORM 　　　　　
+PRINTFORML %타겟은% %CALLNAME:MASTER%에게 추진되어, 업무에 힘썼다…….
+PRINTFORMW 
+ 
+
+
+IF (Talent:비처녀 == 1 && Talent:합의 == 1) && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1) && RAND:10 >= 5
+SETCOLOR 250,50,200
+DRAWLINE
+	IF !RAND:10 && TALENT:기계
+		PRINTFORML 순회 업무 도중 부상당한 %타겟은% 유지관리실을 방문하고 있었다.
+		PRINTFORML 메인테넌스용 캡슐 침대에 누운 %타겟은% 진단 프로그램을 가동시킨다.
+		PRINTFORML 문제가 발견되면 침대의 기능으로 자동 수리가 되기에, 나머지는 슬립 상태에 들어가도 문제 될 것은 없다.
+		PRINTFORML %타겟은% 메인테넌스가 끝날 때까지 자기로 했다…….
+		PRINTFORML 
+		PRINTFORML %CALLNAME%의 메인테넌스가 시작된 것을 확인한 %마스터는% 사람이 없는 유지관리실로 들어갔다.
+		PRINTFORML %타겟이% 자고 있는 캡슐 침대로 다가간 %마스터는% 작은 기기를 꺼내고는,
+		PRINTFORML 기기로부터 늘어진 몇 개의 배선을 캡슐 침대에 연결, 접속해 특수 코드를 입력했다.
+		IF !RAND:2
+			PRINTFORML 이번에 입력한 코드는 최음용으로, 대상을 야한 기분에 들게 하는 것이었다.
+			PRINTFORML 딱딱하게 구는 기계의 처녀들조차 도게자해서 성교를 청원할 정도의 강력함에, 일부 호사가들에게 큰 인기를 끄는 코드다.
+			PRINTFORML 허나 그 강력함에 표면 사회에서는 사용이 금지되어, 지금은 음지에서 겨우겨우 유통될 뿐이다.
+			PRINTFORML 이번에 그 코드를 치안유지국에서 접수했다는 소문을 들은 %마스터가% 「시티」에게 특별한 허가를 받아,
+			PRINTFORML 성행위가 합의된 기계의 처녀 한정으로 사용을 허가받은 것이었다.
+			PRINTFORML 최음 코드의 효과가 나타난 %CALLNAME%의 육체에서는 수컷을 유혹하는 페로몬이 몇 배로 증폭되어 온몸에서 뿜어져 나온다.
+			PRINTFORML 그것은 %CALLNAME%의 육체가 완전히 발정해 수컷을 원하고 있음을 나타내는 사인이며,
+			PRINTFORML 메인테넌스를 마치고 슬립 상태에서 깨어난 %타겟은% %마스터를% 보자마자 그 발밑에 매달릴 정도였다.
+			PRINTFORML 원인은 불명하나 이상하리만치 발정한 육체를 주체하지 못한 %타겟은% %마스터로% 몸을 달래고자 매달리지만,
+			PRINTFORML 사람에게 부탁하는 태도가 아니라는 지적을 받자 주저 없이 그 자리에서 도게자해 교미를 청원했다.
+			PRINTFORML 그러는 동안에도 계속 발정중인 %CALLNAME%의 육체는 질에서 애액을 줄줄 흘리면서, 고간 부분의 얼룩을 서서히 크게 만들어 간다.
+			PRINTFORML 상상 이상의 효과와 %CALLNAME%의 페로몬에 취한 %마스터는% 흥분한 모습으로 %타겟을% 덮쳐 전희도 없이 삽입했다.
+			PRINTFORML 하지만 서로 발정하고 있었기에 자연스레 교합해, 섹스를 배운지 얼마 안 된 원숭이처럼 무작정 허리를 흔든다.
+			PRINTFORML 기교 따위 없는 단조로운, 그저 육봉을 쑤시고 암구멍을 후벼 파는 운동에도 불구하고 둘은 절정을 거듭한다.
+			PRINTFORML 이윽고 %CALLNAME%의 의식이 절정의 부하에 견디지 못하고 블랙아웃 됨으로써 본능대로의 교미는 끝을 맞이했다.
+			PRINTFORML 해제 코드를 입력받은 %타겟은% 의식을 되찾고 나서 부끄러워했지만, 작은 목소리로 「또 부탁해」라고 귓속에 속삭였다…….
+		ELSE
+			PRINTFORML 이번에 입력한 코드는 면간용으로, 한 번 슬립 상태에 들어가면 해제 코드를 입력하지 않는 한 깨어나지 않게 되는 것이었다.
+			PRINTFORML 또한 슬립 상태라면 전신의 기능이 떨어져 감도 역시 떨어지지만, 이 코드는 역으로 감도를 높혀 온몸을 성감대로 만든다.
+			PRINTFORML 게다가 해제 코드 입력과 함께 더미 로그가 생성되어, 슬립 상태에서의 성교 기록이 일절 남지 않는다는 뛰어난 코드였다.
+			PRINTFORML 메인테넌스가 끝나 캡슐 해치가 열리자, %마스터는% 재빠르게 %CALLNAME%의 의복을 벗겨 애무를 시작했다.
+			PRINTFORML 감도가 높아진 %CALLNAME%의 육체는 약간의 애무로 유두와 클리토리스를 발기시키고, 질구에서는 애액을 끈적하게 흘리기 시작한다.
+			PRINTFORML 하지만 육체는 여전히 슬립 상태이기 때문에, 수컷을 받아들일 태세가 갖추어졌음에도 눈을 뜨지 않는다.
+			PRINTFORML %CALLNAME%의 가랑이 사이에 몸을 밀어 넣은 %마스터는% 양다리를 떠안고 육봉을 질구에 밀어 넣었다.
+			PRINTFORML 천천히 귀두가 질 안으로 밀려들어 부드러운 감촉에 휩싸이자 %CALLNAME%의 질이 갑자기 경련했다.
+			PRINTFORML 아무래도 삽입한 것만으로 절정에 이른 듯이, 다기차게 정액을 요구하며 육봉에 얽힌다.
+			PRINTFORML 잠을 자면서도 탐욕스레 수컷을 찾는 %타겟을% 교배 프레스로 난폭하게 범하는 %마스터는% 무책임하게 질내사정했다.
+			PRINTFORML 마지막 한 방울까지 쏟아 부은 %마스터는% 서로의 옷차림을 단정히 하고 해제 코드를 입력하여 기기를 회수했다.
+			PRINTFORML 곧 눈을 뜬 %타겟은% %마스터가% 있는 것에 놀란 모습이었지만, 범해진 것은 깨닫지 못한 것 같다.
+			PRINTFORML 각 부분의 상태를 확인하고 캡슐 침대에서 내려온 %타겟은%, 자신의 가랑이를 타고 흐르는 감촉을 눈치채고 움직임을 멈췄다.
+			PRINTFORML 무슨 일이냐고 걱정하는 %CALLNAME:MASTER%에게 아무 일도 아니라고 대답한 %타겟은% 당황한 모습으로 유지관리실을 빠져나간다.
+			PRINTFORML 기상 때 %CALLNAME:MASTER%의 얼굴을 보고 발정해 버린 것으로 착각한 %타겟은%, 닦아도 닦아도 사타구니에서 흘러내리는 체액을
+			PRINTFORML 처리하면서 홀로 쓸쓸히 자위를 하며 마음을 가다듬었다…….
+		ENDIF
+		PRINTFORML 
+	ELSEIF !RAND:9
+		PRINTFORML 「α팀이 전투를 개시했습니다. β, γ팀은 작전대로 좌우로 전개해서 포위해 주세요.」
+		PRINTFORML 도시에 침임한 「외적」의 구제 작전에사 %타겟은% 전투 차량에서 지시를 내리고 있었다.
+		PRINTFORML 레이더와 현지에서 전달되는 영상을 노려보며, 절묘한 타이밍에 팀을 움직인 %CALLNAME%의 지휘는 완벽했다.
+		PRINTFORML 「외적」은 전방위의 집중포화를 맞아 어느새 빈사 상태다.
+		PRINTFORML 승리를 확신하고 모니터에서 시선을 떼 등받이에 몸을 기댄 %타겟은%, 등 뒤에서 내민 음료에 놀라 뒤를 돌아봤다.
+		PRINTFORML 돌아본 곳에는 %마스터가% 있어, 좋은 지휘였다고 %타겟을% 칭찬한다.
+		PRINTFORML 수줍어하면서 음료를 받은 %타겟은% %CALLNAME:MASTER%에게도 자리를 마련하고, 잠시 휴식을 취하기로 했다.
+		PRINTFORML 하지만 차내에서 경보가 울려, %타겟은% 즉시 휴식을 접어두고 모니터를 향해 돌아섰다.
+		PRINTFORML 「여기는 %CALLNAME%. 통신 받았습니다.」
+		PRINTFORML 「여기는 본부. 그곳으로부터 서쪽으로 2km 지점에서 「외적」의 목격 정보가 있다. 현재 일이 정리되면 시급히 팀을 보내 줄 것.」
+		PRINTFORML 「여기는 %CALLNAME%. 알겠습니다. 이미 작전은 마무리 단계이므로 부상자를 귀환시키는 대로 바로 움직이겠습니다.」
+		PRINTFORML 팔팔한 모습으로 본부와 통신을 끝낸 %타겟은% 각 팀의 리더에게도 새로운 업무가 들어왔다는 취지의 연락을 한다.
+		PRINTFORML 이어서 본부에서 보내진 정보를 모니터에 표시해 정밀 조사를 시작한 %조사처리(CALLNAME,"였")%지만, 갑자기 가슴에 엄습한 쾌감에 몸을 튕겼다.
+		PRINTFORML 무슨 일인가 하고 가슴에 시선을 떨군 곳에서 %마스터가% 뒤에서부터 팔을 돌려, 앞가슴에 손을 넣어 돌기의 선단을 만지작거리고 있었다.
+		PRINTFORML %마스터와% 만나기 전의 %조사처리(CALLNAME,"라")%면 화내며 거부했을 것이다.
+		PRINTFORML 하지만 %CALLNAME:MASTER%에 몸도 마음도 얽매여 버린 %타겟은% 어린 아이를 꾸짖는 듯한 목소리로 가볍게 주의를 줄 뿐 거부하지 않았다.
+		PRINTFORML 오히려 다른 한 손이 고간으로 향하자, 만지기 쉽도록 가랑이를 살짝 벌리고 받아들이는 자세를 보였다.
+		PRINTFORML 속옷 위로부터 민감한 콩이 닿으면서도 %타겟은% 어떻게든 자신의 일에 집중해 정보의 해석과 작전의 입안을 이어간다.
+		PRINTFORML 처음엔 살짝 짖굳은 장난으로 곤란하게 만들 생각이었던 %조사처리(CALLNAME:MASTER,"였")%지만,
+		PRINTFORML 쾌락에 항거하면서 업무를 수행하는 %CALLNAME%의 모습을 보는 사이 본격적으로 행동해 버렸다.
+		PRINTFORML %마스터가% 발기한 육봉을 꺼내 %CALLNAME%의 얼굴 옆으로 들이밀자, %타겟은% 곤혹스러운 듯이 시선을 던진다.
+		PRINTFORML 잠시의 망설임을 보인 %타겟은%, 통신을 일시적으로 차단하고 작정한 듯 %CALLNAME:MASTER%의 귀두를 입에 물었다.
+		PRINTFORML %CALLNAME:MASTER%에게 교육된 테크닉으로 찔꺽거리는 천박한 소리를 내면서 입으로 육봉을 다루는 %CALLNAME%의 헌신에
+		PRINTFORML 눈을 가늘게 뜬 %마스터는%, 사정 직전 %CALLNAME%의 머리채를 잡고 인후 깊은 곳까지 단숨에 육봉을 밀어넣었다.
+		PRINTFORML 갑작스러운 폭거에도 불구하고, %타겟은% 익숙한 모습으로 인후 깊은 곳을 범해지면서 식도에 흘러내리는 정액을 삼킨다.
+		PRINTFORML 곧 사정을 마친 %마스터가% 육봉을 입에서 빼내자, 육봉과 입술 사이에 타액으로 된 다리가 걸렸다.
+		PRINTFORML 한번 사정해서 만족한 %조사처리(CALLNAME:MASTER,"였")%지만, 이번엔 불이 붙어버린 %타겟이% 참을 수 없었다.
+		PRINTFORML 사무용 제복을 아래만 벗어던진 %타겟은%, %마스터를% 자리에 앉혀 배면좌위로 성교를 시작한다.
+		PRINTFORML 그리고 섹스하면서 통신을 다시 연 %타겟은% 팀에게 지시를 내려, 다음 「외적」의 수색과 구제에 임했다…….
+	ELSEIF !RAND:8
+		PRINTFORML 어느 일을 마치고 늘 가던 카페를 찾은 %타겟은%, 눈에 띄는 인물을 발견하고 합석을 제의했다.
+		PRINTFORML 웃는 얼굴로 승낙한 인물, %CALLNAME:MASTER%에게 감사의 말을 하고 앉고서, 담소를 나누며 차를 즐긴다.
+		PRINTFORML 업무로 스트레스가 쌓였는지 %타겟은% 푸념이 많아졌지만, 그는 싫은 내색 없이 듣고 있다.
+		PRINTFORML 어느정도 푸념을 늘어놓고 개운해진 것을 가늠한 듯, 그는 이번엔 자신의 고민도 들어달라고 말했다.
+		PRINTFORML 카페 안쪽으로 통하는 통로를 눈짓으로 확인한 %타겟은%, 그 의미를 알고 얼굴을 붉게 물들이며 고개를 끄덕일 수밖에 없었다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK12
+		PRINTFORML 
+		PRINTFORML %타겟은% 이레귤러 구속용 구속구에 손이 뒤로 구속된 채 %CALLNAME:MASTER% 앞에 무릎을 꿇고 있었다.
+		PRINTFORML %CALLNAME%의 앞뒤 구멍에는 바이브가 박혀 눈과 코 앞에서 노장을 들이 밀어지고 있으나 그의 허락을 조용히 기다려야 한다.
+		PRINTFORML 짙은 수컷의 냄새를 맡으며 허락을 기다리다 보면 머리가 멍해져 귀두를 맛보려고 혀가 늘어지고 만다.
+		PRINTFORML 하지만 그는 손에 든 리드를 움직여 목줄을 당기는 것으로, 페니스와 머리의 거리를 벌려 계속해서 애타게 만든다.
+		PRINTFORML 끊임없이 주어지는 두 구멍의 쾌감과 쿠퍼액에서 풍기는 정취가 이성을 녹여, 이제는 눈앞의 페니스 외에는 아무것도 생각할 수 없게 되어 버린다.
+		PRINTFORML 이제 됐다는 말을 듣는 순간, 굶주린 짐승도 이럴까 싶은 움직임으로 %타겟은% 페니스에 달려든다.
+		PRINTFORML 봉사를 하면 할수록 정액을 하사받을 수 있다는 것을 교육받은 %CALLNAME%의 구강은 쉴 새 없이 봉사를 이어간다.
+		PRINTFORML 풋내나는 정액이 인후를 통과할 때마다 뇌는 행복감에 휩싸여, 그만 그 자리에서 졸졸 방뇨를 해버린다.
+		PRINTFORML 암캐로서 완전히 길들여진 %타겟은% %CALLNAME:MASTER%의 고민을 해결하면서 스트레스를 크게 발산했다…….
+		PRINTFORML 
+	ELSEIF !RAND:7
+		PRINTFORML 담당 구역 내에서 가장 외부에 가깝고 위험도가 높은 지점의 한 구석, 격한 소리나 빛이 잠시동안 연속되고 그대로 조용해진다.
+		PRINTFORML 그곳에는 벽과 도로 위에 퍼진 피와 무수한 「외적」의 사체, 그리고 전투를 끝낸 %CALLNAME%의 모습이 있었다…….
+		PRINTFORML 
+		PRINTFORML 「하아… 하아…… 이걸로 이번 주에만 몇 번째였는지…！！… 이거 노ㅏ… 으브으으읍！」
+		PRINTFORML 
+		PRINTFORML 숨을 돌리고 흐트러진 복장을 고치며 직무에 대한 불평을 늘어놓는 중 쌓여있던 「외적」의 사체더미 중 하나,
+		PRINTFORML 게다가 그녀의 등 뒤에 위치한 그것으로부터 촉수가 뻗어와 %CALLNAME%의 몸을 휘감고 도움을 요청하지 못하게
+		PRINTFORML 재빠르게 촉수를 입에 비틀어 넣어 저항하려고 발버둥 치는 %타겟을% 번식에 사용하기 위해 능욕을 시작한다.
+		PRINTFORML 
+		PRINTFORML 「으붑！ …우굽！ 우구구굽！ …우웁！？ …우구붓！ …흐부우우웁！！」
+		PRINTFORML 
+		PRINTFORML %타겟은% 자신의 입안을 범하는 「외적」의 촉수에서 나오는 형용할 수 없는 맛의 농후한 액체를 억지로 마시면서
+		PRINTFORML 난폭하게 소중한 곳을 지키는 장비를 벗겨지고 촉수로 두 다리가 크게 벌려지자 어쩌면 이 「외적」이 가진 것 중
+		PRINTFORML 가장 굵은 촉수가 모습을 나타내며 옅은 황색의 탁하고 농후한 액체를 그 끝에서 늘어뜨리면서 들어갈 곳을 찾듯이 %CALLNAME%의
+		PRINTFORML 사타구니에 그 불결한 액체가 묻은 그로테스크한 촉수를 기어다니게 하여 끈적한 불쾌감으로 빈틈없이 칠하고 결국 비소 입구를
+		PRINTFORML 발견했는지 그 이외의 것을 잊은 듯이 전투용 내의 너머로 촉수를 밀어붙여 질내로 들어가려고 한다.
+		PRINTFORML 
+		IF !RAND:3
+			PRINTFORML 하지만 능욕을 견디며 빈틈을 노리고 있던 %타겟은% 자신을 범해 번식의 도구로 삼으려고 열중하는 「외적」이
+			PRINTFORML 반응하기 전에 그 약간의 방심을 놓치지 않고 촉수에 의한 구속을 그 점액으로 미끄러뜨려 한쪽 팔만 빼내어
+			PRINTFORML 숨겨둔 소형 대「외적」용탄이 장전된 총을 뽑아 탄약이 전부 떨어질 때까지 계속해서 쐈다.
+		ELSEIF !RAND:2
+			PRINTFORML 그러나 그 행위는 그녀의 마음 속에 있는 「외적」의 능욕에서 오는 공포를 %조사처리(CALLNAME:MASTER,"로")%부터의 실망이라는
+			PRINTFORML 더욱 큰 공포와 그 공포를 주려는 「외적」에 대한 분노로 잊게 해, %타겟은% 자신의 입안을 범하는 촉수를 물어뜯고
+			PRINTFORML 고통에 놀라 느슨해진 구속에서 벗어나 벗겨져서 주변에 흩어진 장비에서 나이프를 집어 들어 덤볐다.
+		ELSE
+			PRINTFORML 그렇게 촉수가 질내로 들어가려고 하기 직전 돌연 주변이 빛으로 비춰지며 격한 소리가 계속 울리고 난 뒤 그곳에는
+			PRINTFORML 방금 전까지 「외적」이였던 것의 잔해가 무참히 나뒹굴고 있는 것을, 달려온 동료에게 간호받으면서 확인하고는
+			PRINTFORML 뒷처리를 동료에게 맡기고 호위를 맡은 여성의 동료가 운전하는 차를 타고 국으로 귀환한다.
+		ENDIF
+		PRINTFORML 
+		PRINTFORML 
+		PRINTFORML 「하아… 저딴 상대따위에…！… 외계조사에 쓰는 장비라면… 하아윽%UNICODE(0x2661)%」
+		PRINTFORML 샤워를 하면서 자신의 추태를 떠올려 변명을 하며, 몸 속 깊은 곳에서 쑤셔 오는 감각으로 국으로 돌아온 뒤 방금 전까지
+		PRINTFORML 받았던 메디컬 체크의 보고에 %타겟은% 대「외적」용의 피임약과 세척을 위해 섭취해버린 물건으로 임신 가능성은 없지만
+		PRINTFORML 이미 체내에 유입돼버린 쾌락물질은 자연스럽게 배출될 때까지 성감각이 예민해진 것을 떠올린다.
+		PRINTFORML 
+		PRINTFORML 「누구…？아직 쓰는 중… 아아%UNICODE(0x2661)%… 거기는 안돼…%UNICODE(0x2661)% …우우웅%UNICODE(0x2661)%」
+		PRINTFORML 갑자기 샤워실에 들어온 %CALLNAME:MASTER%에게 안겨 %타겟은% 가냘프게 거절하지만
+		PRINTFORML 강제로 입을 틀어막히자마자 자신이 %CALLNAME:MASTER% 전용의 암캐라는 것을 이해하고 교태를 부리듯 허리를 밀어붙였다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML 그 후 몇 시간 동안 샤워실 문에 사용 중이라고 표시되었고, 거기서 흐르는 물소리에 섞여 %CALLNAME%의 헐떡이는 소리가 계속 새어나왔다…….
+	ELSEIF !RAND:6
+		PRINTFORML 「수고하셨습니다.」
+		PRINTFORML 담당구획 순회를 마친 %타겟이% 국으로 돌아오고, 로비 소파에 걸터앉은 %마스터를% 발견했다.
+		PRINTFORML 여기서 무엇을 하고 있는지 묻자 %마스터는% %타겟을% 만나러 왔다면서 미소짓는다.
+		PRINTFORML 함꼐 순회하고 있던 동료는 %타겟을% 놀리고는, 보고는 자기들이 할 테니 먼저 돌아가라고 말한다.
+		PRINTFORML 동료에게 장비 세트를 뺏겨버린 %타겟은% 어쩔 수 없이 %마스터와% 함께 국을 뒤로 했다.
+		PRINTFORML 
+		PRINTFORML 「기다려 줘, 아직 샤워 안 했으니까…… 앗……」
+		PRINTFORML 돌아오는 길에 일부러 러브호텔이 있는 길을 택한 %CALLNAME%의 의도대로 %CALLNAME:MASTER%에게 이끌려 갔다.
+		PRINTFORML 순회를 해서 땀을 흘리고 있던 %타겟은% 샤워를 하고 싶었지만, 방에 들어서자마자 안겨 버리면 저항 할 수 없다.
+		PRINTFORML 섹스를 기대해 젖어있던 비소는 간단히 %CALLNAME:MASTER%의 페니스를 받아들이며, 고대하던 쾌감에 몸을 떤다.
+		PRINTFORML 쾌락에 빠져 흐트러지는 %CALLNAME%의 모습에는 치안유지국원으로서의 늠름함은 보이지 않고, 한 마리의 암캐가 되어 있었다…….
+		PRINTFORML 
+	ELSEIF !RAND:5 && (TALENT:거유 || TALENT:폭유)
+		PRINTFORML 도시에 잠입한 「외적」의 구제를 마치고 귀환하던 %타겟은%, 우연히 %마스터와% 만났다.
+		PRINTFORML 신체의 각 부위를 보호해주는 프로텍터를 장비한 %타겟을%을 보고 '좋은 것'을 떠올린 %마스터는%,
+		PRINTFORML 치안유지국에 양해를 구하고 나서 %타겟을% 특명 임무로써 잠시 빌리기로 했다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK13
+		PRINTFORML 
+		PRINTFORML 호텔로 데려와진 %타겟은% 가슴 보호구만 떼어진 채, 뜨겁게 치솟은 육봉으로 그 골짜기를 범해지고 있었다.
+		PRINTFORML 치안유지국원의 상징인 장비를 몸에 두르고, 본래 성행위에 사용하는 장소가 아닌 가슴을 사정을 위해서만 사용한다.
+		PRINTFORML 그 너무나 남성우위인, 제멋대로의 행동을 즐겁게 따르는 자신에게 %CALLNAME%도 흥분을 느껴, 적극적으로 봉사를 계속한다.
+		PRINTFORML %CALLNAME:MASTER%에게 배운 기교를 구사하여 몇 번이고 사정을 유도해, %CALLNAME%의 가슴은 하얗게 더러워져 간다.
+		PRINTFORML 이내 만족한 %마스터는% 정액을 그대로 두고, %CALLNAME%에게 가슴 보호구를 장비시킨다.
+		PRINTFORML 오늘 하루는 이대로 있으라는 명령을 받아, %타겟은% 가슴에서 정액 냄새를 풍기며 업무로 돌아갔다…….
+		PRINTFORML 
+	ELSEIF !RAND:4 && TALENT:강간원망
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 여러 번에 걸친 「외적」 구제에 성공한 공적으로 %타겟은% %CALLNAME:MASTER%에게 안겨 있었다.
+		IF TALENT:기계
+			PRINTFORML 「외적」과 싸울 때 사용하는 장비를 두른 %타겟은% 바닥에 밀착해 침낭 안에서 안긴 듯 뒤로부터 범해지고 있다.
+			PRINTFORML %타겟은% 두 다리의 운동신경을 일시적으로 차단함으로써 두 다리가 박살난 듯한 상황을 만들어내어, 이젠 도망칠 수조차 없다는
+			PRINTFORML 설정 아래 %CALLNAME:MASTER%에게 유린당하는 것을 선택한 것이였다.
+		ELSE
+			PRINTFORML 「외적」과 싸울 때 사용하는 장비를 두른 %타겟은% 벽에 몸을 밀착한 상태로 배면입위로 범해지고 있다.
+			PRINTFORML 좋아하는 체위로 범해주겠다고 들은 %타겟이% 원했던 것은, 이 레이프와 다름없는 자세였다.
+			PRINTFORML 양팔이 등 뒤로 묶인 %타겟은% 내밀어지는 페니스로부터 벗어나는 수를 일체 가지지 않았고,
+			PRINTFORML %CALLNAME:MASTER%의 뜻대로 자궁과 질이 계속해서 사용된다.
+		ENDIF
+		PRINTFORML 
+		PRINTFORML 「외적」에게조차 승리할 힘을 가지고서, %CALLNAME:MASTER%의 페니스를 앞에 두고 애액을 쏟아내며 항복한다.
+		PRINTFORML 자궁구를 찔릴 때마다 자신이 %CALLNAME:MASTER%의 페니스에 이길 수는 없다고 통감하며, 절정한다.
+		PRINTFORML 자궁에 정액을 주입받자, 번식용 모체로서 %CALLNAME:MASTER%에게 인정받은 행복감에 젖는다.
+		PRINTFORML 암컷의 본능에 눈을 뜬 %타겟은% %CALLNAME:MASTER%에게 안겨지는 환희에 떨며 보상을 즐겼다…….
+	ELSEIF !RAND:3
+		PRINTFORML 「치안유지국에서 일하다 보면, 생명의 위협을 느끼는 일이 몇 번 있어.」
+		PRINTFORML 그 전에 이야기하고 있던 %CALLNAME%에게는, 한 가지 버릇이 있다.
+		PRINTFORML 그것은 생명의 위협을 느낀 날 섹스를 하면, 생존 본능이 자극돼 여느 때보다 더욱 열심히 허리를 써서 정액을 탐욕스럽게 요구하는 것이다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML %타겟은% 기승위로 %CALLNAME:MASTER%의 육봉이 불타는 것이 아닌가 싶을 정도로 격렬하게 허리를 상하로 흔들고 있다.
+		PRINTFORML 그 움직임에서 모든 것을 이해한 %마스터는%, 일부러 참고 사정하지 않고 있었다.
+		PRINTFORML 잠꼬대마냥 「사정해줘, 사정해줘」를 반복하는 %조사처리(CALLNAME,"였")%지만, %마스터는% 죄다 무시한다.
+		PRINTFORML 이내 본능 뿐만 아니라 육체도 끈기가 딸려 페니스의 끝을 자궁구에 밀어 붙이는 것으로, 간신히 %마스터는% 사정했다.
+		PRINTFORML 끝까지 사정을 기다려야 했던 %타겟은% 태내에 퍼진 대망의 열량에 절정해, 행복해 보이는 표정을 지으며 기절했다…….
+	ELSEIF !RAND:2
+		PRINTFORML 최근, 치안유지국 유치장에는 기억처리 예정인 남성 이레귤러가 잡혀 있었다.
+		PRINTFORML 그 사실을 안 %마스터는% 간단한 행사를 위해, %타겟을% 데리고 유치장을 방문했다.
+		PRINTFORML %CALLNAME:MASTER%의 의향으로 유치장은 잠시 출입 금지가 되었으며, 감시 카메라도 일시적으로 끊겼다.
+		PRINTFORML 갑작스런 낯선 방문자를 경계하는 남자에게 %마스터는% "좋은 물건"을 보여주며 어둡게 웃었다.
+		PRINTFORML 
+		CALL KOJO_DEFAULT_ENCOUNTER_K1_TALK30
+		PRINTFORML 
+		PRINTFORML 남자가 저지른 죄는 십여 건에 이르는 강간죄였다.
+		PRINTFORML 욕망이 향하는대로 마음대로 여자를 탐했던 남자는 지금 눈 앞에서 안기는 여자에게 손 대지 못하고 고간을 융기시킨 채, 눈에 쌍심지를 켜 주시하고 있다.
+		PRINTFORML 철창을 잡은 %타겟을% 뒤에서 범하면서, %마스터는% 그런 남자를 내려다 보고 있었다.
+		PRINTFORML 몇 번이고 훈육한 %CALLNAME%의 질육은 자신의 쾌락뿐만 아니라, %CALLNAME:MASTER%의 육봉에도 헌신적으로 봉사한다.
+		PRINTFORML 또 그런 %타겟을% 치하하면서, %CALLNAME:MASTER%의 육봉은 어느 쪽이 주인인지를 확실히 가르쳐준다.
+		PRINTFORML 한 번 뿐인 강간으로는 결코 도달할 수 없는 농후한 교미를 보여주면서, %마스터는% 질내사정으로 씨뿌리기를 했다.
+		PRINTFORML 전부 받아들인 %타겟은% 남자에게 힐끗 시선을 준 후, %CALLNAME:MASTER%에게 안겨 입맞춤을 나눈다.
+		PRINTFORML 수컷에게 아양을 떨며 더 많은 아기씨를 조르는 암컷의 모습에 어느 쪽이 수컷으로서 우수한지 깨달은 남자는 그 자리에서 힘없이 고개를 떨궜다.
+		PRINTFORML 
+		PRINTFORML 그 후, 남자의 기억처리는 무사히 이루어졌으며 %마스터와% %CALLNAME%의 성행위 관련 기억 역시 소거되었다.
+		;PRINTFORMW ≪「플레이어」, 이번만이니까요…… 정말이지.≫
+		;PRINTFORMW 「시티」에게 무지막지하게 혼났다…….
+	ELSE
+		PRINTFORML 도시의 치안에 대한 대표자 회의가 열린다는 것에, 매우 바쁜 국장의 대리로서 %타겟은% 회의에 참가하게 되었다.
+		PRINTFORML 높으신 분 눈치보기나 무리한 요구 대응에 일관해야겠지라며 텐션이 올라가지 않는 %조사처리(CALLNAME,"였")%지만,
+		PRINTFORML 참가자 중 %CALLNAME:MASTER%의 모습을 발견하자 마음을 고쳐먹고, 좋은 모습을 보이려고 분발했다.
+		PRINTFORML 
+		IF TALENT:기계
+			PRINTFORML 참가자의 주의가 회의장 전방에 있는 모니터로 향하자, %타겟은% 자신의 비소를 옷 위로부터 더듬는다.
+			PRINTFORML 회의 시작부터 계속 쾌락 신호를 받은 %CALLNAME%의 이성은 이미 타버리기 직전이다.
+			PRINTFORML 미친 듯이 자신의 약점을 자극하며 가버리려 하지만, 얼마 안 가 쾌락 신호가 뚝 끊겨 절정에 이르지 못한다.
+			PRINTFORML 아이 콘택트로 %CALLNAME:MASTER%에게 허가를 구하자, %마스터는% 참 좋은 미소를 돌려 주었다.
+			PRINTFORML （앗…… 하%UNICODE(0x2661)%）
+			PRINTFORML 온몸의 계기가 망가지는 게 아닐까 걱정될 정도로 강렬한 쾌락신호가 엄습해, %타겟은% 절정에 몸을 뒤로 젖혔다.
+			PRINTFORML 푸슉하고 고간에서 조수가 뿜어져 나오는 소리가 회의장에 울렸지만, 아무 일도 없다는 듯 계속되는 발언들에 묻혔다.
+			PRINTFORML %타겟은% 고간에 생긴 얼룩을 어떻게 핑계를 댈지 멍하니 생각하며 대망의 절정에 계속 잠긴다.
+			PRINTFORML 이 후로도 %CALLNAME:MASTER%에 의한 쾌락 신호의 발신과 두절은 몇 번이고 계속되었고,
+			PRINTFORML 그때마다 %타겟은% 미쳐버릴 정도의 쾌감에 몸도 마음도 애가 타는 지경에 이르렀다.
+		ELSEIF !RAND:3
+			PRINTFORML 현재 치안유지국의 규모로서는 무리라고 할 수 있는 요구를 해오는 도시의 대표자와 격론을 나누는 %CALLNAME%의 뺨은
+			PRINTFORML 흥분으로부터 홍조를 띠고 있었다.
+			PRINTFORML 하지만 흥분의 원인은 의론 같은게 아니라, 회의 직전에 %마스터가% 장치한 유두캡과 클리캡에 의해
+			PRINTFORML 장시간 빨려 올라간 유두와 클리토리스가 욱신거려 통증이나 쾌감인지 알 수 없는 감각을 계속 느끼고 있는 것이었다.
+			PRINTFORML 한시라도 빨리 떼어내려고 안달인 %CALLNAME%의 마음 따위는 추호도 모르는 도시의 대표자는,
+			PRINTFORML 고의로 지연시키고 있는 것이 아닌가 하고 %타겟이% 의심할 정도로 요구를 철회하려고 하지 않는다.
+		ELSEIF !RAND:2
+			PRINTFORML 회의는 별탈없이 진행되고 있었지만, %CALLNAME%만은 초점 흐린 눈으로 허공을 응시하고 있었다.
+			PRINTFORML 회의 직전 %CALLNAME:MASTER%로부터 애널에 꽂힌 플러그는 원격 조작이 되는 듯이, 본체가 떨리는가 하더니
+			PRINTFORML 선단이 네 갈래로 갈라져 에널 입구 주변의 장벽을 박박 긁거나 배출을 거부하는 것이다.
+			PRINTFORML 질과는 다른 배 밑에서부터 서서히 퍼져 가는 깊은 쾌감에 시달려, 더 이상 %타겟은% 회의를 할 만한 상황이 아니었다.
+		ELSE
+			PRINTFORML 발언을 마친 %타겟이% 자리에 앉자, 비소로부터 전신까지 달콤한 쾌락이 다가와 무심코 허리를 젖힐 뻔 한다.
+			PRINTFORML 돌발적인 쾌감을 기합으로 억누른 %타겟은% 맞은편에 앉은 %CALLNAME:MASTER%에게 시선을 돌렸다.
+			PRINTFORML %마스터는% 시치미를 떼고 회의에 참가하고 있지만, 주머니에 박힌 한 손으로는 암컷을 조교하는 중이었다.
+			PRINTFORML 「읏！！」
+			PRINTFORML 지그시 보고 있는 것이 반항적이라고 생각한 것인지 %CALLNAME%의 질내에서 진동하던 로터가 더욱 크게 진동했다.
+			PRINTFORML 회의 직전에 질내에 넣어진 로터는 %CALLNAME:MASTER%의 변덕으로 진동하기 때문에 %타겟은% 긴장을 풀 수가 없었다.
+		ENDIF
+		PRINTFORML （빨리…… 빨리 회의 끝나줘……%UNICODE(0x2661)%）
+		PRINTFORML 몇 번째인지도 모르는 절정에 몰리면서, %타겟은% 한시바삐 회의가 끝나기를 바랄 수 밖에 없었다…….
+	ENDIF
+DRAWLINE
+
+CALL JN_SEX_EXP
+RESETCOLOR
+
+ENDIF
+
+
+
+
+
+
+PRINTFORMW
+
+CFLAG:주민_業務ポイント += 1
+EXP:업무경험 += 1
+B_P = 1+(RAND:5)+((EXP:업무경험/100)+1)
+PRINTFORML 【업무경험　　:{EXP:업무경험-1, 5 ,LEFT}→{EXP:업무경험, 5 ,RIGHT}】
+PRINTFORML 【경험치　　　:{CFLAG:주민_경험치, 5 ,LEFT}→{(CFLAG:주민_경험치)+B_P, 5 ,RIGHT}】
+CFLAG:주민_경험치 += B_P
+DRAWLINE
+IF Flag:도시_공적獲得機会 != 0
+	CFLAG:주민_業務ポイント += 8
+	L_K = (((EXP:업무경험/100)+1)*1000)+(EXP:업무경험*3)
+	Flag:도시_공적 += L_K
+	Flag:도시_공적獲得機会 = 0
+	PRINTFORML 추가로 %CALLNAME%의 활약이 「시티」에게 인정받아, 대량의 공적을 획득했다！
+	PRINTFORML 【공적　　:{Flag:도시_공적 - L_K, 10 ,LEFT}→{Flag:도시_공적, 10 ,RIGHT}】
+	DRAWLINE
+ENDIF
+PRINTFORMW 
+TARGET = L_T
+
+
+
+
+
+
+
+
+
+
+

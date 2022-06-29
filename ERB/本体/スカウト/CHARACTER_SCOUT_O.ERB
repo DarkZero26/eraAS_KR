@@ -1,0 +1,43 @@
+﻿
+@CHARACTER_SCOUT_O_UPDATE(ARG:0)
+#DIM L_I
+
+
+L_I = ARG:0
+
+
+
+IF !RAND:5
+	TALENT:L_I:학생 = 1+RAND:5
+	CALLNAME:L_I = 남학생
+	NAME:L_I = 남학생
+ELSEIF !RAND:4
+	TALENT:L_I:성직자 = 1
+	CALLNAME:L_I = 남성 성직자
+	NAME:L_I = 남성 성직자
+ELSEIF !RAND:3
+	TALENT:L_I:아이돌 = 1
+	CALLNAME:L_I = 남성 아이돌
+	NAME:L_I = 남성 아이돌
+ELSEIF !RAND:2
+	TALENT:L_I:사회인 = 1
+	CALLNAME:L_I = 남성 사회인
+	NAME:L_I = 남성 사회인
+ELSE
+	TALENT:L_I:치안유지국원 = 1
+	CALLNAME:L_I = 남성 치안유지국원
+	NAME:L_I = 남성 치안유지국원
+ENDIF
+
+	CFLAG:L_I:가슴사이즈 = CHARACTER_BUST_RETURN(L_I)
+	CFLAG:L_I:ヒップサイズ = CHARACTER_HIP_RETURN(L_I)
+
+CFLAG:L_I:남체레벨 = 1
+CFLAG:L_I:정자레벨 = 1
+
+CFLAG:L_I:使用口上 = 50
+
+
+
+
+

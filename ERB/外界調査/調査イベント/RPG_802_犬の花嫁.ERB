@@ -1,0 +1,714 @@
+﻿;-------------------------------------------------
+;犬の花嫁（編集中）
+;-------------------------------------------------
+@RPG_EVENT_802(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 802
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【調査イベント:犬の花嫁】
+PRINTFORML 
+
+IF CFlag:L_I:犬_遭遇回数 == 0 
+	CALL RPG_EVENT_802_S1(L_I)
+ELSEIF CFlag:L_I:犬_遭遇回数 == 1
+	CALL RPG_EVENT_802_S2(L_I)
+ELSEIF CFlag:L_I:犬_遭遇回数 == 2
+	CALL RPG_EVENT_802_S3(L_I)
+ELSEIF CFlag:L_I:犬_遭遇回数 == 3
+	CALL RPG_EVENT_802_S4(L_I)
+ELSEIF CFlag:L_I:犬_遭遇回数 >= 4
+	CALL RPG_EVENT_802_S5(L_I)
+ENDIF
+
+;-------------------------------------------------
+;犬の花嫁　遭遇変
+;CFlag:犬_遭遇回数０回の時
+;-------------------------------------------------
+@RPG_EVENT_802_S1(L_I)
+#DIM L_INPUT
+#DIM L_I
+
+PRINTFORML 比較的安全な都市境界線を탐색している%CALLNAME:L_I%は視界の端に動く物体をとらえた。
+PRINTFORML こんな場所でまさか外敵かと警戒するが、すぐに危険な存在ではないと分かりホッと息をつく。
+PRINTFORML 都市部から流れてきたのか野良犬がトボトボと歩いている。
+PRINTFORML よく見ると首輪をしており、元々はだれかの飼い犬だったのかもしれない。
+PRINTFORML 野良犬はこちらを一瞥するも、それほど흥미を示さず辺りをキョロキョロ見回している。
+PRINTFORMW 腹を空かしているようで餌になるものを探しているようだが、今日は収穫が無かったようで諦めたのか住処にしているのであろう建物の中へ消えていった…
+PRINTFORML 탐색用に携帯している食料には犬も食べられるものも含まれていたと思うが…
+PRINTFORML 
+PRINTFORML [0] 餌を分けてあげる
+PRINTFORML [1] 気にせず탐색を続ける
+PRINTFORML 
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	PRINTFORML %CALLNAME:L_I%は野良犬を可哀想に思い、食料のうちいくつかを餌として分けてあげる事にした。
+	PRINTFORML 野良犬が入っていた建物の中へ警戒しながら足を進める。
+	PRINTFORML どうやら元々は倉庫として使われていた建物のようで、電気は通っていないようだが、採光用の窓からの光で視界は確保できている。
+	PRINTFORML 比較的安全なエリアであるため、先遣の調査隊により物資はほぼ회수されているようで、がらんどうに近い状態ではあるが
+	PRINTFORMW 入口近くの一角にアクリル板で区切られた一室があり、そこに先ほどの野良犬が居座っていた。
+	PRINTFORML 元々は警備員が常駐するための部屋のようで、ソファーや毛布などが置いてあり暖を取るにはもってこいの場所となっている。
+	PRINTFORML %CALLNAME:L_I%が部屋へ踏み入ると、野良犬は侵入者を警戒しうなり声をあげ警戒態勢をとる。
+	PRINTFORML しかし、%CALLNAME:L_I%がそっと餌を差し出すと、元々飼われていたころを思い出したのか、すぐに警戒を解き餌を食べ始める。
+	PRINTFORMW よほど腹を空かしていたのだろう、すぐに食べ終えてしまったが、あまりの食べっぷりに%CALLNAME:L_I%は気を良くし、さらに数個餌を与えた。
+	PRINTFORML 食べ終えた野良犬は、元の飼い主にもしていたのだろう、%CALLNAME:L_I%の周りを何回か回った後、ワンワンと可愛らしく鳴いて感謝を伝えているようだ。
+	PRINTFORML その後、満足し眠くなったのかソファーの上で眠り始める。
+	PRINTFORML %CALLNAME:L_I%は眠った野良犬を何度か撫でて、탐색へと戻っていった。
+	PRINTFORMW 気が向いたら、また餌をあげに来るのもいいかもしれない…。
+	PRINTFORMW
+	CFlag:L_I:犬_遭遇回数 += 1
+CASE 1
+	PRINTFORML 比較的安全とはいえ、危険域を調査していることには変わりない。
+	PRINTFORML 無駄な寄り道をしている暇はないと%CALLNAME:L_I%は気を取り直し他の場所の調査へと向かった。
+	PRINTFORMW
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+;-------------------------------------------------
+;犬の花嫁　懐柔編
+;CFlag:犬_遭遇回数１回の時
+;-------------------------------------------------
+@RPG_EVENT_802_S2(L_I)
+#DIM L_INPUT
+#DIM L_I
+
+PRINTFORML 탐색を続けていた%CALLNAME:L_I%は、見覚えのある建物を見かけた。
+PRINTFORML 以前餌をやった野良犬が住処にしている倉庫のようだ。未탐색地区を調査していたつもりが、知らぬ間に戻ってきてしまったらしい。
+PRINTFORMW また餌を探し回っているのだろうか。それとも倉庫で眠っているかもしれない。
+PRINTFORML 様子を見に行ってみようか…。
+PRINTFORML 
+PRINTFORML [0] 倉庫を見に行く
+PRINTFORML [1] 気にせず탐색を続ける
+PRINTFORML 
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	PRINTFORML 前回の様子を思い出し、また腹を空かしているかもしれないと%CALLNAME:L_I%は倉庫に足を向けた。
+	PRINTFORML また警備員室を訪れると、この間の首輪をつけた野良犬がソファーの上で眠っている。
+	PRINTFORMW %CALLNAME:L_I%は野良犬に近づき何度か体を撫でてやった。
+	PRINTFORML この間はあまりよく見ていなかったが、野良犬の割にはまあまあ整った毛並みをしている。
+	PRINTFORML まだ飼い主と離れてそれほど経っていないのだろうか。犬種は詳しくわからないが柴犬のような見た目だ。
+	PRINTFORMW しかし体格は通常の柴犬よりも大きく、じゃれつかれると押しのけるのは大変かもしれない。。
+	PRINTFORML そうしていると野良犬が目を覚ましたようだ。
+	PRINTFORML どうやら%CALLNAME:L_I%の事を覚えていたようで、%CALLNAME:L_I%の周りを駆け回ったあと「待て」の体勢をとり%CALLNAME:L_I%の事を見上げている。
+	PRINTFORML %CALLNAME:L_I%は前回同様、餌を何個か与えると정직に食べ始める。
+	PRINTFORML 食べ終えた野良犬はまた%CALLNAME:L_I%の周りをクルクルと回り始めた。どうやら遊んでほしがっているようだ。
+	PRINTFORML %CALLNAME:L_I%は気分転換もかねて数十分ほど遊んであげ、また탐색へと戻っていった。
+	PRINTFORMW 気が抜けない調査の中で、珍しく楽しい気分になった%CALLNAME:L_I%はまた来たいなと感じているようだ。
+	PRINTFORML 
+	PRINTFORML しかし思い返してみると、遊んであげている間になにか視線を感じたような気がする…。
+	PRINTFORML 遊び疲れて休んでいるときなど、座っているだけかと思ったが、時折こちらの事をじっと見つめていたような…
+	PRINTFORML まあ余計なことを気にしても仕方ないと%CALLNAME:L_I%は今後の탐색について考えようと頭を切り替えた。
+	PRINTFORMW
+	CFlag:L_I:犬_遭遇回数 += 1
+CASE 1
+	PRINTFORML 倉庫にいるかも分からないし、一度は탐색済みの場所だ。
+	PRINTFORML また見かけたら気にするかもしないが今は別にいいだろう。%CALLNAME:L_I%は気を取り直し他の場所の調査へと向かった。
+	PRINTFORMW
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+
+;-------------------------------------------------
+;犬の花嫁　予兆編
+;CFlag:犬_遭遇回数２回の時
+;-------------------------------------------------
+@RPG_EVENT_802_S3(L_I)
+#DIM L_INPUT
+#DIM L_I
+
+PRINTFORML 都市境界線を탐색している%CALLNAME:L_I%は、また野良犬の住処となっている倉庫を訪れていた。
+PRINTFORML 野良犬との交流を楽しみにしている%CALLNAME:L_I%は野良犬に餌をあげ、その後遊んであげている。
+PRINTFORMW 野良犬も%CALLNAME:L_I%に懐いたようで、嬉しそうにじゃれついている。
+PRINTFORML 
+PRINTFORML 遊び疲れて休んでいると、以前も感じた視線をまた感じる。
+PRINTFORML 野良犬の方をみると、%CALLNAME:L_I%の事を見ているようだ。
+PRINTFORML 疲れていた%CALLNAME:L_I%はそれほど気にせず楽な姿勢を取っている。
+PRINTFORML 野良犬は%CALLNAME:L_I%のはだけた服の隙間から胸元や腹部などをジッとみている。
+PRINTFORMW 特に下腹部の辺りをじっくりと観察しているようだ…。
+PRINTFORML
+PRINTFORML ふと%CALLNAME:L_I%が気が付くと、野良犬がすぐそこまで近寄って来ていた。
+PRINTFORMW ハッハッと荒い呼吸をしており、まだ遊び疲れているのかと思ったが…
+PRINTFORMW その体をよく見ると、赤黒い生殖器が大きく屹立しており、ビクンビクンと脈動していた…
+PRINTFORML 인간よりだいぶ大きく勃起したペニスに%CALLNAME:L_I%は一瞬目を奪われるが、すぐに気を取り直し警戒する体勢を取る。
+PRINTFORML 野良犬は特に動きを見せずこちらを見つめ続けているが…
+PRINTFORML
+PRINTFORML [0] 気にせず野良犬の相手をする
+PRINTFORML [1] すぐにこの場を立ち去る
+PRINTFORML 
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0
+	PRINTFORML 発情期にでも入ったのだろうと判断し、特に気にせず%CALLNAME:L_I%は野良犬の遊び相手を続けることにした。
+	PRINTFORML 野良犬もこれまでと変わらず%CALLNAME:L_I%に懐いているようで、ボール遊びなどに興じている。
+	PRINTFORMW ただ１点変化があり、遊んでいる間もずっと勃起し続けているペニスがぶらぶらと揺れており、%CALLNAME:L_I%は気にしないようにしつつも、どうしても目に入るそれを見続けるはめになった。
+	PRINTFORML その後、ひとしきり満足するまで野良犬と遊んだ%CALLNAME:L_I%は倉庫を後にした。
+	PRINTFORMW 野良犬と遊ぶのはやはり楽しい。そう実感した%CALLNAME:L_I%は次はいつ遊びにこようかと思案しながら、탐색に戻っていった。
+	IF TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML しかし、%CALLNAME:L_I%の頭の中は倉庫で見た野良犬のペニスの映像がこびりついていた。
+		PRINTFORML そして考えれば考えるほど、体が、特にお腹の下の方が熱くなっていくような…。
+		PRINTFORMW 何か、このままでは"よくないこと"が起こるような気がした%CALLNAME:L_I%だったが、調査に気を取られすぐにその感覚を忘れていった…。
+	ENDIF
+	CFlag:L_I:犬_遭遇回数 += 1
+CASE 1
+	PRINTFORML そのグロテスクな見た目に嫌悪感を覚えた%CALLNAME:L_I%はすぐさま倉庫を後にした。
+	PRINTFORML 時間がたてば発情期も終わっているだろうか。そう考えた%CALLNAME:L_I%はとりあえず次のエリアの調査へと足を向けた。
+	PRINTFORMW 倉庫からはその後ろ姿を野良犬がじっと見つめていた…。
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+;-------------------------------------------------
+;犬の花嫁　性交編
+;CFlag:犬_遭遇回数３回の時
+;-------------------------------------------------
+@RPG_EVENT_802_S4(L_I)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_SIEK
+#DIM L_RNS_MAX
+#DIM L_RNS_NOW
+#DIM L_JYSI
+#DIM L_JYSI_KKRT
+#DIM L_SEX
+
+PRINTFORML 今日も都市境界線を탐색している%CALLNAME:L_I%は、野良犬と遊びに行こうと思っていた。
+PRINTFORML しかし、倉庫に近づくにつれ、なぜだかやはりやめておいたほうがいいのでは…という気持ちも沸き上がってくる。
+PRINTFORMW %CALLNAME:L_I%は前回見たあの大きくて赤黒い"もの"が、帰った後も時折頭をかすめるようになっていた。
+	IF TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML
+		PRINTFORML そのたびに、%CALLNAME:L_I%は頭がぼぅっとしてきて、あの日の帰りにも感じた下腹部の熱が蘇り、불쾌感と何に対してかわからない少しの期待感が沸き起こる。
+		PRINTFORMW 自分でも理解しようのない感覚にさいなまれ、悶々とした日々を過ごすようになっていた。
+		PRINTFORML
+	ENDIF
+PRINTFORML このまま遊びにいってもいいものだろうか？犬と遊ぶだけでなにも問題はないはずだが…。
+PRINTFORML 
+PRINTFORML [0] 野良犬と遊びに行く（最後の選択です）
+PRINTFORML [1] やめておこう。この場を立ち去る。
+PRINTFORML
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+
+CASE 0
+SETCOLOR 250,50,200
+	PRINTFORML 何を気にしているのだろうか。これまで何度も遊んでいるじゃないか。
+	PRINTFORMW 沸き上がる自分の体からの警告であろう直観を無視して%CALLNAME:L_I%は倉庫へと足を運ぶ。
+	IF TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML
+		PRINTFORML 何より直観以上に子宮から湧き上がってくる熱が%CALLNAME:L_I%の体を突き動かしている。
+		PRINTFORML 頭では理解していなくとも、子宮は理解していた。
+		PRINTFORMW 自分の"機能"を十分に発揮させてくれる、つがいとなるべき相手があの場所にいるのだと…。
+	ENDIF
+PRINTFORML
+PRINTFORML 倉庫に足を踏み入れた%CALLNAME:L_I%の事を、野良犬はすぐに察知し出迎えてくれた。
+PRINTFORML いつものように警備員室へ向かうと、まず野良犬に餌をあげようとするが、どういうわけか野良犬は餌には見向きもせず%CALLNAME:L_I%にじゃれついてくる。
+PRINTFORMW 今日は遊ぶのをメインとしようか、そう思い餌をしまい野良犬の相手を始める%CALLNAME:L_I%。
+PRINTFORML
+PRINTFORMW ただひとつ、どうしようもなく気になるのは今日は出迎えてくれたその時からすでに大きく勃起している赤黒いペニス…。
+PRINTFORML
+PRINTFORML 何度もじゃれついてくる野良犬と数十分以上遊び、疲れた%CALLNAME:L_I%はソファーで休憩をとることにした。
+PRINTFORML いつも通り、楽な格好で%CALLNAME:L_I%が休んでいると、いつもは離れた場所からこちらを見ていた野良犬が今日はどういうわけか近寄ってくる。
+PRINTFORML まだ遊び足りないのかと%CALLNAME:L_I%は野良犬に待てと呼びかけるが、野良犬は言うことを聞かず、%CALLNAME:L_I%のそばまで来ると%CALLNAME:L_I%の顔を舐め始める。
+PRINTFORML いつも以上に過剰なスキンシップに驚く%CALLNAME:L_I%だったが、疲れていたこともあり野良犬の好きにさせることにした。。
+PRINTFORMW 野良犬は顔だけでなく、首筋や胸元、お腹やふとももなどいたるところを舐めようとしてくる。
+PRINTFORML そろそろやめさせようと%CALLNAME:L_I%が思った直後、野良犬は%CALLNAME:L_I%の股の間に顔を突っ込み、股間を舐めあげてきた。
+PRINTFORMW 突然生じた快感に%CALLNAME:L_I%は反応できず、しばし野良犬の好きなようにされてしまう。
+PRINTFORML
+PRINTFORML ５分以上は続けられたであろう愛撫に、%CALLNAME:L_I%の体は反応し体の力は抜け、股間は野良犬の唾液と%CALLNAME:L_I%の愛液が混ざりあいドロドロに濡れそぼっている。
+PRINTFORMW これ以上はまずいと気を取り直した%CALLNAME:L_I%は、この場所から逃げ出そうとするが、力が入らず這いつくばって移動する体勢になってしまう。
+PRINTFORML しかし、この体勢は野良犬にとってよく知ったものである。
+PRINTFORMW 본능にすら刻まれているこの体勢は、雌犬がつがいとなるべき雄犬を誘い、待ち受けているポーズであり…
+PRINTFORML
+PRINTFORMW 間違いなく"交尾"するための、"繁殖"するためのポーズであった。
+PRINTFORML
+PRINTFORML 興奮した野良犬が%CALLNAME:L_I%の背後から圧し掛かってくる。
+PRINTFORMW 逃げようと這いつくばっていたため、下半身の衣装はずり下がっており、%CALLNAME:L_I%の股間を守るための防御は薄いパンツ１枚となっている…。 
+PRINTFORML 野良犬がなにをしようとしているかやっと理解した%CALLNAME:L_I%はせめて挿入されることは避けようと、その매혹的な尻を左右に振り大きく赤黒いペニスから逃れようとしてる。
+	IF TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML
+		PRINTFORML しかし、その動きはまるで雄犬を유혹しているかのような動きでもあった。
+		PRINTFORML 頭ではこのままではまずいと理解しているのに、体はその制御を奪われたかのように動き続ける…。
+		PRINTFORMW いつしかペニスを避けるように動いていた尻は、逆にペニスを愛撫し、迎え入れようとペニスの動きに合わせるように揺れている…。
+	ENDIF
+PRINTFORML
+PRINTFORML 幾度かの攻防を繰り返し、なんとか挿入だけは免れていた%CALLNAME:L_I%であったが、その動きの中でずれたパンツがペニスに引っかかり、逆に挿入を導くかの如く体の中心にペニスがセットされてしまう。。
+PRINTFORML 徐々に侵入してくる赤黒く大きなペニス。本来迎え入れるべきではない異種のペニスの侵入に%CALLNAME:L_I%の体は全力で拒否反応を示し、強烈な悪寒と吐き気を覚える。
+PRINTFORMW しかしそれでも侵略は止まらず、ついにその大きなペニスは%CALLNAME:L_I%の体に完全に飲み込まれてしまった…。
+PRINTFORML
+PRINTFORML 인간同士のセックスとは違い、相手のことなど考えない野生の繁殖行為に%CALLNAME:L_I%は完全に翻弄されている。
+PRINTFORMW だが、その体を貫く激しい感覚に、勘違いした体は相手をつがいと認め、快楽を生み出し始める…。
+PRINTFORML 野良犬に범해짐てしまったショックと湧き上がってくる快感に%CALLNAME:L_I%が翻弄されている間に、野良犬が動きが激しくなっていく。
+PRINTFORML 野良犬が射精体勢に入ったことを察した%CALLNAME:L_I%はそれだけはダメだと懇願するが、野良犬に通じるはずもなく…。
+PRINTFORMW 数秒後、子宮口にはまり込む程奥まで打ち込まれた野良犬のペニスは、인간では考えられないほど大量の精子を%CALLNAME:L_I%の子宮へと送り込み始めた…。
+PRINTFORML
+;-------------------------------------------------
+;성녀의자궁がない場合
+;-------------------------------------------------
+	IF TALENT:L_I:성녀의자궁 == 0
+		PRINTFORML 犬から射精されているというショックと、大量の精液によって強制的に感じさせられる快感に身動きが取れない%CALLNAME:L_I%。
+		PRINTFORML それをしり目に、勝ち誇ったかのように射精を続ける野良犬。
+		PRINTFORML 数分後、満足したのか野良犬はペニスを抜き、そのままソファーで眠り始めた。。
+		PRINTFORMW それでも動けないでいる%CALLNAME:L_I%であったが、このままいるわけにもいかないと身支度を整え始める。
+		PRINTFORMW のんきに眠っている野良犬をにらみつけるが、なぜか敵意は湧いてこず、ただただショックを受けている頭のまま倉庫を後にした…。
+		PRINTFORMW 道中、%CALLNAME:L_I%の頭のなかでは、なぜ野良犬に敵意を持てなかったのか、あんな行為の最中なのになぜ自分は感じていたのか、また自分はここにきてしまうのだろうか、といった疑問が渦巻いている…。
+		PRINTFORML 
+		PRINTFORML 【%CALLNAME:L_I%は野良犬に범해짐てしまった…】
+		PRINTFORML 
+		SIF CSTR:L_I:첫섹스상대명 == ""
+			CSTR:L_I:첫섹스상대명 = 野良犬
+		SIF CSTR:L_I:첫절정상대명 ==""
+			CSTR:L_I:첫절정상대명 = 野良犬
+		SIF CSTR:L_I:첫질사상대명 ==""
+			CSTR:L_I:첫질사상대명 = 野良犬
+	
+		TALENT:L_I:비처녀 = 1
+		TCVAR:L_I:履歴_EXP_処女喪失 = 1
+		EXP:L_I:Ｖ경험 += 1
+		EXP:L_I:성교경험 += 1
+		EXP:L_I:질싸경험 += 1
+		EXP:L_I:절정경험 += 1
+		CFlag:L_I:犬_遭遇回数 += 1
+	ENDIF
+	
+;-------------------------------------------------
+;성녀의자궁持ちの場合
+;-------------------------------------------------
+IF TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML 犬から射精されているというありえない事実に、茫然としている%CALLNAME:L_I%。
+		PRINTFORML しかし、そのハッキリしない頭でも感じられるほど、彼女の下腹部から強烈な衝動が沸き上がっていた。
+		PRINTFORMW 彼女の子宮が自分の役割をしきりにアピールしているかのようだ。
+		PRINTFORML
+		PRINTFORML "성녀의자궁"
+		PRINTFORMW
+		PRINTFORMW どんな종족でも受け入れられる彼女の子宮は、完全な異種である犬が相手であってもその力を発揮できてしまう…。
+		PRINTFORML むしろ、인간相手では受けられない圧倒的なまでの射精量に嬉々として精液を受け止め、この相手こそが待ち望んでいた繁殖相手であると卵巣を活発に活動され始める。
+		PRINTFORML %CALLNAME:L_I%の思いなど完全に無視し、彼女の子宮は野良犬の子供を孕もうとその能力を完全に目覚めさせていた…。
+		PRINTFORMW 野良犬も%CALLNAME:L_I%が自分の遺伝子を受け入れられる存在であることを理解しているのか、通常ですら多い精液を、何度も%CALLNAME:L_I%に打ち込み、絶対に目の前の雌を孕ませようとしている。
+
+		;野良犬に対しての卵子최대내구치
+		L_RNS_MAX = 500+CFLAG:L_I:수정최대내구치
+		;異種な分、人よりは수정しづらい
+		;野良犬に対しての卵子현재내구치
+		L_RNS_NOW = L_RNS_MAX
+		;野良犬に対しての수정확률
+		L_JYSI = (CFLAG:L_I:수정확률/3)
+		;野良犬に種付けされる回数
+		L_SEX = (RAND:6)+6
+DO
+		;野良犬の精液の強さ
+		L_SIEK = (40+RAND:40)
+		IF !RAND:5
+			PRINTFORML 「…あぐっ！…あっ…やめっ…強すぎるよぉ……！」
+		ELSEIF !RAND:4
+			PRINTFORML 「もうだめっ……犬の赤ちゃんなんて임신できないってばぁ！」
+		ELSEIF !RAND:3
+			PRINTFORML 「もう出さないでぇ……子宮が勘違いしちゃうからぁ……」
+		ELSEIF !RAND:2
+			PRINTFORML 「……あうっ…なんでこんな気持ちに…だめだってばぁ……」
+		ELSE
+			PRINTFORML 「あんっ……だめなんだから!…犬とセックスして感じちゃうなんてぇ!」
+		ENDIF
+	SETCOLOR 250,50,200	
+	IF TALENT:L_I:수정 == 1
+		IF !RAND:3
+			PRINTFORML すでに%CALLNAME:L_I%の卵子は野良犬の精子に수정していたが、射精の快楽におぼれた野良犬はさらに子種を注ぎ込んでいく…
+		ELSEIF !RAND:2
+			PRINTFORML %CALLNAME:L_I%の수정卵に野良犬の精子が殺到していくが、すでに野良犬の種を抱いている卵は堅い殻に包まれ新たな遺伝子の侵入を拒んでいる…
+		ELSE
+			PRINTFORML 目の前の雌を絶対に孕ませようと、野良犬はすでに수정している%CALLNAME:L_I%の子宮に精液を送り続けている…
+		ENDIF
+	ELSE
+		IF L_RNS_NOW != 0
+			IF !RAND:3
+				PRINTFORML 力強い雄の精液に、子宮は異種にもかかわらずその遺伝子を受け入れるべく準備を整えている…
+			ELSEIF !RAND:2
+				PRINTFORML 宿してはならない相手と気付かない子宮は、積極的に孕もうと卵巣を活発に動かし수정の準備を始めた…
+			ELSE
+				PRINTFORML 인간ではありえないほど濃厚な精液を受け止めた子宮は、임신の期待に歓喜するかのように打ち震えている…
+			ENDIF
+			PRINTFORML 수정耐久値:{L_RNS_NOW} → {L_RNS_NOW-L_SIEK} 
+			L_RNS_NOW -= L_SIEK
+			IF L_RNS_NOW <= 0
+				IF !RAND:3
+					PRINTFORML 【수정体勢】野良犬の遺伝子を受け入れるべく%CALLNAME:L_I%の子宮は体勢を整え、수정卵が誕生するのを今かと待ち構えている…。
+					PRINTFORMW
+				ELSEIF !RAND:2
+					PRINTFORML 【수정体勢】野良犬の精液でパンパンになった%CALLNAME:L_I%の子宮に、卵巣は今がその時と排卵を開始した…。
+					PRINTFORMW
+				ELSE
+					PRINTFORML 【수정体勢】大量の野良犬の精液を浴びせられた%CALLNAME:L_I%の子宮は完全に수정する気マンマンで活発に活動している…。
+					PRINTFORMW
+				ENDIF
+				L_RNS_NOW = 0
+			ENDIF
+		ELSEIF L_RNS_NOW == 0
+			;出目
+			L_JYSI_KKRT = RAND:100
+			;임신하기쉬움、임신하기어려움の判定。성녀의자궁前提なので임신하기어려움は効果半減。
+			IF TALENT:L_I:임신하기쉬움 == 1
+				L_JYSI_KKRT -= 20
+				PRINTFORML %CALLNAME:L_I%の子宮は犬の遺伝子であっても積極的に取り込もうとしている…【出目減少】
+			ELSEIF TALENT:L_I:임신하기어려움 == 1
+				L_JYSI_KKRT += 10
+				PRINTFORML %CALLNAME:L_I%の子宮は異種である野良犬の精液に必死に저항している…【出目増加】
+			ENDIF
+			PRINTFORML 【수정확률:{L_JYSI}】【出目:{L_JYSI_KKRT}】
+			IF L_JYSI > L_JYSI_KKRT
+				PRINTFORML
+				PRINTFORML 【―――수정―――】
+				PRINTFORMW
+				IF L_RNS_MAX < 600
+					PRINTFORML 積極的に孕みたがっている%CALLNAME:L_I%の卵子は、異種の遺伝子であろうと関係なく積極的に野良犬の精子に受け入れてしまった。
+					PRINTFORMW 野良犬と%CALLNAME:L_I%の遺伝子が混ざり合い、新たな生物を生みださんと수정卵は細胞分裂を開始する…
+				ELSEIF L_RNS_MAX > 1000
+					PRINTFORML 異種の精子に対して수정してはいけない相手だとかたくなに阻んでいた卵子だったが、執拗な精子の攻撃についに卵子を覆う膜を溶かされ侵入を許してしまう。
+					PRINTFORMW 異種の遺伝子によって無残にも蹂躙された卵子は本来孕むはずのない生命になるべく、ビクンビクンと脈打ち始める…
+				ELSEIF L_RNS_MAX >= 600
+					PRINTFORML 人の精子とは比べものにならないほど強靭な犬の精子に群がられ、初めは저항していた卵子もあっけなく膜を貫通され수정してしまった…。
+					PRINTFORMW 犬の遺伝子に支配された수정卵は、%CALLNAME:L_I%の遺伝子を侵食し、どのような生物として生まれ出でるのだろうが…。
+				ENDIF
+				TALENT:L_I:수정 += 1
+				TALENT:L_I:피탁란 += 1
+				CFLAG:L_I:임신フラグ = 72
+			ELSE
+				PRINTFORML
+				PRINTFORML 【――수정回避――】
+				PRINTFORML
+				PRINTFORMW 胎内に注がれた野良犬の精子はいまだ卵子の膜を貫通することができず、繰り返し侵入を試みようと卵子をつつきまわしている…。
+			ENDIF
+		ENDIF
+	ENDIF
+	;種付け回数の減少
+	L_SEX -= 1
+	RESETCOLOR
+;種付け回数が0になるまで繰り返す
+LOOP L_SEX != 0
+
+	;수정しなかった
+	IF TALENT:L_I:수정 == 0
+	SETCOLOR 250,50,200
+	PRINTFORML
+	PRINTFORML 全ての精液を吐き出したのだろう、野良犬は%CALLNAME:L_I%からペニスを抜き去り、ソファーの上で寝息を書き始めた。
+	PRINTFORML 何度も野良犬の精液を受け止めた%CALLNAME:L_I%は、何度も절정を繰り返しだらしなく脱力している。
+	PRINTFORMW しかし大量の精液を受け入れながらも本来の機能を発揮できなかった%CALLNAME:L_I%の子宮はずっと熱くうずいたままだった。
+	PRINTFORML
+	PRINTFORML 調査に戻ろうと身支度を整える%CALLNAME:L_I%。だが、その눈は常に野良犬をとらえており熱い視線を送り続けている。
+	PRINTFORML %CALLNAME:L_I%は予感していた。またここを訪れることになるだろう…。
+	PRINTFORMW そしてその時こそついにその本懐を果たすのだ、子宮から感じる熱に突き動かされ%CALLNAME:L_I%は調査へ戻っていった…。
+
+	SIF CSTR:L_I:첫섹스상대명 == ""
+		CSTR:L_I:첫섹스상대명 = 野良犬
+	SIF CSTR:L_I:첫절정상대명 ==""
+		CSTR:L_I:첫절정상대명 = 野良犬
+	SIF CSTR:L_I:첫질사상대명 ==""
+		CSTR:L_I:첫질사상대명 = 野良犬
+	
+	TALENT:L_I:비처녀 = 1
+	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	EXP:L_I:Ｖ경험 += 1
+	EXP:L_I:성교경험 += 1
+	EXP:L_I:질싸경험 += 1
+	EXP:L_I:절정경험 += 1
+	CFlag:L_I:犬_遭遇回数 += 1
+	ENDIF
+
+	;수정した
+	IF TALENT:L_I:수정 == 1
+	SETCOLOR 250,50,200
+	PRINTFORML
+	PRINTFORML 何度も射精を繰り返す野良犬であったが、急にペニスを抜き去り%CALLNAME:L_I%の事を見つめ始めた。
+	PRINTFORML 圧倒的な快楽に流されていた%CALLNAME:L_I%であったが、急に止まった快楽の供給に疑問を覚える。
+	PRINTFORMW 野良犬の事を見てみるとどうやら%CALLNAME:L_I%の下腹部をジッとみているようだ…。
+	PRINTFORML
+	PRINTFORML %CALLNAME:L_I%は野良犬が何を見ているのかに思い至る。%CALLNAME:L_I%の子宮だ…。
+	PRINTFORMW
+	PRINTFORML 彼が存分に精液を注ぎ込み、己の遺伝子を植え付けた%CALLNAME:L_I%の子宮の位置を見透かしたように観察している。
+	PRINTFORML 今更ながらぶり返してきた嫌な予感に身震いしていると%CALLNAME:L_I%はふいに下腹部に微痛を感じた。
+	PRINTFORML
+	PRINTFORML なぜか%CALLNAME:L_I%は分かってしまった。自分は目の前の雄の子供を孕んだのだと。禁忌の수정卵が本来あり得ないはずの人である%CALLNAME:L_I%の子宮に着床したのだと。
+	PRINTFORMW
+	PRINTFORML 禁忌の子供を孕んでしまったという공포に打ち震える%CALLNAME:L_I%を観察していた野良犬は、%CALLNAME:L_I%が完全に自分のメスとなったことを感じ取り、悠々とソファーに乗り寝息を立て始めた。
+	PRINTFORMW あまりのショックに身動きが取れない%CALLNAME:L_I%ではあったが、幾何かの後このままここ居てもしょうがないとのろのろと起き上がり身支度を整え倉庫を後にする。
+	PRINTFORML 誰にも相談できない秘密を体内に抱え、%CALLNAME:L_I%は歩きだす。
+	PRINTFORMW 絶望が身を包んでいるが、なぜか子宮からは暖かなぬくもりが沸き上がっている。
+	PRINTFORML
+	PRINTFORML これからどうすべきだろうか、苦悩する%CALLNAME:L_I%であったが、心の奥底ではすでに気づいていた、もはや自分は子宮の言うことから逃れられないのだろう、何度だってつがいとなったあの雄の子供を産むのだと…。
+	PRINTFORMW
+	SIF CSTR:L_I:첫섹스상대명 == ""
+		CSTR:L_I:첫섹스상대명 = 野良犬
+	SIF CSTR:L_I:첫절정상대명 ==""
+		CSTR:L_I:첫절정상대명 = 野良犬
+	SIF CSTR:L_I:첫질사상대명 ==""
+		CSTR:L_I:첫질사상대명 = 野良犬
+	
+	TALENT:L_I:비처녀 = 1
+	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	EXP:L_I:Ｖ경험 += 1
+	EXP:L_I:성교경험 += (RAND:9)+3
+	EXP:L_I:질싸경험 += (RAND:9)+3
+	EXP:L_I:절정경험 += (RAND:9)+3
+	CFlag:L_I:犬_遭遇回数 += 1
+	ENDIF
+ENDIF
+
+CASE 1
+	PRINTFORML やはり何か嫌な予感がする。
+	PRINTFORML こういう時は直観を信じて行動するのが危険な調査で生き残る秘訣だ。
+	PRINTFORMW そう考えながら%CALLNAME:L_I%は倉庫とは別の方向へ進路を取った。
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+;-------------------------------------------------
+;犬の花嫁　花嫁編
+;CFlag:犬_遭遇回数４回以上の時
+;-------------------------------------------------
+@RPG_EVENT_802_S5(L_I)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_SIEK
+#DIM L_RNS_MAX
+#DIM L_RNS_NOW
+#DIM L_JYSI
+#DIM L_JYSI_KKRT
+#DIM L_SEX
+
+SETCOLOR 250,50,200
+PRINTFORML 野良犬に범해짐てしまったあの日から、%CALLNAME:L_I%の体には、特に子宮に消えない火がずっと灯されているようだった。
+PRINTFORMW 嫌悪感しかないはずの体験…。だが、気が付くと%CALLNAME:L_I%の足は自然とあの倉庫へと向かっている…。
+	IF TALENT:L_I:수정 == 1 && TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML すでに子を孕んでいる%CALLNAME:L_I%の子宮は、精液を受け入れたとしても新たに野良犬の子を宿すことはない。。
+		PRINTFORMW しかし、あの時の強烈な快感が%CALLNAME:L_I%の体にいつまでもくすぶっていた…。
+	ENDIF
+PRINTFORML 倉庫では、野良犬がまるで王様のごとくソファーに寝そべり、%CALLNAME:L_I%の事を待ち受けていた。。
+PRINTFORMW %CALLNAME:L_I%は自然と野良犬に近寄り、すでに半勃ち状態の赤黒いペニスに愛撫を開始する。。
+PRINTFORML 雌犬へと成り下がっている%CALLNAME:L_I%は、ペニスが完全に勃起したことを確認すると、下半身を露出し尻を大きく突き出し、野良犬を유혹する。
+PRINTFORMW 完全に子宮に支配されている%CALLNAME:L_I%の股間はすでに愛液でぐしょぐしょになっており、大きな野良犬のペニスでも簡単に飲み込んでしまうだろう。
+PRINTFORML %CALLNAME:L_I%の準備ができていることを理解した野良犬は、본능のままに%CALLNAME:L_I%にとびかかり"ずんっ"と一息に%CALLNAME:L_I%を貫いた。
+PRINTFORML 押し寄せる圧倒的なまでの快感に一人と一匹、いや生殖の짐승と化した２匹は遺伝子を混ぜ合わせる行為に没頭していく…。
+PRINTFORMW 幾度となく腰を打ち付け、快楽をむさぼる野良犬であったが、ついに限界を迎えたのかぶるるっと身震いしたあと、%CALLNAME:L_I%に大量の精液を送り込み始めた…。。
+
+;-------------------------------------------------
+;성녀의자궁がない場合
+;-------------------------------------------------
+	IF TALENT:L_I:성녀의자궁 == 0
+		PRINTFORML 犬から射精されているというショックと、大量の精液によって強制的に感じさせられる快感に身動きが取れない%CALLNAME:L_I%。
+		PRINTFORML それをしり目に、勝ち誇ったかのように射精を続ける野良犬。
+		PRINTFORMW 数分後、満足したのか野良犬はペニスを抜き、そのままソファーで眠り始めた。。
+		PRINTFORML それでも動けないでいる%CALLNAME:L_I%であったが、このままいるわけにもいかないと身支度を整え始める。
+		PRINTFORML のんきに眠っている野良犬をにらみつけるが、なぜか敵意は湧いてこず、ただただショックを受けている頭のまま倉庫を後にした…。
+		PRINTFORMW 道中、%CALLNAME:L_I%の頭のなかでは、なぜ野良犬に敵意を持てなかったのか、あんな行為の最中なのになぜ自分は感じていたのか、また自分はここにきてしまうのだろうか、といった疑問が渦巻いている…。
+		PRINTFORML 
+		PRINTFORML 【%CALLNAME:L_I%は野良犬に범해짐てしまった…】
+		PRINTFORML 
+		SIF CSTR:L_I:첫섹스상대명 == ""
+			CSTR:L_I:첫섹스상대명 = 野良犬
+		SIF CSTR:L_I:첫절정상대명 ==""
+			CSTR:L_I:첫절정상대명 = 野良犬
+		SIF CSTR:L_I:첫질사상대명 ==""
+			CSTR:L_I:첫질사상대명 = 野良犬
+	
+		TALENT:L_I:비처녀 = 1
+		TCVAR:L_I:履歴_EXP_処女喪失 = 1
+		EXP:L_I:Ｖ경험 += 1
+		EXP:L_I:성교경험 += 1
+		EXP:L_I:질싸경험 += 1
+		EXP:L_I:절정경험 += 1
+		CFlag:L_I:犬_遭遇回数 += 1
+	ENDIF
+	
+;-------------------------------------------------
+;성녀의자궁持ちの場合
+;-------------------------------------------------
+IF TALENT:L_I:성녀의자궁 == 1
+		PRINTFORML 犬から射精されているというありえない事実に、茫然としている%CALLNAME:L_I%。
+		PRINTFORML しかし、そのハッキリしない頭でも感じられるほど、彼女の下腹部から強烈な衝動が沸き上がっていた。
+		PRINTFORMW 彼女の子宮が自分の役割をしきりにアピールしているかのようだ。
+		PRINTFORML
+		PRINTFORML "성녀의자궁"
+		PRINTFORMW
+		PRINTFORMW どんな종족でも受け入れられる彼女の子宮は、完全な異種である犬が相手であってもその力を発揮できてしまう…。
+		PRINTFORML むしろ、인간相手では受けられない圧倒的なまでの射精量に嬉々として精液を受け止め、この相手こそが待ち望んでいた繁殖相手であると卵巣を活発に活動され始める。
+		PRINTFORML %CALLNAME:L_I%の思いなど完全に無視し、彼女の子宮は野良犬の子供を孕もうとその能力を完全に目覚めさせていた…。
+		PRINTFORMW 野良犬も%CALLNAME:L_I%が自分の遺伝子を受け入れられる存在であることを理解しているのか、通常ですら多い精液を、何度も%CALLNAME:L_I%に打ち込み、絶対に目の前の雌を孕ませようとしている。
+
+		;野良犬に対しての卵子최대내구치
+		L_RNS_MAX = 500+CFLAG:L_I:수정최대내구치
+		;異種な分、人よりは수정しづらい
+		;野良犬に対しての卵子현재내구치
+		L_RNS_NOW = L_RNS_MAX
+		;野良犬に対しての수정확률
+		L_JYSI = (CFLAG:L_I:수정확률/3)+(CFLAG:L_I:犬_出産回数*10)
+		;野良犬に種付けされる回数
+		L_SEX = (RAND:6)+6+(CFLAG:L_I:犬_交配回数/3)
+	DO
+		;野良犬の精液の強さ
+		L_SIEK = (40+RAND:40)+CFLAG:L_I:犬_交配回数+(CFLAG:L_I:犬_出産回数*10)
+		
+		IF !RAND:5
+			PRINTFORML 「…あぐっ！…あっ…やめっ…強すぎるよぉ……！」
+		ELSEIF !RAND:4
+			PRINTFORML 「もうだめっ……犬の赤ちゃんなんて임신できないってばぁ！」
+		ELSEIF !RAND:3
+			PRINTFORML 「もう出さないでぇ……子宮が勘違いしちゃうからぁ……」
+		ELSEIF !RAND:2
+			PRINTFORML 「……あうっ…なんでこんな気持ちに…だめだってばぁ……」
+		ELSE
+			PRINTFORML 「あんっ……だめなんだから…犬とセックスして感じちゃうなんて……」
+		ENDIF	
+	SETCOLOR 250,50,200
+	IF TALENT:L_I:수정 == 1
+		IF !RAND:3
+			PRINTFORML すでに%CALLNAME:L_I%の卵子は野良犬の精子に수정していたが、射精の快楽におぼれた野良犬はさらに子種を注ぎ込んでいく…
+		ELSEIF !RAND:2
+			PRINTFORML %CALLNAME:L_I%の수정卵に野良犬の精子が殺到していくが、すでに野良犬の種を抱いている卵は堅い殻に包まれ新たな遺伝子の侵入を拒んでいる…
+		ELSE
+			PRINTFORML 目の前の雌を絶対に孕ませようと、野良犬はすでに수정している%CALLNAME:L_I%の子宮に精液を送り続けている…
+		ENDIF
+	ELSE
+		IF L_RNS_NOW != 0
+			IF !RAND:3
+				PRINTFORML 力強い雄の精液に、子宮は異種にもかかわらずその遺伝子を受け入れるべく準備を整えている…
+			ELSEIF !RAND:2
+				PRINTFORML 宿してはならない相手と気付かない子宮は、積極的に孕もうと卵巣を活発に動かし수정の準備を始めた…
+			ELSE
+				PRINTFORML 인간ではありえないほど濃厚な精液を受け止めた子宮は、임신の期待に歓喜するかのように打ち震えている…
+			ENDIF
+			PRINTFORML 수정耐久値:{L_RNS_NOW} → {L_RNS_NOW-L_SIEK} 
+			L_RNS_NOW -= L_SIEK
+			IF L_RNS_NOW <= 0
+				IF !RAND:3
+					PRINTFORML 【수정体勢】野良犬の遺伝子を受け入れるべく%CALLNAME:L_I%の子宮は体勢を整え、수정卵が誕生するのを今かと待ち構えている…。
+					PRINTFORMW
+				ELSEIF !RAND:2
+					PRINTFORML 【수정体勢】野良犬の精液でパンパンになった%CALLNAME:L_I%の子宮に、卵巣は今がその時と排卵を開始した…。
+					PRINTFORMW
+				ELSE
+					PRINTFORML 【수정体勢】大量の野良犬の精液を浴びせられた%CALLNAME:L_I%の子宮は完全に수정する気マンマンで活発に活動している…。
+					PRINTFORMW
+				ENDIF
+				L_RNS_NOW = 0
+			ENDIF
+		ELSEIF L_RNS_NOW == 0
+			;出目
+			L_JYSI_KKRT = RAND:100
+			;임신하기쉬움、임신하기어려움の判定。성녀의자궁前提なので임신하기어려움は効果半減。
+			IF TALENT:L_I:임신하기쉬움 == 1
+				L_JYSI_KKRT -= 20
+				PRINTFORML %CALLNAME:L_I%の子宮は犬の遺伝子であっても積極的に取り込もうとしている…【出目減少】
+			ELSEIF TALENT:L_I:임신하기어려움 == 1
+				L_JYSI_KKRT += 10
+				PRINTFORML %CALLNAME:L_I%の子宮は異種である野良犬の精液に必死に저항している…【出目増加】
+			ENDIF
+			PRINTFORML 【수정확률:{L_JYSI}】【出目:{L_JYSI_KKRT}】
+			IF L_JYSI > L_JYSI_KKRT
+				PRINTFORML
+				PRINTFORML 【―――수정―――】
+				PRINTFORMW
+				IF L_RNS_MAX < 600
+					PRINTFORML 積極的に孕みたがっている%CALLNAME:L_I%の卵子は、異種の遺伝子であろうと関係なく積極的に野良犬の精子に受け入れてしまった。
+					PRINTFORMW 野良犬と%CALLNAME:L_I%の遺伝子が混ざり合い、新たな生物を生みださんと수정卵は細胞分裂を開始する…
+				ELSEIF L_RNS_MAX > 1000
+					PRINTFORML 異種の精子に対して수정してはいけない相手だとかたくなに阻んでいた卵子だったが、執拗な精子の攻撃についに卵子を覆う膜を溶かされ侵入を許してしまう。
+					PRINTFORMW 異種の遺伝子によって無残にも蹂躙された卵子は本来孕むはずのない生命になるべく、ビクンビクンと脈打ち始める…
+				ELSEIF L_RNS_MAX >= 600
+					PRINTFORML 人の精子とは比べものにならないほど強靭な犬の精子に群がられ、初めは저항していた卵子もあっけなく膜を貫通され수정してしまった…。
+					PRINTFORMW 犬の遺伝子に支配された수정卵は、%CALLNAME:L_I%の遺伝子を侵食し、どのような生物として生まれ出でるのだろうが…。
+				ENDIF
+				TALENT:L_I:수정 += 1
+				TALENT:L_I:피탁란 += 1
+				CFLAG:L_I:임신フラグ = 72
+			ELSE
+				PRINTFORML
+				PRINTFORML 【――수정回避――】
+				PRINTFORML
+				PRINTFORMW 胎内に注がれた野良犬の精子はいまだ卵子の膜を貫通することができず、繰り返し侵入を試みようと卵子をつつきまわしている…。
+			ENDIF
+		ENDIF
+	ENDIF
+	;種付け回数の減少
+	L_SEX -= 1
+	RESETCOLOR
+;種付け回数が0になるまで繰り返す
+LOOP L_SEX != 0
+
+	;수정しなかった
+	IF TALENT:L_I:수정 == 0
+	SETCOLOR 250,50,200
+	PRINTFORML
+	PRINTFORML 全ての精液を吐き出したのだろう、野良犬は%CALLNAME:L_I%からペニスを抜き去り、ソファーの上で寝息を書き始めた。
+	PRINTFORML 何度も野良犬の精液を受け止めた%CALLNAME:L_I%は、何度も절정を繰り返しだらしなく脱力している。
+	PRINTFORMW しかし大量の精液を受け入れながらも本来の機能を発揮できなかった%CALLNAME:L_I%の子宮はずっと熱くうずいたままだった。
+	PRINTFORML
+	PRINTFORML 調査に戻ろうと身支度を整える%CALLNAME:L_I%。だが、その눈は常に野良犬をとらえており熱い視線を送り続けている。
+	PRINTFORML %CALLNAME:L_I%は予感していた。またここを訪れることになるだろう…。
+	PRINTFORMW そしてその時こそついにその本懐を果たすのだ、子宮から感じる熱に突き動かされ%CALLNAME:L_I%は調査へ戻っていった…。
+
+	SIF CSTR:L_I:첫섹스상대명 == ""
+		CSTR:L_I:첫섹스상대명 = 野良犬
+	SIF CSTR:L_I:첫절정상대명 ==""
+		CSTR:L_I:첫절정상대명 = 野良犬
+	SIF CSTR:L_I:첫질사상대명 ==""
+		CSTR:L_I:첫질사상대명 = 野良犬
+	
+	TALENT:L_I:비처녀 = 1
+	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	EXP:L_I:Ｖ경험 += 1
+	EXP:L_I:성교경험 += 1
+	EXP:L_I:질싸경험 += 1
+	EXP:L_I:절정경험 += 1
+	CFlag:L_I:犬_遭遇回数 += 1
+	ENDIF
+
+	;수정した
+	IF TALENT:L_I:수정 == 1
+	SETCOLOR 250,50,200
+	PRINTFORML
+	PRINTFORML 何度も射精を繰り返す野良犬であったが、急にペニスを抜き去り%CALLNAME:L_I%の事を見つめ始めた。
+	PRINTFORML 圧倒的な快楽に流されていた%CALLNAME:L_I%であったが、急に止まった快楽の供給に疑問を覚える。
+	PRINTFORMW 野良犬の事を見てみるとどうやら%CALLNAME:L_I%の下腹部をジッとみているようだ…。
+	PRINTFORML
+	PRINTFORML %CALLNAME:L_I%は野良犬が何を見ているのかに思い至る。%CALLNAME:L_I%の子宮だ…。
+	PRINTFORMW
+	PRINTFORML 彼が存分に精液を注ぎ込み、己の遺伝子を植え付けた%CALLNAME:L_I%の子宮の位置を見透かしたように観察している。
+	PRINTFORML 今更ながらぶり返してきた嫌な予感に身震いしていると%CALLNAME:L_I%はふいに下腹部に微痛を感じた。
+	PRINTFORML
+	PRINTFORML なぜか%CALLNAME:L_I%は分かってしまった。自分は目の前の雄の子供を孕んだのだと。禁忌の수정卵が本来あり得ないはずの人である%CALLNAME:L_I%の子宮に着床したのだと。
+	PRINTFORMW
+	PRINTFORML 禁忌の子供を孕んでしまったという공포に打ち震える%CALLNAME:L_I%を観察していた野良犬は、%CALLNAME:L_I%が完全に自分のメスとなったことを感じ取り、悠々とソファーに乗り寝息を立て始めた。
+	PRINTFORMW あまりのショックに身動きが取れない%CALLNAME:L_I%ではあったが、幾何かの後このままここ居てもしょうがないとのろのろと起き上がり身支度を整え倉庫を後にする。
+	PRINTFORML 誰にも相談できない秘密を体内に抱え、%CALLNAME:L_I%は歩きだす。
+	PRINTFORMW 絶望が身を包んでいるが、なぜか子宮からは暖かなぬくもりが沸き上がっている。
+	PRINTFORML
+	PRINTFORML これからどうすべきだろうか、苦悩する%CALLNAME:L_I%であったが、心の奥底ではすでに気づいていた、もはや自分は子宮の言うことから逃れられないのだろう、何度だってつがいとなったあの雄の子供を産むのだと…。
+	PRINTFORMW
+	
+	EXP:L_I:Ｖ경험 += (RAND:6)+6
+	EXP:L_I:성교경험 += (RAND:6)+6
+	EXP:L_I:질싸경험 += (RAND:6)+6
+	EXP:L_I:절정경험 += (RAND:6)+6
+	CFlag:L_I:犬_遭遇回数 += 1
+	ENDIF
+ENDIF
+
+RESETCOLOR
+DRAWLINE

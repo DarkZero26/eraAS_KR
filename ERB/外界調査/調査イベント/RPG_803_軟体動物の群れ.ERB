@@ -1,0 +1,119 @@
+﻿;-------------------------------------------------
+;軟体動物の群れ
+;-------------------------------------------------
+@RPG_EVENT_803(ARG:0,ARG:1)
+#DIM L_INPUT
+#DIM L_I
+
+ARG = Flag:調査キャラ
+Flag:調査イベント発生中 = 1
+Flag:조사이벤트번호 = 803
+
+L_I = ARG
+CLEARLINE LINECOUNT
+DRAWLINE
+SETCOLOR 150,250,150
+PRINTFORML 【조사 이벤트:연체생물 무리】
+PRINTFORML 
+
+PRINTFORML 폐공장의 한 구획에서 비정상적으로 높은 습도를 검지했다. 이를 조사해 주었으면 한다.
+PRINTFORMW 후방부대로부터 요청 받은 %조사처리(CALLNAME:L_I,"는")% 신중히 폐공장 내부를 조사하고 있다.
+PRINTFORML 공기가 습해지는 것을 피부로 느끼며, %CALLNAME:L_I%의 긴장감은 높아져 간다.
+PRINTFORMW 하지만 고습도 외의 이상은 보이지 않은 채 %조사처리(CALLNAME:L_I,"는")% 이상현상의 중심지에 도착했다.
+PRINTFORML 
+PRINTFORMW 「……이건……군생지？」
+PRINTFORML 
+PRINTFORML 그곳에서 기다리고 있던 것은 주먹만한 크기의 연체생물 무리였다.
+PRINTFORML 그것들은 바닥을 덮을 정도로 밀집해, 한창 그 등 뒤에서 촉수같은 무언가를 
+PRINTFORML 공중에 뻗고는 떨면서 안개같은 것을 발생시키고 있었다.
+PRINTFORMW 비정상적인 습도는 그 행위에 인한 것으로 추정된다.
+PRINTFORML 
+PRINTFORML [0] 원인이 판명되었으므로 떠난다
+PRINTFORML [1] 생태를 조사할 필요가 있다
+PRINTFORML 
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+SELECTCASE L_INPUT
+CASE 0	;原因は判明したので立ち去る
+	PRINTFORML 비정상적인 습도의 원인은 군생 중인 연체생물이 발생시키는 안개였다.
+	PRINTFORMW 그렇게 후방부대에 보고를 보낸 %조사처리(CALLNAME:L_I,"는")% 잰 걸음으로 조사로 돌아갔다…….
+CASE 1	;生態を調査する必要がある
+	SETCOLOR 250,50,200
+	PRINTFORML 도시에서 그리 멀지 않은 곳에서 발견한 이상, 방치할 수는 없다.
+	PRINTFORMW 자세히 생태를 조사할 필요가 있다고 판단한 %조사처리(CALLNAME:L_I,"는")% 장비를 점검한다.
+	PRINTFORML 그렇게 모든 사태에 대처할 수 있을 만큼의 장비가 갖추어져 있음을 확인한 후,
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 살며시 장비를 벗어 던진다.
+	PRINTFORMW 그대로 비틀거리며 이끌리듯이 군생지에 다가가 멈춰선다.
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 모르겠지만, 이 연체생물 무리가 발하는 안개에는 두 가지 효과가 있다.
+	PRINTFORML 하나는 그들의 표피를 건조로부터 보호하는 효과.
+	PRINTFORML 다른 하나는, 그들의 생명에 위협이 가는 행위를 할 수 없게 하는 최면 효과다.
+	PRINTFORML 이 무력한 연체생물은 서로 몸을 맞대고, 안개를 짙게 발함으로써 강력한 적 조차
+	PRINTFORMW 무력화되는 것으로 목숨을 부지해왔다.
+	PRINTFORML 그 최면 효과가 담긴 공기를 자신도 모르게 흡입하고 있던 %조사처리(CALLNAME:L_I,"는")% 스스로를
+	PRINTFORML 무력화하고, 생태를 조사해야 한다는 의사도 작용되어 무방비하게 연체생물에게 대하여
+	PRINTFORMW 몸을 드러내게 된 것이다.
+	PRINTFORML 「힉…… 앗… 아아……」
+	PRINTFORML 잠시 멈춰선 %CALLNAME:L_I%의 양 다리를 기어오르는 연체생물이 향한 곳은 국문이였다.
+	PRINTFORMW 배설기관의 종착지이기도 한 곳으로 머리를 돌린 그들은, 아무런 망설임 없이 침입을 개시한다.
+	PRINTFORML 「으긋…… 아아앗… 아, 안돼……엣」
+	PRINTFORML 정상적인 의식을 유지할 수 있다면 항문을 조여 침입을 막을 수 있었을 것이다.
+	PRINTFORML 하지만 연체생물에 대하여 무력화되어 버린 지금의 %CALLNAME:L_I%에게는 저항은 무리다.
+	PRINTFORMW 무혈결성을 하기로 정한 항문을 한계까지 넓혀, 연체생물이 통과해 간다.
+	PRINTFORML 「오옥%UNICODE(0x2661)%　오오옥……%UNICODE(0x2661)%」
+	PRINTFORML 본래 배출만 하는 항문을 통해 이물이 침입해 온다.
+	PRINTFORML 게다가 그 이물은 무력하디 무력한 하등생물인 연체생물이라는 굴욕.
+	PRINTFORML 안개의 효과를 모르는 %CALLNAME:L_I%에게는 저항할 수 없는 이유마저 모르기에, 유유히 침입해 오는
+	PRINTFORMW 연체생물에게 패닉을 일으켜 버려, 구조 요청이라는 방안조차 떠올릴 수 없다.
+	PRINTFORML 「시, 싫어…… 안으로… 으힉… 들어와%UNICODE(0x2661)%」
+	PRINTFORML 한 마리, 또 한 마리가 항문으로 들어올 때마다 깊은 쾌감이 %CALLNAME:L_I%의 등줄기를 타고 올라,
+	PRINTFORML 혼란스러운 뇌에 쾌락 물질이라는 이름의 마약을 대량으로 방출해 사고를 마비시킨다.
+	PRINTFORML 이윽고 비소에 끈적끈적한 액체를 흘리기 시작한 %조사처리(CALLNAME:L_I,"였")%지만, 연체생물은
+	PRINTFORMW 그쪽 구멍에는 일절 흥미를 보이지 않고 계속해서 항문으로 쇄도한다.
+	PRINTFORML 「오곡…… 게, 게로워…… 뎌느흔, 안드려가%UNICODE(0x2661)%」
+	PRINTFORML 수십 마리의 연체생물을 장으로 받아들인 %CALLNAME:L_I%의 복부는 빵빵하게 부풀어 올랐고,
+	PRINTFORML 안에서 연체생물이 몸을 비틀 때마다 장기가 안쪽으로 흔들리는 감각에 몸부림쳤다.
+	PRINTFORML 통증인지 쾌감인지 모를 자극을 견디지 못한 뇌가 의식을 놓을 때까지 그 지옥은 계속되었고,
+	PRINTFORMW %조사처리(CALLNAME:L_I,"가")% 의식을 되찾을 무렵에는 연체생물는 완전히 자취를 감추고 있었다…….
+	SETCOLOR 150,250,150
+	PRINTFORML 
+	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 피폐해졌다…….【HP-20,SP-20】
+	CFLAG:L_I:주민_현재체력 -= 20
+	CFLAG:L_I:주민_현재기력 -= 20
+	IF TALENT:L_I:항문광 == 0
+		SETCOLOR 150,50,250
+		;PRINTFORML 【%타겟은% 연체생물에게 의해 변비가 해소되었다…】
+		PRINTFORML 【%조사처리(CALLNAME:L_I,"는")% 연체생물에 의해 항문의 쾌감이 육체에 새겨져 버렸다…….】
+		PRINTFORMW 【%조사처리(CALLNAME:L_I,"는")% 「애널광」이 되었다…….】
+		TALENT:L_I:항문광 = 1
+		RESETCOLOR
+	ENDIF
+	
+	SIF CSTR:L_I:첫A섹스상대명 ==""
+		CSTR:L_I:첫A섹스상대명 = 연체생물
+	SIF CSTR:L_I:첫절정상대명 ==""
+		CSTR:L_I:첫절정상대명 = 연체생물
+	
+	TALENT:L_I:Ａ비처녀 = 1
+	TCVAR:L_I:履歴_EXP_Ａ処女喪失 = 1
+	EXP:L_I:Ａ경험 += (RAND:11)+20
+	EXP:L_I:Ａ성교경험 += (RAND:11)+20
+	EXP:L_I:절정경험 += (RAND:11)+20
+	EXP:L_I:강간경험 += 1
+	EXP:L_I:고통쾌락경험 += (RAND:11)+20
+CASEELSE
+	GOTO INPUT_LOOP
+ENDSELECT
+
+RESETCOLOR
+DRAWLINE
+
+
+
+
+
+
+
+
+
+

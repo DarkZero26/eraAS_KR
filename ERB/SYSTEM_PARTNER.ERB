@@ -1,0 +1,122 @@
+﻿;-------------------------------------------------
+;메뉴에 파트너 표시
+;-------------------------------------------------
+@SYSTEM_PARTNER
+#DIM L_I
+#DIM P_S
+#DIMS LSTR
+
+CALL MEMBER_LIST2_1(1, 1 ,1)
+L_I = FLAG:범용변수
+FLAG:범용변수2 = FLAG:범용변수
+FLAG:범용변수 = 100
+IF FLAG:도시_파트너섹스 == 0 && TALENT:L_I:임신 == 0 && TALENT:L_I:수정 == 0 && TALENT:L_I:비처녀 && (TALENT:L_I:심취 || TALENT:L_I:애인 || TALENT:L_I:정부) && FLAG:임신機能 == 1 && FLAG:육종이벤트 == 1
+P_S = RAND:5
+LSTR =  <nonbutton pos='0'><img src='P_SEX_{P_S}' height = '900'  ypos = '0'></nonbutton><nobr>
+HTML_PRINT LSTR
+
+ELSEIF TALENT:L_I:부재 == 0
+	CALL C_PICTURE(L_I, 0, -100)
+ENDIF
+FLAG:범용변수 = 0
+; 실제로는 필요 없는데 외형을 갖추기 위해서만 깔끔함만으로 폭을 늘려본다.
+PRINTFORM 　　 　　
+CALL PRINT_RANGE_STATUS(L_I, "HP", "체력", 3, 4, "伏字", "％")
+CALL PRINT_RANGE_STATUS(L_I, "SP", "기력", 3, 4, "伏字", "％")
+PRINTL
+PRINT 　　 　　
+CALL PRINT_STATUS(L_I, "호감도", 6, 6)
+CALL PRINT_STATUS(L_I, "충성도", 6, 6)
+CALL PRINT_STATUS(L_I, "애정도", 6, 6)
+CALL PRINT_STATUS(L_I, "음란도", 6, 6)
+PRINTL
+PRINT 　　 　　
+CALL PRINT_STATUS(L_I, "인기",   6, 6, , 10000)
+CALL PRINT_STATUS(L_I, "모럴", 6, 6, (L_I==MASTER ? "伏字"#""), 500, , -500)
+CALL PRINT_STATUS(L_I, "카르마", 6, 6, (L_I==MASTER ? "伏字"#""), 500, , -500)
+CALL PRINT_STATUS(L_I, "품성",   6, 6, (L_I==MASTER ? "伏字"#""), 500, , -500)
+PRINTL
+PRINTFORML 　　 　　
+
+
+PRINTFORM 　　　　　
+SIF TALENT:L_I:부재 == 0
+	PRINTFORM %CALLNAME:L_I%
+IF FLAG:도시_파트너섹스 == 0 && TALENT:L_I:임신 == 0 && TALENT:L_I:수정 == 0 &&  TALENT:L_I:비처녀 && (TALENT:L_I:심취 || TALENT:L_I:애인 || TALENT:L_I:정부) && FLAG:임신機能 == 1  && FLAG:육종이벤트 == 1
+	CALL PARTNER_SEX
+ELSEIF TALENT:L_I:합의 != 1
+	PRINTFORML 
+;여기서 아래는 모두 합의가 있다.
+ELSEIF TALENT:L_I:유니크 != 0
+	TRYCALLFORM KOJO_DEFAULT_ENCOUNTER_K{CFLAG:L_I:NPC番号}_PARTNERTALK
+ELSEIF FLAG:도시_방위 != 0
+	PRINTDATAL
+		DATAFORM 「준비가 되면 바로 간다%CSTR:L_I:어미行く%！」
+		DATAFORM 「쓰러트리지 못하더라도 데미지만 통하면 효과는 있어%CSTR:L_I:어미대응%！」
+		DATAFORM 「데미지를 축적시키면 머지않아 적들도 물러날거라고 생각해%CSTR:L_I:어미繋ぎ%%CSTR:L_I:어미逆説%…」
+		;쓸데없이 영웅적인 대사를 추가해 보다
+		DATAFORM 「어떻게든 막아야지 %CSTR:L_I:어미肯定2%……힘낼게%CSTR:L_I:어미促進%」
+		DATAFORM 「이 도시가 %CSTR:L_I:一人称%들에게 남겨진 마지막 자리야 %CSTR:L_I:어미繋ぎ%%CSTR:L_I:어미です%、반드시 막아낸다%CSTR:L_I:어미問う2%！」
+	ENDDATA
+ELSEIF FLAG:턴조사완료 != 0
+	PRINTDATAL
+		DATAFORM 「일단 조사종료 맞지%CSTR:L_I:어미同意求む%？、잠깐 쉴게%CSTR:L_I:어미お願い%」
+		DATAFORM 「쉬고나서 다음 출격 준비를 해야죠%CSTR:L_I:어미同意求む%？」
+		DATAFORM 「획득한 물건은 확인 했어%CSTR:L_I:어미問う4%？、여유가 있으면 제작도 해봐%CSTR:L_I:어미希望%」
+		DATAFORM 「외적이 오기 전엔、세계는 어떤 느낌이었어%CSTR:L_I:어미行為%？」
+	ENDDATA
+ELSEIF TALENT:L_I:부재 == 0
+	IF TALENT:L_I:치안유지국원 && RAND:10 <= 1
+		PRINTDATAL
+			DATAFORM 「우리 관할은 평화 그 자체%CSTR:L_I:어미です%」
+			DATAFORM 「이웃지역에는 이레귤러가 나타난 모양이네%CSTR:L_I:어미許可%」
+			DATAFORM 「%CSTR:L_I:어미何？%？……아아、이건 최근에 나타난 소형외적의 자료야%CSTR:L_I:어미応答%」
+		ENDDATA
+	ELSE
+		PRINTDATAL
+			DATAFORM 「다음 습격까지 준비하고 %CSTR:L_I:어미行く%」
+			DATAFORM 「이번에는 %CSTR:L_I:一人称%가 %CSTR:L_I:二人称%를 지탱%CSTR:L_I:어미ます%」
+			DATAFORM 「조금은 쉬고 %CSTR:L_I:어미希望%、이래도 걱정%CSTR:L_I:어미繋ぎ%%CSTR:L_I:어미です%」
+			DATAFORM 「다음 습격까지 준비하고 %CSTR:L_I:어미行く%」
+			DATAFORM 「해방된 시설은 운용하고 있어%CSTR:L_I:어미問う6%？」
+			DATAFORM 「하아…이레귤러 퇴치도 힘들어%CSTR:L_I:어미応答%…」
+			DATAFORM 「외계에서는 보기 드문 종족을 만날수도 있대%CSTR:L_I:어미許可%」
+			DATAFORM 「외계가 궁금%CSTR:L_I:어미ので% 조사 하러%CSTR:L_I:어미行く%？」
+			DATAFORM 「…가끔은 %CSTR:L_I:一人称%랑 관계를 갖고도 싶은데 %CSTR:L_I:어미繋ぎ%%CSTR:L_I:어미逆説%…」
+			DATAFORM 「…그렇다면 혹시 %CSTR:L_I:어미命令%…%UNICODE(0x2661)%」
+			DATAFORM 「%CSTR:L_I:어미微笑%、오늘은 뭐해%CSTR:L_I:어미行為%？」
+		ENDDATA
+	ENDIF
+ENDIF
+
+IF TALENT:L_I:임신 != 0
+	SETCOLOR COLOR("ピンク")
+	PRINTFORM 　　　　　　　　　【임신:경과일수 {TALENT:L_I:임신}】
+ELSEIF TALENT:L_I:수정 != 0
+	SETCOLOR COLOR("ピンク")
+	PRINTFORM 　　　　　　　　　【수정:경과일수 {TALENT:L_I:임신}】
+ENDIF
+IF TALENT:L_I:탁란 != 0
+	SETCOLOR COLOR("紫")
+	PRINTFORM (탁란%UNICODE(0x2661)%)
+ENDIF
+PRINTFORML 
+RESETCOLOR
+CALL CITY_NEWS
+
+
+
+
+FLAG:범용변수 = 0
+
+
+
+
+
+
+
+
+
+
+
+

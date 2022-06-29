@@ -1,0 +1,600 @@
+﻿;-------------------------------------------------
+;交流イベント
+;-------------------------------------------------
+@TURN_EVENT_COM(ARG:0,ARG:1,ARG:2)
+#DIM L_NPC
+L_NPC = RAND:10
+
+DRAWLINE
+
+CALL TURN_EVENT_COM_Re
+
+
+IF (RAND:10 > 2) && CFLAG:3600 != 0
+;お気に入りとの交流
+	ARG:1 = CFLAG:3600
+	L_NPC = CFLAG:3600
+	CALL TURN_EVENT_COM_C(ARG:1)
+ELSEIF CFLAG:(3020+L_NPC) == 0
+;出会い
+	ARG:1 = L_NPC
+	CFLAG:(3000+L_NPC) = L_NPC
+	CALL TURN_EVENT_COM_Cup(ARG:0,ARG:1,ARG:2)
+ELSE
+;交流
+	ARG:1 = L_NPC
+	CALL TURN_EVENT_COM_C(ARG:0,ARG:1,ARG:2)
+ENDIF
+
+CALL TURN_EVENT_COM_Cup2
+
+
+
+;-------------------------------------------------
+;交流イベント　出会い
+;-------------------------------------------------
+@TURN_EVENT_COM_Cup(ARG:0,ARG:1,ARG:2)
+#DIM L_NPC
+ARG:0 = TARGET
+ARG:2 = 1
+L_NPC = ARG:1
+CFLAG:3900 -= 1
+CFLAG:(3000+L_NPC) = CFLAG:3900
+CFLAG:(3010+L_NPC) = 1
+IF ((EXP:레즈경험)/200)+RAND:300 > RAND:999
+	CFLAG:(3030+L_NPC) = 2
+ELSE
+	CFLAG:(3030+L_NPC) = 1
+ENDIF
+CFLAG:(3040+L_NPC) = (RAND:40)+10
+IF CFLAG:(3030+L_NPC) == 1
+	CALL RANDOM_N_MAN(ARG:0,ARG:1,ARG:2)
+ELSE
+	CALL RANDOM_N_LADY(ARG:0,ARG:1,ARG:2)
+ENDIF
+
+
+
+SETCOLOR 100,250,100
+PRINTFORM %타겟은% 일상 생활 속에서 우연히 
+IF CFLAG:(3030+L_NPC) == 1
+	PRINTFORM 남성 %조사처리(CSTR:(3000+L_NPC),"과")% 지인이 되었다…
+ELSE
+	PRINTFORM 여성 %조사처리(CSTR:(3000+L_NPC),"과")% 지인이 되었다…
+ENDIF
+PRINTFORML 【%CALLNAME%의 교류 리스트에 %조사처리(CSTR:(3000+L_NPC),"가")% 추가되었습니다】
+RESETCOLOR
+CFLAG:(3020+L_NPC) = 1
+CFLAG:3601 = 1
+;-------------------------------------------------
+;交流イベント　関係アップ
+;-------------------------------------------------
+@TURN_EVENT_COM_Cup2
+#DIM L_NPC
+
+L_NPC = 0
+
+REPEAT 9
+
+IF CFLAG:(3000+L_NPC) != 0
+	CFLAG:(3010+L_NPC) += RAND:3
+	CFLAG:(3050+L_NPC) += RAND:2
+ENDIF
+
+IF L_NPC == CFLAG:3600
+	CFLAG:(3010+L_NPC) += 3
+	CFLAG:(3050+L_NPC) += 1
+ENDIF
+
+SIF CFLAG:(3010+L_NPC) >= 500
+	CFLAG:(3010+L_NPC) = 500
+SIF CFLAG:(3050+L_NPC) >= 100
+	CFLAG:(3050+L_NPC) = 100
+L_NPC += 1
+REND
+
+
+
+;-------------------------------------------------
+;交流イベント　関係ランクアップ
+;-------------------------------------------------
+@TURN_EVENT_COM_CRup(ARG:0,ARG:1,ARG:2)
+#DIM L_NPC
+L_NPC = ARG:1
+SETCOLOR 250,100,0
+IF CFLAG:(3010+L_NPC) > 200 && CFLAG:(3020+L_NPC) == 4 && CFLAG:주민交流設定 >= 4  && MARK:함락각인 <= 2 && TALENT:결혼함 == 0 && TALENT:백합결혼 == 0 && TALENT:함락도 != 3
+	PRINTFORML ―――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML 【두 사람의 사랑은 마침내 맺어져, 부부 관계가 되었다…『관계:부부』】
+	PRINTFORMW ―――――――――――――――――――――――――――――――――――――――――――――――――
+	TALENT:교제중 = 0
+	IF CFLAG:(3030+L_NPC) == 1
+		TALENT:결혼함 = 1
+	ELSEIF CFLAG:(3030+L_NPC) == 2
+		TALENT:백합결혼 = 1
+	ENDIF
+	CFLAG:(3020+L_NPC) = 5
+	SIF CSTR:3501 == ""
+		CSTR:3501 = %CSTR:(3000+L_NPC)%
+ELSEIF CFLAG:(3010+L_NPC) > 150 && CFLAG:(3020+L_NPC) == 3 && CFLAG:주민交流設定 >= 3  && MARK:함락각인 <= 2 && TALENT:교제중 == 0 && TALENT:함락도 != 2 && TALENT:결혼함 == 0 && TALENT:백합결혼 == 0
+	PRINTFORML ―――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML 【두 사람은 서로 애정을 품고 교제를 시작한 듯 하다…『관계:연인』】
+	PRINTFORMW ―――――――――――――――――――――――――――――――――――――――――――――――――
+	TALENT:교제중 = 1
+	CFLAG:(3020+L_NPC) = 4
+	SIF CSTR:3500 == ""
+		CSTR:3500 = %CSTR:(3000+L_NPC)%
+ELSEIF CFLAG:(3010+L_NPC) > 100 && CFLAG:(3020+L_NPC) == 2 && CFLAG:주민交流設定 >= 2
+	PRINTFORML ―――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML 【두 사람은 확실한 신뢰 관계를 구축한 것 같다…『관계:절친』】
+	PRINTFORMW ―――――――――――――――――――――――――――――――――――――――――――――――――
+	CFLAG:(3020+L_NPC) = 3
+ELSEIF CFLAG:(3010+L_NPC) > 50 && CFLAG:(3020+L_NPC) == 1 && CFLAG:주민交流設定 >= 1
+	PRINTFORML ―――――――――――――――――――――――――――――――――――――――――――――――――
+	PRINTFORML 【%조사처리(CSTR:(3000+L_NPC),"는")% %타겟과% 허물없는 관계가 된 것 같다…『관계:친구』】
+	PRINTFORMW ―――――――――――――――――――――――――――――――――――――――――――――――――
+	CFLAG:(3020+L_NPC) = 2
+ENDIF
+RESETCOLOR
+;-------------------------------------------------
+;交流イベント　交流
+;-------------------------------------------------
+@TURN_EVENT_COM_C(ARG:0,ARG:1,ARG:2)
+#DIM L_NPC
+L_NPC = ARG:1
+
+;お気に入りとの交流
+IF (RAND:10 > 2) && CFLAG:3600 != 0
+	L_NPC = CFLAG:3600
+	ARG:1 =  CFLAG:3600
+ENDIF
+CFLAG:(3040+L_NPC) = (MARK:함락각인*10)+((CFLAG:(3050+L_NPC))/2)+RAND:50
+
+SETCOLOR 50,250,250
+PRINTFORML ―――――――――――――――――――――――――――――――――――――――――――――――――
+PRINTFORM 교류 이벤트【대상:%CSTR:(3000+L_NPC)%】
+	PRINTFORM 【
+	IF CFLAG:(3030+L_NPC) == 1
+		PRINTFORM 남
+	ELSE
+		PRINTFORM 여
+	ENDIF
+	PRINTFORM 】【관계:
+	IF CFLAG:(3020+L_NPC) == 5
+		PRINTFORM 부부
+	ELSEIF CFLAG:(3020+L_NPC) == 4
+		PRINTFORM 연인
+	ELSEIF CFLAG:(3020+L_NPC) == 3
+		PRINTFORM 절친
+	ELSEIF CFLAG:(3020+L_NPC) == 2
+		PRINTFORM 친구
+	ELSEIF CFLAG:(3020+L_NPC) == 1
+		PRINTFORM 지인
+	ELSEIF CFLAG:(3020+L_NPC) == -5
+		PRINTFORM 애인
+	ENDIF
+PRINTFORML 】【호감도:{CFLAG:(3010+L_NPC)}】【상성:{CFLAG:(3050+L_NPC)}】
+PRINTFORML ―――――――――――――――――――――――――――――――――――――――――――――――――
+
+IF CFLAG:(3020+L_NPC) == 5
+;부부
+	IF !RAND:10
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:9
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:8
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:7
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:6
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:5
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:4
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:3
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:2
+		PRINTFORML 
+		PRINTFORML 
+	ELSE
+		PRINTFORML 
+		PRINTFORML 
+	ENDIF
+ELSEIF CFLAG:(3020+L_NPC) == 4 &&  RAND:10 > 3
+;연인
+	IF !RAND:10
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:9
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:8
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:7
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:6
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:5
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:4
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:3
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:2
+		PRINTFORML 
+		PRINTFORML 
+	ELSE
+		PRINTFORML 
+		PRINTFORML 
+	ENDIF
+ELSEIF CFLAG:(3020+L_NPC) == 3 
+;절친
+	IF !RAND:10
+		PRINTFORML 샤워를 해 땀을 씻어낸 %타겟은% 속옷과 셔츠 한 벌 차림으로 거실로 돌아온다. 당연히 기다리고 있던 %조사처리(CSTR:(3000+L_NPC),"는")% 적잖이 놀랐다.
+		PRINTFORML 힐끔힐끔 셔츠 사이로 보이는 부드러운 피부를 보는 시선을 눈치챈 %타겟은% 대담한 미소를 지으며 매혹적인 행동을 취했다…….
+	ELSEIF !RAND:9
+		PRINTFORML %CSTR:(3000+L_NPC)%의 방에 오는 것도 별난 일이 아니게 되어, 제 집인양 침대에 몸을 맡긴다.
+		PRINTFORML 내친김에 틈새에 숨겨져 있던 얇은 책을 찾아내, 주름이 잡혀 있는 페이지를 조사해 나갔다…….
+	ELSEIF !RAND:8 && MARK:함락각인 == 0
+		PRINTFORML 최근 %CSTR:(3000+L_NPC)%의 얼굴을 보면 가슴이 두근거리거나, 남자다운 부분을 발견하면 뱃속이 뜨거워짐을 느낀다.
+		PRINTFORML 자기 안에 있는 암컷의 본능이 %조사처리(CSTR:(3000+L_NPC),"를")% 『상대』로 인식하고 있는 것을 인정할 수밖에 없었다…….
+	ELSEIF !RAND:7
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:6
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:5
+		PRINTFORML 
+		PRINTFORML 
+	ELSEIF !RAND:4 && CFLAG:(3060+L_NPC) != 0
+		PRINTFORML 오늘은 이야기에 열중해 버려서, 밖을 보면 상당히 어두워져 버린 것 같다.
+		PRINTFORML 이야기를 나누다 지쳐 %CSTR:(3000+L_NPC)%에게 기대자, 바지 위로도 알 수 있을 정도로 페니스가 커지는 것을 알 수 있었다.
+		PRINTFORML 눈치챈 것을 알아챈 것인지 %조사처리(CSTR:(3000+L_NPC),"는")% 빨개진 얼굴을 돌렸다…….
+	ELSEIF !RAND:3
+		PRINTFORML 평소같이 %타겟은% %조사처리(CSTR:(3000+L_NPC),"를")% 초대해 단골 카페에서 식사를 하기로 했다.
+		PRINTFORML 최근 일어난 일이나 취미 이야기로 %조사처리(CSTR:(3000+L_NPC),"와")% 이야기꽃을 피웠다…….
+	ELSEIF !RAND:2
+		PRINTFORML 눈을 뜬 %타겟은% 낯선 천장을 바라본다… 약간 자문한 끝에 %CSTR:(3000+L_NPC)%의 집에 머물렀던 것이 생각났다.
+		PRINTFORML 즉시 이부자리에서 일어나고, 아직 꿈속에 있는 %CSTR:(3000+L_NPC)%의 잠자는 모습을 즐기기로 했다…….
+	ELSE
+		PRINTFORML 취미 이야기로 흥을 돋우던 두 사람은 점심시간이 되어서 점심을 먹기 위해 나갔다.
+		PRINTFORML 문득 둘이 나란히 걷는 모습에서, 이렇게 자연스럽게 신뢰할 수 있을 정도가 되었다고 %타겟은% 자각하고 있었다…….
+	ENDIF
+ELSEIF CFLAG:(3020+L_NPC) >= 2 
+;친구
+	IF !RAND:6
+		PRINTFORML 한가했던 %타겟은% 친구 %조사처리(CSTR:(3000+L_NPC),"를")% 초대해 단골 카페에서 식사를 하기로 했다.
+		PRINTFORML 흔쾌히 승낙한 %조사처리(CSTR:(3000+L_NPC),"과")% 이야기꽃을 피웠다…….
+	ELSEIF !RAND:5
+		PRINTFORML 친해진 %CSTR:(3000+L_NPC)%의 집에 초대받아 한차례 경계했지만 별 문제는 없는 것 같다.
+		PRINTFORML 같은 취미가 있었기 때문에 화제로는 곤란할 일이 없어, 담소는 해가 질 때까지 계속되었다…….
+	ELSEIF !RAND:4
+		PRINTFORML 돌아오는 길에 갑자기 비를 내려 어떻게든 비를 피하려고 해도 적절한 장소를 찾지 못한다.
+		PRINTFORML 그 때 우산을 가진 %조사처리(CSTR:(3000+L_NPC),"를")% 발견하고, 다소 억지스럽게 같이 쓰게 되었다.
+		PRINTFORML %조사처리(CSTR:(3000+L_NPC),"는")% %CALLNAME%의 비에 젖어 비치는 옷에 흠칫하면서 고개를 돌렸다…….
+	ELSEIF !RAND:3
+		PRINTFORML 오늘은 과감히 %조사처리(CSTR:(3000+L_NPC),"를")% 초대해 보는데, 초대받은 %조사처리(CSTR:(3000+L_NPC),"는")% 조금 긴장한 것 같다.
+		PRINTFORML 그러나 그것도 처음뿐, 이야기를 시작하자마자 익숙해졌는지 즐거운 한때가 되었다…….
+	ELSEIF !RAND:2
+		PRINTFORML 목적지까지 가는 도중 %조사처리(CSTR:(3000+L_NPC),"과")% 마주친다. 보아하니 향하는 곳은 별로 다르지 않을 것 같아서 함께 가기로 했다.
+		PRINTFORML 그러는동안 시간을 때우기 위해 담소하면서 목적지로 향했다…….
+	ELSE
+		PRINTFORML 원하는 상품을 찾으러 슈퍼까지 왔는데 좀처럼 찾을 수가 없어, 같이 쇼핑 중인 %CSTR:(3000+L_NPC)%에게 말을 걸었다.
+		PRINTFORML %타겟이% 찾고 있는 물건을 상담해보자 위치를 알고 있던 %CSTR:(3000+L_NPC)%의 안내로 간신히 찾을 수 있었다…….
+	ENDIF
+ELSE
+;지인
+	IF !RAND:7
+		PRINTFORML 버스로 이동 중 옆자리에 누군가 앉아 시선을 돌려보니 %조사처리(CSTR:(3000+L_NPC),"였")%던 것 같다.
+		PRINTFORML 서로 조금 놀라기는 했지만 이동 중에 한가했던 것도 있어, 목적지까지 잡담하기로 했다…….
+	ELSEIF !RAND:6
+		PRINTFORML 구획별 대피 훈련이 시작되고, %타겟은% 대피 도중 %조사처리(CSTR:(3000+L_NPC),"를")% 발견한다.
+		PRINTFORML 달리 아는 사람도 없기 때문에 %조사처리(CSTR:(3000+L_NPC),"과")% 함께 훈련을 계속했다…….
+	ELSEIF !RAND:5
+		PRINTFORML 큰길을 걷다가 면식이 있는 사람이 있었는지 눈길이 끌린다. 아무래도 지인인 %CSTR:(3000+L_NPC)%인 것 같다.
+		PRINTFORML 한가했던 %타겟은% 심심풀이 겸 말을 걸기로 했다…….
+	ELSEIF !RAND:4
+		PRINTFORML 목이 말라 근처의 자판기로 가자 아무래도 선객이 있었던 것 같아, 가까이 가보니 %조사처리(CSTR:(3000+L_NPC),"였")%다.
+		PRINTFORML 별로 할 일도 없어서, 좋아하는 음료를 사면서 이야기를 하기로 했다…….
+	ELSEIF !RAND:3
+		PRINTFORML 건강 진단을 받으러 병원에 와는 봤지만 좀처럼 자기 차례가 돌아오지 않는다.
+		PRINTFORML 마침 %CSTR:(3000+L_NPC)%도 온 것 같아 대화로 시간을 때우기로 했다…….
+	ELSEIF !RAND:2
+		PRINTFORML 평소 잘 오지 않는 지역을 돌아다니고 있었더니 미아가 되어 버렸다.
+		PRINTFORML 그 때 우연히 %조사처리(CSTR:(3000+L_NPC),"가")% 지나가던 중이라, 길안내를 받고 무사히 길을 찾을 수 있었다…….
+	ELSE
+		PRINTFORML %타겟은% 길에서 %조사처리(CSTR:(3000+L_NPC),"과")% 딱 마주쳐 가볍게 대화를 나누었다.
+		PRINTFORML 잠깐이었지만 나쁘지 않은 기분이었던것 같다…….
+	ENDIF
+ENDIF
+
+
+FLAG:범용변수 = L_NPC
+SIF  (TALENT:수정 == 0 && TALENT:임신 == 0) && CFLAG:(3030+L_NPC) == 1 && (CFLAG:(3020+L_NPC) >= 3 && MARK:함락각인 <= 2) || (CFLAG:(3020+L_NPC) >= 4 && RAND:30 < CFLAG:(3040+L_NPC))
+	CALL TURN_EVENT_COM_SEX(ARG:1)
+
+
+CALL TURN_EVENT_COM_CRup(ARG:0,ARG:1,ARG:2)
+
+
+
+
+PRINTFORMW
+
+;-------------------------------------------------
+;交流イベント　セックス
+;-------------------------------------------------
+@TURN_EVENT_COM_SEX(ARG:1)
+#DIM L_NPC
+#DIM SEX_P
+
+L_NPC = FLAG:범용변수
+
+;あなた恋慕キャラは発生しない
+SIF (MARK:함락각인 >= 3) && (CFLAG:주민_모럴 >= -50) && (CFLAG:(3020+L_NPC) <= 4 )
+	RETURN
+;恋人未満の모럴高いキャラは発生しない
+SIF  (CFLAG:(3020+L_NPC) < 3) && (CFLAG:주민_모럴 >= -20)
+	RETURN
+
+
+SEX_P = 0
+
+
+
+
+
+
+SETCOLOR 250,50,150
+PRINTFORML ――――――――――――――――――――――――――――――――――――
+PRINTFORML 밤이 깊어지자 두 사람은 자연스럽게 살을 겹치기 시작했다…
+PRINTFORML ――――――――――――――――――――――――――――――――――――
+
+
+IF TCVAR:履歴_EXP_処女喪失 == 0 && TALENT:비처녀 != 1 ;처녀
+	PRINTFORML 맨살을 드러내고 침대 위로 쓰러지지만, 딱딱하게 발기한 %CSTR:(3000+L_NPC)%의 페니스를 보고 %타겟은% 자그마한 비명을 지른다.
+	PRINTFORML 그 모습을 본 %조사처리(CSTR:(3000+L_NPC),"는")% 걱정스럽게 물었고, %타겟은% 관념한 것 처럼 자신이 처녀임을 고백한다.
+	PRINTFORML 「가능하면 부드럽게 간다」라고 %타겟을% 일단 안심시킨 후, 우선은 손가락으로 남자를 모르는 비소를 만지작거리며, 약한 부분을 더듬으면서 애액을 분비시켜 간다.
+	PRINTFORML %CALLNAME% 쪽에서도 쾌감을 얻을 수 있는 부분을 %CSTR:(3000+L_NPC)%에게 전해, 보다 정확하게 손가락이 성감대에 닿아 서서히 질 안이 풀어지고 끈적끈적해졌다.
+	PRINTFORMW 이를 확인한 %조사처리(CSTR:(3000+L_NPC),"는")% 적당한 때라 보고, 육봉을 비소에 대고 삽입하는 것을 눈짓으로 %CALLNAME%에게 전하고, 이해한 %타겟은% 작게 떨면서 고개를 끄덕였다.
+	PRINTFORML 
+	PRINTFORML 귀두가 질 안을 넓혀 안으로 들어오는 이물감과 뜨거움이 전달된다. %타겟은% 약간의 불쾌함을 느끼는 동시에 원시적 혹은 본능적인 「기쁨」이 몸을 떨게 한다.
+	PRINTFORML 그리고 귀두의 모든 것이 전부 들어가는 순간 툭 파과의 소리와 증거인 피가 뚝뚝 시트를 더럽히고, 지금까지 느껴본 적 없는 아픔을 %타겟은% 눈물을 참고 견디고 있었다.
+	PRINTFORML 역시 지금 움직이는 것은 무리일 것이라고 %CSTR:(3000+L_NPC)%도 통증이 가라앉을 때까지 자세를 그대로 유지한다. 마음을 달래려고 키스를 하면 %CALLNAME% 쪽에서도 적극적으로 응해 왔다.
+	PRINTFORMW 그리고 십여분이 지나서야 겨우 안정되었는지 %타겟이% 편안한 자세로 돌아온다. 그것을 보고 %조사처리(CSTR:(3000+L_NPC),"는")% 천천히 피스톤 운동을 시작했다….
+	PRINTFORML 
+	PRINTFORML 페니스가 질내에서 끌릴 때마다 귀두가 살주름을 긁고 그 자극이 쾌감으로 %타겟을% 흥분시켜 간다.
+	PRINTFORML 파과의 통증과 익숙하지 않은 자극에 당황한 기색이 있지만 %조사처리(CSTR:(3000+L_NPC),"가")% 부드럽게 움직여주는 것도 있어 통증이 심하진 않아 서서히 쾌감이 강해져 갔다.
+	PRINTFORML 목소리도 달콤해져 질내가 페니스 모양에 익숙해질 무렵에는 교성도 지르기 시작해, 상대하는 %CSTR:(3000+L_NPC)%도 허리 움직임을 점점 격렬하게 해 나간다.
+	PRINTFORML 이것이 올바른 암컷의 기쁨이라고 내심 환희하는 %CALLNAME%이기는 하지만 첫 성행위이기 때문에 그냥 상대가 하는대로 있는다. 하지만 그것을 불쾌하다고는 생각하지 않고 오히려 기분 좋다고까지 느꼈다.
+	PRINTFORMW 서로가 서로를 고양시키려는 섹스에 두 사람은 쾌락의 소용돌이에 휩쓸려갔고, 이성이 완전히 녹아내릴 무렵 방에서는 음란한 목소리와 몸을 부딪치는 육음밖에 울리지 않게 되었다….
+	PRINTFORML 
+	PRINTFORML 성행위도 영원히 계속 될 것 같던 무렵 느닷없이 %CSTR:(3000+L_NPC)%의 움직임이 더욱 격렬해지고 %타겟을% 유린하던 육봉도 질 안에서 커지기 시작한다.
+	PRINTFORML %타겟은% 그 모습으로부터 본능적으로 사정하는 것임을 깨닫고 어떻게 해야 할지 일시적으로 이성을 되찾는다. 하지만 조금 전보다 강한 쾌감과 질내사정 하고 싶은 듯한 허리놀림에 다시 육욕의 바다에 잠긴다.
+	PRINTFORML 물론 눈앞의 상대는 자신을 여자로 만든 존재이며, 현재 「수컷」으로 인정한 자…그렇다면 우수한 유전자를 받는 것에 무슨 이의가 있을까.
+	PRINTFORML 완전히 암컷이 된 %타겟은% 사정 직전인 %CSTR:(3000+L_NPC)%의 허리에 다리를, 목에 팔을 감아 황홀해져 웃는 얼굴로 맞이한다.
+	PRINTFORMW 「허가」가 떨어져 더욱 흥분한 %조사처리(CSTR:(3000+L_NPC),"는")% 물소리가 나도록 허리를 움직여 페니스를 자극해…
+	PRINTFORML ―――울컥
+	PRINTFORML 「――～～～%UNICODE(0x2661)%…」
+	PRINTFORML 질내에서 소리가 난 것이라 착각할 정도로 페니스로부터 백탁액이 해방되어, 누구에게도 물들지 않았던 순수한 자궁이 하얗게 물들어 간다.
+	PRINTFORML 자궁구는 진작에 열려 정액을 모두 삼키겠다는 듯 탐욕스럽게 홀짝이고, %타겟은% 태가 뜨거워지는 감각에 더할 나위 없는 행복을 느끼며 절정한다.
+	PRINTFORML 모든 정액을 토해낼 때까지 둘은 움찔움찔 경련했고, 그것이 끝나자 힘이 다 빠진 듯 침대에 쓰러졌다.
+	PRINTFORML 지칠 대로 지쳤을 텐데도 두 사람은 무슨 일이 있었다는 듯 웃음을 흘리고, 문득 시선을 주고 받더니 서로 키스를 청해 입맞춤을 했다…….
+ELSE
+;전희
+	IF RAND:6 == 0 && (TALENT:거유 || TALENT:폭유)
+		PRINTFORML %타겟은% 침대에 앉은 %CSTR:(3000+L_NPC)% 앞에서 무릎을 내리고 %CSTR:(3000+L_NPC)%의 육봉에 한 번 키스를 보낸다.
+		PRINTFORML 눈앞에 있는 페니스를 풍만한 젖으로 끼우자 준비해 둔 로션을 골짜기에 마구 바르고 파이즈리를 시작했다.
+		PRINTFORML 보통 파이즈리는 기분 좋다고는 못한다지만, 이는 페니스와 가슴 크기로 인한 난도 탓이 커 요컨데 둘 다 클수록 하기 쉽다.
+		PRINTFORML %CALLNAME%의 가슴은 말할 것도 없이 탱탱하며 잘 여물었고, %CSTR:(3000+L_NPC)%의 것 또한 쓸어 올리기에 충분한 크기를 갖는다.
+		PRINTFORML 상하로 움직일 때마다 로션이 찌걱찌걱 소리를 내며, 계속 문질러대서인지 작은 거품이 되어 골에서 흘러넘치고 있다.
+		PRINTFORML 가끔 양쪽에서 밀어붙이거나 좌우가 반대로 오르내리는 등 변화를 주면서 다뤄가는 그 쾌감에 %CSTR:(3000+L_NPC)%도 참지 못하고 얼굴을 일그러뜨렸다….
+		PRINTFORML 
+		PRINTFORML 슬슬 멈추자고 권유하자 %타겟은% 속도와 압력을 높여 사정으로 단번에 이끌어간다.
+		PRINTFORML %조사처리(CSTR:(3000+L_NPC),"는")% 저항도 못하고 작은 소리를 내며 정액을 뱉어냈다. 힘차게 튀어나온 정액은 %CALLNAME%의 뺨에까지 미쳐 하얗게 오염시켜 간다.
+		PRINTFORML 여운이 끝날 때까지, 골짜기에서 갓 나온 육봉을 야시시한 소리를 내며 만지작거리고 있었다…….
+	ELSEIF !RAND:5 && (TALENT:거유 || TALENT:폭유)
+		PRINTFORML 침대 위에 누운 %타겟을% %조사처리(CSTR:(3000+L_NPC),"가")% 덮치고, 팽팽하게 발기한 페니스를 크게 여문 쌍유의 계속에 끼워 넣었다.
+		PRINTFORML 이미 육봉에는 로션이 발라져 있어서 %조사처리(CSTR:(3000+L_NPC),"가")% 허리를 움질일 때마다 질척질척 음탕한 물소리가 가슴골에서 울린다.
+		PRINTFORML 그리고 %CSTR:(3000+L_NPC)% 손으로 짓눌린 풍유 사이로 골을 유린하는 귀두가 계속 보였다가 사정에 이르려고 열을 올리고 있다.
+		PRINTFORML 그 모습을 가까이서 계속 보고 있던 %타겟은% 사정감을 촉진시키듯 튀어나온 귀두를 혀로 자극하기 시작했다….
+		PRINTFORML 
+		PRINTFORML 잠시 후 한계가 왔는지 %조사처리(CSTR:(3000+L_NPC),"는")% 허리 움직임을 빠르게 하여 사정하려고 숨을 거칠게 쉰다. 대하는 %타겟은% 그것을 받아들이려 입을 연다.
+		PRINTFORML 이에 응답하듯이 육봉으로부터 힘차게 정액이 뿜어져 나온다. 튀어나온 백탁액은 입에 전부 들어가지 못하고 %CALLNAME%의 얼굴을 하얗게 물들여 간다.
+		PRINTFORML 파르르 작게 떨며 쾌락에 젖는 %조사처리(CSTR:(3000+L_NPC),"를")% %타겟은% 잠시 멍한 듯이 바라보고 있었다…….
+	ELSEIF !RAND:4
+		PRINTFORML %타겟은% 교미 준비만전 페니스를 뺨에 가득 채우고, 물지 않도록 입 전체로 부드럽게 봉사해 나간다.
+		PRINTFORML 처음에는 느긋하고 느린 움직임이었지만 점차 속도를 높여 음란한 물소리를 크게 내며 고개를 움직인다.
+		PRINTFORML 눈을 치뜨고 있는 것도 있어서인지 %CSTR:(3000+L_NPC)%의 사정감은 엄청난 속도로 올라갔다….
+		PRINTFORML 
+		PRINTFORML 어느정도 봉사하고 싶었지만 예상보다 %CSTR:(3000+L_NPC)%의 한계가 빨라 봉사 중인 입안에 정액을 쏟아냈다.
+		PRINTFORML 갑작스런 사정에 놀란 %조사처리(CALLNAME,"지만")% 페니스를 놓지 않도록 단단히 물고 밀려오는 정액을 모두 받아들인다.
+		PRINTFORML 사정이 끝나고 육봉을 빼내어 %CSTR:(3000+L_NPC)%에 정액으로 쌓인 입안을 크게 벌려 보였다.
+		PRINTFORML 그리고 몇 번 음미하고 소리 내어 삼키고 다시 입을 열어 전부 마셨음을 어필했다…….
+	ELSEIF !RAND:3
+		PRINTFORML 둘이서 샤워를 하면서 몸을 정성스럽게 애무한다. 물을 통해 끈적한 감촉이 두 사람의 흥분을 고조시켜 간다.
+		PRINTFORML %타겟은% 물이 올랐는지 %조사처리(CSTR:(3000+L_NPC),"를")% 벽에 기대게 하고, 완전히 발기한 페니스를 입에 물었다.
+		PRINTFORML 펠라받을 줄 몰랐던 %조사처리(CSTR:(3000+L_NPC),"는")% 살짝 당황했으나 성기에서 흘러나오는 쾌감을 견디지 못하고 그저 받아들일 수밖에 없었다.
+		PRINTFORML 육봉을 잡은 입을 전후할 때마다 욕실과 샤워기로 넘쳐흐르는 액체가 음란한 물소리를 온 방안에 울린다.
+		PRINTFORML %CALLNAME%도 벽에 손을 짚고 그 스트로크의 속도를 올려가고, 놓치지 않도록 페니스를 혀로 감아 봉사를 계속해 갔다….
+		PRINTFORML 
+		PRINTFORML 십여 분 후 쾌감을 이기지 못했는지 돌연 %조사처리(CSTR:(3000+L_NPC),"가")% %CALLNAME%의 머리를 잡고 오나홀 쓰듯 움직이기 시작한다.
+		PRINTFORML %타겟은% 그것에 저항하지 않고 받아들이다 못해, 그 움직임에 맞춰 입안의 압력을 조절해 간다.
+		PRINTFORML 그리고 사정을 맞은 육봉에서 방출된 정액은 %CALLNAME%의 목구멍을 힘차게 지났고, %타겟은% 그것들을 모두 마셨다…….
+	ELSEIF !RAND:2
+		PRINTFORML %타겟은% %CSTR:(3000+L_NPC)%의 옷을 야시시한 솜씨로 벗겨낸다. 그 행동에 반응해 바지 위로도 알 수 있을 정도로 페니스가 발기하기 시작했다. 
+		PRINTFORML 이를 알아채고 피부를 기어가는 듯한 움직임으로 손을 사타구니로 가져간 뒤, 지퍼를 내려 페니스를 노출시켰다.
+		PRINTFORML 상당한 명기인 육기둥에 기뻐하며 손가락을 휘감아 우선 느린 속도로 수음을 시작했다.
+		PRINTFORML 입으로는 %CSTR:(3000+L_NPC)%의 젖꼭지나 목덜미를 핥으며 손가락을 능숙하게 놀려 뜨거워지는 페니스를 계속 다룬다.
+		PRINTFORML 귓가에 야한 대사가 들리면서 서서히 빨라져 가는 손의 움직임에 %CSTR:(3000+L_NPC)%의 절정이 점점 다가왔다….
+		PRINTFORML 
+		PRINTFORML 스스로 하는 것보다 쾌감이 강한지 %조사처리(CSTR:(3000+L_NPC),"는")% 작은 신음소리를 내며 맥없이 사정한다.
+		PRINTFORML 방출된 백탁액을 손으로 받아내고 입가까지 가져와 훌쩍이듯 정액을 삼켰다.
+		PRINTFORML 그 모습에 더욱 흥분했는지 %CSTR:(3000+L_NPC)%의 페니스는 시들기는커녕 불타오르듯이 강직을 유지하고 있었다…….
+	ELSE
+		PRINTFORML 서로 선 상태로 %타겟은% %CSTR:(3000+L_NPC)%의 육봉을 가랑이에 끼우고 몸을 앞뒤로 흔들기 시작했다.
+		PRINTFORML 마찰로도 기분 좋은지 %CALLNAME%의 비소에서 애액이 흐르기 시작하고, 그것이 윤활유로서 그 움직임을 원활히 해 나간다.
+		PRINTFORML %CSTR:(3000+L_NPC)%도 귀두가 사타구니에 스치는 것으로 기분 좋은 쾌감을 얻을 수 있었고, 사정에 이르려고 점차 스스로 허리를 움직여 갔다….
+		PRINTFORML 
+		PRINTFORML %조사처리(CSTR:(3000+L_NPC),"가")% 사정의 기미를 보이자 %타겟은% 스트로크를 빠르게 해 보다 빠르게 절정에 이르도록 촉진한다.
+		PRINTFORML 그리고 해방된 정액을 사타구니에 받아들여 사정이 끝날 때까지 귀두를 사타구니 사이로 계속 붙잡고 있었다.
+		PRINTFORML 사정이 멎고 육봉을 가랑이에서 떼어내니, 마치 질내사정 후 넘친 것처럼 대량의 정액이 비소와 허벅지를 하얗게 물들이고 있었다…….
+	ENDIF
+	PRINTFORMW 
+;떡!
+	IF RAND:6 == 0 
+		PRINTFORML %조사처리(CSTR:(3000+L_NPC),"는")% 침대에 몸을 맡긴 %CALLNAME% 위에 올라타 발기한 육봉을 질내로 삽입했다.
+		PRINTFORML 우선은 페니스가 %CALLNAME%의 육벽에 맞도록 움직임을 조정하고 %CALLNAME%의 동작이나 숨소리로 그 감도를 확인한다.
+		PRINTFORML 그러자 약점에 닿았는지 더욱 큰 교성을 지르는 %타겟을% 보고 그 때의 움직임을 바탕으로 피스톤을 빠르게 했다.
+		PRINTFORML 육봉을 빼낼 때마다 귀두가 돌기에 걸리고 그것이 쾌감이 되어 %타겟을% 덮친다. 여유가 없어진 %타겟은%어떻게든 견디려고 베개를 움켜쥔다.
+		PRINTFORML 질내도 %CSTR:(3000+L_NPC)%의 물건에 맞춰 꿈틀거리며 자신을 범하는 페니스로부터 보다 강한 쾌감을 얻고자 질벽을 조였다…….
+	ELSEIF !RAND:4
+		PRINTFORML 후배위 자세로 페니스를 박고, 몇 번 정도 조금씩 움직인 후 긴 스트로크로 허리를 처박기 시작한다.
+		PRINTFORML 질벽의 선단부터 끝까지 귀두가 전체를 문질렀고, 그 강한 쾌락에 %타겟은% 등을 꺾으며 헐떡거렸다.
+		PRINTFORML 자세 때문에 수컷에게 교미를 위해 억제받고 있는 듯한 분위기도 있어서인지 %타겟은% 임신을 각오한 암컷 같이 굴복해 버린 모습으로 범해지는 것을 받아들이고 있다.
+		PRINTFORML 그리고 우수한 유전자는 아직도 떨리는 자궁에 반응하기라도 하듯 질벽은 빠르게 움직이며 페니스를 자극해 사정으로 이끈다.
+		PRINTFORML 그것을 깨달은 %조사처리(CSTR:(3000+L_NPC),"는")% 한 마리의 수컷으로 인정받고 있다는 우월감에 젖으면서 반한 여자에게 교배를 위해 피스톤의 움직임을 빠르게 했다…….
+	ELSEIF !RAND:3
+		PRINTFORML %타겟은% %CSTR:(3000+L_NPC)%에 걸쳐 우뚝 솟은 육봉을 애액이 넘치는 질로 끈적하게 먹는다.
+		PRINTFORML 허리를 내리자 두 성기는 뿌리까지 겹쳐지고, 형태가 잘 맞게끔 찌걱찌걱 그라인드를 한다.
+		PRINTFORML 잠시 후 질내가 적당히 풀어지고 질 안에 걸리는 귀두의 존재감을 확실히 느끼며, %타겟은% 미소를 흘리면서 허리를 위아래로 움직이기 시작했다.
+		PRINTFORML 허리를 들 때마다 질벽을 범하는 페니스가 주는 쾌락에 교성을 지르고 더욱 자극을 갈망하며 %CALLNAME%의 피스톤도 점점 빨라진다.
+		PRINTFORML %CSTR:(3000+L_NPC)%도 질 수 없다는 듯 허리를 들어올려, 두 개의 불규칙한 교류가 더욱 강한 쾌감을 이루어 둘은 절정을 향해 올라갔다…….
+	ELSEIF !RAND:2
+		PRINTFORML 오늘은 서로 할 기분이 되었는지 뜨거운 눈빛을 주고받으며 두 성기를 포개어 하나가 되어 간다.
+		PRINTFORML 이미 애액으로 젖은 질내는 %CSTR:(3000+L_NPC)%의 육봉을 쉬이 받아들여 감도를 맞출 것 없이 강한 피스톤을 시작했다.
+		PRINTFORML %타겟은% 받는 쾌감에 헐떡이면서 %CSTR:(3000+L_NPC)%의 목에 두 팔을 휘감고 야하고 격렬한 교미를 강청한다.
+		PRINTFORML 이에 대답하듯 %조사처리(CSTR:(3000+L_NPC),"는")% 부딪치는 속도를 높여 부드러운 것이 서로 맞부딪치는 듯한 육음을 온 방안에 울리게 한다.
+		PRINTFORML 그 강렬한 쾌락은 %CALLNAME%의 이성을 팍팍 도려내니, 그 모습은 잉태하기 위해 교미에 빠진 암컷 그 자체였다…….
+	ELSE
+		PRINTFORML 자신이 봉사하고 싶다며 %타겟이% 기승위로 성기를 삽입하여 몸을 움직이기 시작한다.
+		PRINTFORML 봉사를 우선했는지 움직임은 처음부터 격렬해 허리를 움직일 때마다 %타겟은% 그 몸을 크게 튕긴다.
+		PRINTFORML 질내도 애액을 대량으로 분비시켜 접합부에서 그것을 물소리를 내며 흩뿌린다.
+		IF TALENT:거유 || TALENT:폭유
+			PRINTFORML %CSTR:(3000+L_NPC)%의 시점에서는 탱탱하게 여문 젖가슴이 마시멜로처럼 출렁이고 있어, 그 모습에 관능을 억누르지 못하고 움켜쥐게 된다.
+			PRINTFORML 그런데도 %타겟은% 귀엽게 허덕이면서도 받아들여 남자의 손에 추잡한 모양으로 변해가는 쾌감에 몸을 떨었다…….
+		ELSE
+			PRINTFORML 자기 위에서 미녀가 자신의 육봉으로 헐떡이며 음무를 반복하는 모습은 굉장히 관능적이었고 좀 더 기쁘게 해달라며 %조사처리(CSTR:(3000+L_NPC),"는")% 허리를 움직인다.
+			PRINTFORML 예상외의 행동에 %타겟은% 한층 더 큰 교성을 지르며, 그대로 엉덩이로 내려치는 강도를 격하게 했다…….
+		ENDIF
+	ENDIF
+	PRINTFORMW 
+;사정
+	IF RAND:3 == 0 
+		PRINTFORML 얼마 가량 성교를 하던 중 돌연 %조사처리(CSTR:(3000+L_NPC),"는")% %CALLNAME%의 신체를 억누르며 조금 전보다 더욱 허리를 격렬하게 흔든다.
+		PRINTFORML 그 행동으로부터 사정이 가까운 것을 깨달은 %타겟은% 무의식적으로 그를 놓치지 않도록 상대의 허리에 다리를 휘감았다.
+		PRINTFORML 질내사정 허가가 떨어졌다고 %조사처리(CSTR:(3000+L_NPC),"는")% 결론을 내리고, 더욱 피스톤을 빠르게 해 사정에 이르러 간다.
+		PRINTFORML %타겟은% 자신의 행동의 조금 곤혹스러운 기색이 있지만, 왠지 그것에 혐오감은 커녕 기대만이 심중에 있었다.
+		PRINTFORML 그렇게 생각하는 사이 %조사처리(CSTR:(3000+L_NPC),"는")% 절정에 달해 여자를 잉태시킬 생각뿐인 정자들을 %CALLNAME%의 자궁에 주입시켰다.
+		PRINTFORML 자신의 가장 신성한 영역을 수컷의 욕망으로 물들이고 있는데도 솟아오르는 감정은 환희와 욕망이었다.
+		PRINTFORML 몸도 수컷을 놓치지 않으려고 두 팔 두 다리로 붙잡아, 마지막 한 방울이 자궁에 들어갈 때까지 서로 질내사정의 여운에 젖어 있었다…….
+	ELSEIF !RAND:2
+		PRINTFORML 서서히 뒤에서 부딪쳐 오는 강도가 강해지고 있음을 느낀 %타겟은% 사정할 것임을 헤아렸다.
+		PRINTFORML 교미를 하는 동물처럼 후배위 자세 탓인지 종의 보존이라는 원시적 욕망이 커지는 느낌이다.
+		PRINTFORML 원래대로라면 밖에 싸는 것을 추천해야 하는데도 말문이 막혀 사정까지의 시간이 흘러간다.
+		PRINTFORML 그리고 뒤에서 덮쳐져 질내 사정 자세로 들어감에서, 자신이 암컷으로서 잉태하고 싶은 것이라고 자각한다.
+		PRINTFORML 동시에 배출된 백탁액은 잘못 쌌는지 자궁이 아닌 질내에 머물러 %타겟은% 강한 불만을 느꼈다.
+		PRINTFORML %CSTR:(3000+L_NPC)%도 마찬가지였던 것 같아, 추가적인 피스톤으로 질내의 정액을 억지로 자궁으로 밀어넣는다.
+		PRINTFORML 자궁에 조금씩 쌓여가는 유전자 무리를 열로 느끼면서 %CALLNAME%타겟의 표정은 미소로 변해갔다…….
+	ELSE
+		PRINTFORML %CSTR:(3000+L_NPC)% 위에서 계속 허리를 흔들던 %조사처리(CALLNAME,"였")%지만 %조사처리(CSTR:(3000+L_NPC),"가")% 무언가 참고 있는 듯 떨고 있었다.
+		PRINTFORML 아무래도 한계가 가까운 것 같아 이대로 피스톤을 계속하고 있으면 안에 싸버릴 것이다.
+		PRINTFORML 하지만 참고 있는 모습이 애처롭게 느껴졌는지 %타겟은% 그라인드까지 더해 그를 사정시키려고 시도하기 시작했다.
+		PRINTFORML 임신이라는 리스크가 뒤따르는데도 %타겟은% 그것을 무의식적으로 바라고 있는 것 같고, 사정을 기대하는 듯 계속해서 몸을 튕긴다.
+		PRINTFORML 그리고 견딜 수 없게 된 %조사처리(CSTR:(3000+L_NPC),"는")% 정액을 힘차게 해방시켜 질내를 하얗게 범해갔다.
+		PRINTFORML 기승위 자세임에도 뛰쳐나온 정자들은 어떻게든 자궁으로 들어가려고 자궁구에 부딪치고 일부 틈새를 뚫으며 난자를 찾기 시작한다.
+		PRINTFORML 직접적으로 감지한 %타겟은% 암컷이 되어 정자들의 싸움이 시작된 배를 문지르고 난자와의 회합을 기도하고 있었다…….
+	ENDIF
+ENDIF
+
+
+CFLAG:(3060+L_NPC) += 1
+SIF CSTR:첫섹스상대명 == ""
+	CSTR:첫섹스상대명 = %CSTR:(3000+L_NPC)%
+SIF CSTR:첫키스상대명 == ""
+	CSTR:첫키스상대명 = %CSTR:(3000+L_NPC)%
+SIF CSTR:첫정음상대명 ==""
+	CSTR:첫정음상대명 = %CSTR:(3000+L_NPC)%
+SIF CSTR:첫펠라상대명 ==""
+	CSTR:첫펠라상대명 = %CSTR:(3000+L_NPC)%
+SIF CSTR:첫A섹스상대명 ==""
+	CSTR:첫A섹스상대명 = %CSTR:(3000+L_NPC)%
+SIF CSTR:첫절정상대명 ==""
+	CSTR:첫절정상대명 = %CSTR:(3000+L_NPC)%
+SIF CSTR:첫질사상대명 ==""
+	CSTR:첫질사상대명 = %CSTR:(3000+L_NPC)%
+IF !TALENT:비처녀
+	SETCOLOR COLOR("ピンク")
+	PRINTL 처녀상실
+	RESETCOLOR
+	TALENT:비처녀 = 1
+	TCVAR:履歴_EXP_処女喪失 = 1
+ENDIF
+
+IF FLAG:임신機能 && CFLAG:(3020+L_NPC) == 5 && TALENT:수정 == 0 && TALENT:임신 == 0
+	SIF CSTR:3501 == ""
+		CSTR:3501 = %CSTR:(3000+L_NPC)%
+	CFLAG:수정현재내구치 -= (CFLAG:수정최대내구치)/10
+	PRINTFORML 
+	PRINTFORML  【수정내구치:{CFLAG:수정현재내구치+((CFLAG:수정최대내구치)/10)}　→　{CFLAG:수정현재내구치}】
+	PRINTFORML 
+	SIF CFLAG:수정현재내구치 <= 0
+		CFLAG:수정현재내구치 = 0
+	IF CFLAG:수정현재내구치 == 0
+		TALENT:수정 = 1
+		CFLAG:임신フラグ = -1
+		PRINTFORML
+		PRINTFORML
+		PRINTFORML 【%CSTR:(3000+L_NPC)%의 아이를 수정했습니다…】
+		PRINTFORML
+		PRINTFORMW
+	ENDIF
+ENDIF
+
+RESETCOLOR
+
+
+CALL JN_SEX_EXP
+
+
+
+
+
+;-------------------------------------------------
+; 修正
+;-------------------------------------------------
+@TURN_EVENT_COM_Re
+#DIM L_NPC
+
+L_NPC = 0
+$INPUT_LOOP
+
+
+IF  CFLAG:(3020+L_NPC) >= 5
+	CSTR:3500 = %CSTR:(3000+L_NPC)%
+	CSTR:3501 = %CSTR:(3000+L_NPC)%
+ENDIF
+
+L_NPC += 1
+SIF L_NPC < 10
+	GOTO INPUT_LOOP
+
+
+
+
+

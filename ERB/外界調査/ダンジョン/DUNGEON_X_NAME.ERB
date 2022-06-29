@@ -1,0 +1,104 @@
+﻿;-------------------------------------------------
+;ダンジョン定義用テンプレート
+;XXXをダンジョンIDで置き換える
+;RETURN HOGEとなっている物はRETURNで返値を返す
+;必須な物
+;	_NAME
+;	_ABLE
+;	_PARAM
+;-------------------------------------------------
+
+
+
+
+[SKIPSTART]
+;-------------------------------------------------
+;DUNGEON_XXX：(ダンジョン名)
+;-------------------------------------------------
+;ダンジョンの名前定義関数。必須
+;ISMODIFに非0を受け取ったときは選択肢用の簡単な説明を出す(任意)
+;その際の簡単な説明をMODIFに入れる
+@DUNGEON_XXX_NAME(ISMODIF = 0)
+#DIM ISMODIF
+#DIMS MODIF
+MODIF = 
+RESULTS = (ダンジョン名)%MODIF * (ISMODIF != 0)%
+RETURN
+
+
+;そのダンジョンに탐색できるかどうかの判定関数。必須
+;탐색不可なら0、可なら1を返す
+@DUNGEON_XXX_ABLE
+RETURN HOGE
+
+
+;そのダンジョンで出現するルート타입を一つ返す
+;フロア自体を入れることはできない
+@DUNGEON_XXX_ROUTE
+RETURN HOGE
+
+
+;フロアイベント抽選関数
+;そのダンジョンで起きるフロアイベントを一つ返す
+;STEPは何階の捜索であるか渡される(FLAG:調査区域では何階の捜索か分からないため)
+@DUNGEON_XXX_FE(STEP)
+#DIM STEP
+RETURN HOGE
+
+
+;人材系フロアイベントが発生したときに呼び出される関数の番号を返す
+;人材系イベントを起こしたくない時はDUNGEON_XXX_FEで人材系を除外すること
+@DUNGEON_XXX_PERSON
+RETURN HOGE
+
+
+;ダンジョンに出現する敵抽選関数
+;敵IDを一つ入れて返す
+@DUNGEON_XXX_ENEMY(RARE = -1)
+#DIM RARE  ;レア敵フラグ。1ならレア敵が確実に出現する(レア敵が設定されているダンジョンのみ)
+#DIM ENE
+SIF RARE == -1
+	RARE = POSSIB(3)
+
+IF RARE == 1
+	;レア敵
+ELSE
+	;通常敵
+ENDIF
+RETURN ENE
+
+
+;アイテム入手フロアイベントが発生したときに呼び出される関数の番号を返す
+;人材系イベントを起こしたくない時はDUNGEON_XXX_FEでアイテム入手系を除外すること
+@DUNGEON_XXX_ITEM
+RETURN HOGE
+
+
+;フロアを調査時に起こるミニイベントのIDを抽選して返す
+;この関数が未定義ならシステム既定のものを使う
+;HOGEのイベントは必ず存在している必要がある
+@DUNGEON_XXX_MINIEV
+RETURN HOGE
+
+
+;ダンジョンの各種パラメータ設定。必須
+;FLAG:調査瘴気くらい？FLAG:調査深度も一応設定できる
+@DUNGEON_XXX_PARAM
+FLAG:調査瘴気 = 
+FLAG:索敵難易度 = 
+RETURN
+
+
+;ダンジョンでの戦闘後に呼ばれる関数
+;EIDに敵IDが格納される。WINが1ならプレイヤーが勝った
+@DUNGEON_XXX_AFTERBATTLE(EID , WIN)
+#DIM EID
+#DIM WIN
+RETURN
+
+
+;ダンジョンが定義する特殊戦闘
+;戦闘などを行いたい場合はすべて自分で関数を呼ぶこと
+@DUNGEON_XXX_SPBATTLE
+RETURN
+[SKIPEND]

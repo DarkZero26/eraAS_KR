@@ -1,0 +1,42 @@
+﻿;-------------------------------------------------
+;所持武器に付いているアーティファクト効果の合計を数える関数
+;EFFIDに効果IDを受け取る
+;プレイヤー側専用
+;-------------------------------------------------
+@ARTEFF_COUNT_PLAYER(EFFID = -1)
+#FUNCTION
+#DIM EFFID
+#DIM CNT
+#DIM DYNAMIC EFF
+SIF EFFID == -1
+	THROW EFFIDが未設定です
+
+;装備中アーティファクトを全検索
+FOR CNT , 1 , 6
+	;アーティファクト未装備
+	IF !INRANGE(FLAG:(15900 + CNT), 1, 90)
+		EFF--
+		CONTINUE
+	ENDIF
+
+	;該当効果発見
+	SIF FLAG:(15200 + (FLAG:(15900 + CNT))) == EFFID
+		EFF++
+NEXT
+RETURNF EFF
+
+
+;-------------------------------------------------
+;所持武器に付いているアーティファクト効果の合計を数える関数
+;EFFIDに効果IDを受け取る
+;敵側専用
+;-------------------------------------------------
+@ARTEFF_COUNT_ENEMY(EFFID = -1)
+#FUNCTION
+#DIM EFFID
+#DIM CNT
+#DIM DYNAMIC EFF
+SIF EFFID == -1
+	THROW EFFIDが未設定です
+
+RETURNF 0

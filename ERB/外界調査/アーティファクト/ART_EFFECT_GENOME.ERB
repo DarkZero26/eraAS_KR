@@ -1,0 +1,21 @@
+﻿;-------------------------------------------------
+;アーティファクトの効果テンプレート
+;XXXは効果IDで置き換える
+;ゲノム適性は既存のアーティファクト効果のテンプレでは実装できなかったので
+;-------------------------------------------------
+@CHECK_GENOME_ART(CHR = -1)
+#FUNCTION
+#DIM CHR
+#DIM CNT
+#DIM DYNAMIC GNUM
+#DIM ARTID
+FOR CNT , 0 , 5
+	;アーティファクトがセットされている
+	IF INRANGE(FLAG:(15901 + CNT) , 1 , 90)
+		ARTID = FLAG:(15901 + CNT)
+		;アーティファクトにゲノム適性が設定されている && そのゲノム適性が設定済みのゲノムである && キャラCHRがそのゲノムを所有している
+		SIF FLAG:(18000 + ARTID) > 0 && STRFIND(@"%CFLAGNAME:(FLAG:(18000 + ARTID))%" , "ゲノム") >= 0 && CFLAG:CHR:(FLAG:(18000 + ARTID))
+			GNUM++
+	ENDIF
+NEXT
+RETURNF GNUM
