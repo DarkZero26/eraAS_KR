@@ -124,10 +124,10 @@ L_TMP = BASE:L_T:절정
 ;- 計算:절정強度
 SELECTCASE L_TMP
 	;2.5倍以上
-	CASE IS >= (FLAG:최대値_절정 * 250 / 100)
+	CASE IS >= (FLAG:최대치_절정 * 250 / 100)
 		L_LV = 3
 	;1.5倍以上
-	CASE IS >= (FLAG:최대値_절정 * 150 / 100)
+	CASE IS >= (FLAG:최대치_절정 * 150 / 100)
 		L_LV = 2
 	CASEELSE
 		L_LV = 1

@@ -452,7 +452,7 @@ IF Flag:카페범위축소_엉덩이
 	Talent:L_I:거대엉덩이 = 0
 	SIF Flag:카페범위축소_엉덩이 != 82
 		Talent:L_I:(Flag:카페범위축소_엉덩이) = 1
-	CFLAG:L_I:ヒップサイズ = CHARACTER_HIP_RETURN(L_I)
+	CFLAG:L_I:힙사이즈 = CHARACTER_HIP_RETURN(L_I)
 ENDIF
 
 
@@ -471,7 +471,7 @@ ENDIF
 
 IF !V_VIRGIN
 	TALENT:L_I:비처녀 = 1
-	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	TCVAR:L_I:이력_EXP_처녀상실 = 1
 	EXP:L_I:Ｖ경험 = (RAND:20) + 1
 	EXP:L_I:성교경험 = RAND:(EXP:L_I:Ｖ경험) * 5 + RAND:(EXP:L_I:Ｖ경험) + 1
 ENDIF
@@ -764,7 +764,7 @@ IF Flag:카페범위축소_성격 != 0
 	CALL CHARACTER_SCOUT_MIND_REPEAT(L_I, L_SEIKAKU)
 ENDIF
 
-;小さい체형の靴3は定義されてません...
+;小さい체형の신발3は定義されてません...
 SIF (TALENT:L_I:소인체형 || TALENT:L_I:작은체형) && CFlag:L_I:주민_체격 == 0
 	CFlag:L_I:주민_체격 = 1
 

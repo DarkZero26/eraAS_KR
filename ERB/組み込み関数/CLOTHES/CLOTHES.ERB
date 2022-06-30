@@ -46,7 +46,7 @@
 #DIMS L_KEY
 #DIMS L_STR
 
-L_POS = GETNUM(CSTR, "衣装名_帽子")
+L_POS = GETNUM(CSTR, "衣装名_모자")
 L_LEN = 7
 
 L_CNT=0
@@ -84,7 +84,7 @@ PRINTL
 #DIM L_POS
 #DIM L_TMP
 
-L_POS = GETNUM(CSTR, "衣装名_帽子")
+L_POS = GETNUM(CSTR, "衣装名_모자")
 
 SELECTCASE ARGS
 	CASE "デフォルト"
@@ -99,16 +99,16 @@ SELECTCASE ARGS
 		CSTR:ARG:衣装名_上着ボトムス = マイクロミニスカート
 		CSTR:ARG:衣装名_下着トップス = 
 		CSTR:ARG:衣装名_下着ボトムス = 
-		CSTR:ARG:衣装名_靴下 = ニーソックス
-		CSTR:ARG:衣装名_靴 = ミュール
+		CSTR:ARG:衣装名_양말 = ニーソックス
+		CSTR:ARG:衣装名_신발 = ミュール
 	CASE "메이드服"
 		CALL CLOTHES_CLEAR(ARG)
-		CSTR:ARG:衣装名_帽子			= ホワイトブリム
+		CSTR:ARG:衣装名_모자			= ホワイトブリム
 		CSTR:ARG:衣装名_全身服			= 메이드服(ミニ)
 		CSTR:ARG:衣装名_下着トップス	= ブラジャー
 		CSTR:ARG:衣装名_下着ボトムス	= パンティ
-		CSTR:ARG:衣装名_靴下			= ガーターストッキング
-		CSTR:ARG:衣装名_靴				= 메이드ブーツ
+		CSTR:ARG:衣装名_양말			= ガーターストッキング
+		CSTR:ARG:衣装名_신발				= 메이드ブーツ
 	CASE "ギャル衣装"
 		
 	CASEELSE
@@ -125,7 +125,7 @@ ENDSELECT
 ;-------------------------------------------------
 @CLOTHES_CLEAR(ARG)
 
-CSTR:ARG:衣装名_帽子			= 
+CSTR:ARG:衣装名_모자			= 
 CSTR:ARG:衣装名_上着トップス	= 
 CSTR:ARG:衣装名_上着ボトムス	= 
 CSTR:ARG:衣装名_全身服			= 
@@ -133,8 +133,8 @@ CSTR:ARG:衣装名_手袋			=
 CSTR:ARG:衣装名_下着トップス	= 
 CSTR:ARG:衣装名_下着ボトムス	= 
 CSTR:ARG:衣装名_全身下着		= 
-CSTR:ARG:衣装名_靴下			= 
-CSTR:ARG:衣装名_靴				= 
+CSTR:ARG:衣装名_양말			= 
+CSTR:ARG:衣装名_신발				= 
 CSTR:ARG:衣装名_外套			= 
 CSTR:ARG:衣装名_アクセサリー	= 
 
@@ -158,7 +158,7 @@ CSTR:ARG:衣装名_アクセサリー	=
 #DIMS L_LIST, 100
 #DIM L_TMP
 
-L_POS = GETNUM(CSTR, "衣装名_帽子")
+L_POS = GETNUM(CSTR, "衣装名_모자")
 L_LEN = 7
 
 CUSTOMDRAWLINE =
@@ -201,7 +201,7 @@ SELECTCASE L_INPUT
 		REPEAT 100
 
 			IF !COUNT
-				L_STR = %CSVCSTR(NO:ARG, GETNUM(CSTR, "衣装名_帽子")+L_INPUT, 0)%
+				L_STR = %CSVCSTR(NO:ARG, GETNUM(CSTR, "衣装名_모자")+L_INPUT, 0)%
 				;存在する場合は除外
 				SIF FINDELEMENT(GCLOTHE_NAME, L_STR) != -1
 					L_STR = 
@@ -280,7 +280,7 @@ RESTART
 #DIM L_W
 #DIMS L_STR
 
-L_POS = GETNUM(CSTR, "衣装名_帽子")
+L_POS = GETNUM(CSTR, "衣装名_모자")
 L_W = 75
 
 PRINTFORM %"【의상】", 12, LEFT%：

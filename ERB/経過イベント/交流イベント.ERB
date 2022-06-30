@@ -366,7 +366,7 @@ PRINTFORML 밤이 깊어지자 두 사람은 자연스럽게 살을 겹치기 �
 PRINTFORML ――――――――――――――――――――――――――――――――――――
 
 
-IF TCVAR:履歴_EXP_処女喪失 == 0 && TALENT:비처녀 != 1 ;처녀
+IF TCVAR:이력_EXP_처녀상실 == 0 && TALENT:비처녀 != 1 ;처녀
 	PRINTFORML 맨살을 드러내고 침대 위로 쓰러지지만, 딱딱하게 발기한 %CSTR:(3000+L_NPC)%의 페니스를 보고 %타겟은% 자그마한 비명을 지른다.
 	PRINTFORML 그 모습을 본 %조사처리(CSTR:(3000+L_NPC),"는")% 걱정스럽게 물었고, %타겟은% 관념한 것 처럼 자신이 처녀임을 고백한다.
 	PRINTFORML 「가능하면 부드럽게 간다」라고 %타겟을% 일단 안심시킨 후, 우선은 손가락으로 남자를 모르는 비소를 만지작거리며, 약한 부분을 더듬으면서 애액을 분비시켜 간다.
@@ -543,7 +543,7 @@ IF !TALENT:비처녀
 	PRINTL 처녀상실
 	RESETCOLOR
 	TALENT:비처녀 = 1
-	TCVAR:履歴_EXP_処女喪失 = 1
+	TCVAR:이력_EXP_처녀상실 = 1
 ENDIF
 
 IF FLAG:임신機能 && CFLAG:(3020+L_NPC) == 5 && TALENT:수정 == 0 && TALENT:임신 == 0

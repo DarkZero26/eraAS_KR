@@ -122,9 +122,9 @@ ENDIF
 
 
 ;目
-C_eye = Cflag:L_I:瞳色
+C_eye = Cflag:L_I:눈동자색
 ;体
-C_body = CFLAG:L_I:肌色
+C_body = CFLAG:L_I:살색
 ;胸
 C_bust = C_PICTURE_BUST(L_I)
 
@@ -134,19 +134,19 @@ C_suit = CFLAG:L_I:복장
 C_hairC = CFLAG:L_I:머리색
 ;머리모양
 C_hair = CFLAG:L_I:머리모양
-;後머리모양
-C_U_hair = CFLAG:L_I:後머리모양
-;靴下
-C_socks = CFLAG:L_I:靴下
-;靴
-C_boots = CFLAG:L_I:靴
-;下着上
-C_bra = CFLAG:L_I:下着上
-;下着下
-C_panties = CFLAG:L_I:下着下
+;뒷머리모양
+C_U_hair = CFLAG:L_I:뒷머리모양
+;양말
+C_socks = CFLAG:L_I:양말
+;신발
+C_boots = CFLAG:L_I:신발
+;속옷상의
+C_bra = CFLAG:L_I:속옷상의
+;속옷하의
+C_panties = CFLAG:L_I:속옷하의
 
-;淫紋
-C_in = CFLAG:L_I:淫紋
+;음문
+C_in = CFLAG:L_I:음문
 
 C_NINSIN = C_PICTURE_NINSIN(L_I)
 
@@ -186,7 +186,7 @@ ENDIF
 	LSTR_5 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%bust_{C_body}_{C_bust}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ;임신
 IF  Talent:L_I:임신 >= 6
-	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%C_MB_{CFLAG:L_I:肌色}_{L_N}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%C_MB_{CFLAG:L_I:살색}_{L_N}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ELSE
 	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='C_no' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ENDIF
@@ -200,8 +200,8 @@ ENDIF
 ;溢れ精液
 	LSTR_15 = <nonbutton pos='{P_S2}'><img src='H_A_S_0_{H_TNS}' height = '850' width = '-465'  ypos = '{P_S}'></nonbutton>
 
-;淫紋
-IF CFLAG:L_I:淫紋 == 0 || CFLAG:L_I:淫紋 == -1 || Talent:L_I:임신 >= 6
+;음문
+IF CFLAG:L_I:음문 == 0 || CFLAG:L_I:음문 == -1 || Talent:L_I:임신 >= 6
 	LSTR_17 = <nonbutton pos='{P_S2}'><img src='C_no' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ELSE
 	LSTR_17 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%in_{C_in}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>

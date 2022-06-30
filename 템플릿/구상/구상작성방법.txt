@@ -1,0 +1,24 @@
+역주) 깨져있는 문서를 번역한 것이라 중간중간 알아보기 힘들수 있음 세미콜론 이후는 역주
+
+우선 구상을 작성한 후 파일명(필수는 아니지만 판별하기 쉽도록)과 
+함수의 K0000의 '0000'을 다른 곳에 쓰지 않은 임의의 숫자로 변경.
+
+그 후 구상폴더에 있는 KOJO_FUNC.ERB를 열고
+
+;특수구상
+	; IF
+		;TRYCALLFORM KOJO_ENCOUNTER_K0000(ARGS)
+	;ENDIF
+
+의 부분을
+	IF
+		TRYCALLFORM KOJO_ENCOUNTER_K0000(ARGS)
+	ENDIF ;주석해제하라는 뜻
+
+로 고쳐 「IF」의 부분에 그 입상이 되는 조건을 붙여 「0000」을 조금 전에 변경한 숫자와 같게 한다.
+예:조건이 이레귤러?이고 숫자가 2000.
+IF TALENT:이레귤러?
+	TRYCALLFORM KOJO_ENCOUNTER_K2000(ARGS)
+ENDIF
+
+;한국어 버전의 경우 후배쨩 ERB를 주석포함 번역해서 포함시켜 뒀으니 참고할 것.

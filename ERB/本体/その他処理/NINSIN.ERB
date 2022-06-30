@@ -84,7 +84,7 @@ RETURNF !CFLAG:ARG:임신フラグ && !CFLAG:ARG:避妊薬
 #DIM L_P
 #DIM L_VAL
 #DIM L_HIT
-#DIM L_危険日
+#DIM L_위험일
 
 SIF !FLAG:임신機能
 	RETURN
@@ -152,7 +152,7 @@ SIF TALENT:L_T:교제중 == 1 || TALENT:L_T:결혼함 == 1　|| TALENT:L_T:백�
 #DIM L_T
 #DIM L_N_K
 #DIM L_N_D
-#DIM L_危険日
+#DIM L_위험일
 
 L_T = ARG:1
 L_N = (RAND:(1+(CFlag:MASTER:정자레벨)*CFlag:MASTER:남체레벨))+5
@@ -165,11 +165,11 @@ SIF !FLAG:임신機能
 SIF TALENT:L_I:수정 != 0 || TALENT:L_I:임신 != 0
 	RETURN
 
-L_危険日 = C_위험일(L_I)
+L_위험일 = C_위험일(L_I)
 
 
-;危険日以外は無し(배란제使用時は除く)
-SIF !L_危険日 && TALENT:L_I:배란제 == 0 && (L_I != MASTER)
+;위험일以外は無し(배란제使用時は除く)
+SIF !L_위험일 && TALENT:L_I:배란제 == 0 && (L_I != MASTER)
 	RETURN
 SIF TALENT:L_I:배란제 != 0
 	L_N_D = 20

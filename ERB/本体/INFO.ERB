@@ -9,7 +9,7 @@
 ;
 ;	Edit	Date			Author					Reason
 ;	005		2019/04/14		M						表示系改善 ＆ リファクタリング：
-;														関連して危険日と悩み有無の順序入れ替え
+;														関連して위험일と悩み有無の順序入れ替え
 ;														値 0 の物は伏字モード連動
 ;														定型ラベル型ステータス表示はPRINT_STATUS.ERBに集約
 ;														表示項目桁の指示明確化
@@ -39,7 +39,7 @@
 ;	・ INFO_TARGET_MAIN					情報:ターゲット(主処理)
 ;	・ INFO_TARGET_DETAIL				情報:ターゲット(詳細)
 ;	・ INFO_WORK_NAME					情報:労役役職名
-;	・ INFO_危険日						情報:危険日
+;	・ INFO_위험일						情報:위험일
 ;	・ INFO_LABEL_LIST					情報:ラベル一覧を使用したソート用ボタン作成関数
 ;	・ INFO_SORT_BUTTON					情報:ソート用ボタン作成関数
 ;	・ INFO_CHARA_DETAIL_LABEL			情報:ラベル使用一行情報表示関数
@@ -366,7 +366,7 @@ IF SHORT
 		CALL CP_HEARTB()
 		RESETCOLOR
 
-	;危険日 且つ 女
+	;위험일 且つ 女
 	ELSEIF C_위험일(L_I) && VAR_SEX(L_I)
 		PRINT ,
 		SETCOLOR COLOR("紫")
@@ -399,10 +399,10 @@ ELSE
 		PRINTFORM 배란제
 		CALL CP_HEARTB()
 		RESETCOLOR
-	;危険日
+	;위험일
 	ELSEIF C_위험일(L_I) && VAR_SEX(L_I)
-		;- 情報:危険日
-		CALL INFO_危険日(L_I)
+		;- 情報:위험일
+		CALL INFO_위험일(L_I)
 	ELSE
 		PRINTFORM 　　　　　
 	ENDIF
@@ -846,17 +846,17 @@ ENDSELECT
 RETURNF L_STR
 
 ;=================================================
-;   sub INFO_危険日
+;   sub INFO_위험일
 ;=================================================
-;   情報:危険日
+;   情報:위험일
 ;-------------------------------------------------
 ; Input:
 ;  ARG:0				対象キャラ
 ;  ARG:1				句点有無
 ;-------------------------------------------------
-@INFO_危険日(ARG, ARG:1=0)
+@INFO_위험일(ARG, ARG:1=0)
 
-;危険日 且つ 女
+;위험일 且つ 女
 IF C_위험일(ARG) && VAR_SEX(ARG)
 	SIF ARG:1
 		PRINT ,

@@ -76,29 +76,29 @@ LSTR_15 =
 
 
 ;目
-C_eye = Cflag:C_T:瞳色
+C_eye = Cflag:C_T:눈동자색
 ;体
-C_body = CFLAG:C_T:肌色
+C_body = CFLAG:C_T:살색
 ;胸
 C_bust = C_PICTURE_BUST(C_T)
-;帽子
-C_hat = CFLAG:C_T:帽子
+;모자
+C_hat = CFLAG:C_T:모자
 ;服
 C_suit = CFLAG:C_T:복장
 ;머리색
 C_hairC = CFLAG:C_T:머리색
 ;머리모양
 C_hair = CFLAG:C_T:머리모양
-;後머리모양
-C_U_hair = CFLAG:C_T:後머리모양
-;靴下
-C_socks = CFLAG:C_T:靴下
-;靴
-C_boots = CFLAG:C_T:靴
-;下着上
-C_bra = CFLAG:C_T:下着上
-;下着下
-C_panties = CFLAG:C_T:下着下
+;뒷머리모양
+C_U_hair = CFLAG:C_T:뒷머리모양
+;양말
+C_socks = CFLAG:C_T:양말
+;신발
+C_boots = CFLAG:C_T:신발
+;속옷상의
+C_bra = CFLAG:C_T:속옷상의
+;속옷하의
+C_panties = CFLAG:C_T:속옷하의
 
 
 
@@ -266,13 +266,13 @@ ELSEIF CFLAG:C_T:맨션행동 == 51
 		LSTR_6 = <nonbutton pos='{P_S2}'><img src='C_RACE_1_{CFLAG:C_T:주민_종족}_0_{CFLAG:C_T:주민_종족특징1}' height = '1300'  ypos = '{P_S}'></nonbutton>
 	;目
 		LSTR_7 = <nonbutton pos='{P_S2}'><img src='eye_{C_eye}' height = '1300' ypos = '{P_S}'></nonbutton>
-	;下着上
+	;속옷상의
 	    IF C_bra == -1
 			LSTR_8 = <nonbutton pos='{P_S2}'><img src='C_no' height = '1300' ypos = '{P_S}'></nonbutton>
 		ELSE
 			LSTR_8 = <nonbutton pos='{P_S2}'><img src='bra_{C_bust}_{C_bra}' height = '1300' ypos = '{P_S}'></nonbutton>
 		ENDIF
-	;下着下
+	;속옷하의
 	    IF C_panties == -1
 			LSTR_9 = <nonbutton pos='{P_S2}'><img src='C_no' height = '1300' ypos = '{P_S}'></nonbutton>
 		ELSE
@@ -309,13 +309,13 @@ ELSE
 	ENDIF
 	;胸
 		LSTR_5 = <nonbutton pos='{P_S2}'><img src='bust_{C_body}_{C_bust}' height = '1300' ypos = '{P_S}'></nonbutton>
-	;下着上
+	;속옷상의
 	    IF C_bra == -1
 			LSTR_6 = <nonbutton pos='{P_S2}'><img src='C_no' height = '1300' ypos = '{P_S}'></nonbutton>
 		ELSE
 			LSTR_6 = <nonbutton pos='{P_S2}'><img src='bra_{C_bust}_{C_bra}' height = '1300' ypos = '{P_S}'></nonbutton>
 		ENDIF
-	;下着下
+	;속옷하의
 	    IF C_panties == -1
 			LSTR_7 = <nonbutton pos='{P_S2}'><img src='C_no' height = '1300' ypos = '{P_S}'></nonbutton>
 		ELSE
@@ -327,13 +327,13 @@ ELSE
 		ELSE
 			LSTR_8 = <nonbutton pos='{P_S2}'><img src='socks_{C_socks}' height = '1300' ypos = '{P_S}'></nonbutton>
 		ENDIF
-	;靴
+	;신발
 	    IF C_boots == -1
 			LSTR_9 = <nonbutton pos='{P_S2}'><img src='C_no' height = '1300' ypos = '{P_S}'></nonbutton>
 		ELSE
 			LSTR_9 = <nonbutton pos='{P_S2}'><img src='boots_{C_boots}' height = '1300' ypos = '{P_S}'></nonbutton>
 		ENDIF
-	;帽子
+	;모자
 	    IF C_hat == 0
 			LSTR_14 = <nonbutton pos='{P_S2}'><img src='C_no' height = '1300' ypos = '{P_S}'></nonbutton>
 		ELSE

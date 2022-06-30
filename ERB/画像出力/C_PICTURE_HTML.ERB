@@ -72,61 +72,61 @@ ENDIF
 LSTR_1 = C_RACE_2_{CFLAG:L_T:주민_종족}_0_{CFLAG:L_T:주민_종족특징2}
 LSTR_1 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_1)%
 ;体
-LSTR_2 = %LSTR_0%body_{CFLAG:L_T:肌色}
+LSTR_2 = %LSTR_0%body_{CFLAG:L_T:살색}
 LSTR_2 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_2)%
 ;종족특징3
 LSTR_3 = %LSTR_0%C_RACE_3_{CFLAG:L_T:주민_종족}_0_{CFLAG:L_T:주민_종족특징3}
 LSTR_3 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_3)%
 ;目
-LSTR_4 = %LSTR_0%eye_{CFLAG:L_T:瞳色}
+LSTR_4 = %LSTR_0%eye_{CFLAG:L_T:눈동자색}
 LSTR_4 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_4)%
 ;胸
-LSTR_5 = %LSTR_0%bust_{CFLAG:L_T:肌色}_{C_bust}
+LSTR_5 = %LSTR_0%bust_{CFLAG:L_T:살색}_{C_bust}
 LSTR_5 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_5)%
 
 ;임신
 IF  Talent:L_T:임신 >= 6
-	LSTR_N2 = %LSTR_0%C_MB_{CFLAG:L_T:肌色}_{L_N}
+	LSTR_N2 = %LSTR_0%C_MB_{CFLAG:L_T:살색}_{L_N}
 ELSE
 	LSTR_N2 = C_no
 ENDIF
 
 LSTR_N2 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_N2)%
  
-;下着上
-IF CFLAG:L_T:下着上 == -1 || Talent:L_T:임신 >= 6
+;속옷상의
+IF CFLAG:L_T:속옷상의 == -1 || Talent:L_T:임신 >= 6
 	LSTR_6 = C_no
 ELSE
-	LSTR_6 = %LSTR_0%bra_{C_bust}_{CFLAG:L_T:下着上}
+	LSTR_6 = %LSTR_0%bra_{C_bust}_{CFLAG:L_T:속옷상의}
 ENDIF
 LSTR_6 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_6)%
-;下着下
-IF CFLAG:L_T:下着下 == -1 || Talent:L_T:임신 >= 6
+;속옷하의
+IF CFLAG:L_T:속옷하의 == -1 || Talent:L_T:임신 >= 6
 	LSTR_7 = C_no
 ELSE
-	LSTR_7 = %LSTR_0%panties_{CFLAG:L_T:下着下}
+	LSTR_7 = %LSTR_0%panties_{CFLAG:L_T:속옷하의}
 ENDIF
 LSTR_7 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_7)%
 ;ソックス
-IF CFLAG:L_T:靴下 == -1 || Talent:L_T:임신 >= 6
+IF CFLAG:L_T:양말 == -1 || Talent:L_T:임신 >= 6
 	LSTR_8 = C_no
 ELSE
-	LSTR_8 = %LSTR_0%socks_{CFLAG:L_T:靴下}
+	LSTR_8 = %LSTR_0%socks_{CFLAG:L_T:양말}
 ENDIF
 LSTR_8 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_8)%
-;靴
-IF CFLAG:L_T:靴 == -1 || Talent:L_T:임신 >= 6
+;신발
+IF CFLAG:L_T:신발 == -1 || Talent:L_T:임신 >= 6
 	LSTR_9 = C_no
 ELSE
-	LSTR_9 = %LSTR_0%boots_{CFLAG:L_T:靴}
+	LSTR_9 = %LSTR_0%boots_{CFLAG:L_T:신발}
 ENDIF
 LSTR_9 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_9)%
 
-;帽子
-IF CFLAG:L_T:帽子 == 0 || CFLAG:L_T:帽子 == -1 || Talent:L_T:임신 != 0
+;모자
+IF CFLAG:L_T:모자 == 0 || CFLAG:L_T:모자 == -1 || Talent:L_T:임신 != 0
 	LSTR_14 = C_no
 ELSE
-	LSTR_14 = hat_{CFLAG:L_T:帽子}
+	LSTR_14 = hat_{CFLAG:L_T:모자}
 ENDIF
 LSTR_14 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_14)%
 
@@ -145,18 +145,18 @@ LSTR_11 = hair_{CFLAG:L_T:머리색}_{CFLAG:L_T:머리모양}
 LSTR_11 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_11)%
 
 ;後髪
-LSTR_UK = hair_U_{CFLAG:L_T:머리색}_{CFLAG:L_T:後머리모양}
+LSTR_UK = hair_U_{CFLAG:L_T:머리색}_{CFLAG:L_T:뒷머리모양}
 LSTR_UK = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_UK)%
 
 ;종족특징1
 LSTR_12 = C_RACE_1_{CFLAG:L_T:주민_종족}_0_{CFLAG:L_T:주민_종족특징1}
 LSTR_12 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_12)%
 
-;淫紋
-IF CFLAG:L_T:淫紋 == 0 || CFLAG:L_T:淫紋 == -1 || Talent:L_T:임신 >= 6
+;음문
+IF CFLAG:L_T:음문 == 0 || CFLAG:L_T:음문 == -1 || Talent:L_T:임신 >= 6
 	LSTR_15 = C_no
 ELSE
-	LSTR_15 = %LSTR_0%in_{CFLAG:L_T:淫紋}
+	LSTR_15 = %LSTR_0%in_{CFLAG:L_T:음문}
 ENDIF
 IF CFlag:L_T:주민_체격 == 1
 	LSTR_15 = %C_PICTURE_IMG(L_X, L_Y+L_Y2-110, L_W, L_H, LSTR_15)%
@@ -234,20 +234,20 @@ ENDIF
 LSTR_1 = C_RACE_2_{CFLAG:L_T:주민_종족}_0_{CFLAG:L_T:주민_종족특징2}
 LSTR_1 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_1)%
 ;体
-LSTR_2 = %LSTR_13%body_{CFLAG:L_T:肌色}
+LSTR_2 = %LSTR_13%body_{CFLAG:L_T:살색}
 LSTR_2 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_2)%
 ;종족특징3
 LSTR_3 = %LSTR_13%C_RACE_3_{CFLAG:L_T:주민_종족}_0_{CFLAG:L_T:주민_종족특징3}
 LSTR_3 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_3)%
 ;目
-LSTR_4 = %LSTR_13%eye_{CFLAG:L_T:瞳色}
+LSTR_4 = %LSTR_13%eye_{CFLAG:L_T:눈동자색}
 LSTR_4 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_4)%
 ;胸
-LSTR_5 = %LSTR_13%bust_{CFLAG:L_T:肌色}_{C_bust}
+LSTR_5 = %LSTR_13%bust_{CFLAG:L_T:살색}_{C_bust}
 LSTR_5 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_5)%
 
 IF  Talent:L_T:임신 >= 6
-	LSTR_N2 = %LSTR_13%C_MB_{CFLAG:L_T:肌色}_{L_N}
+	LSTR_N2 = %LSTR_13%C_MB_{CFLAG:L_T:살색}_{L_N}
 ELSE
 	LSTR_N2 = C_no
 ENDIF
@@ -258,17 +258,17 @@ ENDIF
 LSTR_11 = hair_{CFLAG:L_T:머리색}_{CFLAG:L_T:머리모양}
 LSTR_11 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_11)%
 ;後髪
-LSTR_UK = hair_U_{CFLAG:L_T:머리색}_{CFLAG:L_T:後머리모양}
+LSTR_UK = hair_U_{CFLAG:L_T:머리색}_{CFLAG:L_T:뒷머리모양}
 LSTR_UK = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_UK)%
 
 ;종족특징1
 LSTR_12 = C_RACE_1_{CFLAG:L_T:주민_종족}_0_{CFLAG:L_T:주민_종족특징1}
 LSTR_12 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_12)%
-;淫紋
-IF CFLAG:L_T:淫紋 == 0 || CFLAG:L_T:淫紋 == -1 || Talent:L_T:임신 >= 6
+;음문
+IF CFLAG:L_T:음문 == 0 || CFLAG:L_T:음문 == -1 || Talent:L_T:임신 >= 6
 	LSTR_14 = C_no
 ELSE
-	LSTR_14 = %LSTR_13%in_{CFLAG:L_T:淫紋}
+	LSTR_14 = %LSTR_13%in_{CFLAG:L_T:음문}
 ENDIF
 IF CFlag:L_T:주민_체격 == 1
 	LSTR_14 = %C_PICTURE_IMG(L_X, L_Y+L_Y2-110, L_W, L_H, LSTR_14)%

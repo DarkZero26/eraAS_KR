@@ -191,8 +191,8 @@ CS_chii  = %INFO_STR_CHII(CFLAG:L_T:주민_지위)%
 CS_size  = %INFO_STR_THREESIZE(L_T)%
 CS_hairC = %INFO_STR_HAIRCOLOR(CFLAG:L_T:머리색)%
 CS_hair  = %INFO_STR_HAIR(CFLAG:L_T:머리모양)%
-CS_eye   = %INFO_STR_EYE(CFLAG:L_T:目)%
-CS_eyeC  = %INFO_STR_EYECOLOR(CFLAG:L_T:瞳色)%
+CS_eye   = %INFO_STR_EYE(CFLAG:L_T:눈)%
+CS_eyeC  = %INFO_STR_EYECOLOR(CFLAG:L_T:눈동자색)%
 CS_body  = %INFO_STR_STYLE(CFLAG:L_T:체형)%
 
 IF TALENT:L_T:유니크 == 1
@@ -228,8 +228,8 @@ PRINTFORM 　　　　　
 CALL PRINT_LABEL("체형",,,CS_body)
 PRINTL
 PRINTFORM 　　　　　
-CALL PRINT_LABEL("매력포인트",,,CSTR:L_T:チャームポイント)
-CALL PRINT_LABEL("버릇",,,CSTR:L_T:癖)
+CALL PRINT_LABEL("매력포인트",,,CSTR:L_T:매력포인트)
+CALL PRINT_LABEL("버릇",,,CSTR:L_T:버릇)
 PRINTL
 PRINTFORM 　　　　　
 PRINTFORM 【유전자:

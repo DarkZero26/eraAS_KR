@@ -468,7 +468,7 @@ CALL EVENT_DAILY_BEDTIME_MSG_START("Ｖ")
 ;- 本番
 ;-----------------------------
 
-;危険日
+;위험일
 IF C_위험일(TARGET)
 	SELECTCASE RAND:7
 		CASE 6
@@ -1251,7 +1251,7 @@ SELECTCASE ARGS
 	;その他
 	CASEELSE
 ENDSELECT
-CALL INFO_危険日(TARGET)
+CALL INFO_위험일(TARGET)
 PRINTL
 
 

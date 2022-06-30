@@ -25,7 +25,7 @@
 ・「スパイテロ駆除依頼」「이스による駆除依頼」の成功時、加入キャラのステータスを閲覧してから加入の可否を選択することが可能に
 ・能力表示画面にて、NO:ARGを表示してるのはCFLAG:개별번호にすべきと思うので修正
 　ランダムキャラは同じcsvから生成されるのでNO:ARGは同一値になります
-・加入時にキャラの危険日がランダムに設定されるように変更
+・加入時にキャラの위험일がランダムに設定されるように変更
 ・スカウト時に「気に入らないからチェンジで！」した場合にはキャラ固有IDの加算が進まないように挙動を変更
 ・隠しステータス（無自覚の雌など、페로몬系ステータス）の生成処理の変更
 　１）各種페로몬系ステータスは無自覚の雌が高ければ高いほど大きな数値になるように
@@ -63,13 +63,13 @@ ERB/本体/その他処理/MEMBER_LIST.ERB
 
 ERB/本体/スカウト/CHARACTER_NPC_SCOUT.ERB
 ・加入キャンセル処理をDELCHARAからCANCEL_SCOUTに変更
-・NPC加入時の危険日のランダム化
+・NPC加入時の위험일のランダム化
 ・eramaker風の構文をemuera文法で全体的に書き換え
 　REPEAT文のFOR文への書き換え
 　能力値の上限処理はSIFからMIN()を使用したものに変更
 
 ERB/本体/スカウト/CHARACTER_SCOUT.ERB
-・危険日設定処理のランダム化
+・위험일設定処理のランダム化
 ・@CANCEL_SCOUTの作成
 　キャラ物色中にキャンセルしても番号が進むのが気になるので作成
 　DELCHARAの代わりに使う
@@ -90,10 +90,10 @@ ERB/本体/スカウト/CHARACTER_SCOUT_MIND.ERB
 　上記の改変にともなって記述を整理した
 ・@CHARACTER_SCOUT_PERSONAL
 　当関数の処理内容を「身体特徴系のフレーバーデータ設定」と解釈し、いくつかの関数に切り分けた
-　癖の設定は@CHARACTER_SCOUT_KUSE
-　チャームポイントの設定は@CHARACTER_SCOUT_CHARM_POINT
+　버릇の設定は@CHARACTER_SCOUT_KUSE
+　매력포인트の設定は@CHARACTER_SCOUT_CHARM_POINT
 　신장체중やスリーサイズの生成は@CHARACTER_SCOUT_BODYSIZEとして関数化した
-　CSTRで記録する「癖」と「チャームポイント」は追加の可能性を考慮してSTRDATA構文を使用した
+　CSTRで記録する「버릇」と「매력포인트」は追加の可能性を考慮してSTRDATA構文を使用した
 ・@CHARACTER_SCOUT_PERSONAL2
 　一部小文字を大文字にしたのと半角スペースを入れたくらいでほぼ変化なし
 ・@CHARACTER_SCOUT_PERSONAL3/@CHARACTER_SCOUT_COSTUME(L_C_ID)

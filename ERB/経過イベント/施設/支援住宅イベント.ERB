@@ -113,7 +113,7 @@ ELSEIF CFLAG:支援_密会_進展 == 30
 		CSTR:첫질사상대명 = 지원 주택의 청년
 	
 	TALENT:비처녀 = 1
-	TCVAR:履歴_EXP_処女喪失 = 1
+	TCVAR:이력_EXP_처녀상실 = 1
 	EXP:Ｖ경험 += (RAND:5+1)+1
 	EXP:성교경험 += (RAND:5+1)+1
 	EXP:질싸경험 += (RAND:2+1)+1
@@ -200,10 +200,10 @@ CFLAG:支援_密会_進展 += 1
 #DIM L_VAL
 
 
-L_TMP = CFLAG:危険日
+L_TMP = CFLAG:위험일
 L_VAL = (DAY % 7)
 
-;３日に一回危険日
+;３日に一回위험일
 L_TMP /= 2
 L_VAL /= 2
 

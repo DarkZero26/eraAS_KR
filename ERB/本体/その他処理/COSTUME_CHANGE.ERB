@@ -87,11 +87,11 @@ PRINTL
 PRINTLC [1] 下着トップス
 PRINTLC [2] 下着ボトムス
 PRINTL
-PRINTLC [3] 靴下
-PRINTLC [4] 靴
+PRINTLC [3] 양말
+PRINTLC [4] 신발
 PRINTL
-PRINTLC [5] 帽子＆アクセ
-PRINTLC [6] 淫紋
+PRINTLC [5] 모자＆アクセ
+PRINTLC [6] 음문
 PRINTL
 PRINTL
 PRINTLC [100] 購入しない
@@ -403,7 +403,7 @@ IF CFLAG:RESULT:주민_체격 == 1
 	PRINTFORMW 体格が対応していません。
 	GOTO INPUT_LOOP2
 ENDIF
-CFLAG:RESULT:下着上 = C_T
+CFLAG:RESULT:속옷상의 = C_T
 L_NAME = %CALLNAME:RESULT%
 MONEY -= L_MONEY
 PRINTFORMW %L_NAME%を着替えさせました
@@ -415,7 +415,7 @@ CALL COSTUME_MAIN
 
 
 ;=================================================
-;下着下
+;속옷하의
 ;=================================================
 @O_COSTUME_INNER_BOTTOMS
 #DIMS L_I
@@ -519,7 +519,7 @@ IF CFLAG:RESULT:주민_체격 == 1
 	PRINTFORMW 体格が対応していません。
 	GOTO INPUT_LOOP2
 ENDIF
-CFLAG:RESULT:下着下 = C_T
+CFLAG:RESULT:속옷하의 = C_T
 L_NAME = %CALLNAME:RESULT%
 MONEY -= L_MONEY
 PRINTFORMW %L_NAME%を着替えさせました
@@ -529,7 +529,7 @@ CALL COSTUME_MAIN
 
 
 ;=================================================
-;靴下
+;양말
 ;=================================================
 @O_COSTUME_SOCKS
 #DIMS L_I
@@ -545,7 +545,7 @@ CLEARLINE LINECOUNT
 DRAWLINE
 PRINTFORML 購入する衣装を選んでください
 DRAWLINE
-PRINTLC [0]  靴下                 ￥2000
+PRINTLC [0]  양말                 ￥2000
 PRINTLC [1]  ハイソックス         ￥5000
 PRINTL
 PRINTLC [2]  オーバーストッキング ￥10000
@@ -626,7 +626,7 @@ IF CFLAG:RESULT:주민_체격 == 1
 	PRINTFORMW 体格が対応していません。
 	GOTO INPUT_LOOP2
 ENDIF
-CFLAG:RESULT:靴下 = C_T
+CFLAG:RESULT:양말 = C_T
 L_NAME = %CALLNAME:RESULT%
 MONEY -= L_MONEY
 PRINTFORMW %L_NAME%を着替えさせました
@@ -638,7 +638,7 @@ CALL COSTUME_MAIN
 
 
 ;=================================================
-;靴
+;신발
 ;=================================================
 @O_COSTUME_BOOTS
 #DIMS L_I
@@ -660,7 +660,7 @@ PRINTL
 PRINTLC [2]  上履き             ￥7000   
 PRINTLC [3]  スニーカー         ￥9000   
 PRINTL
-PRINTLC [4]  革靴               ￥13000  
+PRINTLC [4]  革신발               ￥13000  
 PRINTLC [5]  ハイヒール         ￥20000  
 PRINTL
 PRINTLC [-1] 脱がす             ￥0
@@ -742,7 +742,7 @@ IF CFLAG:RESULT:주민_체격 == 1
 	PRINTFORMW 体格が対応していません。
 	GOTO INPUT_LOOP2
 ENDIF
-CFLAG:RESULT:靴 = C_T
+CFLAG:RESULT:신발 = C_T
 L_NAME = %CALLNAME:RESULT%
 MONEY -= L_MONEY
 PRINTFORMW %L_NAME%を着替えさせました
@@ -753,7 +753,7 @@ CALL COSTUME_MAIN
 
 
 ;=================================================
-;帽子
+;모자
 ;=================================================
 @O_COSTUME_HAT
 #DIMS L_I
@@ -857,7 +857,7 @@ IF CFLAG:RESULT:주민_체격 == 1
 	PRINTFORMW 体格が対応していません。
 	GOTO INPUT_LOOP2
 ENDIF
-CFLAG:RESULT:帽子 = C_T
+CFLAG:RESULT:모자 = C_T
 L_NAME = %CALLNAME:RESULT%
 MONEY -= L_MONEY
 PRINTFORMW %L_NAME%を着替えさせました
@@ -868,7 +868,7 @@ CALL COSTUME_MAIN
 
 
 ;=================================================
-;淫紋
+;음문
 ;=================================================
 @O_COSTUME_IN
 #DIMS L_I
@@ -884,12 +884,12 @@ CLEARLINE LINECOUNT
 DRAWLINE
 PRINTFORML 購入する衣装を選んでください
 DRAWLINE
-PRINTLC [1]  淫紋             ￥50000
-PRINTLC [2]  淫紋             ￥50000
-PRINTLC [3]  淫紋             ￥50000
+PRINTLC [1]  음문             ￥50000
+PRINTLC [2]  음문             ￥50000
+PRINTLC [3]  음문             ￥50000
 PRINTL
-PRINTLC [4]  淫紋             ￥50000
-PRINTLC [5]  淫紋             ￥50000
+PRINTLC [4]  음문             ￥50000
+PRINTLC [5]  음문             ￥50000
 PRINTL
 PRINTL
 PRINTLC [-1] 解除               ￥0
@@ -969,7 +969,7 @@ IF CFLAG:RESULT:주민_체격 == 1
 	PRINTFORMW 体格が対応していません。
 	GOTO INPUT_LOOP2
 ENDIF
-CFLAG:RESULT:淫紋 = C_T
+CFLAG:RESULT:음문 = C_T
 L_NAME = %CALLNAME:RESULT%
 MONEY -= L_MONEY
 PRINTFORMW %L_NAME%を印しました

@@ -67,7 +67,7 @@ RETURNF 1
 #DIM L_ADD
 #DIM L_TMP
 #DIM L_TYPE
-#DIM L_危険日
+#DIM L_위험일
 #DIMS L_NAME
 
 ;男は暫定で除外
@@ -150,10 +150,10 @@ SIF CFLAG:ＮＴＲ함락도 < L_LV
 PRINTFORMW %CALLNAME%に%L_NAME%が声をかけている……
 
 L_TYPE=0
-L_危険日=C_위험일(TARGET)
-;임신中は危険日解除
+L_위험일=C_위험일(TARGET)
+;임신中は위험일解除
 SIF TALENT:임신
-	L_危険日=0
+	L_위험일=0
 
 SELECTCASE CFLAG:ＮＴＲ함락도
 	;回避
@@ -183,15 +183,15 @@ SELECTCASE CFLAG:ＮＴＲ함락도
 		L_TYPE = [[ＮＴＲ結果:隷属]]
 ;		PRINTFORMW %CALLNAME%は言いつけ通り、夜に%L_NAME%の客室を訪れた……
 		PRINTFORMW %CALLNAME%は言いつけに逆らえず、夜に%L_NAME%の客室を訪れた……
-		;危険日
-		IF L_危険日
+		;위험일
+		IF L_위험일
 			SELECTCASE RAND:2
 				CASE 1
-					PRINTFORML 危険日だから今日はダメだと心に決めていたはずの%CALLNAME%だったが、
+					PRINTFORML 위험일だから今日はダメだと心に決めていたはずの%CALLNAME%だったが、
 					PRINTFORML %L_NAME%に抱き締められ押し倒されると、そのままペニスの挿入を許してしまった……
 					PRINTFORML 何度も子宮で精液を受け止めながら、%CALLNAME%は암컷의본능のまま子宮を捧げ続けた……
 				CASEELSE
-					PRINTFORML %L_NAME%は%CALLNAME%が危険日だと知ると、普段よりも激しく%CALLNAME%を求めていった…
+					PRINTFORML %L_NAME%は%CALLNAME%が위험일だと知ると、普段よりも激しく%CALLNAME%を求めていった…
 					PRINTFORML 
 					PRINTFORML 何度も大量に注がれた精液が垂れるのをそのままにして、限界を迎えてぐったりベッドに横たわる%CALLNAME%に
 					PRINTFORML %L_NAME%は再びペニスを突き立て、体を揺すりだした……
@@ -226,8 +226,8 @@ SELECTCASE CFLAG:ＮＴＲ함락도
 	CASE 3
 		L_TYPE = [[ＮＴＲ結果:陥落]]
 		PRINTFORMW %CALLNAME%は顔を赤らめながら、夜に%L_NAME%の客室を訪れた……
-		;危険日
-		IF L_危険日
+		;위험일
+		IF L_위험일
 			SELECTCASE RAND:6
 				CASE 5
 					PRINTFORML 部屋の中にベットの軋む音が響く……
@@ -237,7 +237,7 @@ SELECTCASE CFLAG:ＮＴＲ함락도
 					PRINTFORML その瞬間、膣内でペニスが跳ね、%L_NAME%の精液が排卵日の子宮内を埋め尽くしていく……
 					PRINTFORML 二人は射精が終わった後も繋がったままでキスを交わしながら、思いを確かめ合っている……
 				CASE 4
-					PRINTFORML %CALLNAME%は部屋に着くなり%L_NAME%に抱き付き、耳元で危険日である事を告げた……
+					PRINTFORML %CALLNAME%は部屋に着くなり%L_NAME%に抱き付き、耳元で위험일である事を告げた……
 					PRINTFORML %CALLNAME%が求めているものを察した%L_NAME%は、たまらず%CALLNAME%の下着に手を掛けた……
 					PRINTFORML 
 					PRINTFORML 時間を忘れ没頭していた子作りの為のセックスを終えた%CALLNAME%は、
@@ -249,22 +249,22 @@ SELECTCASE CFLAG:ＮＴＲ함락도
 					PRINTFORML なおもペニスを離すまいと身体を絡ませていく……
 					PRINTFORML 
 					PRINTFORML 激しく何度も交わりやっとペニスを해방した%CALLNAME%は、
-					PRINTFORML 膣口から溢れる精液を%L_NAME%に見せながら今日が危険日だと知らせ、にっこり微笑んだ……
+					PRINTFORML 膣口から溢れる精液を%L_NAME%に見せながら今日が위험일だと知らせ、にっこり微笑んだ……
 				CASE 2
 					PRINTFORML 膣奥に突き立てた時の%CALLNAME%の反応に、普段とは違う熱気を感じ取った%L_NAME%は、
-					PRINTFORML %CALLNAME%が危険日である事を悟り、対面座位で%CALLNAME%の腰をしっかりと抱き寄せ最奥への刺激に集中し始めた……
+					PRINTFORML %CALLNAME%が위험일である事を悟り、対面座位で%CALLNAME%の腰をしっかりと抱き寄せ最奥への刺激に集中し始めた……
 					PRINTFORML 密着した허리기술から%L_NAME%が本気で自分を孕ませるつもりなのだと知ると、
 					PRINTFORML %CALLNAME%の期待と興奮は更に高まっていく……
 					PRINTFORML %CALLNAME%はゴリゴリと奥を弄られ続けて何度もイかされていたが、
 					PRINTFORML 更なる強烈な절정と共に膣が一気にペニスを締め付け、待望の膣内射精が訪れた……！
 					PRINTFORML 激しい快感と女としての喜びに震え、%CALLNAME%は涙を流しながら膣内に広がる%L_NAME%の精液を味わった……
 				CASE 1
-					PRINTFORML 危険日だから今日はダメだと心に決めていたはずの%CALLNAME%だったが、
+					PRINTFORML 위험일だから今日はダメだと心に決めていたはずの%CALLNAME%だったが、
 					PRINTFORML %L_NAME%に抱き締められその体温を身体で感じると、決意よりも본능が打ち勝った……
 					PRINTFORML %L_NAME%の精子を子宮に迎えたい、%L_NAME%に孕ませられたいと願う気持ちに、
 					PRINTFORML %CALLNAME%は逆らう事は出来なかった……
 				CASEELSE
-					PRINTFORML %L_NAME%は%CALLNAME%が危険日だと知ると、普段よりも激しく%CALLNAME%を求めていった…
+					PRINTFORML %L_NAME%は%CALLNAME%が위험일だと知ると、普段よりも激しく%CALLNAME%を求めていった…
 					PRINTFORML 
 					PRINTFORML 何度も大量に注がれた精液が垂れるのをそのままにして、限界を迎えてぐったりベッドに横たわる%CALLNAME%に
 					PRINTFORML %L_NAME%は再びペニスを突き立て、体を揺すりだした……

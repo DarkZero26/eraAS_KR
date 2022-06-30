@@ -284,19 +284,19 @@ L_T = ARG
 
 
 
-L_S = 신장{CFlag:L_T:신장}cm:체중{CFlag:L_T:체중}kg:Ｂ{CFlag:L_T:가슴사이즈}cm(%INFO_STR_CUP(ARG)%)Ｗ{CFlag:L_T:ウエストサイズ}cm:Ｈ{CFlag:L_T:ヒップサイズ}cm
+L_S = 신장{CFlag:L_T:신장}cm:체중{CFlag:L_T:체중}kg:Ｂ{CFlag:L_T:가슴사이즈}cm(%INFO_STR_CUP(ARG)%)Ｗ{CFlag:L_T:허리사이즈}cm:Ｈ{CFlag:L_T:힙사이즈}cm
 
 RETURNF L_S
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; カップサイズの値に対応する文字列を返します。
+;; 컵사이즈の値に対応する文字列を返します。
 ;;
 ;; 引数
-;;   ARG     カップサイズの値を表す整数
+;;   ARG     컵사이즈の値を表す整数
 ;; 戻値
-;;   カップサイズの文字列 (測定不能,ＡＡ,Ａ,...,Ｚ,測定不能,)
+;;   컵사이즈の文字列 (測定不能,ＡＡ,Ａ,...,Ｚ,測定不能,)
 ;;
 @INFO_STR_CUP(ARG)
 #FUNCTIONS
@@ -305,12 +305,12 @@ RETURNF L_S
 
 L_T = ARG
 
-IF CFlag:L_T:カップサイズ <= 0
+IF CFlag:L_T:컵사이즈 <= 0
 	L_S = 측정불능
-ELSEIF CFlag:L_T:カップサイズ == 1
+ELSEIF CFlag:L_T:컵사이즈 == 1
 	L_S = ＡＡ
-ELSEIF CFlag:L_T:カップサイズ >= 2 && CFlag:L_T:カップサイズ <= 27
-	L_S = %UNICODE(0x0ff22 - 3 + CFlag:L_T:カップサイズ)%
+ELSEIF CFlag:L_T:컵사이즈 >= 2 && CFlag:L_T:컵사이즈 <= 27
+	L_S = %UNICODE(0x0ff22 - 3 + CFlag:L_T:컵사이즈)%
 ELSE
 	L_S = 측정불능
 ENDIF
@@ -403,11 +403,11 @@ RETURNF L_S
 
 SELECTCASE ARG
 CASE  0
-	L_S = 숏헤어
+	L_S = 숏컷
 CASE  1
-	L_S = 미디움헤어
+	L_S = 단발
 CASE  2
-	L_S = 롱헤어
+	L_S = 장발
 CASE  3
 	L_S = 트윈테일
 CASE  4
@@ -419,9 +419,9 @@ CASE  6
 CASE  7
 	L_S = 언밸런스
 CASE  8
-	L_S = 内はね
+	L_S = 안쪽컬
 CASE  9
-	L_S = 外はね
+	L_S = 바깥컬
 CASE 10
 	L_S = 세미웨이브
 CASE 11
@@ -439,9 +439,9 @@ CASE 16
 CASE 17
 	L_S = 댕기머리
 CASE 18
-	L_S = 드릴
+	L_S = 드릴헤어
 CASE 19
-	L_S = 베리숏헤어
+	L_S = 베리숏컷
 CASE 20
 	L_S = 보브
 CASE 21
@@ -484,11 +484,11 @@ RETURNF L_S
 
 SELECTCASE ARG
 CASE  0
-	L_S = 숏헤어(뒷머리)
+	L_S = 숏컷(뒷머리)
 CASE  1
-	L_S = 미디움헤어(뒷머리)
+	L_S = 단발(뒷머리)
 CASE  2
-	L_S = 롱헤어(뒷머리)
+	L_S = 장발(뒷머리)
 CASE  3
 	L_S = 트윈테일(뒷머리)
 CASE  4
@@ -500,9 +500,9 @@ CASE  6
 CASE  7
 	L_S = 언밸런스(뒷머리)
 CASE  8
-	L_S = 内はね(뒷머리)
+	L_S = 안쪽컬(뒷머리)
 CASE  9
-	L_S = 外はね(뒷머리)
+	L_S = 바깥컬(뒷머리)
 CASE 10
 	L_S = 세미웨이브(뒷머리)
 CASE 11
@@ -520,9 +520,9 @@ CASE 16
 CASE 17
 	L_S = 댕기머리(뒷머리)
 CASE 18
-	L_S = 드릴(뒷머리)
+	L_S = 드릴헤어(뒷머리)
 CASE 19
-	L_S = 베리숏헤어(뒷머리)
+	L_S = 베리숏컷(뒷머리)
 CASE 20
 	L_S = 보브(뒷머리)
 CASE 21
@@ -571,7 +571,7 @@ CASE 1
 CASE 2
 	L_S = 표준
 CASE 3
-	L_S = 탁한눈
+	L_S = 초롱눈
 CASE 4
 	L_S = 날선눈
 CASE 5
@@ -579,7 +579,7 @@ CASE 5
 CASE 6
 	L_S = 큰눈
 CASE 7
-	L_S = 切れ長
+	L_S = 실눈
 CASEELSE
 	L_S = {ARG}
 ENDSELECT
@@ -589,12 +589,12 @@ RETURNF L_S
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; 瞳色の値に対応する文字列を返します。
+;; 눈동자색の値に対応する文字列を返します。
 ;;
 ;; 引数
-;;   ARG     瞳色の値を表す整数。
+;;   ARG     눈동자색の値を表す整数。
 ;; 戻値
-;;   瞳色の文字列。
+;;   눈동자색の文字列。
 ;;
 @INFO_STR_EYECOLOR(ARG)
 #FUNCTIONS
@@ -622,12 +622,12 @@ RETURNF L_S
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; 肌色の値に対応する文字列を返します。
+;; 살색の値に対応する文字列を返します。
 ;;
 ;; 引数
-;;   ARG     肌色の値を表す整数。
+;;   ARG     살색の値を表す整数。
 ;; 戻値
-;;   肌色の文字列。
+;;   살색の文字列。
 ;;
 @INFO_STR_SKINCOLOR(ARG)
 #FUNCTIONS
@@ -635,15 +635,15 @@ RETURNF L_S
 
 SELECTCASE ARG
 CASE 0
-	L_S = 표준
+	L_S = 보통
 CASE 1
-	L_S = 옅음
+	L_S = 연갈색
 CASE 2
-	L_S = 밝음
+	L_S = 창백
 CASE 3
-	L_S = 탁함
+	L_S = 분홍색
 CASE 4
-	L_S = 어두움
+	L_S = 갈색
 CASE 5
 	L_S = 흼
 CASEELSE

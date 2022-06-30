@@ -259,10 +259,10 @@ FLAG:최대数_ABLLV			= 9
 FLAG:최대数_MARKLV			= 3
 FLAG:최대数_EXP				= 999
 
-FLAG:최대数_무드			= 1000
-FLAG:최대数_무드桁数		= 5
+FLAG:최대값_무드			= 1000
+FLAG:최대값_무드桁数		= 5
 FLAG:최대数_調教人数		= 2
-FLAG:최대値_절정			= 10000
+FLAG:최대치_절정			= 10000
 FLAG:최대値_체력			= LIMIT(1000 * FLAG:연구시설 / 100 / 50 * 50,300,1000)
 FLAG:최대値_子宮精液		= 10
 
@@ -287,15 +287,15 @@ VARSET LOCAL
 
 REPEAT CHARANUM
 	LOCAL = NO:COUNT
-	CFLAG:COUNT:使用口上 = LOCAL
+	CFLAG:COUNT:사용구상 = LOCAL
 
 ;-------------------------------------------------
 ;	;존재확인
 ;	IF EXISTCSV(LOCAL,0)
-;		;使用口上を常にCSVに合わせる(暫定)
-;		CFLAG:COUNT:使用口上 = CSVCFLAG(LOCAL, GETNUM(CFLAG, "使用口上"), 0)
-;		SIF !CFLAG:COUNT:使用口上
-;			CFLAG:COUNT:使用口上 = LOCAL
+;		;사용구상を常にCSVに合わせる(暫定)
+;		CFLAG:COUNT:사용구상 = CSVCFLAG(LOCAL, GETNUM(CFLAG, "사용구상"), 0)
+;		SIF !CFLAG:COUNT:사용구상
+;			CFLAG:COUNT:사용구상 = LOCAL
 ;	ENDIF
 ;-------------------------------------------------
 REND

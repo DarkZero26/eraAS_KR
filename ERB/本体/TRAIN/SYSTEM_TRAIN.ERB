@@ -992,7 +992,7 @@ TARGET = ARG
 
 L_HIT=0
 
-IF TCVAR:ARG:履歴_EXP_処女喪失
+IF TCVAR:ARG:이력_EXP_처녀상실
 	PRINTFORM %CALLNAME:ARG%
 	SETCOLOR COLOR("ピンク")
 	PRINTW 처녀상실
@@ -1032,7 +1032,7 @@ ENDIF
 CALL 첫체험기록_TRAIN(ARG)
 
 ;初期化
-TCVAR:ARG:履歴_EXP_処女喪失 = 0
+TCVAR:ARG:이력_EXP_처녀상실 = 0
 TCVAR:ARG:履歴_EXP_Ａ処女喪失 = 0
 TCVAR:ARG:履歴_EXP_童貞喪失 = 0
 
@@ -1249,7 +1249,7 @@ FOR L_I, 0, DEFTR_PL_NUM
 	ELSEIF MARK:L_P:예속각인
 		L_MOOD = 2
 	ENDIF
-	BASE:L_P:무드 = (FLAG:최대数_무드 / FLAG:최대数_무드桁数) * L_MOOD
+	BASE:L_P:무드 = (FLAG:최대값_무드 / FLAG:최대값_무드桁数) * L_MOOD
 
 ;	IF MARK:L_P:함락각인
 ;		L_VAL = 10000

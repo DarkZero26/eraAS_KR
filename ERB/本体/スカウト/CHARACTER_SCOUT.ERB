@@ -132,7 +132,7 @@ ELSEIF Flag:EP成否 == 1
 	TALENT:L_I:주인있음 = 1
 	TALENT:L_I:약점 = 1
 	Talent:L_I:비처녀 = 1
-	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	TCVAR:L_I:이력_EXP_처녀상실 = 1
 	Talent:L_I:Ａ비처녀 = 1
 	TCVAR:L_I:履歴_EXP_Ａ処女喪失 = 1
 	EXP:L_I:Ｖ경험 = (RAND:200)+100
@@ -157,7 +157,7 @@ ENDIF
 IF Flag:조사이벤트번호 == 401
 	TALENT:L_I:前성노예 = 1
 	Talent:L_I:비처녀 = 1
-	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	TCVAR:L_I:이력_EXP_처녀상실 = 1
 	Talent:L_I:Ａ비처녀 = 1
 	TCVAR:L_I:履歴_EXP_Ａ処女喪失 = 1
 	EXP:L_I:Ｖ경험 = (RAND:200)+50
@@ -233,14 +233,14 @@ SIF CALLNAME:L_I == ""
 
 MAXBASE:L_I:체력 = 200
 BASE:L_I:체력 = MAXBASE:L_I:체력
-MAXBASE:L_I:절정 = FLAG:최대値_절정
-MAXBASE:L_I:무드 = FLAG:최대数_무드
+MAXBASE:L_I:절정 = FLAG:최대치_절정
+MAXBASE:L_I:무드 = FLAG:최대값_무드
 
-CFLAG:L_I:使用口上 = NO:L_I
-CFLAG:L_I:危険日 = RAND:6
+CFLAG:L_I:사용구상 = NO:L_I
+CFLAG:L_I:위험일 = RAND:6
 
-FLAG:개별번호カウント += 1
-CFLAG:L_I:개별번호 = FLAG:개별번호カウント
+FLAG:개별번호카운트 += 1
+CFLAG:L_I:개별번호 = FLAG:개별번호카운트
 
 
 ;남성거주자最終調整
@@ -272,7 +272,7 @@ CALL CHARACTER_SCOUT_COSTUME(ARG:0)
 ;キャンセル用の関数
 @CANCEL_SCOUT(L_C_ID)
 #DIM L_C_ID
-FLAG:개별번호カウント --
+FLAG:개별번호카운트 --
 DELCHARA L_C_ID
 
 

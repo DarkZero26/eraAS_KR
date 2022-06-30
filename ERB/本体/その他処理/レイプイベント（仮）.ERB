@@ -187,7 +187,7 @@ IF RAND:100 < L_I
 		PRINTL 처녀상실
 		RESETCOLOR
 		TALENT:비처녀 = 1
-		TCVAR:履歴_EXP_処女喪失 = 1
+		TCVAR:이력_EXP_처녀상실 = 1
 	ENDIF
 
 	;- EXP
@@ -234,7 +234,7 @@ ELSE
 ENDIF
 PRINTL
 
-TCVAR:履歴_EXP_処女喪失 = 0
+TCVAR:이력_EXP_처녀상실 = 0
 
 ;=================================================
 ;   sub KOJO_RAPE
@@ -242,7 +242,7 @@ TCVAR:履歴_EXP_処女喪失 = 0
 ;   口上:レイプイベント
 ;-------------------------------------------------
 @KOJO_RAPE
-TRYCCALLFORM KOJO_RAPE_K{CFLAG:使用口上}
+TRYCCALLFORM KOJO_RAPE_K{CFLAG:사용구상}
 ;口上が無い場合は地の分が表示される
 CATCH
 	SELECTCASE FLAG:レイプ結果타입

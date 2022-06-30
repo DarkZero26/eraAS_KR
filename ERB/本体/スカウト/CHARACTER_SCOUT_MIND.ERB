@@ -243,12 +243,12 @@ ENDIF
 #DIM L_C_ID
 IF TALENT:L_C_ID:NPC == 0
 	IF TALENT:L_C_ID:EPC == 0
-		CFLAG:L_C_ID:肌色 = RAND:6
+		CFLAG:L_C_ID:살색 = RAND:6
 		CFLAG:L_C_ID:머리색 = RAND:11
 		CFLAG:L_C_ID:머리모양 = RAND:30
-		CFLAG:L_C_ID:後머리모양 = RAND:30
-		CFLAG:L_C_ID:目 = RAND:8
-		CFLAG:L_C_ID:瞳色 = RAND:6
+		CFLAG:L_C_ID:뒷머리모양 = RAND:30
+		CFLAG:L_C_ID:눈 = RAND:8
+		CFLAG:L_C_ID:눈동자색 = RAND:6
 		CFLAG:L_C_ID:체형 = RAND:3
 		IF TALENT:L_C_ID:오토코 == 1 || TALENT:L_C_ID:후타나리
 			CFLAG:L_C_ID:ペニスサイズ = RAND:4
@@ -276,11 +276,11 @@ CALL CHARACTER_SCOUT_BODYSIZE(L_C_ID)
 
 
 ;-------------------------------------------------
-;チャームポイント決定
+;매력포인트決定
 ;-------------------------------------------------
 @CHARACTER_SCOUT_CHARM_POINT(L_C_ID)
 #DIM L_C_ID
-STRDATA CSTR:L_C_ID:チャームポイント
+STRDATA CSTR:L_C_ID:매력포인트
 	DATA 피부
 	DATA 눈매
 	DATA 콧대
@@ -311,8 +311,8 @@ STRDATA CSTR:L_C_ID:チャームポイント
 	DATA 잠버릇
 	DATA 머릿결
 ENDDATA
-SIF CSTR:L_C_ID:チャームポイント == "엉덩이" && (TALENT:L_C_ID:큰엉덩이  || TALENT:L_C_ID:거대엉덩이)
-	CSTR:L_C_ID:チャームポイント = 큰 엉덩이
+SIF CSTR:L_C_ID:매력포인트 == "엉덩이" && (TALENT:L_C_ID:큰엉덩이  || TALENT:L_C_ID:거대엉덩이)
+	CSTR:L_C_ID:매력포인트 = 큰 엉덩이
 
 
 ;-------------------------------------------------
@@ -320,7 +320,7 @@ SIF CSTR:L_C_ID:チャームポイント == "엉덩이" && (TALENT:L_C_ID:큰엉
 ;-------------------------------------------------
 @CHARACTER_SCOUT_KUSE(L_C_ID)
 #DIM L_C_ID
-STRDATA CSTR:L_C_ID:癖
+STRDATA CSTR:L_C_ID:버릇
 	DATA 입술을 핥는다
 	DATA 먼 산을 본다
 	DATA 머리카락을 만진다
@@ -358,8 +358,8 @@ STRDATA CSTR:L_C_ID:癖
 	DATA 포즈를 잡는다
 	DATA 가슴을 댄다
 ENDDATA
-SIF CSTR:L_C_ID:癖 == "가슴을 댄다" && TALENT:L_C_ID:오토코
-	CSTR:L_C_ID:癖 = 포즈를 잡는다
+SIF CSTR:L_C_ID:버릇 == "가슴을 댄다" && TALENT:L_C_ID:오토코
+	CSTR:L_C_ID:버릇 = 포즈를 잡는다
 
 
 ;-------------------------------------------------
@@ -407,16 +407,16 @@ ELSE
 	CFLAG:L_C_ID:체중 = ((CFLAG:L_C_ID:신장 - 48) * 3) / 10 + RAND:5
 ENDIF
 
-;ウエストサイズ
+;허리사이즈
 ;補正値
 L_HOSEI_WAIST = RAND:100 + CFLAG:L_C_ID:체형 * 100
-CFLAG:L_C_ID:ウエストサイズ = (CFLAG:L_C_ID:신장 * 320) + (RAND:500 * 2 + RAND:500 * 2)
-CFLAG:L_C_ID:ウエストサイズ = CFLAG:L_C_ID:ウエストサイズ * (L_HOSEI_WAIST + 1000) / 1000000
+CFLAG:L_C_ID:허리사이즈 = (CFLAG:L_C_ID:신장 * 320) + (RAND:500 * 2 + RAND:500 * 2)
+CFLAG:L_C_ID:허리사이즈 = CFLAG:L_C_ID:허리사이즈 * (L_HOSEI_WAIST + 1000) / 1000000
 SIF CFLAG:L_C_ID:신장 < 130
-	CFLAG:L_C_ID:ウエストサイズ += (130 - CFLAG:L_C_ID:신장 + RAND:10 + RAND:(TALENT:L_C_ID:소인체형 + 1)) / 5
+	CFLAG:L_C_ID:허리사이즈 += (130 - CFLAG:L_C_ID:신장 + RAND:10 + RAND:(TALENT:L_C_ID:소인체형 + 1)) / 5
 
 CFLAG:L_C_ID:가슴사이즈 = CHARACTER_BUST_RETURN(L_C_ID)
-CFLAG:L_C_ID:ヒップサイズ = CHARACTER_HIP_RETURN(L_C_ID)
+CFLAG:L_C_ID:힙사이즈 = CHARACTER_HIP_RETURN(L_C_ID)
 
 
 ;-------------------------------------------------
@@ -463,9 +463,9 @@ ELSE
 	ENDIF
 
 	
-	;カップサイズはバスト-アンダーバストがAAで7.5cm以上10.0cm未満
+	;컵사이즈はバスト-アンダーバストがAAで7.5cm以上10.0cm未満
 	;以降+2.5cm毎にサイズアップし、AA未満で測定不能(=0)
-	L_HS = (CFLAG:L_I:ウエストサイズ+CFLAG:L_I:신장/20)*10
+	L_HS = (CFLAG:L_I:허리사이즈+CFLAG:L_I:신장/20)*10
 	SIF TALENT:L_I:소인체형
 		L_HS -= 10+RAND:10
 	IF TALENT:L_I:거유 == 1
@@ -486,8 +486,8 @@ ELSE
 		L_BH = L_HS+150
 	ENDIF
 	L_BH += RAND:50
-	CFLAG:L_I:カップサイズ = MAX(0, (L_BH-L_HS-50)/25)
-	CFLAG:L_I:체중 += RAND:(CFLAG:L_I:カップサイズ + 1) / 10
+	CFLAG:L_I:컵사이즈 = MAX(0, (L_BH-L_HS-50)/25)
+	CFLAG:L_I:체중 += RAND:(CFLAG:L_I:컵사이즈 + 1) / 10
 ENDIF
 RETURNF L_BH/10
 
@@ -649,7 +649,7 @@ CASE "조인"
 CASE "오니"
 	L_OVUM_DEFFENSE = 500
 	CFLAG:L_C_ID:수정확률 = 20
-CASE "吸血오니"
+CASE "흡혈귀"
 	L_OVUM_DEFFENSE = 500
 	CFLAG:L_C_ID:수정확률 = 5
 CASE "ニア"
@@ -821,7 +821,7 @@ CASE "인간"
 	CFLAG:L_C_ID:주민_종족특징1 = 0
 	CFLAG:L_C_ID:주민_종족특징2 = 0
 CASE "엘프"
-	CFLAG:L_C_ID:주민_종족특징1 = CFLAG:L_C_ID:肌色
+	CFLAG:L_C_ID:주민_종족특징1 = CFLAG:L_C_ID:살색
 	CFLAG:L_C_ID:주민_종족특징2 = 0
 CASE "야마"
 	IF RAND:999 < 950
@@ -860,11 +860,11 @@ CASE "오니"
 	CFLAG:L_C_ID:주민_종족특징1 = RAND:4
 	CFLAG:L_C_ID:주민_종족특징2 = 0
 	SIF RAND:10 > 6
-		CFLAG:L_C_ID:肌色 = 4
+		CFLAG:L_C_ID:살색 = 4
 CASE "정령"
 	CFLAG:L_C_ID:주민_종족특징1 = 0
 	CFLAG:L_C_ID:주민_종족특징2 = RAND:6
-CASE "吸血오니"
+CASE "흡혈귀"
 	CFLAG:L_C_ID:주민_종족특징1 = 0
 	CFLAG:L_C_ID:주민_종족특징2 = RAND:4
 CASE "ニア"
@@ -877,24 +877,24 @@ ENDSELECT
 IF TALENT:L_C_ID:오토코 == 0
 	IF TALENT:L_C_ID:학생
 		CFLAG:L_C_ID:복장 = RAND:3
-		CFLAG:L_C_ID:靴 = (RAND:3)+2
+		CFLAG:L_C_ID:신발 = (RAND:3)+2
 	ELSEIF TALENT:L_C_ID:아이돌 == 1
 		CFLAG:L_C_ID:복장 = (RAND:4)+5
-		CFLAG:L_C_ID:靴 = RAND:5
+		CFLAG:L_C_ID:신발 = RAND:5
 	ELSEIF TALENT:L_C_ID:사회인 == 1
 		CFLAG:L_C_ID:복장 = (RAND:6)+3
-		CFLAG:L_C_ID:靴 = RAND:2
+		CFLAG:L_C_ID:신발 = RAND:2
 	ELSEIF TALENT:L_C_ID:창녀 == 1
 		CFLAG:L_C_ID:복장 = (RAND:2)+9
-		CFLAG:L_C_ID:靴 = RAND:2
+		CFLAG:L_C_ID:신발 = RAND:2
 	ELSEIF TALENT:L_C_ID:치안유지국원 
 		CFLAG:L_C_ID:복장 = (RAND:3)+20
-		CFLAG:L_C_ID:靴 = RAND:2
+		CFLAG:L_C_ID:신발 = RAND:2
 		SIF CFLAG:L_C_ID:복장 == 22
-			CFLAG:L_C_ID:帽子 = 2
+			CFLAG:L_C_ID:모자 = 2
 	ELSE
 		CFLAG:L_C_ID:복장 = RAND:12
-		CFLAG:L_C_ID:靴 = RAND:5
+		CFLAG:L_C_ID:신발 = RAND:5
 	ENDIF
 ENDIF
 
@@ -903,16 +903,16 @@ IF FLAG:유연_연구중 != 0
 ENDIF
 
 L_RANDOM = RAND:2
-CFLAG:L_C_ID:下着上 = L_RANDOM
-CFLAG:L_C_ID:下着下 = (RAND:3)+L_RANDOM 
-CFLAG:L_C_ID:靴下 = RAND:4
+CFLAG:L_C_ID:속옷상의 = L_RANDOM
+CFLAG:L_C_ID:속옷하의 = (RAND:3)+L_RANDOM 
+CFLAG:L_C_ID:양말 = RAND:4
 
 
 
 
 IF CFlag:L_C_ID:주민_체격 == 1
 	CFlag:L_C_ID:복장 = (RAND:5)
-	CFlag:L_C_ID:靴 = RAND:3
+	CFlag:L_C_ID:신발 = RAND:3
 	IF FLAG:유연_연구중 != 0
 		CFLAG:L_C_ID:복장 = 14
 	ENDIF
@@ -1063,7 +1063,7 @@ CASE 15, 10
 ;期待値3.0×2＝6、0～12
 	CFlag:L_I:난자레벨 = RAND:7 + RAND:7
 CASE 5
-;"엘프", "오토마타", "해인", "吸血오니"
+;"엘프", "오토마타", "해인", "흡혈귀"
 ;期待値2.5×2＝5、0～10
 	CFlag:L_I:난자레벨 = RAND:6 + RAND:6
 ENDSELECT
@@ -1079,7 +1079,7 @@ CASE "해인", "엘프"
 ;期待値3.0×2＝6、0～12
 ;設定的に繁殖力が弱い
 	CFlag:L_I:모체레벨 = RAND:7 + RAND:7
-CASE "오토마타", "천사", "吸血오니", "정령"
+CASE "오토마타", "천사", "흡혈귀", "정령"
 ;そもそも繁殖行為やってんのか疑問な連中
 ;期待値2.5×2＝5、0～10
 	CFlag:L_I:모체레벨 = RAND:6 + RAND:6

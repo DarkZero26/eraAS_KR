@@ -169,11 +169,11 @@ ELSEIF TR_PREV_SEX_V()
 ;その他
 ELSE
 	;処女＋작은체형
-	IF TCVAR:履歴_EXP_処女喪失 && TALENT:작은체형
+	IF TCVAR:이력_EXP_처녀상실 && TALENT:작은체형
 		PRINTFORML %타겟은% %CALLNAME:PLAYER%에게 걸터앉아 천천히 허리를 내려,
 		PRINT 남자를 모르는 어린 틈새로 페니스를 삼켜갔다…….
 	;処女
-	ELSEIF TCVAR:履歴_EXP_処女喪失
+	ELSEIF TCVAR:이력_EXP_처녀상실
 		PRINTFORML %타겟은% %CALLNAME:PLAYER%에게 걸터앉아 천천히 허리를 내려,
 		PRINT 남자를 모르는 비렬으로 페니스를 삼켜갔다…….
 	ELSE

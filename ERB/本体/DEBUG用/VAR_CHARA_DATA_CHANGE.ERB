@@ -130,7 +130,7 @@ PRINTFORML [-] 이름　　：%NAME:L_T%
 PRINTFORML [1] 호칭　　：%CALLNAME:L_T%
 PRINTFORML [2] 일인칭　：%CSTR:L_T:一人称%
 PRINTFORML [3] 이인칭　：%CSTR:L_T:二人称%
-PRINTFORML [4] 구상번호：{CFLAG:L_T:使用口上}
+PRINTFORML [4] 구상번호：{CFLAG:L_T:사용구상}
 PRINTL
 PRINTFORML [5] 첫 경험 데이터 초기화
 PRINTL
@@ -195,7 +195,7 @@ SELECTCASE RESULT
 		IF RESULT == 9999
 			;スルー
 		ELSE
-			CFLAG:L_T:使用口上 = RESULT
+			CFLAG:L_T:사용구상 = RESULT
 		ENDIF
 	;初体験初期化
 	CASE 5

@@ -234,7 +234,7 @@ ARG:0 = L_I
 
 
 SIF Talent:L_I:비처녀 == 1
-	TCVAR:L_I:履歴_EXP_処女喪失 = 1
+	TCVAR:L_I:이력_EXP_처녀상실 = 1
 SIF Talent:L_I:Ａ비처녀 == 1
 	TCVAR:L_I:履歴_EXP_Ａ処女喪失 = 1
 
@@ -247,16 +247,16 @@ SIF T_TALK2 == ""
 
 
 ;性格と口調の設定
-SIF CFLAG:L_I:使用口上 == 0
+SIF CFLAG:L_I:사용구상 == 0
 	CALL CHARACTER_SCOUT_MIND_REPEAT(L_I)
 SIF !STRLENS(CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "一人称")))
 	CSTR:L_I:一人称 '= CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "一人称"))
 SIF !STRLENS(CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "二人称")))
 	CSTR:L_I:二人称 '= CSVCSTR(CFLAG:L_I:NPC番号, GETNUM(CSTR, "二人称"))
 
-SIF !STRLENS(CSTR:L_I:チャームポイント)
+SIF !STRLENS(CSTR:L_I:매력포인트)
 	CALL CHARACTER_SCOUT_CHARM_POINT(L_I)
-SIF !STRLENS(CSTR:L_I:癖)
+SIF !STRLENS(CSTR:L_I:버릇)
 	CALL CHARACTER_SCOUT_KUSE(L_I)
 SIF !CFLAG:L_I:신장
 	CALL CHARACTER_SCOUT_BODYSIZE(L_I)
@@ -275,14 +275,14 @@ CSTR:L_I:二人称2 = %T_TALK2%
 
 MAXBASE:L_I:체력 = 200
 BASE:L_I:체력 = MAXBASE:L_I:체력
-MAXBASE:L_I:절정 = FLAG:최대値_절정
-MAXBASE:L_I:무드 = FLAG:최대数_무드
+MAXBASE:L_I:절정 = FLAG:최대치_절정
+MAXBASE:L_I:무드 = FLAG:최대값_무드
 
-CFLAG:L_I:使用口上 = NO:L_I
-CFLAG:L_I:危険日 = RAND:6
+CFLAG:L_I:사용구상 = NO:L_I
+CFLAG:L_I:위험일 = RAND:6
 
-FLAG:개별번호カウント += 1
-CFLAG:L_I:개별번호 = FLAG:개별번호カウント
+FLAG:개별번호카운트 += 1
+CFLAG:L_I:개별번호 = FLAG:개별번호카운트
 
 CALL CHARACTER_SCOUT_PROFILE(ARG:0)
 ;初期プロフィール

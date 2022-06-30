@@ -65,11 +65,11 @@ L_T = ARG
 
 MAXBASE:L_T:체력 = 200
 BASE:L_T:체력 = MAXBASE:L_T:체력
-MAXBASE:L_T:절정 = FLAG:최대値_절정
-MAXBASE:L_T:무드 = FLAG:최대数_무드
+MAXBASE:L_T:절정 = FLAG:최대치_절정
+MAXBASE:L_T:무드 = FLAG:최대값_무드
 
-CFLAG:L_T:使用口上 = NO:L_T
-CFLAG:L_T:危険日 = DAY % 7
+CFLAG:L_T:사용구상 = NO:L_T
+CFLAG:L_T:위험일 = DAY % 7
 
 ;初期化
 CSTR:L_T:キャラ紹介0 = 
@@ -362,13 +362,13 @@ L_VAL=0
 L_LV=0
 
 ;- 計算:桁単位
-L_VAL = (FLAG:최대数_무드 / FLAG:최대数_무드桁数)
+L_VAL = (FLAG:최대값_무드 / FLAG:최대값_무드桁数)
 
 ;- 計算:レベル
 L_LV = (BASE:ARG:무드 / L_VAL)
 
 ;- 調整
-L_LV = MIN(L_LV, FLAG:최대数_무드桁数)
+L_LV = MIN(L_LV, FLAG:최대값_무드桁数)
 
 RETURNF L_LV
 
