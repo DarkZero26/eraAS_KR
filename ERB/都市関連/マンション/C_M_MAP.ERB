@@ -297,7 +297,7 @@ CASEELSE
 		;戻る
 		GOTO INPUT_LOOP
 	CASEELSE
-		;주민割り当て
+		;주민 할당
 		;正しいキャラ番号かどうかチェック
 		C_S = RESULT
 		IF C_S < CHARANUM
@@ -307,7 +307,7 @@ CASEELSE
 			;NPCかどうかの判定
 			IF TALENT:C_S:NPC == 1 
 			PRINTFORMW NPC는 선택할 수 없습니다.
-			;チェックを終えたら部屋とキャラの相互割り当て処理を従来Verからコピペ
+			;체크를 마치면 방과 캐릭터의 상호 할당 처리를 기존 Ver에서 복사붙여넣기
 			ELSEIF C_S == MASTER
 				PRINTFORMW %마스터를% 선택할 수 없습니다.
 				GOTO INPUT_LOOP2_1
