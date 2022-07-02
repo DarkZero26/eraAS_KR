@@ -1,7 +1,7 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
 ;	Module		:COMFxxx.ERB
-;	Facility	:TRAINコマンド(73:アナルバイブ)。
+;	Facility	:TRAINコマンド(73:아날바이브)。
 ;
 ;	Licence		:ライセンスフリー。
 ;
@@ -44,7 +44,7 @@ RESULTS = 애널바이브
 @COM_FUNC_ABLE_X73
 
 ;特定アイテムを所有
-SIF !ITEM:アナルバイブ
+SIF !ITEM:아날바이브
 	RETURN 0
 
 RETURN 1
@@ -68,7 +68,7 @@ L_T = TARGET
 ;- 事前処理
 ;-----------------------------
 ;CHK
-SIF TEQUIP:L_T:Ａ器具 != [[TRAIN:アナルバイブ]]
+SIF TEQUIP:L_T:Ａ器具 != [[TRAIN:아날바이브]]
 	RETURN 1
 
 TEQUIP:L_T:Ａ器具 = 0
@@ -131,7 +131,7 @@ L_T = TARGET
 ;COM別FLAGの設定
 ;-----------------------------
 
-TEQUIP:L_T:Ａ器具 = [[TRAIN:アナルバイブ]]
+TEQUIP:L_T:Ａ器具 = [[TRAIN:아날바이브]]
 TEQUIP:L_T:Ａ器具経過ターン = 0
 
 L_TMP = TEQUIP:L_T:ポイント性交

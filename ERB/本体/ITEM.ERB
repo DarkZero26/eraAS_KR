@@ -185,9 +185,9 @@ SELECTCASE ITEM_TR_SALEABLE(LOCAL)
 			;その他アイテム
 			CASE 60 TO 99
 				SELECTCASE ITEMNAME:LOCAL
-					CASE "【道具:陰核成長剤】"
+					CASE "【도구:음핵성장제】"
 						LOCALS =  %ITEMNAME:LOCAL%:대상을 후타나리화, 재사용시 소거됩니다.
-					CASE "【道具:排卵誘発剤】"
+					CASE "【도구:배란유발제】"
 						LOCALS =  %ITEMNAME:LOCAL%:임신 확률을 올려줍니다.
 					;ERROR
 					CASEELSE
@@ -210,7 +210,7 @@ SELECTCASE ITEM_TR_SALEABLE(LOCAL)
 				;- CHK:ERROR
 				L_ERR_MSG=
 				SELECTCASE ITEMNAME:LOCAL
-					CASE "【道具:排卵誘発剤】"
+					CASE "【도구:배란유발제】"
 						IF TALENT:RESULT:배란제
 							L_ERR_MSG = 이미 배란유발제를 사용하고 있습니다.
 						ELSEIF TALENT:RESULT:임신
@@ -236,14 +236,14 @@ SELECTCASE ITEM_TR_SALEABLE(LOCAL)
 
 				;- 購買処理
 				SELECTCASE ITEMNAME:LOCAL
-					CASE "【道具:陰核成長剤】"
+					CASE "【도구:음핵성장제】"
 						PRINTFORMW ＜%L_NAME%에게 음핵성장제를 사용했다＞
 						IF TALENT:L_T:후타나리 == 0
 							TALENT:L_T:후타나리 = 1
 						ELSEIF TALENT:L_T:후타나리 == 1
 							TALENT:L_T:후타나리 = 0
 						ENDIF
-					CASE "【道具:排卵誘発剤】"
+					CASE "【도구:배란유발제】"
 						PRINTFORMW ＜%L_NAME%에게 배란유발제를 사용했다＞
 						TALENT:L_T:배란제 = 1
 				ENDSELECT
@@ -284,7 +284,7 @@ SIF ITEMPRICE:ARG <= 0
 	RETURNF -1
 
 SELECTCASE ITEMNAME:ARG
-	CASE "ローター", "Ｅマッサージャ", "バイブ", "アナルバイブ"
+	CASE "로터", "E마사지기", "바이브", "아날바이브"
 		SIF ITEM:ARG
 			RETURNF 0
 	CASE "【設備:シェルター化】"

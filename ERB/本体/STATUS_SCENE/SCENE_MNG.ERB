@@ -42,7 +42,7 @@
 	"MNG_特殊_치료設備", 
 	"MNG_特殊_品種改良", 
 	"MNG_特殊_身体強化", 
-	"MNG_特殊_次世代創造", 
+	"MNG_特殊_차세대창조", 
 	
 	"MNG_登録_交友制御", 
 	"MNG_登録_衣装変更", 
@@ -96,7 +96,7 @@
 #DIM CONST INPUT_MODE_치료設備   = 1025
 #DIM CONST INPUT_MODE_品種改良   = 1026
 #DIM CONST INPUT_MODE_身体強化   = 1027
-#DIM CONST INPUT_MODE_次世代創造 = 1028
+#DIM CONST INPUT_MODE_차세대창조 = 1028
 #DIM CONST INPUT_MODE_抹消中止   = 1032
 
 
@@ -148,7 +148,7 @@ CASE 1 TO CHARANUM - 1
 		CALL CITY_F_54_GI2(L_INPUT)
 	CASE "MNG_特殊_身体強化"
 		CALL LABORATORY_BOOST_ST(L_INPUT)
-	CASE "MNG_特殊_次世代創造"
+	CASE "MNG_特殊_차세대창조"
 		IF CFLAG:L_INPUT:주민_회수済み数  <= CFLAG:L_INPUT:주민_継承
 			PRINTFORMW 조건을 만족하고 있지 않습니다.
 		ELSE
@@ -180,7 +180,7 @@ CASE INPUT_MODE_品種改良
 	IF FLAG:품종개량시설 >= 1
 		MODE_NOW '= MODE_NAME:(L_INPUT % 1000)
 	ENDIF
-CASE INPUT_MODE_身体強化, INPUT_MODE_次世代創造
+CASE INPUT_MODE_身体強化, INPUT_MODE_차세대창조
 	IF FLAG:연구시설 >= 1
 		MODE_NOW '= MODE_NAME:(L_INPUT % 1000)
 	ENDIF
@@ -364,7 +364,7 @@ MNG_特殊_外見変更
 
 MNG_特殊_品種改良
 MNG_特殊_身体強化
-MNG_特殊_次世代創造
+MNG_特殊_차세대창조
 
 MNG_登録_交友制御
 MNG_登録_衣装変更
@@ -498,7 +498,7 @@ IF LIST_NAME == "기초정보"
 		DETAIL_OP = 3
 	CASE "MNG_特殊_身体強化"
 		DETAIL_OP = 4
-	CASE "MNG_特殊_次世代創造"
+	CASE "MNG_特殊_차세대창조"
 		DETAIL_OP = 5
 	{
 	CASE "MNG_入居_一号室", "MNG_入居_二号室", "MNG_入居_三号室", "MNG_入居_四号室", "MNG_入居_五号室", 
@@ -630,7 +630,7 @@ IF GROUPMATCH(SCENE,
 	"MNG_登録_レギュラー", "MNG_登録_特別保護", "MNG_登録_名前変更", 
 	"MNG_転職_성직자", "MNG_転職_메이드", "MNG_転職_아이돌", "MNG_転職_사회인", "MNG_転職_局員", "MNG_転職_창녀", 
 	"MNG_配属_학원生徒", "MNG_配属_支援ボラ", "MNG_配属_ラブホ店員", "MNG_配属_カジノ店員", 
-	"MNG_特殊_外見変更", "MNG_特殊_치료設備", "MNG_特殊_品種改良", "MNG_特殊_身体強化", "MNG_特殊_次世代創造", 
+	"MNG_特殊_外見変更", "MNG_特殊_치료設備", "MNG_特殊_品種改良", "MNG_特殊_身体強化", "MNG_特殊_차세대창조", 
 	"MNG_登録_交友制御", "MNG_登録_衣装変更", "MNG_登録_範囲消去", "MNG_登録_抹消中止"
 	)
 }
@@ -899,7 +899,7 @@ IF GROUPMATCH(SCENE,
 		SETCOLOR COLOR("灰色")
 		PRINTFORM [----] - ？？？？？
 	ELSE
-		SIF SCENE == "MNG_特殊_次世代創造"
+		SIF SCENE == "MNG_特殊_차세대창조"
 			SETCOLOR COLOR("黄色")
 		PRINTBUTTON "[1028] - 차세대창조", "1028"
 	ENDIF

@@ -214,30 +214,30 @@ CFlag:L_I:주민_최대BRE  = L_BRE+(RAND:(Flag:イベントキャラ特別補�
 CFlag:L_I:주민_현재BRE  = CFlag:L_I:주민_최대BRE
 
 
-CFlag:L_I:주민_技能ポイント = 200
+CFlag:L_I:주민_기능포인트 = 200
 
-CSTR:L_I:주민_M兵装_名前 = メイン兵装
-CFlag:L_I:주민_M兵装ダ이스 = 2
-CFlag:L_I:주민_M兵装데미지 = 3
-CFlag:L_I:주민_M兵装ボーナス = 2
-CFlag:L_I:주민_M兵装숙련도 = 1
+CSTR:L_I:주민_M병기_名前 = メイン병기
+CFlag:L_I:주민_M병기다이스 = 2
+CFlag:L_I:주민_M병기데미지 = 3
+CFlag:L_I:주민_M병기보너스 = 2
+CFlag:L_I:주민_M병기숙련도 = 1
 
-CSTR:L_I:주민_S兵装_名前 = サブ兵装
-CFlag:L_I:주민_S兵装ダ이스 = 1
-CFlag:L_I:주민_S兵装데미지 = 3
-CFlag:L_I:주민_S兵装ボーナス = 1
-CFlag:L_I:주민_S兵装숙련도 = 1
+CSTR:L_I:주민_S병기_名前 = サブ병기
+CFlag:L_I:주민_S병기다이스 = 1
+CFlag:L_I:주민_S병기데미지 = 3
+CFlag:L_I:주민_S병기보너스 = 1
+CFlag:L_I:주민_S병기숙련도 = 1
 
 
 ;必要ならフラグで制御
-;IF FLAG:兵装ランダム
-	CFlag:L_I:주민_M兵装 = RAND:5
-	CSTR:L_I:주민_M兵装_名前 = %ランダム兵装名(CFlag:L_I:주민_M兵装)%
-	CFlag:L_I:주민_S兵装 = RAND:5
-	CSTR:L_I:주민_S兵装_名前 = %ランダム兵装名(CFlag:L_I:주민_S兵装)%
+;IF FLAG:병기ランダム
+	CFlag:L_I:주민_M병기 = RAND:5
+	CSTR:L_I:주민_M병기_名前 = %ランダム병기名(CFlag:L_I:주민_M병기)%
+	CFlag:L_I:주민_S병기 = RAND:5
+	CSTR:L_I:주민_S병기_名前 = %ランダム병기名(CFlag:L_I:주민_S병기)%
 ;ENDIF
 
-@ランダム兵装名(ARG)
+@ランダム병기名(ARG)
 #FUNCTIONS
 #DIM T_R
 
@@ -265,7 +265,7 @@ SELECTCASE ARG
 		SPLIT "화염마법/수마법/얼음마법/흙마법/바람마법/전기마법/소리마법/광마법/독마법/흑마술/백마술/고대마술/자연마술/정령마술/정신마술/시간마술/공간마술/조령술/룬마법/수비술/마안/소환마술", "/", LOCALS
 		LOCAL = RAND:RESULT
 	CASEELSE
-		LOCALS = 兵装
+		LOCALS = 병기
 		LOCAL = 0
 ENDSELECT
 

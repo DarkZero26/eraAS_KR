@@ -11,9 +11,9 @@
 LS_STATUS:CON_敵_NAME = 폭주한 실험체
 TEMP = (Flag:依頼_이스からの駆除依頼_Lv / 2) + 1
 
-;特定レベルから専用ダ이스
+;特定レベルから専用다이스
 SIF Flag:依頼_이스からの駆除依頼_Lv >= 40
-	L_STATUS:CON_敵_主兵装 = 4
+	L_STATUS:CON_敵_주병기 = 4
 
 L_STATUS:CON_敵_EB = 10 + TEMP * 2
 L_STATUS:CON_敵_HP = TEMP * 10 + 50

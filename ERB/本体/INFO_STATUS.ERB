@@ -859,8 +859,8 @@ FOR L_I,0,VARSIZE("TALENT")
 	;-特殊変換
 	SELECTCASE TALENTNAME:L_I
 		CASE "시조"
-			IF CFLAG:(ARG):次世代創造子孫数
-				L_STR = 시조:창조수{MIN(CFLAG:(ARG):次世代創造子孫数, 999), 3, RIGHT}
+			IF CFLAG:(ARG):차세대창조자손수
+				L_STR = 시조:창조수{MIN(CFLAG:(ARG):차세대창조자손수, 999), 3, RIGHT}
 			ELSE
 				L_STR = 
 			ENDIF
@@ -1834,13 +1834,13 @@ CALL PRINT_LABEL(CSTR:L_I:4000, -19)
 PRINTFORM %" " * MAX(0, _INFO_RPG_WEPON_SPAN-RESULT)%
 CALL PRINT_LABEL(CSTR:L_I:4010, -19)
 PRINTL
-CALL PRINT_LABEL("타　입",,,INFO_STR_HEISOU(CFlag:L_I:주민_M兵装), -4)
+CALL PRINT_LABEL("타　입",,,INFO_STR_HEISOU(CFlag:L_I:주민_M병기), -4)
 PRINTFORM %" " * MAX(0, _INFO_RPG_WEPON_SPAN-RESULT)%
-CALL PRINT_LABEL("타　입",,,INFO_STR_HEISOU(CFlag:L_I:주민_S兵装), -4)
+CALL PRINT_LABEL("타　입",,,INFO_STR_HEISOU(CFlag:L_I:주민_S병기), -4)
 PRINTL
-CALL PRINT_LABEL("숙련도",,,@"\@ CFlag:L_I:주민_M兵装숙련도?{CFlag:L_I:주민_M兵装숙련도}#\@", -3 )
+CALL PRINT_LABEL("숙련도",,,@"\@ CFlag:L_I:주민_M병기숙련도?{CFlag:L_I:주민_M병기숙련도}#\@", -3 )
 PRINTFORM %" " * MAX(0, _INFO_RPG_WEPON_SPAN-RESULT)%
-CALL PRINT_LABEL("숙련도",,,@"\@ CFlag:L_I:주민_S兵装숙련도?{CFlag:L_I:주민_S兵装숙련도}#\@", -3 )
+CALL PRINT_LABEL("숙련도",,,@"\@ CFlag:L_I:주민_S병기숙련도?{CFlag:L_I:주민_S병기숙련도}#\@", -3 )
 PRINTL
 CALL PRINT_LABEL("대미지",,,INFO_STR_MAIN_WEAPON_DAMAGE(L_I))
 PRINTFORM %" " * MAX(0, _INFO_RPG_WEPON_SPAN-RESULT)%

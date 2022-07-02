@@ -1,9 +1,9 @@
 ﻿;@license CC0
 
-;CoC7版ライクなダ이스
+;CoC7版ライクな다이스
 ;注意点: -1 をそのままifで判定すると true 扱いになるのでちうい
 ;@param {SKILL_VALUE} 判定に使用する技能の値
-;@param {BONUS} ボーナスあるいはペナルティダ이스、ペナルティダ이스の場合は負の値を指定する。
+;@param {BONUS} 보너스あるいはペナルティ다이스、ペナルティ다이스の場合は負の値を指定する。
 ;@return 成功値 4:critical, 3:extream, 2:hard, 1:regular, 0:miss, -1:fumble
 @COC7_DICE(SKILL_VALUE, BONUS)
 #FUNCTION
@@ -27,7 +27,7 @@ ELSE
 ENDIF
 
 ;@private 外部からの利用は想定していません
-;@param {BONUS} ボーナスあるいはペナルティダ이스、ペナルティダ이스の場合は負の値を指定する。
+;@param {BONUS} 보너스あるいはペナルティ다이스、ペナルティ다이스の場合は負の値を指定する。
 ;@return 出目、判定を簡便にするため範囲は1-100
 @_COC7_DICEROLL(BONUS)
 #FUNCTION
@@ -41,10 +41,10 @@ DEBUGPRINTFORML 주사위눈 : {DICE_VALUE}, 잔여보너스 : {BONUS}
 IF BONUS == 0
     RETURNF DICE_VALUE
 ELSEIF BONUS > 0
-    ;ボーナスダ이스の判定
+    ;보너스다이스の判定
     RETURNF MIN(DICE_VALUE, _COC7_DICEROLL(BONUS - 1))
 ELSEIF BONUS < 0
-    ;ペナルティダ이스の判定
+    ;ペナルティ다이스の判定
     RETURNF MAX(DICE_VALUE, _COC7_DICEROLL(BONUS + 1))
 ENDIF
 

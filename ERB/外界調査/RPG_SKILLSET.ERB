@@ -34,7 +34,7 @@
 	, "전투 승리 시 아이템 획득"
 	, "불명"
 }
-#DIM  DYNAMIC 変更前_技能ポイント
+#DIM  DYNAMIC 変更前_기능포인트
 #DIM  DYNAMIC 変更前_눈독
 #DIM  DYNAMIC 変更前_아이디어
 #DIM  DYNAMIC 変更前_귀동냥
@@ -48,7 +48,7 @@
 
 IF !DO_CHECK
 	;変更前の현재の技能値を保存。直球。
-	変更前_技能ポイント = CFLAG:C_ID:주민_技能ポイント
+	変更前_기능포인트 = CFLAG:C_ID:주민_기능포인트
 	変更前_눈독         = CFLAG:C_ID:6600
 	変更前_아이디어     = CFLAG:C_ID:6601
 	変更前_귀동냥       = CFLAG:C_ID:6602
@@ -75,7 +75,7 @@ FOR SKILL_ID, 0, 10
 		PRINTFORML 
 NEXT
 DRAWLINE
-PRINTFORML 【기능 포인트:{CFLAG:C_ID:주민_技能ポイント}】　※기능 상한 100
+PRINTFORML 【기능 포인트:{CFLAG:C_ID:주민_기능포인트}】　※기능 상한 100
 DRAWLINE
 FOR SKILL_ID, 0, 10
 	PRINTFORM 　[{SKILL_ID, 3}]【%SKILL_NAME_STR:SKILL_ID, 8, LEFT%:{CFLAG:C_ID:(CFLAG_ID + SKILL_ID), 3 ,LEFT}】+1 [{100 + SKILL_ID, 3}]+5 [{200 + SKILL_ID, 3}]+10
@@ -96,7 +96,7 @@ SELECTCASE L_INPUT
 CASE 999
 	RETURN
 CASE 400
-	CFLAG:C_ID:주민_技能ポイント = 変更前_技能ポイント
+	CFLAG:C_ID:주민_기능포인트 = 変更前_기능포인트
 	CFLAG:C_ID:6600 = 変更前_눈독
 	CFLAG:C_ID:6601 = 変更前_아이디어
 	CFLAG:C_ID:6602 = 変更前_귀동냥
@@ -112,19 +112,19 @@ CASE 400
 CASE 301 TO 399
 	IF L_INPUT == 399
 		DRAWLINE
-		PRINTFORML 남은 보유 포인트 {CFLAG:C_ID:주민_技能ポイント}를 전부 무작위로 배분합니다. 괜찮겠습니까?
+		PRINTFORML 남은 보유 포인트 {CFLAG:C_ID:주민_기능포인트}를 전부 무작위로 배분합니다. 괜찮겠습니까?
 		PRINTFORML [1] 네
 		PRINTFORML [0] 아니오
 		INPUT
 		L_INPUT = RESULT
 		SELECTCASE L_INPUT
 		CASE 1
-			UP_NUM = CFLAG:C_ID:주민_技能ポイント
+			UP_NUM = CFLAG:C_ID:주민_기능포인트
 		CASEELSE
 			RESTART
 		ENDSELECT
 	ELSE
-		UP_NUM = MIN(L_INPUT % 100, CFLAG:C_ID:주민_技能ポイント)
+		UP_NUM = MIN(L_INPUT % 100, CFLAG:C_ID:주민_기능포인트)
 	ENDIF
 	CALL RPG_SKILLSET_RAND_LVUP(C_ID, UP_NUM)
 	RESTART
@@ -142,9 +142,9 @@ CASEELSE
 	CASEELSE
 		RESTART
 	ENDSELECT
-	UP_NUM = MIN(UP_NUM, CFLAG:C_ID:주민_技能ポイント, 100 - CFLAG:C_ID:(CFLAG_ID + SKILL_ID))
+	UP_NUM = MIN(UP_NUM, CFLAG:C_ID:주민_기능포인트, 100 - CFLAG:C_ID:(CFLAG_ID + SKILL_ID))
 	CFLAG:C_ID:(CFLAG_ID + SKILL_ID) += UP_NUM
-	CFLAG:C_ID:주민_技能ポイント     -= UP_NUM
+	CFLAG:C_ID:주민_기능포인트     -= UP_NUM
 	RESTART
 ENDSELECT
 
@@ -160,10 +160,10 @@ SIF !CFLAG_ID
 FOR LOCAL, 0, UP_NUM
 	SKILL_ID = RAND:10
 	;現状では必要ないがバグ防止
-	SIF CFLAG:L_I:주민_技能ポイント <= 0
+	SIF CFLAG:L_I:주민_기능포인트 <= 0
 		RETURN
 	SIF CFLAG:L_I:(CFLAG_ID + SKILL_ID) >= 100
 		CONTINUE
 	CFLAG:L_I:(CFLAG_ID + SKILL_ID) ++
-	CFLAG:L_I:주민_技能ポイント --
+	CFLAG:L_I:주민_기능포인트 --
 NEXT

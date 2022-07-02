@@ -20,7 +20,7 @@ RESULTS = 로션
 @COM_FUNC_ABLE_X150
 
 ;特定アイテムを所有
-SIF !ITEM:ローション
+SIF !ITEM:로션
 	RETURN 0
 
 RETURN 1
@@ -41,7 +41,7 @@ VARSET LOCAL
 L_P = PLAYER
 L_T = TARGET
 
-TEQUIP:L_T:ポイント愛撫 = [[TRAIN:ローション]]
+TEQUIP:L_T:ポイント愛撫 = [[TRAIN:로션]]
 
 
 ;=================================================
@@ -92,7 +92,7 @@ SOURCE:L_T:液体 += LOCAL:1
 
 
 
-ITEM:ローション -= 1
+ITEM:로션 -= 1
 
 ;=================================================
 ;   sub COM_FUNC_TRAIN_MSG_Xxxx

@@ -1,5 +1,5 @@
-﻿#DIM CONST ATK_RATIO = 100   ;((50 + ダ이스出目 * 10) * ATK * ATK_RATIO) / 100としてダ이스出目にかけるATKの倍率を調整。敵味方共通
-#DIM CONST ATK_RATIO_E = 100 ;((50 + ダ이스出目 * 10) * ATK * ATK_RATIO * ATK_RATIO_E) / 100としてダ이스出目にかけるATKの倍率を調整。敵専用
+﻿#DIM CONST ATK_RATIO = 100   ;((50 + 다이스出目 * 10) * ATK * ATK_RATIO) / 100として다이스出目にかけるATKの倍率を調整。敵味方共通
+#DIM CONST ATK_RATIO_E = 100 ;((50 + 다이스出目 * 10) * ATK * ATK_RATIO * ATK_RATIO_E) / 100として다이스出目にかけるATKの倍率を調整。敵専用
 #DIM CONST ATK_BASE = 70     ;ATKの値にかかる基本割合。これにサイコロの出目x10が加算
 #DIM CONST DEF_RATIO = 80    ;DEFの倍率を調整。敵味方共通
 #DIM CONST DEF_RATIO_E = 100 ;上記の敵専用補正
@@ -34,10 +34,10 @@
 #DIMS BSTR_D  , 100
 
 ;戦闘パラメータ受け渡し用配列の添え字
-;ダ이스系
-#DIM CONST ダ이스数  = 0 ;BOOST_Aで使うときはパーセンテージ加算ではなく固定値加算
-#DIM CONST ダ이스面  = 1 ;同上
-#DIM CONST ダ이스加算= 2 ;同上
+;다이스系
+#DIM CONST 다이스数  = 0 ;BOOST_Aで使うときはパーセンテージ加算ではなく固定値加算
+#DIM CONST 다이스面  = 1 ;同上
+#DIM CONST 다이스加算= 2 ;同上
 ;能力系 - キャラ自身
 #DIM CONST 최대HP    = 3
 #DIM CONST 현재HP    = 4

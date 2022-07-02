@@ -107,7 +107,7 @@ PRINTFORM 　　　　　　　　　장착도구：
 L_TMP = TEQUIP:Ｖ器具
 IF L_TMP
 	SELECTCASE L_TMP
-		CASE [[TRAIN:バイブ]]
+		CASE [[TRAIN:바이브]]
 			PRINT [바이브] 
 			L_HIT=1
 	ENDSELECT
@@ -116,7 +116,7 @@ ENDIF
 L_TMP = TEQUIP:Ａ器具
 IF L_TMP
 	SELECTCASE L_TMP
-		CASE [[TRAIN:アナルバイブ]]
+		CASE [[TRAIN:아날바이브]]
 			PRINT [애널바이브] 
 			L_HIT=1
 	ENDSELECT
@@ -461,7 +461,7 @@ L_TMP = TEQUIP:L_T:Ａ器具
 IF L_TMP
 	CALLFORM COM_FUNC_GET_NAME_X{L_TMP}
 	SELECTCASE RESULTS
-		CASE "アナルバイブ"
+		CASE "아날바이브"
 			RESULTS = Ａ바이브
 	ENDSELECT
 	L_STR += @"[%RESULTS%] "

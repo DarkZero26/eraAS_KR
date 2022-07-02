@@ -20,7 +20,7 @@ DRAWLINE
 PRINTFORML 계승의 주체가 될 주민을 선택해주세요.
 CALL PRINT_LABEL("조건")
 PRINTFORML 출산횟수 ＞계승횟수 (주민등록 이전의 출산횟수는 포함되지 않습니다.)
-CALL LIST_CHARA("次世代創造")
+CALL LIST_CHARA("차세대창조")
 L_MOTHER = RESULT
 SIF L_MOTHER == 1000
 	RETURN
@@ -224,7 +224,7 @@ CALL LABORATORY_BREEDING_BABY_HEREDITY_PHEROMONE(L_MOTHER, L_BABY)
 IF CSTR:L_MOTHER:시조 == ""
 	CSTR:L_BABY:시조 = %CALLNAME:L_MOTHER%
 	CFLAG:L_BABY:주민_시조 = CFLAG:L_MOTHER:개별번호
-	CFLAG:L_MOTHER:次世代創造子孫数 ++
+	CFLAG:L_MOTHER:차세대창조자손수 ++
 ELSE
 	CSTR:L_BABY:시조 = %CSTR:L_MOTHER:시조%
 	CFLAG:L_BABY:주민_시조 = CFLAG:L_MOTHER:주민_시조
@@ -233,7 +233,7 @@ ELSE
 		CFLAG:L_BABY:주민_시조 = CFLAG:L_MOTHER:개별번호
 	L_FIRST = FINDCHARA(CFLAG:0:개별번호, CFLAG:L_BABY:주민_시조)
 	SIF L_FIRST >= 1
-		CFLAG:L_FIRST:次世代創造子孫数 ++
+		CFLAG:L_FIRST:차세대창조자손수 ++
 ENDIF
 CSTR:L_BABY:모친 = %CALLNAME:L_MOTHER%
 CFLAG:L_BABY:주민_모친 = CFLAG:L_MOTHER:개별번호
@@ -266,7 +266,7 @@ CFlag:L_BABY:주민_DEF = CFlag:L_MOTHER:주민_DEF + SQRT(MAX(1, CFlag:L_MOTHER
 CFlag:L_BABY:주민_HIT = CFlag:L_MOTHER:주민_HIT + SQRT(MAX(1, CFlag:L_MOTHER:주민_HIT + L_WOMB_GRADE)) + (L_WOMB_GRADE / 5) + (L_GENE_GRADE * 2)
 CFlag:L_BABY:주민_SPD = CFlag:L_MOTHER:주민_SPD + SQRT(MAX(1, CFlag:L_MOTHER:주민_SPD + L_WOMB_GRADE)) + (L_WOMB_GRADE / 5) + (L_GENE_GRADE * 2)
 
-CFLAG:L_BABY:주민_技能ポイント += L_GENE_GRADE * 5
+CFLAG:L_BABY:주민_기능포인트 += L_GENE_GRADE * 5
 
 CSTR:L_BABY:캐릭터해설03 = 【기밀 레벨 2:채취】창조 이후로부터 기록 전까지 성경험은 없다. 채취 역시 되어있지 않다.
 CSTR:L_BABY:캐릭터해설04 = 【기밀 레벨 3:권리(재산)】당신의 신청에 의해, %CSTR:L_BABY:모친%의 유전자를 계승하여 창조・조정된 주민.
@@ -275,7 +275,7 @@ CSTR:L_BABY:캐릭터해설15 = 【중요 기밀:일족】시조「%CSTR:L_BABY:
 
 MONEY -= 200000
 
-PRINTFORMW 要求された条件をもとに、素材を用いて次世代創造を行いました。
+PRINTFORMW 要求された条件をもとに、素材を用いて차세대창조を行いました。
 FLAG:継承종족 = 0
 CFLAG:L_MOTHER:주민_継承 ++
 
@@ -915,7 +915,7 @@ CFLAG:L_CHARA:주민_현재체력 = CFLAG:L_CHARA:주민_최대체력
 CFLAG:L_CHARA:주민_현재기력 = CFLAG:L_CHARA:주민_최대기력
 CFLAG:L_CHARA:주민_현재BRE  = CFLAG:L_CHARA:주민_최대BRE
 
-CFLAG:L_CHARA:주민_技能ポイント += 5 + L_BONUS
+CFLAG:L_CHARA:주민_기능포인트 += 5 + L_BONUS
 
 CLEARLINE LINECOUNT
 CALL INFO_STATUS_HEADER(L_CHARA)
@@ -931,9 +931,9 @@ SIF CFLAG:L_CHARA:주민_최대BRE && FLAG:STATUS伏字モード
 	SETCOLOR COLOR("伏字")
 PRINTFORML BRE:{CFLAG:L_CHARA:주민_최대BRE - (10 + L_BONUS)}→{CFLAG:L_CHARA:주민_최대BRE}
 RESETCOLOR
-SIF CFLAG:L_CHARA:주민_技能ポイント && FLAG:STATUS伏字モード
+SIF CFLAG:L_CHARA:주민_기능포인트 && FLAG:STATUS伏字モード
 	SETCOLOR COLOR("伏字")
-PRINTFORML 기능 포인트:{CFLAG:L_CHARA:주민_技能ポイント-(5 + L_BONUS)}→{CFLAG:L_CHARA:주민_技能ポイント}
+PRINTFORML 기능 포인트:{CFLAG:L_CHARA:주민_기능포인트-(5 + L_BONUS)}→{CFLAG:L_CHARA:주민_기능포인트}
 RESETCOLOR
 PRINTFORML 
 PRINTFORML 

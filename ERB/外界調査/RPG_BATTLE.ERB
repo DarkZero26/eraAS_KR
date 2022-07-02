@@ -444,7 +444,7 @@ EFFWAIT += EFFECT
 SIF EFFECT > 0
 	PRINTL 
 ;ゲノム適性敵側
-;敵側ゲノム移植の仕様、および敵へのボーナスが未定なので未実装
+;敵側ゲノム移植の仕様、および敵への보너스が未定なので未実装
 
 ;プレイヤー側
 EFFECT = 0
@@ -493,9 +493,9 @@ SIF EFFWAIT > 0
 	WAIT
 EFFWAIT = 0
 ;---戦闘パラメータ受け渡し配列準備---
-BPARAM_A:ダ이스数 = MAX(1 , CFLAG:L_I:(6551 + L_W) + BOOST_A:ダ이스数)
-BPARAM_A:ダ이스面 = MAX(2 , CFLAG:L_I:(6552 + L_W) + BOOST_A:ダ이스面)
-BPARAM_A:ダ이스加算 = CFLAG:L_I:(6553 + L_W) + BOOST_A:ダ이스加算
+BPARAM_A:다이스数 = MAX(1 , CFLAG:L_I:(6551 + L_W) + BOOST_A:다이스数)
+BPARAM_A:다이스面 = MAX(2 , CFLAG:L_I:(6552 + L_W) + BOOST_A:다이스面)
+BPARAM_A:다이스加算 = CFLAG:L_I:(6553 + L_W) + BOOST_A:다이스加算
 BPARAM_A:최대HP = CFLAG:L_I:주민_최대체력
 BPARAM_A:현재HP = CFLAG:L_I:주민_현재체력
 BPARAM_D:최대HP = FLAG:敵_최대체력
@@ -537,18 +537,18 @@ BSTR_D:BNAME = %SAVESTR:敵_名前%
 BSTR_A:WEAPON = %CSTR:L_I:(4000 + L_W)%
 BSTR_D:WEAPON = 
 
-;---以下ダ이스ロール部---
+;---以下다이스ロール部---
 ;いつでも戻せるように昔の構文は残す
 [SKIPSTART]
 ;基本데미지&アーティファクト補正
 L_D += RAND:(CFlag:L_I:(6552+L_W)) + RAND:(FLAG:遺物_ATK合計値+1) + 1
-;데미지ボーナス&アーティファクト補正
+;데미지보너스&アーティファクト補正
 L_D += CFlag:L_I:(6553+L_W)+((1+RAND:(FLAG:遺物_ATK合計値+1))/5)
 L_DL -= 1
 [SKIPEND]
 
 ;ヒット数
-PRINTFORML 공격횟수：{BPARAM_A:ダ이스数}
+PRINTFORML 공격횟수：{BPARAM_A:다이스数}
 CALL RPG_DICE_ROLL(BPARAM_A , BPARAM_D , BSTR_A , BSTR_D , BRESULT)
 L_D = BRESULT:DAMAGE
 
@@ -703,7 +703,7 @@ RETURN 0
 @RPG_BATTLE_ATTACK_E(ARG)
 #DIM L_INPUT
 #DIM L_I
-#DIM L_D;ダ이스ロール数
+#DIM L_D;다이스ロール数
 #DIM L_W
 #DIM L_DL
 #DIM D_TEMP
@@ -770,7 +770,7 @@ EFFWAIT += EFFECT
 SIF EFFECT > 0
 	PRINTL 
 ;ゲノム適性敵側
-;敵側ゲノム移植の仕様、および敵へのボーナスが未定なので未実装
+;敵側ゲノム移植の仕様、および敵への보너스が未定なので未実装
 
 [SKIPSTART]
 ;敵側
@@ -819,9 +819,9 @@ SIF EFFWAIT > 0
 EFFWAIT = 0
 
 ;---戦闘パラメータ受け渡し配列準備---
-BPARAM_A:ダ이스数 = MAX(1 , FLAG:(9031 + L_W) + BOOST_A:ダ이스数)
-BPARAM_A:ダ이스面 = MAX(2 , FLAG:(9032 + L_W) + BOOST_A:ダ이스面)
-BPARAM_A:ダ이스加算 = FLAG:(9033 + L_W) + BOOST_A:ダ이스加算
+BPARAM_A:다이스数 = MAX(1 , FLAG:(9031 + L_W) + BOOST_A:다이스数)
+BPARAM_A:다이스面 = MAX(2 , FLAG:(9032 + L_W) + BOOST_A:다이스面)
+BPARAM_A:다이스加算 = FLAG:(9033 + L_W) + BOOST_A:다이스加算
 BPARAM_A:최대HP = FLAG:敵_최대체력
 BPARAM_A:현재HP = FLAG:敵_현재체력
 BPARAM_D:최대HP = CFLAG:L_I:주민_최대체력
@@ -952,9 +952,9 @@ ENDIF
 ;기력不足なら데미지増加
 SIF CFlag:L_I:주민_현재기력 <= CFlag:L_I:주민_최대기력-((CFlag:L_I:주민_최대기력*7)/10)
 	L_D += L_D/2
-;DEFによる데미지減算はダ이스ロール部に移動
+;DEFによる데미지減算は다이스ロール部に移動
 
-;最低保障데미지はダ이스ロール部に移動
+;最低保障데미지は다이스ロール部に移動
 ;SIF L_D <= 0
 ;	L_D = (RAND:3)+1
 
@@ -1018,7 +1018,7 @@ CALL PRINT_LABEL(@"HIT{Flag:敵_HIT}")
 CALL PRINT_LABEL(@"SPD{Flag:敵_SPD}")
 CALL PRINT_LABEL(@"BRE{Flag:敵_최대BRE}")
 PRINTL  
-CALL PRINT_LABEL(@"주무장：{FLAG:敵_M兵装ダ이스}D{FLAG:敵_M兵装데미지} + {FLAG:敵_M兵装ボーナス}    부무장：{FLAG:敵_S兵装ダ이스}D{FLAG:敵_S兵装데미지} + {FLAG:敵_S兵装ボーナス}")
+CALL PRINT_LABEL(@"주무장：{FLAG:敵_M병기다이스}D{FLAG:敵_M병기데미지} + {FLAG:敵_M병기보너스}    부무장：{FLAG:敵_S병기다이스}D{FLAG:敵_S병기데미지} + {FLAG:敵_S병기보너스}")
 PRINTL  
 ;[ENDIF]
 
@@ -1035,7 +1035,7 @@ ENDIF
 
 
 ;-------------------------------------------------
-;戦闘用ダ이스ロール関数
+;戦闘用다이스ロール関数
 ;攻撃側、防御側の諸変数を全て集め、攻撃力と防御力を計算して実데미지を出す
 ;BRは初期化される
 ;ARRAY_A、ARRAY_Dは直接いじらないこと
@@ -1052,7 +1052,7 @@ ENDIF
 #DIM DYNAMIC HISSATSU ;必殺の一撃フラグ
 #DIM KASUDAME         ;命中したのに데미지0だったときのカスダメ割合。현재체력に割合として掛け最低保証値にする
 #DIM NODAMAGE         ;攻撃して防御を貫通できなかったときに立つフラグ
-#DIM L_SHOW , 3       ;ダ이스/実데미지の一時保存
+#DIM L_SHOW , 3       ;다이스/実데미지の一時保存
 #DIM HITRATE          ;命中状態一時保存
 #DIM HITRATE_V        ;上記HITRATEの実補正
 #DIM DMG              ;DAMAGE
@@ -1095,8 +1095,8 @@ ENDIF
 
 $DR_LOOP
 NODAMAGE = 0
-;ダ이스出目
-L_SHOW:0 = ATK_BASE + MAX(0 , DICEROLL(PRM_A:ダ이스面 , PRM_A:ダ이스加算)) * 10
+;다이스出目
+L_SHOW:0 = ATK_BASE + MAX(0 , DICEROLL(PRM_A:다이스面 , PRM_A:다이스加算)) * 10
 ;ATKに乱数を掛ける
 ;L_SHOW:1 = CALC_ATK(PRM_A:攻撃)
 L_SHOW:1 = PERCENT(PRM_A:攻撃 , RAND(80 , 101))
@@ -1147,15 +1147,15 @@ CALL CALC_HIT_SHOW(HITRATE , PRM_A:ISENEMY)
 PRINTL 
 ALLDMG += MAX(0 , DMG)
 
-;ダ이스数減算、まだ回数があるならもう一回
-SIF --PRM_A:ダ이스数 > 0
+;다이스数減算、まだ回数があるならもう一回
+SIF --PRM_A:다이스数 > 0
 	GOTO DR_LOOP
 
 IF HISSATSU == 0 && PRM_A:熟練 >= 10
 	CALL PRINT_LABEL("――――SPECIAL ATACK!!――――", , COL:0)
 	PRINTL 
 	PRINTFORML %조사처리(PRMS_A:BNAME,"는")% 혼신의 일격을 가했다!!
-	PRM_A:ダ이스数++
+	PRM_A:다이스数++
 	HISSATSU = 1
 	GOTO DR_LOOP
 ENDIF

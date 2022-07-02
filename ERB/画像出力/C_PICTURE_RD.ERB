@@ -70,13 +70,13 @@ PRINTFORML □-----　주무장　-----□□-----　부무장　-----□
 CALL PRINT_LABEL(CSTR:L_T:4000, -19)	; 左詰めは負
 CALL PRINT_LABEL(CSTR:L_T:4010, -19)
 PRINTL
-CALL PRINT_LABEL("타입",,,INFO_STR_HEISOU(CFLAG:L_T:주민_M兵装))	;  枠込みで表示した文字数がRESULTに返る
+CALL PRINT_LABEL("타입",,,INFO_STR_HEISOU(CFLAG:L_T:주민_M병기))	;  枠込みで表示した文字数がRESULTに返る
 PRINTFORM %" "*MAX(0,  23-RESULT)%
-CALL PRINT_LABEL("타입",,,INFO_STR_HEISOU(CFlag:L_T:주민_S兵装))
+CALL PRINT_LABEL("타입",,,INFO_STR_HEISOU(CFlag:L_T:주민_S병기))
 PRINTL
-CALL PRINT_LABEL("숙련도",,,@"{CFlag:L_T:주민_M兵装숙련도}", -3)
+CALL PRINT_LABEL("숙련도",,,@"{CFlag:L_T:주민_M병기숙련도}", -3)
 PRINTFORM %" "*MAX(0,  23-RESULT)%
-CALL PRINT_LABEL("숙련도",,,@"{CFlag:L_T:주민_S兵装숙련도}", -3)
+CALL PRINT_LABEL("숙련도",,,@"{CFlag:L_T:주민_S병기숙련도}", -3)
 PRINTL
 CALL PRINT_LABEL("데미지",,,INFO_STR_MAIN_WEAPON_DAMAGE(L_T))
 PRINTFORM %" "*MAX(0,  23-RESULT)%

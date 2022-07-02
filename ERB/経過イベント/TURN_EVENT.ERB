@@ -21,7 +21,7 @@ FOR L_I, 1, CHARANUM
 	ARG =  L_I
 
 	IF TARGET != MASTER  && (TALENT:L_I:NPC != 999)  && TALENT:L_I:부재 == 0 && TALENT:L_I:자원봉사자 == 0  && TALENT:L_I:남성거주자 == 0
-		;陥落ボーナスイベント
+		;陥落보너스イベント
 		SIF CFLAG:華燭の典 == 0 && (Talent:심취 == 1 || Talent:애인 == 1 || Talent:정부 == 1)
 			CALL TURN_EVENT_FALL_BONUS
 		CALL TURN_EVENT_NAYAMI_K
@@ -367,11 +367,11 @@ IF Talent:ＮＴＬ == 1 && Talent:미망인 == 1
 	TALENT:결혼함 = 0
 ENDIF
 
-SIF CFlag:주민_M兵装숙련도 == 0
-	CFlag:주민_M兵装숙련도 = 1
+SIF CFlag:주민_M병기숙련도 == 0
+	CFlag:주민_M병기숙련도 = 1
 
-SIF CFlag:주민_S兵装숙련도 == 0
-	CFlag:주민_S兵装숙련도 = 1
+SIF CFlag:주민_S병기숙련도 == 0
+	CFlag:주민_S병기숙련도 = 1
 
 
 ;-------------------------------------------------
@@ -522,7 +522,7 @@ SIF CFlag:주민_현재체력 >= CFlag:주민_최대체력
 #DIM DYNAMIC RATE_EVIL_UP        ;裏社会に기여する確率、선악属性準拠
 
 #DIM DYNAMIC CHARA_WORK          ;このターンのキャラの功績
-#DIM DYNAMIC WORK_BONUS          ;業種別、経験その他によるボーナス、基礎値はCHARA_WORK
+#DIM DYNAMIC WORK_BONUS          ;業種別、経験その他による보너스、基礎値はCHARA_WORK
 #DIM DYNAMIC FALLEN_BONUS        ;陥落による補正
 
 #DIM DYNAMIC CITY_EXP            ;都市に入る경험치、基礎値はWORK_BONUS
@@ -546,7 +546,7 @@ CHARA_WORK = RAND:(3 + GETEXPLV(EXP:업무경험, 9)) + MAX(MARK:예속각인, M
 ;아이돌による全주민への追加補正、補正値0～20、팬수数8000以上で최대補正
 CHARA_WORK += CBRT(LIMIT(FLAG:都市_合計팬수数, 1, 8000)) - 1
 
-;業種別、経験その他によるボーナス、基礎値は功績
+;業種別、経験その他による보너스、基礎値は功績
 WORK_BONUS = MAX(CHARA_WORK, 1)
 IF Talent:아이돌 != 0
 	WORK_BONUS += RAND:6 + GETEXPLV(EXP:유혹경험, 9) + CBRT(LIMIT(CFLAG:주민_인기, 1, 1000))
@@ -573,7 +573,7 @@ ELSE
 	WORK_BONUS += RAND(1, 3) + CBRT(LIMIT(FLAG:都市_合計팬수数, 1, 1000)) - 1
 ENDIF
 
-;陥落関連ボーナス
+;陥落関連보너스
 IF TALENT:합의 == 1 || TALENT:조교완료
 	FALLEN_BONUS = 1 + CFlag:주민_기여도 / 2
 ELSEIF TALENT:약점   != 0
@@ -583,7 +583,7 @@ ELSEIF TALENT:범해짐 != 0
 ELSE
 	FALLEN_BONUS = 1 + CFlag:주민_기여도 / 4
 ENDIF
-;三種類の陥落ごとに別々のボーナス
+;三種類の陥落ごとに別々の보너스
 IF TALENT:애인 == 1
 	FALLEN_BONUS += RAND:(3 + CBRT(LIMIT(CFLAG:호감도 / 100, 1, 1000)))
 ELSEIF TALENT:정부 == 1

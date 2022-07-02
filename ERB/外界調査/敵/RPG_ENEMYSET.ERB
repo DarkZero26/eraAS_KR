@@ -15,17 +15,17 @@
 VARSET STATUS_E
 VARSET STATUS_ES
 
-;汎用ダ이스抽選。もし専用ダ이스を使わせたいなら各々の敵設定ファイルでダ이스の設定を書き換える
+;汎用다이스抽選。もし専用다이스を使わせたいなら各々の敵設定ファイルで다이스の設定を書き換える
 IF DUNGEON >= 0
-	;特定の調査区域ではダ이스レベルアップが起きない
+	;特定の調査区域では다이스レベルアップが起きない
 	IF DUNGEON > 1
-		;特定の調査深度以上からLV2ダ이스
+		;特定の調査深度以上からLV2다이스
 		FOR CNT , VARSIZE("DICE_LVUP_FLOOR") - 1 , 0 , -1
 			IF FLAG:調査深度 >= DICE_LVUP_FLOOR:CNT
 				CALL DICE_LOTTERY(CNT + 1)
-				STATUS_E:CON_敵_主兵装 = RESULT
+				STATUS_E:CON_敵_주병기 = RESULT
 				CALL DICE_LOTTERY(CNT + 1)
-				STATUS_E:CON_敵_副兵装 = RESULT
+				STATUS_E:CON_敵_부병기 = RESULT
 			ENDIF
 		NEXT
 	ELSE
@@ -33,11 +33,11 @@ IF DUNGEON >= 0
 	ENDIF
 ELSE
 	$DICE_LV1
-	;Lv1汎用ダ이스
+	;Lv1汎用다이스
 	CALL DICE_LOTTERY()
-	STATUS_E:CON_敵_主兵装 = RESULT
+	STATUS_E:CON_敵_주병기 = RESULT
 	CALL DICE_LOTTERY()
-	STATUS_E:CON_敵_副兵装 = RESULT
+	STATUS_E:CON_敵_부병기 = RESULT
 ENDIF
 
 ;敵パラメータを参照型配列で読み込み
@@ -72,33 +72,33 @@ FLAG:敵_LUK += PERCENT(FLAG:敵_LUK , BOOST)
 
 FLAG:敵_현재체력 = FLAG:敵_최대체력
 
-;ダ이스設定部
-;ダ이스ID
-Flag:敵_M兵装 = STATUS_E:CON_敵_主兵装
+;다이스設定部
+;다이스ID
+Flag:敵_M병기 = STATUS_E:CON_敵_주병기
 
-;ダ이스の性能
-CALLFORM DICE_SIDE_{STATUS_E:CON_敵_主兵装}
-Flag:敵_M兵装데미지 = RESULT
-CALLFORM DICE_ROLLNUM_{STATUS_E:CON_敵_主兵装}
-Flag:敵_M兵装ダ이스 = RESULT
-CALLFORM DICE_BONUS_{STATUS_E:CON_敵_主兵装}
-Flag:敵_M兵装ボーナス = RESULT
+;다이스の性能
+CALLFORM DICE_SIDE_{STATUS_E:CON_敵_주병기}
+Flag:敵_M병기데미지 = RESULT
+CALLFORM DICE_ROLLNUM_{STATUS_E:CON_敵_주병기}
+Flag:敵_M병기다이스 = RESULT
+CALLFORM DICE_BONUS_{STATUS_E:CON_敵_주병기}
+Flag:敵_M병기보너스 = RESULT
 
-Flag:敵_S兵装 = STATUS_E:CON_敵_副兵装
-CALLFORM DICE_SIDE_{STATUS_E:CON_敵_副兵装}
-Flag:敵_S兵装데미지 = RESULT
-CALLFORM DICE_ROLLNUM_{STATUS_E:CON_敵_副兵装}
-Flag:敵_S兵装ダ이스 = RESULT
-CALLFORM DICE_BONUS_{STATUS_E:CON_敵_副兵装}
-Flag:敵_S兵装ボーナス = RESULT
+Flag:敵_S병기 = STATUS_E:CON_敵_부병기
+CALLFORM DICE_SIDE_{STATUS_E:CON_敵_부병기}
+Flag:敵_S병기데미지 = RESULT
+CALLFORM DICE_ROLLNUM_{STATUS_E:CON_敵_부병기}
+Flag:敵_S병기다이스 = RESULT
+CALLFORM DICE_BONUS_{STATUS_E:CON_敵_부병기}
+Flag:敵_S병기보너스 = RESULT
 
-;副兵装が汎用品なら主兵装と同等の能力になってしまうので弱体化
-CALLFORM DICE_COMMON_{STATUS_E:CON_敵_副兵装}
+;부병기が汎用品なら주병기と同等の能力になってしまうので弱体化
+CALLFORM DICE_COMMON_{STATUS_E:CON_敵_부병기}
 IF RESULT
-	;ダ이스ロール数はそのまま
-	Flag:敵_S兵装ダ이스 = Flag:敵_S兵装ダ이스
-	Flag:敵_S兵装데미지 = MAX(PERCENT(Flag:敵_S兵装데미지 , RAND(60 , 80)) , 2)
-	Flag:敵_S兵装ボーナス = PERCENT(Flag:敵_S兵装ボーナス , RAND(60 , 80))
+	;다이스ロール数はそのまま
+	Flag:敵_S병기다이스 = Flag:敵_S병기다이스
+	Flag:敵_S병기데미지 = MAX(PERCENT(Flag:敵_S병기데미지 , RAND(60 , 80)) , 2)
+	Flag:敵_S병기보너스 = PERCENT(Flag:敵_S병기보너스 , RAND(60 , 80))
 ENDIF
 RETURN
 

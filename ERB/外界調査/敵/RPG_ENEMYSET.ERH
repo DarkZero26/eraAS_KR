@@ -6,8 +6,8 @@
 #DIM CONST CON_敵_SPD = 4;SPD=SPD+RAND:(MAX(1,SPD/2))
 #DIM CONST CON_敵_LUK = 5;
 #DIM CONST CON_敵_EB = 6  ;獲得경험치
-#DIM CONST CON_敵_主兵装 = 7;M兵装のダ이스ID。初期値にコモンダ이스が入っている
-#DIM CONST CON_敵_副兵装 = 8;S兵装のダ이스ID。初期値にコモンダ이스が入っている
+#DIM CONST CON_敵_주병기 = 7;M병기の다이스ID。初期値にコモン다이스が入っている
+#DIM CONST CON_敵_부병기 = 8;S병기の다이스ID。初期値にコモン다이스が入っている
 #DIM CONST CON_敵_レア = 9;유니크フラグ。非0で유니크敵になる
 #DIM CONST CON_敵_弱点 = 10;弱点属性
 #DIM CONST CON_敵_耐性 = 11;耐性を持つ属性
@@ -17,5 +17,5 @@
 ;敵パラメータ読み込み配列添字(文字列)
 #DIM CONST CON_敵_NAME = 0
 
-;汎用ダ이스持ちがLv2ダ이스を使い始める深度
-#DIM CONST DICE_LVUP_FLOOR = 0 , 100;この深度から確定で上位モデルのダ이스を使う
+;汎用다이스持ちがLv2다이스を使い始める深度
+#DIM CONST DICE_LVUP_FLOOR = 0 , 100;この深度から確定で上位モデルの다이스を使う
