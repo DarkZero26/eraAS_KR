@@ -9,7 +9,7 @@
 #DIM TEMP
 
 LS_STATUS:CON_敵_NAME = 폭주한 실험체
-TEMP = (Flag:依頼_이스からの駆除依頼_Lv / 2) + 1
+TEMP = (Flag:依頼_이스からの駆除依頼_Lv / 10) + 1
 
 ;特定レベルから専用다이스
 SIF Flag:依頼_이스からの駆除依頼_Lv >= 40
@@ -17,8 +17,8 @@ SIF Flag:依頼_이스からの駆除依頼_Lv >= 40
 
 L_STATUS:CON_敵_EB = 10 + TEMP * 2
 L_STATUS:CON_敵_HP = TEMP * 10 + 50
-L_STATUS:CON_敵_ATK = TEMP * TEMP + 6
-L_STATUS:CON_敵_DEF = TEMP * TEMP + 7
+L_STATUS:CON_敵_ATK = TEMP * 3
+L_STATUS:CON_敵_DEF = TEMP * 2
 L_STATUS:CON_敵_HIT = TEMP * TEMP + 5
 L_STATUS:CON_敵_SPD = TEMP * TEMP + 5
 L_STATUS:CON_敵_LUK = 0

@@ -164,10 +164,17 @@ IF Flag:フロア_特殊調査 > 0 && Flag:フロア_種類 != 90
 ELSE 
 	PRINTFORML 
 ENDIF
-PRINTFORML [3]  - 이동(SP소비)
+PRINTFORM [3]  - 이동(SP소비)
 IF CFlag:L_I:주민_현재기력 <= CFlag:L_I:주민_최대기력-((CFlag:L_I:주민_최대기력*7)/10)
 	CALL PRINT_LABEL("주의：피로합니다!",,COLOR("RPG_MESSAGE_WARNING"))
-	PRINTFORML 
+	PRINTFORM 
+ELSE 
+	PRINTFORM
+ENDIF
+IF Flag:調査深度 == Flag:深度上限
+	SETCOLOR 50,250,250
+	PRINTFORML [900]  - 조사완료
+	RESETCOLOR
 ELSE 
 	PRINTFORML 
 ENDIF
@@ -218,6 +225,8 @@ SELECTCASE L_INPUT
 		IF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
 			CFlag:L_I:주민_현재기력 -= Flag:フロア_消耗
 			Flag:調査深度 += 1
+			SIF Flag:調査深度 > Flag:深度上限
+				 Flag:調査深度 = Flag:深度上限
 			Flag:フロア_탐색回数 = (RAND:3)+(RAND:((Flag:調査区域/2)+1))+1
 			Flag:ターン進行深度 += 1
 			;현재いるルートを進める。ダンジョン全体の進行度とは別
@@ -241,6 +250,20 @@ SELECTCASE L_INPUT
 		SIF FLAG:8900 >= 3
 			FLAG:8900 = 0
 		GOTO INPUT_LOOP
+	CASE 900
+		;撤退
+		Flag:턴조사완료 = 1
+		CALL RPG_END
+		Flag:調査深度 = 1
+		DRAWLINE
+		DRAWLINE
+		CALL PRINT_LABEL("조사를 무사히 마친 것 같군요. 포상으로 아티팩트를 증정합니다.")
+		PRINTFORML 
+		DRAWLINE
+		DRAWLINE
+		PRINTFORMW
+		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		CALL RPG_MAIN	
 	CASE 999
 		;撤退
 		Flag:턴조사완료 = 1
