@@ -47,10 +47,6 @@ L_I = ARG:0
 SIF FLAG:あなた_逢瀬中 == 1
 	L_I = MASTER
 
-IF Talent:L_I:NPC != 0
-	HTML_PRINT C_PICTURE_NPC_HTML_NAKED(L_I, 0, -600, 0, 800)
-	RETURN
-ENDIF
 
 
 C_eye = 0
@@ -158,6 +154,20 @@ H_TNS = C_PICTURE_SEMEN(L_I)
 
 P_S2 = 0
 P_S = -600
+
+
+
+
+IF Talent:L_I:NPC != 0
+	IF TALENT:L_I:임신 == 0 && TALENT:L_I:수정 == 0
+		LSTR_0 = <nonbutton pos='{P_S2}'><img src='H_TNS_0_{H_TNS}' height = '400'   ypos = '{P_S-400}'></nonbutton>
+	ENDIF
+	LSTR = <nobr>%LSTR_0%
+	HTML_PRINT LSTR
+	HTML_PRINT C_PICTURE_NPC_HTML_NAKED(L_I, 0, -600, 0, 800)
+	RETURN
+ENDIF
+
 ;-------------------------------------------------
 ;描画処理
 ;-------------------------------------------------

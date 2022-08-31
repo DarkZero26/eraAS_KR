@@ -254,7 +254,6 @@ SELECTCASE L_INPUT
 		;撤退
 		Flag:턴조사완료 = 1
 		CALL RPG_END
-		Flag:調査深度 = 1
 		DRAWLINE
 		DRAWLINE
 		CALL PRINT_LABEL("조사를 무사히 마친 것 같군요. 포상으로 아티팩트를 증정합니다.")
@@ -263,6 +262,7 @@ SELECTCASE L_INPUT
 		DRAWLINE
 		PRINTFORMW
 		CALL RPG_ARTIFACT_GENOME_GET(ARG , 0)
+		Flag:調査深度 = 1
 		CALL RPG_MAIN	
 	CASE 999
 		;撤退

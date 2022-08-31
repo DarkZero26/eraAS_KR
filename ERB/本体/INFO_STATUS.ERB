@@ -1237,8 +1237,13 @@ SIF TALENT:L_I:선조회귀 == 1
 	PRINTFORML 기밀 Lv 3:【선조답례　　】		과거 세대의 특이성을 발현한 자, 외모도 다소 닮았다.
 SIF TALENT:L_I:기억처리완료 == 1
 	PRINTFORML 기밀 Lv 2:【기억처리　　】		아무것도 떠올리지 못한다.
-SIF TALENT:L_I:명가 == 1
+IF TALENT:L_I:명가 == 1 && CFLAG:L_I:주민_세대 >=30
+	PRINTFORML 기밀 Lv 0:【월경　　　　】		주민이라면 모르는 이가 없는 귀족 중의 귀족. 「플레이어」의 손발이 되어 도시에 적대하는 자를 섬멸한다.
+ELSEIF TALENT:L_I:명가 == 1 && CFLAG:L_I:주민_세대 >= 20
+	PRINTFORML 기밀 Lv 0:【호족　　　　】		다른 명문가보가 오래 「플레이어」를 섬기고 있는 일족. 계승으로 얻은 힘을 주인을 위해 휘두른다.
+ELSEIF TALENT:L_I:명가 == 1 
 	PRINTFORML 기밀 Lv 0:【명문가　　　】		수 대 째 「플레이어」를 섬기는 일족, 거주민들의 동경 대상이기도 하다.
+ENDIF
 SIF TALENT:L_I:극상의암컷 == 1
 	PRINTFORML 기밀 Lv 1:【극상의암컷 】		남성에게는 성적으로, 여성에게는 질투의 시선을 받을 만한 외모를 하고 있다.
 SIF TALENT:L_I:마돈나 == 1
