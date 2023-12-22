@@ -6,6 +6,8 @@
 #DIM C_P
 #DIM U_P
 #DIM E_P
+#DIM LP_MIN
+#DIM LP_MAX
 
 C_P = 0
 U_P = 0
@@ -30,13 +32,19 @@ IF ((FLAG:유연_고정난수)+(FLAG:유연_サポーター総数*5)+E_P+C_P+U_P
 	CFLAG:주민_육체데미지 += (FLAG:유연_육체데미지+FLAG:유연_위험성)/5
 	CFLAG:주민_정신데미지 += (FLAG:유연_정신데미지+FLAG:유연_위험성)/5
 	IF TALENT:자원봉사자 == 3
+		;획득 LP 보정값 산출
+		;최소치는 봉사자 lv/4, 최대치는 lv/2+1
+		LP_MIN = 1+(TURN_CAREER_LEVEL()/4)
+		LP_MAX = (FLAG:유연_연구이익+(FLAG:유연_위험성/2))+(TURN_CAREER_LEVEL()/2)
 		SETCOLOR 150,250,150
 		DRAWLINE
 		PRINTFORML 【유물 연구:성공】
 		DRAWLINE
 		CALLFORM AL_Clear_{FLAG:유연_연구대상}
 		DRAWLINE
-		L_P = (RAND:(FLAG:유연_연구이익+(FLAG:유연_위험성/2)))+1
+		L_P = (RAND:LP_MAX)+1
+		SIF L_P < LP_MIN
+			L_P = LP_MIN
 		FLAG:도시_현재LP += L_P
 			PRINTFORML ＬＰ　{FLAG:도시_현재LP-L_P}　→　{FLAG:도시_현재LP}
 		SIF FLAG:도시_최대LP <= FLAG:도시_현재LP
@@ -94,4 +102,10 @@ CFLAG:주민_정신데미지 -= 5
 SIF CFLAG:주민_정신데미지 <= 0
 	CFLAG:주민_정신데미지 = 0
 
-
+;-------------------------------------------------
+;값 계산
+;-------------------------------------------------
+;キャリアLVで獲得LPに補正、但しLV20まで
+@TURN_CAREER_LEVEL
+#FUNCTION
+RETURNF (FLAG:유연_합계경험치/30) > 20 ? 20 # (FLAG:유연_합계경험치/30)
