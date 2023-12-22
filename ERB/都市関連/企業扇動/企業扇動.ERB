@@ -2,37 +2,27 @@
 ;-------------------------------------------------
 ;企業扇動
 ;-------------------------------------------------
-@CITY_KS(ARG:0,ARG:1,ARGS:0)
+@CITY_KS
 #DIM L_INPUT
 #DIM L_M
-#DIM L_I
-#DIM L_NM
-#DIM N_S
 #DIM K_N
 #DIM K_N2
 
-K_N2 = 0
-
 $INPUT_LOOP
-K_N = 1
-L_NM = 0
 CLEARLINE LINECOUNT
 DRAWLINE
 PRINTFORML 【기업선동】
 DRAWLINE
-$INPUT_LOOP_K
-PRINTFORM 【%STR:(2500+K_N)%:
-PRINTFORM 【담당:
-ARG:0 = 16000
-ARG:1 = K_N
-CALL MEMBER_LIST2(ARG:0,ARG:1)
-SIF FLAG:범용변수 == 0
-	FLAG:(6020+K_N) = 0
-PRINTFORML 】
-PRINTFORML  [레벨:{Flag:(6001), 3 ,RIGHT}]
-K_N += 1
-SIF K_N <= 5
-	GOTO INPUT_LOOP_K
+;インフォメーション
+FOR K_N, 1, 6
+	PRINTFORM 【%STR:(2500+K_N)%:
+	PRINTFORM 【담당:
+	CALL MEMBER_LIST2(16000,K_N)
+	SIF FLAG:범용변수 == 0
+		FLAG:(6020+K_N) = 0
+	PRINTFORML 】
+	PRINTFORML  [레벨:{Flag:6001, 3 ,RIGHT}]
+NEXT
 DRAWLINE
 PRINTFORML 도시의 기업에 주민을 보내 일을 촉진시킵니다.
 PRINTFORML 주민을 임명함으로써, 턴 종료 시 기업에 개입하여 공적 포인트를 받습니다. (각 기업당 1명까지)
@@ -46,6 +36,8 @@ PRINTFORML [999] 돌아간다
 INPUT
 L_INPUT = RESULT
 L_M = RESULT
+
+
 SELECTCASE L_INPUT
 	CASE 999
 		JUMP SYSTEM_MENU
@@ -56,68 +48,56 @@ SELECTCASE L_INPUT
 		DRAWLINE
 		PRINTFORML 담당할 기업을 선택해주세요.
 		DRAWLINE
-		K_N = 1
-				$INPUT_LOOP_K2
-		ARG:0 = 16000
-		ARG:1 = K_N
+		;기업선택지와 담당현황 리스트업
+		FOR K_N, 1,6
 		PRINTFORM [{K_N}]　%STR:(2500+K_N)%:
 		PRINTFORM 담당:
-		CALL MEMBER_LIST2(ARG:0,ARG:1)
+		CALL MEMBER_LIST2(16000,K_N)
 		SIF FLAG:범용변수 == 0
 			FLAG:(6020+K_N) = 0
 		PRINTFORML 
-		K_N += 1
-		SIF K_N <= 5
-			GOTO INPUT_LOOP_K2
+		NEXT
+		
 		PRINTFORML 
 		PRINTFORML [999] 돌아간다
 		INPUT
 		L_INPUT = RESULT
 		K_N2    = RESULT
+		
 		SELECTCASE L_INPUT
 		CASE 999
 			GOTO INPUT_LOOP
-		CASE 1,2,3,4,5
+		CASEELSE
 			CLEARLINE LINECOUNT
 			DRAWLINE
-			PRINTFORML 임명할 주민을 선택해주세요.
+			IF L_M == 100
+				PRINTFORML 해제할 주민을 선택해주세요.
+			ELSE
+				PRINTFORML 임명할 주민을 선택해주세요.
+			ENDIF
 			DRAWLINE
 			CALL LIST_CHARA
 			L_INPUT = RESULT
-			L_I = RESULT
 			IF L_INPUT != 1000
-				IF TALENT:L_INPUT:NPC == 1
+				IF L_M == 100 && CFlag:L_INPUT:16000 != 0
+					CFlag:L_INPUT:16000 = 0
+					PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 임무에서 제외했습니다.
+				ELSEIF TALENT:L_INPUT:NPC == 1
 					PRINTFORMW NPC는 선택할 수 없습니다.
-					GOTO INPUT_LOOP
-				ELSEIF L_INPUT == 999
-					GOTO INPUT_LOOP
 				ELSEIF L_INPUT == 0
 					PRINTFORMW 당신은 선택할 수 없습니다.
-					GOTO INPUT_LOOP
+				ELSEIF Flag:(6020+K_N2)  != 0
+					PRINTFORMW 배속할 수 있는 인원은 기업 당１명까지입니다.
+				ELSEIF CFlag:L_INPUT:16000 != 0
+					PRINTFORMW 이미%STR:(2500+CFlag:L_INPUT:16000)%에 임명되어 있습니다.
 				ELSE
-					IF L_M == 100 && (CFlag:L_I:16000 != 0)
-							CFlag:L_I:16000 = 0
-						PRINTFORMW %조사처리(CALLNAME:L_I,"를")% 임무에서 제외했습니다.
-					ELSE
-							IF Flag:(6020+K_N2)  != 0
-								PRINTFORMW 배속할 수 있는 인원은 기업 당 １명까지입니다.
-								GOTO INPUT_LOOP
-							ENDIF
-							IF CFlag:L_I:(16000) != 0
-								PRINTFORMW 이미 %STR:(2500+CFlag:L_I:(16000))%에 임명되어 있습니다.
-								GOTO INPUT_LOOP
-							ENDIF
-							L_NM += 1
-						CFlag:L_I:(16000) = K_N2
-						Flag:(6020+K_N2)  = 1
-						PRINTFORMW %조사처리(CALLNAME:L_I,"를")% 임명했습니다.
-					ENDIF
-				ENDIF
+					CFlag:L_INPUT:(16000) = K_N2
+					Flag:(6020+K_N2)  = 1
+					PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 임명했습니다.
 			ENDIF
-		ENDSELECT
-		GOTO INPUT_LOOP
+		ENDIF
+	ENDSELECT
 ENDSELECT
-
 GOTO INPUT_LOOP
 
 
