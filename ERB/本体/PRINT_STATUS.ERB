@@ -178,7 +178,7 @@ RETURN L_CH
 #DIM DYNAMIC value_color; 値の色
 #DIM DYNAMIC L_backup_color	; 현재の表示色 (呼び出し元で変えている可能性がある)
 ;--  Constant emum.  --------------------------------------------------------
-#DIMS FLAG_SCAN_KEY  = "", "都市_", "도시_현재", "현재"
+#DIMS FLAG_SCAN_KEY  = "", "都市_", "도시_현재", "현재", "도시_"
 #DIMS CFLAG_SCAN_KEY = "", "주민_", "주민_技能_"
 
 ; ローカル変数の初期化
@@ -314,7 +314,7 @@ RETURN value
 #DIM DYNAMIC L_backup_color	; 현재の表示色 (呼び出し元で変えている可能性がある)
 ;--  Constant emum.  --------------------------------------------------------
 #DIMS FLAG_SCAN_KEY_CURRENT  =     "",      "현재", "都市_", "도시_현재", ""
-#DIMS FLAG_SCAN_KEY_MAX      = "合計",      "최대", "都市_", "도시_최대", ""
+#DIMS FLAG_SCAN_KEY_MAX      = "合計",      "최대", "都市_", "도시_최대", "", "도시_"
 #DIMS CFLAG_SCAN_KEY_CURRENT =     "", "주민_현재", "현재"
 #DIMS CFLAG_SCAN_KEY_MAX     = "合計", "주민_최대", "최대"
 
