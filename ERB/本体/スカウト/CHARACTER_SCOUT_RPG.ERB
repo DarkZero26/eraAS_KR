@@ -186,13 +186,13 @@ IF RAND:100 >= 97 && FLAG:범용변수 == 52
 	L_SBP += 10+(RAND:10)
 ENDIF
 
-SIF Flag:都市_裏社会 >= 999
-	Flag:都市_裏社会 = 999
-SIF Flag:都市_表社会  >= 999
-	Flag:都市_表社会  = 999
+SIF Flag:도시_뒷사회 >= 999
+	Flag:도시_뒷사회 = 999
+SIF Flag:도시_표면사회  >= 999
+	Flag:도시_표면사회  = 999
 
-L_SLO = (Flag:都市_表社会)/10
-L_SLU = (Flag:都市_裏社会)/25
+L_SLO = (Flag:도시_표면사회)/10
+L_SLU = (Flag:도시_뒷사회)/25
 
 SIF  Flag:喫茶店_補正値 >= 1
 	L_SBP += (Flag:喫茶店_補正値)*2
