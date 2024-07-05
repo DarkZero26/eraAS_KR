@@ -1,4 +1,5 @@
-﻿@C_PICTURE_H(ARG:0,ARG:1);逢引中
+﻿;日焼けパッチ：日焼け画像表示処理を追加
+@C_PICTURE_H(ARG:0,ARG:1);逢引中
 #DIM L_I
 #DIM L_TMP
 #DIM P_S
@@ -40,6 +41,7 @@
 #DIMS LSTR_15
 #DIMS LSTR_16
 #DIMS LSTR_17
+#DIMS LSTR_18
 #DIMS LSTR_N2
 #DIMS LSTR_UK
 
@@ -81,6 +83,7 @@ LSTR_13 =
 LSTR_14 = 
 LSTR_15 = 
 LSTR_17 = 
+LSTR_18 = 
 
 L_Y2 = 0
 LSTR_16 = 
@@ -170,6 +173,7 @@ ENDIF
 
 ;-------------------------------------------------
 ;描画処理
+;LSTR_ = <nonbutton pos='{P_S2}'><img src='%LSTR_%in_{C_in}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ;-------------------------------------------------
 
 IF TALENT:L_I:임신 != 0 || TALENT:L_I:수정 != 0
@@ -217,6 +221,15 @@ ELSE
 	LSTR_17 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%in_{C_in}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ENDIF
 
+;日焼け跡
+IF HIYAKE_CLOTH:L_I:0 != ""
+	LSTR_18 = <nonbutton pos='{P_S2}'><img src='%HIYAKE_CLOTH:L_I:0%' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+ELSE
+	LSTR_18 = 
+ENDIF
+
+;LSTR_6,LSTR_7,LSTR_8,LSTR_9,LSTR_10は未使用？
+;日焼けパッチ：日焼け画像表示処理を追加(LSTR_18をLSTR_N2の次に追加)
 LSTR = <nobr>%LSTR_0%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_6%%LSTR_7%%LSTR_8%%LSTR_9%%LSTR_10%%LSTR_11%%LSTR_12%%LSTR_14%%LSTR_13%%LSTR_15%%LSTR_17%
 HTML_PRINT LSTR
 

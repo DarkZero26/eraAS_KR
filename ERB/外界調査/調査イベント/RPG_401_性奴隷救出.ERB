@@ -21,14 +21,17 @@ PRINTFORML 조용히 둘러보자 그 곳은 보강된 공장 같았고, 이레�
 PRINTFORML 기록에 따르면 이 곳에 거주민이 잡혀 있는 것 같다. 아마 남자들의 노리개가 되었을 것이다.
 PRINTFORML 지금은 경계를 늦추고 있는 것 같다. 습격할 기회이지만…….
 PRINTFORML 
-PRINTFORML 
-PRINTFORML 
-PRINTFORML [0] 구조한다　　　　(주민 등록　)
-PRINTFORML [1] 구조하지 않는다 (주민 미등록)
-PRINTFORML 
 $INPUT_LOOP
-INPUT
-L_INPUT = RESULT
+IF FLAG:自動探索勧誘 < 2 && FLAG:自動探索
+	L_INPUT = FLAG:自動探索勧誘
+ELSE
+	FLAG:自動探索 = 0
+	PRINTFORML [0] 구조한다　      (주민 등록)
+	PRINTFORML [1] 구조하지 않는다 (주민 미등록)
+	PRINTFORML 
+	CALL INPUT_INT(0,1)
+	L_INPUT = RESULT
+ENDIF
 SELECTCASE L_INPUT
 CASE 0
 	PRINTFORML 부대를 이끌고 포위한 뒤, %CALLNAME:L_I%의 신호와 함께 일제히 치고 들어갔다.

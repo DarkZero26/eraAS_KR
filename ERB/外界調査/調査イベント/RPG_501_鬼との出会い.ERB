@@ -26,12 +26,17 @@ PRINTFORML 먼저 적의가 없음을 전하자, 오니는 놀라게 한 것에 
 PRINTFORML 이야기에 따르면「외적」과 계속 싸우다보니 마을에서 상당히 멀리 떨어져 버렸다는 것 같다. 다시말해 일행에게서 낙오되었다는 것이다.
 PRINTFORML 오니는 이대로 토벌을 계속할 것 같지만, 상태를 보아하니 오래 버티지 못 할 것 같다…….
 PRINTFORML 
-PRINTFORML [0] 권유한다　　　(주민 등록　)
-PRINTFORML [1] 그대로 보낸다 (주민 미등록)
-PRINTFORML 
 $INPUT_LOOP
-INPUT
-L_INPUT = RESULT
+IF FLAG:自動探索勧誘 < 2 && FLAG:自動探索
+	L_INPUT = FLAG:自動探索勧誘
+ELSE
+	FLAG:自動探索 = 0
+	PRINTFORML [0] 권유한다　　      (주민 등록)
+	PRINTFORML [1] 그대로 보낸다   (주민 미등록)
+	PRINTFORML 
+	CALL INPUT_INT(0,1)
+	L_INPUT = RESULT
+ENDIF
 SELECTCASE L_INPUT
 CASE 0
 	PRINTFORML %조사처리(CALLNAME:L_I,"는")% 도시에 대한 소식을 전하며, 「우리들과 함께 싸우자」라면서 권유했다.

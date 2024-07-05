@@ -793,3 +793,61 @@ ENDSELECT
 
 RETURNFORM RESULT
 
+;=================================================
+;   sub CONFIG_DATA_xx
+;=================================================
+;   コンフィグNo.xx: 함락 후 고민 오프
+;-------------------------------------------------
+; Input:
+;  ARG					コンフィグNo
+;  ARGS					対象KEY(PALAM,TITLE,EXPLANATION)
+; Output:
+;  RESULTS				結果文字列
+;  RESULT				（※ARGSで分岐）
+;	[PALAM]				FLAGの値
+;	[SWITCH]			スイッチ属性(1:スイッチ 0:スイッチではない)
+;-------------------------------------------------
+@CONFIG_DATA_8(ARG,ARGS)
+#DIMS L_STR
+VARSET RESULT
+VARSET RESULTS
+
+L_STR = 陥落後悩みオフ機能
+
+SELECTCASE ARGS
+	;- 値
+	CASE "PALAM"
+		RESULT = FLAG:L_STR
+	;- スイッチ
+	CASE "SWITCH"
+		;- ONかOFFしか無い場合は1、それ以外は0を設定
+		RESULT = 1
+		RESULTS = %L_STR%
+	;- 表題
+	CASE "TITLE"
+		RESULTS = 함락 후 고민 없음
+	;- 説明
+	CASE "EXPLANATION"
+		PRINTL 함락된 경우 고민이 추가되지 않도록 할 수 있습니다.
+		PRINTL ON으로 하면 고민이 추가되지 않습니다.
+		PRINTL 
+		PRINTL 
+		PRINTL [1] ON
+		PRINTL [0] OFF
+		PRINTL
+		PRINTL [100] 변경 없음
+		CALL INPUT_INT(0,1,100)
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW 설정을 OFF로 했습니다.
+				FLAG:L_STR = 0
+			CASE 1
+				PRINTW 설정을 ON으로 했습니다.
+				FLAG:L_STR = 1
+			CASE 100
+				;何も無し
+		ENDSELECT
+
+ENDSELECT
+
+RETURNFORM RESULT

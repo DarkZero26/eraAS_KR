@@ -7,6 +7,7 @@
 #DIM L_M
 #DIM K_N
 #DIM K_N2
+#DIM L_C,6
 
 $INPUT_LOOP
 CLEARLINE LINECOUNT
@@ -17,95 +18,129 @@ DRAWLINE
 FOR K_N, 1, 6
 	PRINTFORM 【%STR:(2500+K_N)%:
 	PRINTFORM 【담당:
-	CALL MEMBER_LIST2(16000,K_N)
-	SIF FLAG:범용변수 == 0
+
+	LOCAL = 0
+	FOR K_N2, 0, CHARANUM
+		SIF TALENT:K_N2:부재
+			CONTINUE
+		SIF CFLAG:K_N2:16000 != K_N
+			CONTINUE
+		;SIF K_N2 == OPT_HIGHLIGHT
+		;	SETCOLOR COLOR("HIGHLIGHT")
+		PRINTFORM [%CALLNAME:K_N2%]
+		;RESETCOLOR
+		LOCAL ++
+		L_C:K_N = K_N2
+	NEXT
+	IF LOCAL == 0
 		FLAG:(6020+K_N) = 0
+		L_C:K_N = 0
+	ENDIF
 	PRINTFORML 】
 	PRINTFORML  [레벨:{Flag:6001, 3 ,RIGHT}]
 NEXT
+
 DRAWLINE
 PRINTFORML 도시의 기업에 주민을 보내 일을 촉진시킵니다.
 PRINTFORML 주민을 임명함으로써, 턴 종료 시 기업에 개입하여 공적 포인트를 받습니다. (각 기업당 1명까지)
 PRINTFORML 【무자각 소질・인기・지위・계급이 높을수록 ＋보정.】
 PRINTFORML 【비처녀이며 모럴이 낮을수록……】【비처녀이며 카르마가 높을수록……】
 DRAWLINE
-PRINTFORML [  0] 담당임명
+PRINTFORML [0] 담당임명
 PRINTFORML 
-PRINTFORML [100] 임명해제
-PRINTFORML [999] 돌아간다
-INPUT
+PRINTFORML [1] 임명해제
+PRINTFORML [9] 돌아간다
+CALL INPUT_INT(0,1,9)
 L_INPUT = RESULT
 L_M = RESULT
 
-
 SELECTCASE L_INPUT
-	CASE 999
-		JUMP SYSTEM_MENU
-	CASEELSE
-		SIF L_INPUT > 2 && L_INPUT != 100
-			GOTO INPUT_LOOP
+CASE 9
+	JUMP SYSTEM_MENU
+CASE 1
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	PRINTFORML 담당할 기업을 선택해주세요.
+	DRAWLINE
+	;기업선택지와 담당현황 리스트업
+	FOR K_N, 1, 6
+		PRINTFORM [{K_N}]　%STR:(2500+K_N)%:
+		IF L_C:K_N
+			PRINTFORML 담당:[%CALLNAME:(L_C:K_N)%]
+		ELSE
+			PRINTFORML 담당:
+		ENDIF
+	NEXT
+		
+	PRINTFORML 
+	PRINTFORML [9] 돌아간다
+	CALL INPUT_INT(1,2,3,4,5,9)
+	
+	L_INPUT = RESULT
+	SELECTCASE L_INPUT
+	CASE 9
+		GOTO INPUT_LOOP
+	CASE 1 TO 5
+		IF L_C:L_INPUT > 0
+			CFLAG:(L_C:L_INPUT):16000 = 0
+			PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 임무에서 제외했습니다.
+		ELSE
+			PRINTFORMW 담당되어 있는 주민이 없습니다.
+		ENDIF
+	ENDSELECT
+	
+CASE 0
+ 	CLEARLINE LINECOUNT
+	DRAWLINE
+	PRINTFORML 담당할 기업을 선택해주세요.
+	DRAWLINE
+	;選択肢の企業と担当状況をリストアップ
+	FOR K_N, 1, 6
+		PRINTFORM [{K_N}]　%STR:(2500+K_N)%:
+		IF L_C:K_N
+			PRINTFORML 담당:[%CALLNAME:(L_C:K_N)%]
+		ELSE
+			PRINTFORML 담당:
+		ENDIF
+	NEXT
+	
+	PRINTFORML 
+	PRINTFORML [9] 돌아간다
+	CALL INPUT_INT(1,2,3,4,5,9)
+	L_INPUT = RESULT
+	K_N2 = RESULT
+	SELECTCASE L_INPUT
+	CASE 1 TO 5
 		CLEARLINE LINECOUNT
 		DRAWLINE
-		PRINTFORML 담당할 기업을 선택해주세요.
+			PRINTFORML 임명할 주민을 선택해주세요.
 		DRAWLINE
-		;기업선택지와 담당현황 리스트업
-		FOR K_N, 1,6
-		PRINTFORM [{K_N}]　%STR:(2500+K_N)%:
-		PRINTFORM 담당:
-		CALL MEMBER_LIST2(16000,K_N)
-		SIF FLAG:범용변수 == 0
-			FLAG:(6020+K_N) = 0
-		PRINTFORML 
-		NEXT
-		
-		PRINTFORML 
-		PRINTFORML [999] 돌아간다
-		INPUT
+		CALL LIST_CHARA
 		L_INPUT = RESULT
-		K_N2    = RESULT
-		
-		SELECTCASE L_INPUT
-		CASE 999
-			GOTO INPUT_LOOP
-		CASEELSE
-			CLEARLINE LINECOUNT
-			DRAWLINE
-			IF L_M == 100
-				PRINTFORML 해제할 주민을 선택해주세요.
+		IF L_INPUT != 1000
+			IF TALENT:L_INPUT:NPC == 1
+				PRINTFORMW NPC는 선택할 수 없습니다.
+			ELSEIF L_INPUT == 0
+				PRINTFORMW 당신은 선택할 수 없습니다.
+			ELSEIF CFlag:L_INPUT:16000 != 0
+				PRINTFORMW 이미%STR:(2500+CFlag:L_INPUT:16000)%에 임명한 상태입니다.
 			ELSE
-				PRINTFORML 임명할 주민을 선택해주세요.
-			ENDIF
-			DRAWLINE
-			CALL LIST_CHARA
-			L_INPUT = RESULT
-			IF L_INPUT != 1000
-				IF L_M == 100 && CFlag:L_INPUT:16000 != 0
-					CFlag:L_INPUT:16000 = 0
-					PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 임무에서 제외했습니다.
-				ELSEIF TALENT:L_INPUT:NPC == 1
-					PRINTFORMW NPC는 선택할 수 없습니다.
-				ELSEIF L_INPUT == 0
-					PRINTFORMW 당신은 선택할 수 없습니다.
-				ELSEIF Flag:(6020+K_N2)  != 0
-					PRINTFORMW 배속할 수 있는 인원은 기업 당１명까지입니다.
-				ELSEIF CFlag:L_INPUT:16000 != 0
-					PRINTFORMW 이미%STR:(2500+CFlag:L_INPUT:16000)%에 임명되어 있습니다.
-				ELSE
-					CFlag:L_INPUT:(16000) = K_N2
-					Flag:(6020+K_N2)  = 1
-					PRINTFORMW %조사처리(CALLNAME:L_INPUT,"를")% 임명했습니다.
+				IF Flag:(6020+K_N2)  != 0
+					PRINTFORML 이미 %조사처리(CALLNAME:(L_C:K_N2), "가")% 임명되어 있습니다.
+					PRINTFORML %조사처리(CALLNAME:L_INPUT, "로")% 변경하시겠습니까?
+					PRINTFORML [0] 변경한다
+					PRINTFORML [1] 그만둔다
+					CALL INPUT_INT(0,1)
+					SIF RESULT == 1
+						GOTO INPUT_LOOP
+					CFLAG:(L_C:K_N2):16000 = 0
+				ENDIF
+				CFlag:L_INPUT:16000 = K_N2
+				Flag:(6020+K_N2)  = 1
+				PRINTFORMW %조사처리(CALLNAME:L_INPUT%, "를") 임명했습니다.
 			ENDIF
 		ENDIF
 	ENDSELECT
 ENDSELECT
 GOTO INPUT_LOOP
-
-
-
-
-
-
-
-
-
-
+	

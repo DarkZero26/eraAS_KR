@@ -4,6 +4,8 @@
 ;-------------------------------------------------
 @TURN_EVENT_NYM_R
 #DIM L_NAYAMI_SLOT
+SIF FLAG:陥落後悩みオフ機能 && (TALENT:심취 || TALENT:애인 || TALENT:정부)
+	RETURN
 L_NAYAMI_SLOT = RAND(1, 3)
 SIF CFLAG:(4010 + L_NAYAMI_SLOT)
 	RETURN

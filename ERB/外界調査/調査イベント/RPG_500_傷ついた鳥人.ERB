@@ -21,12 +21,17 @@ PRINTFORML 그러자, 그곳에는 날개에서 피를 흘리며 쓰러져 있�
 PRINTFORML 아무래도「외적」에게 습격당해, 목숨만 건져서 여기까지 도망쳐 온 듯 하다.
 PRINTFORML ……구조 여부는 자유겠지만…….
 PRINTFORML 
-PRINTFORML [0] 구조한다　　　　(주민 등록　)
-PRINTFORML [1] 구조하지 않는다 (주민 미등록)
-PRINTFORML 
 $INPUT_LOOP
-INPUT
-L_INPUT = RESULT
+IF FLAG:自動探索勧誘 < 2 && FLAG:自動探索
+	L_INPUT = FLAG:自動探索勧誘
+ELSE
+	FLAG:自動探索 = 0
+	PRINTFORML [0] 구조한다　        (주민 등록)
+	PRINTFORML [1] 구조하지 않는다   (주민 미등록)
+	PRINTFORML 
+	CALL INPUT_INT(0,1)
+	L_INPUT = RESULT
+ENDIF
 SELECTCASE L_INPUT
 CASE 0
 	PRINTFORML 내버려두고 갈 이유도 없었기에, 다른 대원에게 명령해 구조를 실시하기로 했다.

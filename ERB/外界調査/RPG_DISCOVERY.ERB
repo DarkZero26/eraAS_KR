@@ -89,6 +89,14 @@ ELSEIF FLAG:フロア_特殊調査 == 1
 	
 ENDIF
 DRAWLINE
+IF FLAG:自動探索調査 == 0 && FLAG:自動探索
+	IF (FLAG:フロア_特殊調査== 3 && CFlag:L_I:주민_技能_락픽 >= 20) || (FLAG:フロア_特殊調査== 2 && CFlag:L_I:주민_技能_컴퓨터 >= 20) || (FLAG:フロア_特殊調査== 1 && CFlag:L_I:주민_技能_기계수리 >= 20)
+		L_INPUT = 0
+	ELSE
+		L_INPUT = 1
+	ENDIF
+	GOTO AUTO_SKIP
+ENDIF
 
 PRINTFORML 
 PRINTFORML [0] 기능 사용
@@ -98,6 +106,9 @@ $INPUT_LOOP
 INPUT
 DRAWLINE
 L_INPUT = RESULT
+
+$AUTO_SKIP
+
 SELECTCASE L_INPUT
 CASE 0
 	IF FLAG:フロア_特殊調査 == 3
