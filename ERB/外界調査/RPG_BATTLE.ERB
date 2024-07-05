@@ -176,8 +176,10 @@ CLEARLINE LINECOUNT
 DOATK_P = 1
 DOATK_E = 1
 
+SIF (Flag:敵_レア && FLAG:自動探索戦闘 == 2) || FLAG:自動探索戦闘 == 1
+	FLAG:自動探索 = 0
 ;INPUTネスト。攻撃が予約されてなければここに入る
-IF ATTACKNUM == 0
+IF ATTACKNUM == 0 && !FLAG:自動探索
 	CALL SHOW_TURN(TURN , TURNLIMIT)
 
 	CALL PRINT_LABEL(CALLNAME:L_I)
@@ -1405,8 +1407,8 @@ IF CFlag:CHR:주민_승리횟수 >= 50 && TALENT:CHR:「예거」 == 0
 	ENDIF
 ENDIF
 Flag:ターン戦闘回数 += 1
-Flag:自動戦闘 = 0
-Flag:自動戦闘 = 0
+;Flag:自動戦闘 = 0
+;Flag:自動戦闘 = 0
 IF TALENT:CHR:《아웃이터》&& RAND:10 >= 8
 	IF !RAND:7
 		CFlag:CHR:주민_최대체력 += 2
@@ -1438,7 +1440,7 @@ SETCOLOR 250,50,50
 PRINTFORMW %WORDS_RPG("DEFEATED_CITY", CHR)%
 RESETCOLOR
 Flag:敵_レア = 0
-Flag:自動戦闘 = 0
+FLAG:自動探索 = 0
 RETURN 1
 
 

@@ -504,10 +504,10 @@ IF !L_HIT && (TFLAG:行動経過ターン数 >= FLAG:최대数_行動限界タ�
 ENDIF
 
 
-SIF L_EXIT
+IF L_EXIT
 	SELECTCOM = [[TRAIN:行動終了]]
-
-
+	VARSET NEXTCOM
+ENDIF	
 ;=================================================
 ;   sub TRAIN_SHOW_COM
 ;=================================================

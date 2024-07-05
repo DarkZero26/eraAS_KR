@@ -37,15 +37,28 @@ CASE "RPG_強化剤投与"
 	DOPING_FLAG_ID = GETNUM(FLAG, "I強化剤(HP)")
 	DOPING_CNT_ID  = GETNUM(CFLAG, "주민_強化回数")
 	DOPING_LIMIT   = 100 - CFLAG:C_ID:DOPING_CNT_ID
+	LOCAL = 100 - CFLAG:C_ID:주민_超人回数
 CASE "RPG_超人薬投与"
 	DOPING_ID      = 1
 	DOPING_FLAG_ID = GETNUM(FLAG, "I超人薬(HP)")
 	DOPING_CNT_ID  = GETNUM(CFLAG, "주민_超人回数")
 	DOPING_LIMIT   = 100 - CFLAG:C_ID:DOPING_CNT_ID
+	LOCAL = 100 - CFLAG:C_ID:주민_超人回数
 ENDSELECT
 IF DOPING_LIMIT <= 0
-	PRINTFORMW 강화 횟수가 부족합니다.
-	RETURN
+	IF LOCAL
+		IF DOPING_ID
+			MODE_NOW '= "RPG_強化剤投与"
+			PRINTFORMW 초인약을 한계까지 사용했으므로 강화제 사용으로 전환합니다.
+		ELSE
+			MODE_NOW '= "RPG_超人薬投与"
+			PRINTFORMW 강화제를 한계까지 사용했으므로 초인약 사용으로 전환합니다.
+		ENDIF
+		RESTART
+	ELSE
+		PRINTFORMW 강화제, 초인약 모두 한계까지 사용했습니다.
+		RETURN
+	ENDIF
 ENDIF
 IF STRLENSU(LOG_STR) > 0
 	SETCOLOR COLOR("LOG")

@@ -47,8 +47,6 @@ DRAWLINE
 
 IF Flag:턴조사완료 == 1
 	PRINTFORML 이번 턴의 조사는 끝났습니다. 
-ELSEIF  Flag:도시_방위 != 0
-	PRINTFORML 방위전 때에는 조사할 수 없습니다.
 ELSE
 	PRINTFORML [0] 조사개시
 ENDIF

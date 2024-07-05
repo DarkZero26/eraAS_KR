@@ -133,6 +133,25 @@ SIF NOWFLOOR >= FLOORLENGTH || FLOOREVENT:NOWFLOOR == 0
 ;수반/후방/회수부대の能力再計算(地形適性があるため)
 CALL CALC_SUPPORT
 
+;오토용 처리
+IF FLAG:自動探索
+	IF CFlag:L_I:주민_현재기력 < Flag:フロア_消耗
+		PRINTFORMW %CALLNAME:L_I%의 ＳＰ가 부족하기 때문에 오토 탐색을 종료합니다.
+		FLAG:自動探索 = 0
+	ELSE
+		IF FLAG:自動探索調査 == 1
+			L_INPUT = 3
+		ELSEIF Flag:フロア_特殊調査 > 0 && Flag:フロア_種類 != 90
+			L_INPUT = 10
+		ELSEIF Flag:フロア_탐색回数 > 0 && Flag:フロア_種類 != 90
+			L_INPUT = 0
+		ELSE
+			L_INPUT = 3
+		ENDIF
+		GOTO AUTO_SKIP
+	ENDIF
+ENDIF
+
 CLEARLINE LINECOUNT
 DRAWLINE
 CALL C_PICTURE_R(ARG)
@@ -179,6 +198,9 @@ ELSE
 	PRINTFORML 
 ENDIF
 PRINTFORML [999] - 철수
+PRINT  　　　　　
+PRINTFORM [8]  - 자동탐색　　　
+PRINTFORML [9]  - 자동탐색 옵션
 DRAWLINE
 
 SETCOLOR 0,0,0
@@ -187,6 +209,7 @@ RESETCOLOR
 L_INPUT = RESULT
 
 
+$AUTO_SKIP
 
 
 SELECTCASE L_INPUT
@@ -249,6 +272,69 @@ SELECTCASE L_INPUT
 		FLAG:8900 += 1
 		SIF FLAG:8900 >= 3
 			FLAG:8900 = 0
+		GOTO INPUT_LOOP
+	CASE 8
+		IF CFlag:L_I:주민_현재기력 >= Flag:フロア_消耗
+			FLAG:自動探索 = 1
+		ELSE
+			PRINTFORMW %CALLNAME:L_I%의 ＳＰ가 부족합니다.
+		ENDIF
+	CASE 9
+		LOCAL = 1
+		DO
+			CLEARLINE LINECOUNT
+			DRAWLINE
+			PRINTL 자동 탐색 설정을 변경할 수 있습니다.
+			PRINTL 
+			PRINT 　전투시　　　…　
+			SIF FLAG:自動探索戦闘 == 0
+				SETCOLOR 0x70FFFF
+			PRINT [0] - 정지하지 않는다　　
+			RESETCOLOR
+			SIF FLAG:自動探索戦闘 == 1
+				SETCOLOR 0x70FFFF
+			PRINT [1] - 정지한다　　　
+			RESETCOLOR
+			SIF FLAG:自動探索戦闘 == 2
+				SETCOLOR 0x70FFFF
+			PRINTL [2] - 강적 출현시 정지한다
+			RESETCOLOR
+			
+			PRINTL 
+			PRINT 　조사를　　　…　
+			SIF FLAG:自動探索調査 == 0
+				SETCOLOR 0x70FFFF
+			PRINT [3] - 한다　　　　　
+			RESETCOLOR
+			SIF FLAG:自動探索調査 == 1
+				SETCOLOR 0x70FFFF
+			PRINTL [4] - 하지 않는다　　　　
+			RESETCOLOR
+			
+			PRINTL 
+			PRINT 　구출, 권유시…　
+			SIF FLAG:自動探索勧誘 == 0
+				SETCOLOR 0x70FFFF
+			PRINT [6] - 주민등록을 한다　
+			RESETCOLOR
+			SIF FLAG:自動探索勧誘 == 1
+				SETCOLOR 0x70FFFF
+			PRINT [7] - 주민등록을 하지 않는다
+			RESETCOLOR
+			SIF FLAG:自動探索勧誘 == 2
+				SETCOLOR 0x70FFFF
+			PRINTL [8] - 정지한다　　　
+			RESETCOLOR
+			
+			PRINTL 
+			PRINTL [9]  - 돌아가기
+			CALL INPUT_INT(0,1,2,3,4,6,7,8,9)
+			IF RESULT != 9
+				FLAG:(7014 + RESULT / 3) = RESULT % 3
+			ELSE
+				LOCAL = 0
+			ENDIF
+		LOOP LOCAL
 		GOTO INPUT_LOOP
 	CASE 900
 		;撤退

@@ -23,12 +23,17 @@ PRINTFORML 다가가 보니 캡슐 안에는 사람이 있는 것 같다.
 PRINTFORML 사용되고 있는 캡슐의 연대를 보아 구세대의 사람일지도 모른다.
 PRINTFORML 하지만 아무리 캡슐 안에서 동면 중이라고는 해도, 머지않아「외적」에게 습격당할 것이다…….
 PRINTFORML 
-PRINTFORML [0] 구조한다　　　　(주민 등록　)
-PRINTFORML [1] 구조하지 않는다 (주민 미등록)
-PRINTFORML 
 $INPUT_LOOP
-INPUT
-L_INPUT = RESULT
+IF FLAG:自動探索勧誘 < 2 && FLAG:自動探索
+	L_INPUT = FLAG:自動探索勧誘
+ELSE
+	FLAG:自動探索 = 0
+	PRINTFORML [0] 구조한다　        (주민 등록)
+	PRINTFORML [1] 구조하지 않는다   (주민 미등록)
+	PRINTFORML 
+	CALL INPUT_INT(0,1)
+	L_INPUT = RESULT
+ENDIF
 SELECTCASE L_INPUT
 CASE 0
 	PRINTFORML 모처럼 찾아낸 사람이다. 이대로 방치한다면 잠자리가 사나울 것 같아 구조하기로 했다.
