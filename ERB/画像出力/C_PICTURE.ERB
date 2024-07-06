@@ -9,9 +9,9 @@
 
 LSTR_0 = <nonbutton pos='{L_X}'><img src='MAIN_BG_{FLAG:時間帯}' height = '1000'  ypos = '{L_Y-150}'></nonbutton>
 IF Talent:C_T:NPC == 0
-	HTML_PRINT C_PICTURE_HTML(C_T, L_X, L_Y, -465, 850, LSTR_0)
+	HTML_PRINT C_PICTURE_HTML(C_T, L_X, L_Y, 465, 850, LSTR_0)
 ELSE
-	HTML_PRINT C_PICTURE_NPC_HTML(C_T, L_X, L_Y, -465, 850, LSTR_0)
+	HTML_PRINT C_PICTURE_NPC_HTML(C_T, L_X, L_Y, 465, 850, LSTR_0)
 ENDIF
 
 
@@ -32,7 +32,7 @@ ENDIF
 ;描画処理
 ;-------------------------------------------------
 
-HTML_PRINT C_PICTURE_HTML(C_T, 100, -1000, -465, 850, LSTR_0)
+HTML_PRINT C_PICTURE_HTML(C_T, 100, -1000, 465, 850, LSTR_0)
 
 
 

@@ -173,7 +173,7 @@ ENDIF
 
 ;-------------------------------------------------
 ;描画処理
-;LSTR_ = <nonbutton pos='{P_S2}'><img src='%LSTR_%in_{C_in}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+;LSTR_ = <nonbutton pos='{P_S2}'><img src='%LSTR_%in_{C_in}' height = '850' width = '-65' ypos = '{P_S}'></nonbutton>
 ;-------------------------------------------------
 
 IF TALENT:L_I:임신 != 0 || TALENT:L_I:수정 != 0
@@ -183,42 +183,42 @@ ELSE
 ENDIF
 
 ;종족특징2
-	LSTR_1 = <nonbutton pos='{P_S2}'><img src='C_RACE_2_{CFLAG:L_I:주민_종족}_0_{CFLAG:L_I:주민_종족특징2}' height = '850'  width = '-465' ypos = '{P_S+L_Y2}'></nonbutton>
+	LSTR_1 = <nonbutton pos='{P_S2}'><img src='C_RACE_2_{CFLAG:L_I:주민_종족}_0_{CFLAG:L_I:주민_종족특징2}' height = '850'  width = '465' ypos = '{P_S+L_Y2}'></nonbutton>
 ;体
-	LSTR_2 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%body_{C_body}' height = '850' width = '-465'  ypos = '{P_S}'></nonbutton>
+	LSTR_2 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%body_{C_body}' height = '850' width = '465'  ypos = '{P_S}'></nonbutton>
 ;종족특징3
-	LSTR_3 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%C_RACE_3_{CFLAG:L_I:주민_종족}_0_{CFLAG:L_I:주민_종족특징3}' height = '850'  width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_3 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%C_RACE_3_{CFLAG:L_I:주민_종족}_0_{CFLAG:L_I:주민_종족특징3}' height = '850'  width = '465' ypos = '{P_S}'></nonbutton>
 ;目
 IF Palam:L_I:욕정 >= 30000
-	LSTR_4 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%S_eye_1' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_4 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%S_eye_1' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ELSEIF Palam:L_I:욕정 >= 15000
-	LSTR_4 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%H_eye_0_{C_eye}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_4 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%H_eye_0_{C_eye}' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ELSE
-	LSTR_4 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%eye_{C_eye}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_4 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%eye_{C_eye}' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ENDIF
 ;胸
-	LSTR_5 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%bust_{C_body}_{C_bust}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_5 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%bust_{C_body}_{C_bust}' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ;임신
 IF  Talent:L_I:임신 >= 6
-	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%C_MB_{CFLAG:L_I:살색}_{L_N}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%C_MB_{CFLAG:L_I:살색}_{L_N}' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ELSE
-	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='C_no' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_N2 = <nonbutton pos='{P_S2}'><img src='C_no' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ENDIF
 
 ;前髪
-	LSTR_11 = <nonbutton pos='{P_S2}'><img src='hair_{C_hairC}_{C_hair}' height = '850' width = '-465' ypos = '{P_S+L_Y2}'></nonbutton>
+	LSTR_11 = <nonbutton pos='{P_S2}'><img src='hair_{C_hairC}_{C_hair}' height = '850' width = '-65' ypos = '{P_S+L_Y2}'></nonbutton>
 ;後髪
-	LSTR_UK = <nonbutton pos='{P_S2}'><img src='hair_U_{C_hairC}_{C_U_hair}' height = '850' width = '-465' ypos = '{P_S+L_Y2}'></nonbutton>
+	LSTR_UK = <nonbutton pos='{P_S2}'><img src='hair_U_{C_hairC}_{C_U_hair}' height = '850' width = '465' ypos = '{P_S+L_Y2}'></nonbutton>
 ;종족특징1
-	LSTR_12 = <nonbutton pos='{P_S2}'><img src='C_RACE_1_{CFLAG:L_I:주민_종족}_0_{CFLAG:L_I:주민_종족특징1}' height = '850' width = '-465'  ypos = '{P_S+L_Y2}'></nonbutton>
+	LSTR_12 = <nonbutton pos='{P_S2}'><img src='C_RACE_1_{CFLAG:L_I:주민_종족}_0_{CFLAG:L_I:주민_종족특징1}' height = '850' width = '465'  ypos = '{P_S+L_Y2}'></nonbutton>
 ;溢れ精液
-	LSTR_15 = <nonbutton pos='{P_S2}'><img src='H_A_S_0_{H_TNS}' height = '850' width = '-465'  ypos = '{P_S}'></nonbutton>
+	LSTR_15 = <nonbutton pos='{P_S2}'><img src='H_A_S_0_{H_TNS}' height = '850' width = '465'  ypos = '{P_S}'></nonbutton>
 
 ;음문
 IF CFLAG:L_I:음문 == 0 || CFLAG:L_I:음문 == -1 || Talent:L_I:임신 >= 6
-	LSTR_17 = <nonbutton pos='{P_S2}'><img src='C_no' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_17 = <nonbutton pos='{P_S2}'><img src='C_no' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ELSE
-	LSTR_17 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%in_{C_in}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
+	LSTR_17 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%in_{C_in}' height = '850' width = '465' ypos = '{P_S}'></nonbutton>
 ENDIF
 
 ;LSTR_6,LSTR_7,LSTR_8,LSTR_9,LSTR_10は未使用？

@@ -43,15 +43,12 @@
 #DIMS LSTR_12
 #DIMS LSTR_14
 #DIMS LSTR_15
-#DIMS LSTR_16
+
 #DIMS LSTR_N2
 #DIMS LSTR_UK
 #DIM DYNAMIC C_bust
 #DIM DYNAMIC ARG_ID
 
-;日焼けパッチ改変
-VARSET 身体系
-VARSET 衣装系
 
 SIF Flag:범용변수6 != 999 && Flag:탐색中 != 1
 	BG_STR = 
@@ -80,7 +77,7 @@ LSTR_1 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_1)%
 
 ;体
 LSTR_2 = %LSTR_0%body_{CFLAG:L_T:살색}
-身体系:0 '= LSTR_2
+
 LSTR_2 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_2)%
 
 ;종족특징3
@@ -89,7 +86,7 @@ LSTR_3 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_3)%
 
 ;目
 LSTR_4 = %LSTR_0%eye_{CFLAG:L_T:눈동자색}
-身体系:1 '= LSTR_5
+
 LSTR_4 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_4)%
 
 ;胸
@@ -102,9 +99,7 @@ IF  Talent:L_T:임신 >= 6
 ELSE
 	LSTR_N2 = C_no
 ENDIF
-身体系:2 '= LSTR_N2
-LSTR_N2 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_N2)%
- 
+
  
 ;속옷상의
 IF CFLAG:L_T:속옷상의 == -1 || Talent:L_T:임신 >= 6
@@ -112,7 +107,7 @@ IF CFLAG:L_T:속옷상의 == -1 || Talent:L_T:임신 >= 6
 ELSE
 	LSTR_6 = %LSTR_0%bra_{C_bust}_{CFLAG:L_T:속옷상의}
 ENDIF
-衣装系:0 '= LSTR_6
+
 LSTR_6 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_6)%
 
 
@@ -143,7 +138,7 @@ IF CFLAG:L_T:신발 == -1 || Talent:L_T:임신 >= 6
 ELSE
 	LSTR_9 = %LSTR_0%boots_{CFLAG:L_T:신발}
 ENDIF
-衣装系:3 '= LSTR_9
+
 LSTR_9 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_9)%
 
 
@@ -153,7 +148,7 @@ IF CFLAG:L_T:모자 == 0 || CFLAG:L_T:모자 == -1 || Talent:L_T:임신 != 0
 ELSE
 	LSTR_14 = hat_{CFLAG:L_T:모자}
 ENDIF
-衣装系:4 '= LSTR_14
+
 LSTR_14 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_14)%
 
 ;マタニティドレス
@@ -164,19 +159,19 @@ ELSEIF CFLAG:L_T:복장 == -1
 ELSE
 	LSTR_10 = %LSTR_0%suit_{C_bust}_{CFLAG:L_T:복장}
 ENDIF
-衣装系:5 '= LSTR_10
+
 LSTR_10 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_10)%
 
 ;前髪
-;日焼けパッチ：髪は衣服に含めない
+
 LSTR_11 = hair_{CFLAG:L_T:머리색}_{CFLAG:L_T:머리모양}
-;衣装系:6 '= LSTR_11
+
 LSTR_11 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_11)%
 
 
 ;後髪
 LSTR_UK = hair_U_{CFLAG:L_T:머리색}_{CFLAG:L_T:뒷머리모양}
-;衣装系:7 '= LSTR_UK
+
 LSTR_UK = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_UK)%
 
 ;종족특징1
@@ -195,13 +190,9 @@ ELSE
 	LSTR_15 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_15)%
 ENDIF
 
+LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_6%%LSTR_7%%LSTR_8%%LSTR_9%%LSTR_15%%LSTR_10%%LSTR_11%%LSTR_12%%LSTR_14%%OL_STR%
 
-;日焼けパッチ：日焼け表示のために一部パーツの表示順を入れかえ(LSTR_4(目)、LSTR_16(日焼け跡))
-;復旧のために一応残す↓
-;LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_6%%LSTR_7%%LSTR_8%%LSTR_9%%LSTR_15%%LSTR_10%%LSTR_11%%LSTR_12%%LSTR_14%%OL_STR%
-;左から順に下層のレイヤーとなる
-LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_5%%LSTR_N2%%LSTR_6%%LSTR_7%%LSTR_8%%LSTR_9%%LSTR_15%%LSTR_10%%LSTR_16%%LSTR_4%%LSTR_11%%LSTR_12%%LSTR_14%%OL_STR%
-;DEBUGPRINTFORML %LSTR%
+
 RETURNF LSTR
 
 
@@ -243,7 +234,7 @@ RETURNF LSTR
 #DIMS LSTR_14
 #DIMS LSTR_N2
 #DIMS LSTR_UK
-#DIMS LSTR_15 ;日焼けパッチ用
+
 #DIM C_bust
 
 C_bust = C_PICTURE_BUST(L_T)
@@ -312,9 +303,8 @@ ELSE
 ENDIF
 
 
-;日焼けパッチ：日焼け画像表示を淫紋(LSTR_14)の前に追加
-;LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_11%%LSTR_12%%LSTR_15%%LSTR_14%
-LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_5%%LSTR_N2%%LSTR_15%%LSTR_4%%LSTR_11%%LSTR_12%%LSTR_14%
+LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_11%%LSTR_12%%LSTR_14%
+																												   
 
 RETURNF LSTR
 
