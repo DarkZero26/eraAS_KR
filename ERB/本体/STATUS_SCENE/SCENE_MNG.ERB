@@ -1608,31 +1608,19 @@ ENDIF
 
 
 
-;日焼け跡パッチ：日焼けに関する処理を追加
 @MNG_CUSTOM_LOOKS(L_I)
 #DIM         L_I
 #DIM DYNAMIC L_CHANGE_H_COLOR = -1 ;
 #DIM DYNAMIC L_CHANGE_H_STYLE = -1 ;えっちすたいるではなくヘアスタイルだ
-#DIM DYNAMIC L_CHANGE_UH_STYLE = -1;
+#DIM DYNAMIC L_CHANGE_UH_STYLE = -1 ;
 #DIM DYNAMIC L_CHANGE_E_COLOR = -1 ;
 #DIM DYNAMIC L_CHANGE_B_COLOR = -1 ;
 #DIM         L_NOW_H_COLOR         ;画像表示用に一時変更する
 #DIM         L_NOW_H_STYLE         ;
-#DIM         L_NOW_UH_STYLE        ;
+#DIM         L_NOW_UH_STYLE         ;
 #DIM         L_NOW_E_COLOR         ;
 #DIM         L_NOW_B_COLOR         ;
 #DIM         L_PARTS_TYPE
-#DIM         L_COLOR               ;表示色一時保存用
-#DIM CONST   L_HIYAKE_CREATE = 6   ;日焼け跡生成コマンドの番号
-#DIM CONST   L_HIYAKE_DELETE = 7   ;日焼け跡除去コマンドの番号
-#DIM CONST   L_HIYAKE_COLOR = 55   ;
-#DIM CONST   L_HIYAKE_NEED_LV = 3  ;日焼け跡生成/除去に必要な에스테틱レベル
-#DIM         L_CHANGE_HIYAKE_COLOR = HIYAKE_DEF_COLOR:0
-#DIMS        L_NOW_HIYAKE          ;変更前の日焼け跡の画像名
-#DIMS DYNAMIC L_CHANGE_HIYAKE      ;変更後の日焼け跡の画像名
-#DIMS CONST DEL_HIYAKE = "DELH"    ;日焼け跡を除去する文字列
-#DIMS CONST DT_HIYAKE_DELETE = "DELLIST" ;不要な日焼け画像を記録しておくDATATABLE
-
 IF !INRANGE(L_I, 0, CHARANUM - 1)
 	RETURN
 ELSEIF L_I == MASTER
@@ -1643,41 +1631,30 @@ ELSEIF MONEY < 10000
 	PRINTFORMW 자금이 부족합니다.
 	RETURN
 ENDIF
-
-
-
 ;変更前の状態を保存
 L_NOW_H_COLOR = CFLAG:L_I:머리색
 L_NOW_H_STYLE = CFLAG:L_I:머리모양
 L_NOW_UH_STYLE = CFLAG:L_I:뒷머리모양
 L_NOW_E_COLOR = CFLAG:L_I:눈동자색
 L_NOW_B_COLOR = CFLAG:L_I:살색
-L_NOW_HIYAKE = %HIYAKE_CLOTH:L_I:0%
 
-;初期値は現在の日焼け跡
-L_CHANGE_HIYAKE = %L_NOW_HIYAKE%		
-						  
 DO
-
 	CLEARLINE LINECOUNT
 	DRAWLINE
 	PRINTFORML %CALLNAME:L_I%의 외모를 변경합니다.
-	
 {
 	CALL PRINT_LABEL("머리색　",,,@"%INFO_STR_HAIRCOLOR(L_NOW_H_COLOR), 20%→\@
 					L_CHANGE_H_COLOR == -1 ? 변경없음 # %INFO_STR_HAIRCOLOR(L_CHANGE_H_COLOR)%\@",,,,,,,, 1)
 }
-PRINTL 
 {
 	CALL PRINT_LABEL("앞머리　",,,@"%INFO_STR_HAIR(L_NOW_H_STYLE), 20%→\@
 					L_CHANGE_H_STYLE == -1 ? 변경없음 # %INFO_STR_HAIR(L_CHANGE_H_STYLE)%\@",,,,,,,, 1)
 }
-PRINTL
+	PRINTL
 {
 	CALL PRINT_LABEL("뒷머리　",,,@"%INFO_STR_U_HAIR(L_NOW_H_STYLE), 20%→\@
 					L_CHANGE_H_STYLE == -1 ? 변경없음 # %INFO_STR_U_HAIR(L_CHANGE_UH_STYLE)%\@",,,,,,,, 1)
 }
-PRINTL 	   
 {
 	CALL PRINT_LABEL("눈동자색",,,@"%INFO_STR_EYECOLOR(L_NOW_E_COLOR), 20%→\@
 					L_CHANGE_E_COLOR == -1 ? 변경없음 # %INFO_STR_EYECOLOR(L_CHANGE_E_COLOR)%\@",,,,,,,, 1)
@@ -1686,12 +1663,6 @@ PRINTL
 {
 	CALL PRINT_LABEL("피부색　",,,@"%INFO_STR_SKINCOLOR(L_NOW_B_COLOR), 20%→\@
 					L_CHANGE_B_COLOR == -1 ? 변경없음 # %INFO_STR_SKINCOLOR(L_CHANGE_B_COLOR)%\@",,,,,,,, 1)
-}
-PRINTL 
-;三項演算の中に三項演算が入っててごめんよ
-{
-	CALL PRINT_LABEL("선탠",,,@"\@ L_NOW_HIYAKE != "" ? %"선탠 있음" , 20% # %"선탠 없음" , 20%\@→
-					\@ L_CHANGE_HIYAKE == L_NOW_HIYAKE ? 변경없음 # %\@ L_CHANGE_HIYAKE == "" || L_CHANGE_HIYAKE == DEL_HIYAKE ? 선탠없음 # 선탠함 \@% \@",,,,,,,, 1)
 }
 	PRINTL
 	DRAWLINE
@@ -1707,7 +1678,7 @@ PRINTL
 	CFLAG:L_I:뒷머리모양 = L_NOW_UH_STYLE
 	CFLAG:L_I:눈동자색 = L_NOW_E_COLOR
 	CFLAG:L_I:살색 = L_NOW_B_COLOR
-	HIYAKE_CLOTH:L_I:0 = %L_NOW_HIYAKE%
+	
 	HTML_PRINT C_PICTURE_HTML(L_I, 0, -702, 0, 850)
 	SIF L_CHANGE_H_COLOR > -1
 		CFLAG:L_I:머리색 = L_CHANGE_H_COLOR
@@ -1719,13 +1690,6 @@ PRINTL
 		CFLAG:L_I:눈동자색 = L_CHANGE_E_COLOR
 	SIF L_CHANGE_B_COLOR > -1
 		CFLAG:L_I:살색 = L_CHANGE_B_COLOR
-	IF L_CHANGE_HIYAKE == ""
-		;変更後が日焼け跡除去のパターン
-		HIYAKE_CLOTH:L_I:0 = 
-	ELSE
-		;現在の服装設定で日焼け跡を作るパターン
-		HIYAKE_CLOTH:L_I:0 = %L_CHANGE_HIYAKE%
-	ENDIF						   
 	HTML_PRINT C_PICTURE_HTML(L_I, 800, -800, 0, 850)
 	DRAWLINE
 	PRINTFORML [0] 변경 초기화
@@ -1751,31 +1715,6 @@ PRINTL
 	ELSE
 		PRINTFORML  피부색 변경(레벨 9 이상)
 	ENDIF
-	IF FLAG:에스테틱 >= L_HIYAKE_NEED_LV
-		IF L_CHANGE_HIYAKE == ""
-			PRINTFORM [{L_HIYAKE_CREATE}] %"선탠" , 18 , LEFT%
-		ELSE
-			PRINTFORM [{L_HIYAKE_CREATE}] %"선탠 취소" , 18 , LEFT%
-		ENDIF
-
-		IF L_NOW_HIYAKE != ""
-			PRINTFORM [{L_HIYAKE_DELETE}] %"선탠 자국 제거" , 18 , LEFT%
-		ELSE
-			;日焼け跡がないなら日焼け跡の除去は不能
-			L_COLOR = GETCOLOR()
-			SETCOLORBYNAME GRAY
-			PRINTPLAINFORM [{L_HIYAKE_DELETE}] %"선탠 자국 제거" , 18 , LEFT%
-			SETCOLOR L_COLOR
-		ENDIF
-
-		PRINTFORM [{L_HIYAKE_COLOR}] %"선탠 색 설정" , 16 , LEFT%
-		PRINTL 
-	ELSE
-		L_COLOR = GETCOLOR()
-		SETCOLORBYNAME GRAY
-		PRINTFORM 선탠(레벨{L_HIYAKE_NEED_LV}이상 필요)
-		SETCOLOR L_COLOR
-	ENDIF									  
 	PRINTFORML 
 	PRINTFORML [100] 적용　(￥10000)
 	PRINTFORML [999] 돌아간다
@@ -1860,58 +1799,8 @@ PRINTL
 				BREAK
 		LOOP 1
 		L_CHANGE_B_COLOR = L_PARTS_TYPE
-	CASE L_HIYAKE_CREATE
-		;日焼けパッチ追加部分
-		SIF FLAG:에스테틱 < L_HIYAKE_NEED_LV
-			CONTINUE
-		;PRINTFORMW 健康的に日焼けしました
-
-		IF L_CHANGE_HIYAKE == ""
-			;新しく日焼けを作るパターン
-			;キャラの衣服情報だけ取れればいいので座標や画像サイズの引数は適当
-			;これで衣服のスプライト名が文字列配列"衣装系"、身体は文字列配列"身体系"にHTML_PRINTで使うタグがはき出される
-			VARSET 身体系
-			VARSET 衣装系
-			CALLF C_PICTURE_HTML(L_I , 0 , 0 , 0 , 0)
-
-			;日焼け跡生成処理
-			CALL CREATE_HIYAKE(L_I , 身体系 , 衣装系 , L_CHANGE_HIYAKE_COLOR)
-			L_CHANGE_HIYAKE = %HIYAKE_CLOTH:L_I:0%
-			HIYAKE_CLOTH:L_I:0 = %L_NOW_HIYAKE%
-		ELSE
-			;日焼けをキャンセルするパターン
-			L_CHANGE_HIYAKE = 
-		ENDIF
-	CASE L_HIYAKE_DELETE
-		;日焼けパッチ追加部分
-		SIF FLAG:에스테틱 < L_HIYAKE_NEED_LV
-			CONTINUE
-
-		;日焼け除去
-		L_CHANGE_HIYAKE = 
-	CASE L_HIYAKE_COLOR
-		;日焼けパッチ追加部分。日焼け色変更
-		SIF FLAG:에스테틱 < L_HIYAKE_NEED_LV
-			CONTINUE
-
-		CALL HIYAKE_CHANGE_COLOR(L_CHANGE_HIYAKE_COLOR)
-		L_CHANGE_HIYAKE_COLOR = RESULT
-
-		PRINTW AAA
-		;もし現時点での変更予定の日焼け画像と名前が不一致なら再生成の必要あり
-		IF HIYAKE_CREATE_NAME(L_I , L_CHANGE_HIYAKE_COLOR) != L_CHANGE_HIYAKE
-			PRINTW BBB
-			;やっていることはL_HIYAKE_CREATEの部分と同じ
-			VARSET 身体系
-			VARSET 衣装系
-			CALLF C_PICTURE_HTML(L_I , 0 , 0 , 0 , 0)
-
-			CALL CREATE_HIYAKE(L_I , 身体系 , 衣装系 , L_CHANGE_HIYAKE_COLOR)
-			L_CHANGE_HIYAKE = %HIYAKE_CLOTH:L_I:0%
-			HIYAKE_CLOTH:L_I:0 = %L_NOW_HIYAKE%
-	   	ENDIF
 	CASE 100
-		IF ALLSAMES(-1, L_CHANGE_H_COLOR, L_CHANGE_H_STYLE, L_CHANGE_UH_STYLE, L_CHANGE_E_COLOR, L_CHANGE_B_COLOR) && L_CHANGE_HIYAKE == L_NOW_HIYAKE
+		IF ALLSAMES(-1, L_CHANGE_H_COLOR, L_CHANGE_H_STYLE, L_CHANGE_UH_STYLE, L_CHANGE_E_COLOR, L_CHANGE_B_COLOR)
 			PRINTFORMW 변경 내용이 지정되어 있지 않습니다.
 			CONTINUE
 		;何らかの処理が適用される場合は個別に抜けるよ
@@ -1920,14 +1809,10 @@ PRINTL
 		ELSEIF L_CHANGE_UH_STYLE >= 0 && L_CHANGE_UH_STYLE != L_NOW_UH_STYLE
 		ELSEIF L_CHANGE_E_COLOR >= 0 && L_CHANGE_E_COLOR != L_NOW_E_COLOR
 		ELSEIF L_CHANGE_B_COLOR >= 0 && L_CHANGE_B_COLOR != L_NOW_B_COLOR
-		ELSEIF L_CHANGE_HIYAKE != L_NOW_HIYAKE								
 		ELSE
 			PRINTFORMW %조사처리(CALLNAME:L_I,"는")% 이미 지정된 외모를 하고 있습니다.
 			CONTINUE
 		ENDIF
-		
-		;日焼けパッチ：不必要な画像を削除
-		CALL HIYAKE_DT整理											   
 		
 		PRINTFORMW %CALLNAME:L_I%의 외모를 변경했습니다.
 		MONEY -= 10000
@@ -1938,7 +1823,6 @@ PRINTL
 		CFLAG:L_I:뒷머리모양 = L_NOW_UH_STYLE
 		CFLAG:L_I:눈동자색 = L_NOW_E_COLOR
 		CFLAG:L_I:살색 = L_NOW_B_COLOR
-		HIYAKE_CLOTH:L_I:0 = %L_NOW_HIYAKE%							 
 		RETURN
 	ENDSELECT
 LOOP 1

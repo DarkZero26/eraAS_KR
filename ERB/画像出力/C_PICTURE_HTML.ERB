@@ -195,17 +195,6 @@ ELSE
 	LSTR_15 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_15)%
 ENDIF
 
-;日焼け
-;淫紋(LSTR_16)の上に表示すべきか、下に表示すべきか迷っている
-;仮に淫紋の下に表示してみる
-VARSET LSTR_16
-IF HIYAKE_CLOTH:L_T:0 != ""
-	;キャラに設定された日焼け画像が実在するかチェック。ない場合は何もしない(ない場合は不具合的なアレだと思うが…)
-	IF DT_SEARCH_IN_COLUMN(HIYAKE_DT , COL_CLOTH , HIYAKE_CLOTH:L_T:0) >= 0
-		LSTR_16 = %DT_CELL_GETS(HIYAKE_DT , DT_SEARCH_IN_COLUMN(HIYAKE_DT , COL_CLOTH , HIYAKE_CLOTH:L_T:0) , COL_CLOTH)%
-		LSTR_16 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_16)%
-	ENDIF
-ENDIF
 
 ;日焼けパッチ：日焼け表示のために一部パーツの表示順を入れかえ(LSTR_4(目)、LSTR_16(日焼け跡))
 ;復旧のために一応残す↓
@@ -322,20 +311,6 @@ ELSE
 	LSTR_14 = %C_PICTURE_IMG(L_X, L_Y+L_Y2, L_W, L_H, LSTR_14)%
 ENDIF
 
-
-;日焼け
-;淫紋(LSTR_16)の上に表示すべきか、下に表示すべきか迷っている
-;仮に淫紋の下に表示してみる
-VARSET LSTR_15
-IF HIYAKE_CLOTH:L_T:0 != ""
-	;キャラに設定された日焼け画像が実在するかチェック。ない場合はデバッグに表示して何もしない(ない場合は不具合的なアレだと思うが…)
-	IF DT_SEARCH_IN_COLUMN(HIYAKE_DT , COL_CLOTH , HIYAKE_CLOTH:L_T:0) >= 0
-		LSTR_15 = %DT_CELL_GETS(HIYAKE_DT , DT_SEARCH_IN_COLUMN(HIYAKE_DT , COL_CLOTH , HIYAKE_CLOTH:L_T:0) , COL_CLOTH)%
-		LSTR_15 = %C_PICTURE_IMG(L_X, L_Y, L_W, L_H, LSTR_15)%
-	ELSE
-		DEBUGPRINTFORML %CALLNAME:L_T%の日焼け画像が見つかりません  HIYAKE_CLOTH=%HIYAKE_CLOTH:L_T:0%
-	ENDIF
-ENDIF
 
 ;日焼けパッチ：日焼け画像表示を淫紋(LSTR_14)の前に追加
 ;LSTR = <nobr>%BG_STR%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_11%%LSTR_12%%LSTR_15%%LSTR_14%

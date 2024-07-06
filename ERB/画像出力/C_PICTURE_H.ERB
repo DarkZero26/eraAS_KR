@@ -221,13 +221,6 @@ ELSE
 	LSTR_17 = <nonbutton pos='{P_S2}'><img src='%LSTR_16%in_{C_in}' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
 ENDIF
 
-;日焼け跡
-IF HIYAKE_CLOTH:L_I:0 != ""
-	LSTR_18 = <nonbutton pos='{P_S2}'><img src='%HIYAKE_CLOTH:L_I:0%' height = '850' width = '-465' ypos = '{P_S}'></nonbutton>
-ELSE
-	LSTR_18 = 
-ENDIF
-
 ;LSTR_6,LSTR_7,LSTR_8,LSTR_9,LSTR_10は未使用？
 ;日焼けパッチ：日焼け画像表示処理を追加(LSTR_18をLSTR_N2の次に追加)
 LSTR = <nobr>%LSTR_0%%LSTR_1%%LSTR_UK%%LSTR_2%%LSTR_3%%LSTR_4%%LSTR_5%%LSTR_N2%%LSTR_6%%LSTR_7%%LSTR_8%%LSTR_9%%LSTR_10%%LSTR_11%%LSTR_12%%LSTR_14%%LSTR_13%%LSTR_15%%LSTR_17%
